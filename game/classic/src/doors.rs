@@ -63,6 +63,8 @@ pub struct Airlock {
     pub req_access: Vec<String>,
     /// Until when the "deny" animation shows.
     pub deny_until: Option<f32>,
+    /// Powered opens and closes since the power system last billed them.
+    pub operations: u32,
 }
 
 impl Default for Airlock {
@@ -73,6 +75,7 @@ impl Default for Airlock {
             powered: true,
             req_access: Vec::new(),
             deny_until: None,
+            operations: 0,
         }
     }
 }
@@ -106,7 +109,29 @@ impl Airlock {
             // Operating: ignored.
             DoorState::Opening { .. } | DoorState::Closing { .. } => return false,
         }
+        self.operations += 1;
         true
+    }
+
+    /// Luna's crowbar: an unpowered closed door can be prised open, and an open door can be
+    /// pulled shut at any time, unless it is bolted. Uses no power.
+    pub fn force(&mut self, now: f32) -> bool {
+        if self.bolted {
+            return false;
+        }
+        match self.state {
+            DoorState::Closed if !self.powered => {
+                self.state = DoorState::Opening {
+                    done_at: now + OPEN_DS,
+                };
+                true
+            }
+            DoorState::Open { .. } => {
+                self.start_closing(now);
+                true
+            }
+            _ => false,
+        }
     }
 
     fn start_closing(&mut self, now: f32) {
@@ -157,6 +182,7 @@ pub fn update_doors(
                 door.state = DoorState::Open { autoclose_at: None };
                 if !door.bolted && door.powered {
                     door.start_closing(now);
+                    door.operations += 1;
                 }
             }
             DoorState::Closing {

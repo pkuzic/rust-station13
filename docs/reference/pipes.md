@@ -60,7 +60,6 @@ member holds part of the network's gas, in proportion to its volume:
 
 ## Not yet
 
-- Power: machines always run.
 - Pressure-rated pipes, leaks and bursts.
 - Gas filters and mixers.
 - Heat exchangers.

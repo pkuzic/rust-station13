@@ -32,4 +32,6 @@
     "scrubber": (gender: neuter, sg: (nom: "air scrubber", indef: "an air scrubber"), pl: Some((nom: "air scrubbers"))),
     "connector": (gender: neuter, sg: (nom: "connector port", indef: "a connector port"), pl: Some((nom: "connector ports"))),
     "canister": (gender: neuter, sg: (nom: "canister", indef: "a canister"), pl: Some((nom: "canisters"))),
+    "smes": (gender: neuter, sg: (nom: "SMES", indef: "a SMES unit"), pl: Some((nom: "SMES units"))),
+    "cable": (gender: neuter, sg: (nom: "power cable", indef: "a power cable"), pl: Some((nom: "power cables"))),
 }

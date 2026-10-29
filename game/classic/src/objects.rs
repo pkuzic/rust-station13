@@ -102,6 +102,9 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
         return Err(format!("{} at {pos:?}: unknown access id {bad:?}", spec.id));
     }
     let proto = spec.id.as_str();
+    if matches!(proto, "cable" | "smes" | "apc") {
+        return Ok(spawn_power_object(world, proto, pos));
+    }
     if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
         let id = world.resource_mut::<NetIds>().alloc();
         let appearance = Appearance::new(machine.sprite, machine.state);
@@ -121,8 +124,9 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             ..Airlock::default()
         };
         let appearance = Appearance::new("airlock", airlock.state.name());
+        let power = crate::power::PowerUser::new(crate::power::Channel::Equipment, 0.0);
         return Ok(world
-            .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
+            .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque, power))
             .id());
     }
     let item = Item {
@@ -172,4 +176,37 @@ pub fn spawn_player_mob(world: &mut World, pos: TilePos) -> Entity {
             ),
         ))
         .id()
+}
+
+/// Cables, SMES units and APCs. An APC powers the area its tile is in.
+fn spawn_power_object(world: &mut World, proto: &str, pos: TilePos) -> Entity {
+    use crate::power::{Apc, Cable, PowerNode, SMES_CAPACITY, SMES_OUTPUT, Smes};
+    let id = world.resource_mut::<NetIds>().alloc();
+    let area = {
+        let mut maps = world.query::<&MapLayer>();
+        maps.iter(world)
+            .next()
+            .and_then(|m| m.0.area(pos))
+            .unwrap_or_default()
+            .to_owned()
+    };
+    let mut entity = world.spawn((GridPos(pos), id, PowerNode));
+    match proto {
+        "cable" => {
+            entity.insert((Appearance::new("cable", ""), Cable));
+        }
+        "smes" => {
+            let smes = Smes {
+                charge: SMES_CAPACITY,
+                capacity: SMES_CAPACITY,
+                output: SMES_OUTPUT,
+                online: true,
+            };
+            entity.insert((Appearance::new("smes", "on"), smes, Dense));
+        }
+        _ => {
+            entity.insert((Appearance::new("apc", "on"), Apc::new(area)));
+        }
+    }
+    entity.id()
 }

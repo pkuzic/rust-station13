@@ -62,6 +62,7 @@ Record findings here as they are verified, with the Luna path.
 - [Luna's atmos, as it actually ran](reference/atmos.md) (background only; we follow `docs/ATMOSPHERICS.md`)
 - [Environment: air, bodies and space](reference/environment.md) (our design and tuning)
 - [Pipes and atmospherics machinery](reference/pipes.md)
+- [Electrical power](reference/power.md)
 
 ## Writing a behaviour spec
 

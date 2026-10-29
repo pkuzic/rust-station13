@@ -85,3 +85,20 @@ valve-closed = Вы закрываете { NOUN($item, case: "acc") }.
 canister-connected = Вы подключаете { NOUN($item, case: "acc") } к порту.
 canister-disconnected = Вы отключаете { NOUN($item, case: "acc") } от порта.
 examine-gauge = Манометр показывает { $value } кПа.
+
+# Питание. Аргументы: $value (проценты); $equipment, $lighting, $environment (on/off); $item (id).
+examine-apc = Заряд батареи энергощитка: { $value }%. Оборудование: { $equipment ->
+        [on] вкл.
+       *[off] выкл.
+    }, освещение: { $lighting ->
+        [on] вкл.
+       *[off] выкл.
+    }, жизнеобеспечение: { $environment ->
+        [on] вкл.
+       *[off] выкл.
+    }.
+examine-smes = Накопитель энергии заряжен на { $value }%.
+apc-breaker-on = Вы включаете главный рубильник энергощитка.
+apc-breaker-off = Вы выключаете главный рубильник энергощитка.
+apc-locked = Доступ запрещён.
+door-forced = Вы вскрываете { NOUN($item, case: "acc") } ломом.

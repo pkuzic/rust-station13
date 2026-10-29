@@ -88,6 +88,9 @@ fn every_message_formats_in_both_locales() {
     args.set("zone", "zone-l_arm");
     args.set("value", 75);
     args.set("intent", "harm");
+    args.set("equipment", "on");
+    args.set("lighting", "off");
+    args.set("environment", "on");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();
