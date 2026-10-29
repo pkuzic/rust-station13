@@ -48,6 +48,23 @@ pub struct Opaque;
 #[derive(Component, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DisplayName(pub String);
 
+/// Whether a mob is awake, out cold or dead (BYOND `stat`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum MobStat {
+    #[default]
+    Conscious,
+    Unconscious,
+    Dead,
+}
+
+/// How a mob acts on others (BYOND `a_intent`). Disarm and grab come later.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum Intent {
+    #[default]
+    Help,
+    Harm,
+}
+
 /// Which hand is in use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Hand {

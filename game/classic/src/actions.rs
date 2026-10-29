@@ -5,11 +5,13 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, TilePos};
+use rs13_world::{Appearance, DisplayName, GridPos, Intent, MobStat, TilePos};
 
 use crate::access::IdCard;
+use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::Airlock;
 use crate::hands::{Hands, HeldBy, Item};
+use crate::health::{Body, Vitals};
 use crate::movement::Mob;
 use crate::time::WorldTime;
 
@@ -21,6 +23,7 @@ pub enum Action {
     Drop,
     SwapHands,
     Examine(Entity),
+    SetIntent(Intent),
 }
 
 /// Actions waiting for the next tick, in the order they were requested.
@@ -42,6 +45,8 @@ type ActingMob<'a> = (
     &'a mut Hands,
     &'a mut PendingActions,
     &'a mut Outbox,
+    Option<&'a mut CombatIntent>,
+    Option<&'a Vitals>,
 );
 
 pub fn process_actions(
@@ -49,6 +54,8 @@ pub fn process_actions(
     mut mobs: Query<ActingMob, With<Mob>>,
     mut targets: Query<(Option<&GridPos>, Has<Item>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
+    people: Query<(), With<Body>>,
+    mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     mut commands: Commands,
 ) {
@@ -56,10 +63,19 @@ pub fn process_actions(
     // Items picked up earlier this tick (component changes apply after the system).
     let mut taken: HashSet<Entity> = HashSet::new();
 
-    for (mob, mob_pos, mut hands, mut pending, mut outbox) in &mut mobs {
+    for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals) in &mut mobs {
+        if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            pending.0.clear();
+            continue;
+        }
         for action in pending.0.drain(..) {
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
+                Action::SetIntent(new) => {
+                    if let Some(intent) = intent.as_mut() {
+                        intent.0 = new;
+                    }
+                }
                 Action::Drop => {
                     let active = hands.active;
                     if let Some(item) = hands.slot_mut(active).take() {
@@ -82,6 +98,10 @@ pub fn process_actions(
                     }
                     Err(_) => {}
                 },
+                Action::UseOn(target) if people.contains(target) => {
+                    // Reach and the outcome are worked out by `resolve_attacks`.
+                    attacks.0.push((mob, target));
+                }
                 Action::UseOn(target) => {
                     let Ok((Some(target_pos), is_item, airlock)) = targets.get_mut(target) else {
                         // Held by someone, or gone.

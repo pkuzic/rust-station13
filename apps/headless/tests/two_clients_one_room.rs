@@ -9,7 +9,7 @@ use std::time::Duration;
 use rs13_classic::{locales, maps};
 use rs13_headless::{BotConfig, BotReport, BotResult, SeenPlayer, bot_app, unique_client_id};
 use rs13_i18n::{Lexicon, Localizer, langid};
-use rs13_world::{Dir, TileMap};
+use rs13_world::{Dir, Intent, MobStat, TileMap};
 
 #[derive(Default)]
 struct Extra {
@@ -111,6 +111,14 @@ fn two_clients_move_in_one_room() {
 
     let (en, ru) = localizers();
     let ids = |r: &BotResult| r.notices.iter().map(|n| n.id.clone()).collect::<Vec<_>>();
+
+    // Each bot was told its own health, state and intent.
+    for result in [&first, &second] {
+        let status = result.status.expect("status update received");
+        assert_eq!(status.health, 100);
+        assert_eq!(status.stat, MobStat::Conscious);
+        assert_eq!(status.intent, Intent::Help);
+    }
 
     // The examine answer went only to the bot that asked.
     assert_eq!(ids(&first), ["examine", "say"]);

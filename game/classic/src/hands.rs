@@ -4,8 +4,11 @@ use bevy_ecs::prelude::*;
 use rs13_world::{Hand, HandsView, NetId};
 
 /// Something that can be picked up.
-#[derive(Component, Debug)]
-pub struct Item;
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub struct Item {
+    /// Brute damage when hitting someone with it (Luna `force`).
+    pub force: f32,
+}
 
 /// On a held item: the mob holding it. A held item has no `GridPos`.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]

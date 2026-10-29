@@ -11,4 +11,16 @@
     "apc": (gender: neuter, sg: (nom: "APC", indef: "an APC")),
     "id-card": (gender: neuter, sg: (nom: "ID card", indef: "an ID card"), pl: Some((nom: "ID cards"))),
     "human": (gender: neuter, sg: (nom: "human", indef: "a human"), pl: Some((nom: "humans"))),
+    // Body parts, for messages like "attacked in the chest".
+    "zone-head": (gender: neuter, sg: (nom: "head")),
+    "zone-chest": (gender: neuter, sg: (nom: "chest")),
+    "zone-groin": (gender: neuter, sg: (nom: "groin")),
+    "zone-l_arm": (gender: neuter, sg: (nom: "left arm")),
+    "zone-r_arm": (gender: neuter, sg: (nom: "right arm")),
+    "zone-l_hand": (gender: neuter, sg: (nom: "left hand")),
+    "zone-r_hand": (gender: neuter, sg: (nom: "right hand")),
+    "zone-l_leg": (gender: neuter, sg: (nom: "left leg")),
+    "zone-r_leg": (gender: neuter, sg: (nom: "right leg")),
+    "zone-l_foot": (gender: neuter, sg: (nom: "left foot")),
+    "zone-r_foot": (gender: neuter, sg: (nom: "right foot")),
 }

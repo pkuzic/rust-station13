@@ -1,10 +1,11 @@
 // Item prototypes. Each id is also its sprite id and its noun id in the locales.
+// force: brute damage when hitting someone with it (Luna values, see docs/reference/health.md).
 [
-    (id: "crowbar"),
-    (id: "wrench"),
-    (id: "screwdriver"),
-    (id: "wirecutters"),
-    (id: "oxygen-tank"),
-    (id: "metal-sheet"),
-    (id: "id-card"),
+    (id: "crowbar", force: 5.0),
+    (id: "wrench", force: 5.0),
+    (id: "screwdriver", force: 5.0),
+    (id: "wirecutters", force: 6.0),
+    (id: "oxygen-tank", force: 5.0),
+    (id: "metal-sheet", force: 5.0),
+    (id: "id-card", force: 0.0),
 ]

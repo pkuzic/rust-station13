@@ -40,3 +40,18 @@ name-rejected = That name is not allowed. You are { $name }.
 
 # Prompt of the say line.
 hud-say = Say:
+
+# Combat. Args: $attacker, $victim (names), $item (noun id), $zone (body part noun id).
+attacked-with = { $victim } has been attacked in the { NOUN($zone) } with the { NOUN($item) } by { $attacker }!
+punched = { $attacker } has punched { $victim }!
+punched-face = { $attacker } has punched { $victim } in the face!
+punch-missed = { $attacker } has attempted to punch { $victim }!
+
+# Status bar. Args: $value (health), $intent (help/harm).
+hud-health = Health: { $value }
+hud-health-crit = Health: CRITICAL
+hud-health-dead = You are dead
+hud-intent = Intent: { $intent ->
+        [harm] harm
+       *[help] help
+    }

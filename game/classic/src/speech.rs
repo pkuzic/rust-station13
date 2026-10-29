@@ -2,9 +2,10 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{DisplayName, GridPos, MapLayer, Opaque, TileMap, TilePos};
+use rs13_world::{DisplayName, GridPos, MapLayer, MobStat, Opaque, TileMap, TilePos};
 
 use crate::actions::Outbox;
+use crate::health::Vitals;
 use crate::movement::Mob;
 
 /// Longest message, in characters (Luna `MAX_MESSAGE_LEN`).
@@ -80,13 +81,26 @@ fn line(a: TilePos, b: TilePos) -> impl Iterator<Item = TilePos> {
 /// Deliver each pending line to every mob that can see the speaker.
 pub fn speak(
     map: Single<&MapLayer>,
-    mut speakers: Query<(Entity, &GridPos, &DisplayName, &mut PendingSpeech), With<Mob>>,
-    mut listeners: Query<(Entity, &GridPos, &mut Outbox), With<Mob>>,
+    mut speakers: Query<
+        (
+            Entity,
+            &GridPos,
+            &DisplayName,
+            &mut PendingSpeech,
+            Option<&Vitals>,
+        ),
+        With<Mob>,
+    >,
+    mut listeners: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
 ) {
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
     let mut said: Vec<(Entity, TilePos, LocMsg)> = Vec::new();
-    for (speaker, pos, name, mut pending) in &mut speakers {
+    for (speaker, pos, name, mut pending, vitals) in &mut speakers {
+        if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            pending.0.clear();
+            continue;
+        }
         for raw in pending.0.drain(..) {
             let Some(text) = sanitize_speech(&raw) else {
                 continue;
@@ -99,8 +113,9 @@ pub fn speak(
         }
     }
     for (speaker, from, msg) in said {
-        for (listener, to, mut outbox) in &mut listeners {
-            if listener == speaker || can_see(&map.0, &opaque, from, to.0, HEARING_RANGE) {
+        for (listener, to, mut outbox, vitals) in &mut listeners {
+            let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
+            if awake && (listener == speaker || can_see(&map.0, &opaque, from, to.0, HEARING_RANGE)) {
                 outbox.0.push(msg.clone());
             }
         }

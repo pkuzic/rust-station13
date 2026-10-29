@@ -50,4 +50,16 @@
         sg: (nom: "ID-карта", gen: "ID-карты", dat: "ID-карте", acc: "ID-карту", ins: "ID-картой", prep: "ID-карте"),
         pl: Some((nom: "ID-карты", gen: "ID-карт", dat: "ID-картам", acc: "ID-карты", ins: "ID-картами", prep: "ID-картах")),
     ),
+    // Body parts, for messages like «бьёт ... в грудь».
+    "zone-head": (gender: feminine, sg: (nom: "голова", gen: "головы", dat: "голове", acc: "голову", ins: "головой", prep: "голове")),
+    "zone-chest": (gender: feminine, sg: (nom: "грудь", gen: "груди", dat: "груди", acc: "грудь", ins: "грудью", prep: "груди")),
+    "zone-groin": (gender: masculine, sg: (nom: "пах", gen: "паха", dat: "паху", acc: "пах", ins: "пахом", prep: "пахе")),
+    "zone-l_arm": (gender: feminine, sg: (nom: "левая рука", gen: "левой руки", dat: "левой руке", acc: "левую руку", ins: "левой рукой", prep: "левой руке")),
+    "zone-r_arm": (gender: feminine, sg: (nom: "правая рука", gen: "правой руки", dat: "правой руке", acc: "правую руку", ins: "правой рукой", prep: "правой руке")),
+    "zone-l_hand": (gender: feminine, sg: (nom: "левая кисть", gen: "левой кисти", dat: "левой кисти", acc: "левую кисть", ins: "левой кистью", prep: "левой кисти")),
+    "zone-r_hand": (gender: feminine, sg: (nom: "правая кисть", gen: "правой кисти", dat: "правой кисти", acc: "правую кисть", ins: "правой кистью", prep: "правой кисти")),
+    "zone-l_leg": (gender: feminine, sg: (nom: "левая нога", gen: "левой ноги", dat: "левой ноге", acc: "левую ногу", ins: "левой ногой", prep: "левой ноге")),
+    "zone-r_leg": (gender: feminine, sg: (nom: "правая нога", gen: "правой ноги", dat: "правой ноге", acc: "правую ногу", ins: "правой ногой", prep: "правой ноге")),
+    "zone-l_foot": (gender: feminine, sg: (nom: "левая стопа", gen: "левой стопы", dat: "левой стопе", acc: "левую стопу", ins: "левой стопой", prep: "левой стопе")),
+    "zone-r_foot": (gender: feminine, sg: (nom: "правая стопа", gen: "правой стопы", dat: "правой стопе", acc: "правую стопу", ins: "правой стопой", prep: "правой стопе")),
 }

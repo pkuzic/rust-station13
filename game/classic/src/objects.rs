@@ -1,17 +1,20 @@
 //! Spawning map objects, items and player mobs.
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 use bevy_ecs::prelude::*;
 use rs13_world::{
-    Appearance, Dense, DisplayName, GridPos, HandsView, MapLayer, NetId, ObjectSpec, Opaque, TileMap, TilePos,
+    Appearance, Dense, DisplayName, GridPos, HandsView, MapLayer, MobStat, NetId, ObjectSpec, Opaque,
+    TileMap, TilePos,
 };
 use serde::Deserialize;
 
 use crate::access::{AccessIds, IdCard};
 use crate::actions::{Outbox, PendingActions};
+use crate::combat::CombatIntent;
 use crate::doors::Airlock;
 use crate::hands::{Hands, Item};
+use crate::health::{Body, HEALTH_FULL, Vitals};
 use crate::movement::{Mob, MoveIntent};
 use crate::names::default_name;
 use crate::speech::PendingSpeech;
@@ -32,18 +35,19 @@ impl NetIds {
 #[derive(Deserialize)]
 struct ItemProto {
     id: String,
+    force: f32,
 }
 
-/// Ids of all item prototypes, from `content/items.ron`.
+/// Item prototypes from `content/items.ron`: id to force.
 #[derive(Resource, Debug)]
-pub struct ItemProtos(pub HashSet<String>);
+pub struct ItemProtos(pub HashMap<String, f32>);
 
 impl Default for ItemProtos {
     fn default() -> Self {
         let protos: Vec<ItemProto> =
             rs13_content::parse_ron("content/items.ron", include_str!("../content/items.ron"))
                 .expect("built-in item prototypes are valid");
-        Self(protos.into_iter().map(|p| p.id).collect())
+        Self(protos.into_iter().map(|p| (p.id, p.force)).collect())
     }
 }
 
@@ -78,8 +82,8 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
         return Err(format!("{} at {pos:?}: unknown access id {bad:?}", spec.id));
     }
     let proto = spec.id.as_str();
-    let is_item = world.resource::<ItemProtos>().0.contains(proto);
-    if proto != "airlock" && !is_item {
+    let force = world.resource::<ItemProtos>().0.get(proto).copied();
+    if proto != "airlock" && force.is_none() {
         return Err(format!("unknown prototype {proto:?} at {pos:?}"));
     }
 
@@ -94,7 +98,10 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
             .id());
     }
-    let mut item = world.spawn((GridPos(pos), id, Appearance::new(proto, ""), Item));
+    let item = Item {
+        force: force.unwrap_or(0.0),
+    };
+    let mut item = world.spawn((GridPos(pos), id, Appearance::new(proto, ""), item));
     if proto == "id-card" {
         item.insert(IdCard {
             access: spec.access.clone(),
@@ -109,19 +116,31 @@ pub fn spawn_player_mob(world: &mut World, pos: TilePos) -> Entity {
     let id = world.resource_mut::<NetIds>().alloc();
     world
         .spawn((
-            GridPos(pos),
-            id,
-            Appearance::new("human", ""),
-            DisplayName(default_name(id.0)),
-            Dense,
-            Mob::default(),
-            MoveIntent::default(),
-            Hands::default(),
-            HandsView::default(),
-            PendingActions::default(),
-            PendingSpeech::default(),
-            Outbox::default(),
-            PlayerControlled,
+            // What others see.
+            (
+                GridPos(pos),
+                id,
+                Appearance::new("human", ""),
+                DisplayName(default_name(id.0)),
+                Dense,
+                HandsView::default(),
+            ),
+            // What the mob is and does.
+            (
+                Mob::default(),
+                MoveIntent::default(),
+                Hands::default(),
+                PendingActions::default(),
+                PendingSpeech::default(),
+                Body::default(),
+                Vitals {
+                    health: HEALTH_FULL,
+                    stat: MobStat::Conscious,
+                },
+                CombatIntent::default(),
+                Outbox::default(),
+                PlayerControlled,
+            ),
         ))
         .id()
 }

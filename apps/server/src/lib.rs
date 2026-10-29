@@ -6,6 +6,8 @@ use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
+use rs13_classic::combat::CombatIntent;
+use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
@@ -14,7 +16,7 @@ use rs13_classic::{ClassicPlugin, maps};
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, MoveInput, Notice, NoticeChannel, Player};
+use rs13_network::protocol::{ActionInput, MoveInput, Notice, NoticeChannel, Player, StatusUpdate};
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{DisplayName, GridPos, MapLayer, NetId, TileMap};
 
@@ -24,6 +26,10 @@ struct Port(u16);
 /// On a client's link entity: the mob that client controls.
 #[derive(Component)]
 struct Controls(Entity);
+
+/// On a client's link entity: the status last sent to it.
+#[derive(Component, Default)]
+struct SentStatus(Option<StatusUpdate>);
 
 /// On a mob whose player has already chosen a name this session.
 #[derive(Component)]
@@ -44,7 +50,10 @@ pub fn server_app(port: u16) -> App {
     .add_observer(spawn_player)
     // Lightyear drops messages not read in the frame they arrive, and a frame may
     // have no fixed tick, so read inputs every frame; the game applies them on ticks.
-    .add_systems(Update, (apply_move_inputs, queue_actions, send_notices));
+    .add_systems(
+        Update,
+        (apply_move_inputs, queue_actions, send_notices, send_status),
+    );
     app
 }
 
@@ -107,7 +116,7 @@ fn spawn_player(
             },
         ));
         if let Ok(mut link) = world.get_entity_mut(link) {
-            link.insert(Controls(mob));
+            link.insert((Controls(mob), SentStatus::default()));
         }
         info!(client_id, x = spawn.x, y = spawn.y, "player joined");
     });
@@ -155,6 +164,7 @@ fn queue_actions(
                 ActionInput::Examine(id) => resolve(id).map(Action::Examine),
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::SwapHands => Some(Action::SwapHands),
+                ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
                 ActionInput::Say(text) => {
                     speech.0.push(text);
                     None
@@ -188,6 +198,28 @@ fn send_notices(mut links: Query<(&Controls, &mut MessageSender<Notice>)>, mut o
         };
         for msg in outbox.0.drain(..) {
             sender.send::<NoticeChannel>(Notice(msg));
+        }
+    }
+}
+
+/// Tell each client its own health, state and intent whenever they change.
+fn send_status(
+    mut links: Query<(&Controls, &mut SentStatus, &mut MessageSender<StatusUpdate>)>,
+    mobs: Query<(&Vitals, &CombatIntent)>,
+) {
+    for (controls, mut sent, mut sender) in &mut links {
+        let Ok((vitals, intent)) = mobs.get(controls.0) else {
+            continue;
+        };
+        let status = StatusUpdate {
+            // Luna shows health as a whole number.
+            health: vitals.health.round() as i32,
+            stat: vitals.stat,
+            intent: intent.0,
+        };
+        if sent.0 != Some(status) {
+            sender.send::<NoticeChannel>(status);
+            sent.0 = Some(status);
         }
     }
 }
