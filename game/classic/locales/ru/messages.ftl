@@ -50,3 +50,19 @@ name-rejected = Это имя недопустимо. Вас зовут { $name 
 
 # Prompt of the say line.
 hud-say = Сказать:
+
+# Бой. Аргументы: $attacker, $victim (имена), $item (id предмета), $zone (id части тела).
+# Настоящее время, чтобы не согласовывать глагол с полом.
+attacked-with = { $attacker } бьёт { $victim } { NOUN($item, case: "ins") } в { NOUN($zone, case: "acc") }!
+punched = { $attacker } бьёт { $victim } кулаком!
+punched-face = { $attacker } бьёт { $victim } кулаком в лицо!
+punch-missed = { $attacker } пытается ударить { $victim }, но промахивается!
+
+# Строка состояния. Аргументы: $value (здоровье), $intent (help/harm).
+hud-health = Здоровье: { $value }
+hud-health-crit = Здоровье: КРИТИЧЕСКОЕ
+hud-health-dead = Вы мертвы
+hud-intent = Намерение: { $intent ->
+        [harm] вред
+       *[help] помощь
+    }

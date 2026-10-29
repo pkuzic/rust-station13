@@ -4,8 +4,9 @@
 //! (default `127.0.0.1:13013`, English, a random name).
 //!
 //! Controls: arrow keys or WASD move (hold Shift to walk); left click uses the active
-//! hand on something in reach; Shift+click examines; Q drops; X swaps hands; T opens
-//! the say line (Enter sends, Esc cancels).
+//! hand on something in reach (a held item hits people on any intent); Shift+click
+//! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
+//! (Enter sends, Esc cancels).
 //!
 //! Placeholder graphics: tiles and objects are flat coloured squares until the
 //! Luna sprite import lands.
@@ -23,8 +24,8 @@ use rs13_i18n::{Case, Lexicon, Localizer, langid};
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player};
-use rs13_world::{Appearance, Dir, GridPos, Hand, HandsView, MapLayer, NetId, TilePos};
+use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
+use rs13_world::{Appearance, Dir, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, TilePos};
 
 /// On-screen size of one tile, in pixels.
 const TILE_PX: f32 = 32.0;
@@ -33,6 +34,8 @@ const TILE_PX: f32 = 32.0;
 const GLIDE_TILES_PER_SEC: f32 = 5.0;
 /// Lines kept in the message log.
 const LOG_LINES: usize = 8;
+/// Colour of the player's own character.
+const OWN_PLAYER_COLOR: Color = Color::srgb(0.35, 0.85, 0.40);
 /// A Windows 2000-era UI font with Cyrillic, with fallbacks for other systems.
 const UI_FONT: &str = "Tahoma, 'DejaVu Sans', sans-serif";
 
@@ -58,6 +61,13 @@ struct ChatInput {
 
 #[derive(Component)]
 struct ChatLine;
+
+#[derive(Component)]
+struct StatusLine;
+
+/// Our own health, state and intent, as last reported by the server.
+#[derive(Resource, Default)]
+struct OwnStatus(Option<StatusUpdate>);
 
 #[derive(Resource)]
 struct ServerAddr(SocketAddr);
@@ -108,6 +118,7 @@ fn main() {
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
         .init_resource::<ChatInput>()
+        .init_resource::<OwnStatus>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
         .add_systems(Startup, (setup, spawn_hud))
@@ -123,11 +134,13 @@ fn main() {
                 chat_typing,
                 (send_move_input, send_hotkeys, send_clicks),
                 receive_notices,
+                receive_status,
                 glide,
                 follow_own_player,
                 update_hands_bar,
                 update_log,
                 update_chat_line,
+                update_status_line,
             )
                 .chain(),
         )
@@ -214,6 +227,12 @@ fn spawn_hud(mut commands: Commands) {
                 TextColor(Color::srgb(1.0, 1.0, 0.75))
             ),
             (
+                StatusLine,
+                Text::new(""),
+                ui_text_font(15.0),
+                TextColor(Color::srgb(0.95, 0.95, 0.95))
+            ),
+            (
                 Node {
                     width: Val::Percent(100.0),
                     justify_content: JustifyContent::Center,
@@ -251,6 +270,8 @@ fn tile_color(id: &str) -> Color {
 /// Placeholder look of an object: colour, size and draw layer.
 fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
     match (appearance.sprite.as_str(), appearance.state.as_str()) {
+        ("human", "unconscious") => (Color::srgb(0.45, 0.45, 0.55), TILE_PX * 0.7, 3.0),
+        ("human", "dead") => (Color::srgb(0.45, 0.10, 0.10), TILE_PX * 0.7, 3.0),
         ("human", _) => (Color::srgb(0.35, 0.55, 0.95), TILE_PX * 0.7, 3.0),
         ("airlock", "deny") => (Color::srgb(0.85, 0.20, 0.15), TILE_PX - 1.0, 2.0),
         ("airlock", "open") => (Color::srgb(0.22, 0.20, 0.14), TILE_PX - 1.0, 2.0),
@@ -300,9 +321,12 @@ fn add_sprites(
 
 fn update_appearance(mut objects: Query<(&Appearance, &mut Sprite, Has<OwnPlayer>), Changed<Appearance>>) {
     for (appearance, mut sprite, own) in &mut objects {
-        if !own {
-            sprite.color = object_look(appearance).0;
-        }
+        // Our own player stays green while it is up and about.
+        sprite.color = if own && appearance.state.is_empty() {
+            OWN_PLAYER_COLOR
+        } else {
+            object_look(appearance).0
+        };
     }
 }
 
@@ -322,7 +346,7 @@ fn mark_own_player(
     mut own: Query<(Entity, &mut Sprite), (Added<Controlled>, With<Player>)>,
 ) {
     for (entity, mut sprite) in &mut own {
-        sprite.color = Color::srgb(0.35, 0.85, 0.40);
+        sprite.color = OWN_PLAYER_COLOR;
         commands.entity(entity).insert(OwnPlayer);
         info!("own player received");
     }
@@ -428,6 +452,13 @@ fn send_hotkeys(
     if keys.just_pressed(KeyCode::KeyX) {
         sender.send::<IntentChannel>(ActionInput::SwapHands);
     }
+    // Classic hotkeys: 1 help, 4 harm (2 disarm and 3 grab come later).
+    if keys.just_pressed(KeyCode::Digit1) {
+        sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Help));
+    }
+    if keys.just_pressed(KeyCode::Digit4) {
+        sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Harm));
+    }
 }
 
 /// Left click: use the active hand on the topmost thing on the clicked tile.
@@ -471,6 +502,44 @@ fn send_clicks(
     } else {
         ActionInput::UseOn(target)
     });
+}
+
+fn receive_status(
+    mut own: ResMut<OwnStatus>,
+    mut receivers: Query<&mut MessageReceiver<StatusUpdate>, With<Client>>,
+) {
+    for mut receiver in &mut receivers {
+        if let Some(status) = receiver.receive().last() {
+            own.0 = Some(status);
+        }
+    }
+}
+
+fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut Text, With<StatusLine>>) {
+    if !own.is_changed() {
+        return;
+    }
+    let Some(status) = own.0 else { return };
+    let health = match status.stat {
+        MobStat::Dead => loc.0.format("hud-health-dead", None),
+        MobStat::Unconscious => loc.0.format("hud-health-crit", None),
+        MobStat::Conscious => {
+            let mut args = rs13_i18n::Args::new();
+            args.set("value", status.health);
+            loc.0.format("hud-health", Some(&args))
+        }
+    }
+    .unwrap_or_default();
+    let mut args = rs13_i18n::Args::new();
+    args.set(
+        "intent",
+        match status.intent {
+            Intent::Help => "help",
+            Intent::Harm => "harm",
+        },
+    );
+    let intent = loc.0.format("hud-intent", Some(&args)).unwrap_or_default();
+    text.0 = format!("{health}    {intent}");
 }
 
 fn receive_notices(

@@ -58,6 +58,7 @@ Record findings here as they are verified, with the Luna path.
 - [Hands, items and clicking](reference/hands.md)
 - [Speech and character names](reference/speech.md)
 - [Access and ID cards](reference/access.md)
+- [Health, attacks, unconsciousness and death](reference/health.md)
 
 ## Writing a behaviour spec
 

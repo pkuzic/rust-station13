@@ -11,7 +11,7 @@ use rs13_i18n::LocMsg;
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player};
+use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
 use rs13_world::{Appearance, Dir, GridPos, NetId, TilePos};
 
 /// Give up if no own player has been received after this long.
@@ -47,14 +47,16 @@ pub struct BotResult {
     pub players: Vec<SeenPlayer>,
     /// Notices from the server, unformatted, in arrival order.
     pub notices: Vec<LocMsg>,
+    /// The last status the server reported for the bot's own mob.
+    pub status: Option<StatusUpdate>,
 }
 
 /// Filled in when the bot finishes. `None` if it never received its own player.
 pub type BotReport = Arc<Mutex<Option<BotResult>>>;
 
-/// Notices received so far.
+/// Notices received so far, and the latest status.
 #[derive(Resource, Default)]
-struct Received(Vec<LocMsg>);
+struct Received(Vec<LocMsg>, Option<StatusUpdate>);
 
 #[derive(Resource)]
 struct ReportSink(BotReport);
@@ -169,12 +171,20 @@ fn examine(
     }
 }
 
+/// Receivers are queried separately: Lightyear adds each one to the client entity only
+/// once the first message of that type arrives.
 fn receive_notices(
-    mut receivers: Query<&mut MessageReceiver<Notice>, With<Client>>,
+    mut notices: Query<&mut MessageReceiver<Notice>, With<Client>>,
+    mut statuses: Query<&mut MessageReceiver<StatusUpdate>, With<Client>>,
     mut received: ResMut<Received>,
 ) {
-    for mut receiver in &mut receivers {
+    for mut receiver in &mut notices {
         received.0.extend(receiver.receive().map(|n| n.0));
+    }
+    for mut receiver in &mut statuses {
+        if let Some(status) = receiver.receive().last() {
+            received.1 = Some(status);
+        }
     }
 }
 
@@ -210,6 +220,7 @@ fn finish(
             *sink.0.lock().unwrap() = Some(BotResult {
                 players: seen,
                 notices: received.0.clone(),
+                status: received.1,
             });
             exit.write(AppExit::Success);
         }

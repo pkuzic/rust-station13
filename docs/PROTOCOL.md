@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **3**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **4**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -36,8 +36,9 @@ Player mobs are despawned on the server when their client disconnects.
 | Message | Direction | Channel | Meaning |
 |---|---|---|---|
 | `MoveInput { dir: Option<Dir>, run: bool }` | client → server | `IntentChannel` (ordered, reliable) | The movement the player is holding. Sent when it changes; the server applies the latest one every tick until a new one arrives. |
-| `ActionInput` | client → server | `IntentChannel` | `UseOn(NetId)`, `Examine(NetId)`, `Drop`, `SwapHands`, `Say(String)`, `SetName(String)`. Queued and applied on the next tick; unknown ids are ignored. `SetName` is accepted once per session; an invalid name keeps the random one and sends `name-rejected`. |
+| `ActionInput` | client → server | `IntentChannel` | `UseOn(NetId)`, `Examine(NetId)`, `Drop`, `SwapHands`, `Say(String)`, `SetName(String)`, `SetIntent(Intent)`. Queued and applied on the next tick; unknown ids are ignored. `SetName` is accepted once per session; an invalid name keeps the random one and sends `name-rejected`. |
 | `Notice(LocMsg)` | server → one client | `NoticeChannel` (ordered, reliable) | A message for that player: message id + arguments, formatted by the client in its own language. |
+| `StatusUpdate { health, stat, intent }` | server → one client | `NoticeChannel` | The player's own health, state and intent, sent when they change. Nobody else's health is sent. |
 
 ## Rules
 

@@ -5,11 +5,14 @@
 
 pub mod access;
 pub mod actions;
+pub mod combat;
 pub mod doors;
 pub mod hands;
+pub mod health;
 pub mod movement;
 pub mod names;
 pub mod objects;
+pub mod rng;
 pub mod speech;
 pub mod time;
 
@@ -42,6 +45,9 @@ impl Plugin for ClassicPlugin {
             .init_resource::<objects::NetIds>()
             .init_resource::<objects::ItemProtos>()
             .init_resource::<access::AccessIds>()
+            .init_resource::<rng::GameRng>()
+            .init_resource::<combat::PendingAttacks>()
+            .init_resource::<combat::VisibleEvents>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -55,7 +61,12 @@ impl Plugin for ClassicPlugin {
             .add_systems(FixedUpdate, time::advance_time.before(TickSet::Commands))
             .add_systems(
                 FixedUpdate,
-                (actions::process_actions, speech::speak)
+                (
+                    actions::process_actions,
+                    combat::resolve_attacks,
+                    speech::speak,
+                    combat::deliver_visible,
+                )
                     .chain()
                     .in_set(TickSet::Commands),
             )
@@ -65,6 +76,7 @@ impl Plugin for ClassicPlugin {
                     .chain()
                     .in_set(TickSet::Gameplay),
             )
+            .add_systems(FixedUpdate, health::update_vitals.in_set(TickSet::Simulation))
             .add_systems(FixedUpdate, hands::sync_hands_view.in_set(TickSet::Publish));
     }
 }

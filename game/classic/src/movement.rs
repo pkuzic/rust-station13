@@ -6,11 +6,12 @@
 use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
-use rs13_world::{Dense, Dir, GridPos, MapLayer, TileMap, TilePos};
+use rs13_world::{Dense, Dir, GridPos, MapLayer, MobStat, TileMap, TilePos};
 
 use crate::access::IdCard;
 use crate::doors::{Airlock, BUMP_COOLDOWN_DS, DoorState};
 use crate::hands::Hands;
+use crate::health::Vitals;
 use crate::objects::PlayerControlled;
 use crate::time::WorldTime;
 
@@ -78,6 +79,7 @@ pub fn move_mobs(
         &MoveIntent,
         Has<PlayerControlled>,
         Option<&Hands>,
+        Option<&Vitals>,
     )>,
     mut objects: Query<(&GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
@@ -94,10 +96,13 @@ pub fn move_mobs(
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent, is_player, hands)) = mobs.get_mut(entity) else {
+        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals)) = mobs.get_mut(entity) else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
+        if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            continue;
+        }
         if now < mob.next_move_ds {
             continue;
         }

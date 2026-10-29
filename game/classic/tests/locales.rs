@@ -83,10 +83,32 @@ fn every_message_formats_in_both_locales() {
     args.set("name", "John Smith");
     args.set("verb", "ask");
     args.set("text", "Hello?");
+    args.set("attacker", "Alice Abbott");
+    args.set("victim", "Bob Barnes");
+    args.set("zone", "zone-l_arm");
+    args.set("value", 75);
+    args.set("intent", "harm");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();
             assert!(!text.contains('{'), "{id}: unresolved noun in {text:?}");
         }
     }
+}
+
+#[test]
+fn attack_message_declines_item_and_body_part() {
+    let mut args = Args::new();
+    args.set("attacker", "Alice Abbott");
+    args.set("victim", "Bob Barnes");
+    args.set("item", "crowbar");
+    args.set("zone", "zone-l_arm");
+    assert_eq!(
+        ru().format("attacked-with", Some(&args)).unwrap(),
+        "Alice Abbott бьёт Bob Barnes ломом в левую руку!"
+    );
+    assert_eq!(
+        en().format("attacked-with", Some(&args)).unwrap(),
+        "Bob Barnes has been attacked in the left arm with the crowbar by Alice Abbott!"
+    );
 }
