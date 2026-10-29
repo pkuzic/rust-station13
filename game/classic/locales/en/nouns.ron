@@ -1,0 +1,12 @@
+// Nouns of the classic build, keyed by prototype id. English needs only `nom`,
+// plus plural `nom` for countable nouns.
+{
+    "crowbar": (gender: neuter, sg: (nom: "crowbar"), pl: Some((nom: "crowbars"))),
+    "wrench": (gender: neuter, sg: (nom: "wrench"), pl: Some((nom: "wrenches"))),
+    "airlock": (gender: neuter, sg: (nom: "airlock"), pl: Some((nom: "airlocks"))),
+    "metal-sheet": (gender: neuter, sg: (nom: "metal sheet"), pl: Some((nom: "metal sheets"))),
+    "oxygen-tank": (gender: neuter, sg: (nom: "oxygen tank"), pl: Some((nom: "oxygen tanks"))),
+    "screwdriver": (gender: neuter, sg: (nom: "screwdriver"), pl: Some((nom: "screwdrivers"))),
+    "wirecutters": (gender: plural, sg: (nom: "wirecutters")),
+    "apc": (gender: neuter, sg: (nom: "APC")),
+}

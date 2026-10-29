@@ -1,0 +1,43 @@
+// Nouns of the classic build, keyed by prototype id.
+// Russian nouns must define all six cases (sg, and pl when the noun can be counted).
+// Checked by game/classic/tests/locales.rs.
+{
+    "crowbar": (
+        gender: masculine,
+        sg: (nom: "лом", gen: "лома", dat: "лому", acc: "лом", ins: "ломом", prep: "ломе"),
+        pl: Some((nom: "ломы", gen: "ломов", dat: "ломам", acc: "ломы", ins: "ломами", prep: "ломах")),
+    ),
+    "wrench": (
+        gender: masculine,
+        sg: (nom: "гаечный ключ", gen: "гаечного ключа", dat: "гаечному ключу", acc: "гаечный ключ", ins: "гаечным ключом", prep: "гаечном ключе"),
+        pl: Some((nom: "гаечные ключи", gen: "гаечных ключей", dat: "гаечным ключам", acc: "гаечные ключи", ins: "гаечными ключами", prep: "гаечных ключах")),
+    ),
+    "airlock": (
+        gender: masculine,
+        sg: (nom: "шлюз", gen: "шлюза", dat: "шлюзу", acc: "шлюз", ins: "шлюзом", prep: "шлюзе"),
+        pl: Some((nom: "шлюзы", gen: "шлюзов", dat: "шлюзам", acc: "шлюзы", ins: "шлюзами", prep: "шлюзах")),
+    ),
+    "metal-sheet": (
+        gender: masculine,
+        sg: (nom: "лист металла", gen: "листа металла", dat: "листу металла", acc: "лист металла", ins: "листом металла", prep: "листе металла"),
+        pl: Some((nom: "листы металла", gen: "листов металла", dat: "листам металла", acc: "листы металла", ins: "листами металла", prep: "листах металла")),
+    ),
+    "oxygen-tank": (
+        gender: masculine,
+        sg: (nom: "кислородный баллон", gen: "кислородного баллона", dat: "кислородному баллону", acc: "кислородный баллон", ins: "кислородным баллоном", prep: "кислородном баллоне"),
+        pl: Some((nom: "кислородные баллоны", gen: "кислородных баллонов", dat: "кислородным баллонам", acc: "кислородные баллоны", ins: "кислородными баллонами", prep: "кислородных баллонах")),
+    ),
+    "screwdriver": (
+        gender: feminine,
+        sg: (nom: "отвёртка", gen: "отвёртки", dat: "отвёртке", acc: "отвёртку", ins: "отвёрткой", prep: "отвёртке"),
+        pl: Some((nom: "отвёртки", gen: "отвёрток", dat: "отвёрткам", acc: "отвёртки", ins: "отвёртками", prep: "отвёртках")),
+    ),
+    "wirecutters": (
+        gender: plural,
+        sg: (nom: "кусачки", gen: "кусачек", dat: "кусачкам", acc: "кусачки", ins: "кусачками", prep: "кусачках"),
+    ),
+    "apc": (
+        gender: masculine,
+        sg: (nom: "энергощиток", gen: "энергощитка", dat: "энергощитку", acc: "энергощиток", ins: "энергощитком", prep: "энергощитке"),
+    ),
+}

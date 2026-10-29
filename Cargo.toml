@@ -1,0 +1,64 @@
+[workspace]
+resolver = "3"
+members = [
+    "apps/server",
+    "apps/client",
+    "apps/hub",
+    "apps/headless",
+    "engine/core",
+    "engine/world",
+    "engine/simulation",
+    "engine/network",
+    "engine/content",
+    "engine/i18n",
+    "game/classic",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/pkuzic/rust-station13"
+publish = false
+
+[workspace.dependencies]
+# Internal crates
+rs13-core = { path = "engine/core" }
+rs13-world = { path = "engine/world" }
+rs13-simulation = { path = "engine/simulation" }
+rs13-network = { path = "engine/network" }
+rs13-content = { path = "engine/content" }
+rs13-i18n = { path = "engine/i18n" }
+rs13-classic = { path = "game/classic" }
+
+# Engine stack: exact pins, see docs/adr/0002-bevy-lightyear-pin.md.
+# Bevy and Lightyear must be upgraded together.
+bevy = "=0.20.1"
+bevy_ecs = "=0.20.1"
+bevy_app = "=0.20.1"
+lightyear = { version = "=0.31.0", default-features = false }
+
+# Content, i18n
+serde = { version = "1.0.229", features = ["derive"] }
+ron = "0.12.3"
+fluent-bundle = "0.16.0"
+unic-langid = { version = "0.9.6", features = ["macros"] }
+
+# Diagnostics
+thiserror = "2.0.21"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+# Bevy is very slow in debug builds; optimise dependencies but keep our code debuggable.
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

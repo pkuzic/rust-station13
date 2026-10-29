@@ -1,0 +1,17 @@
+[package]
+name = "rs13-network"
+description = "Network protocol, sessions and replication built on Lightyear."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+rs13-core.workspace = true
+lightyear = { workspace = true, features = ["std", "client", "server", "replication", "netcode", "udp"] }
+serde.workspace = true
