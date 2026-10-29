@@ -54,6 +54,8 @@ Record findings here as they are verified, with the Luna path.
 ## Specs written so far
 
 - [Movement](reference/movement.md)
+- [Doors and airlocks](reference/airlock.md)
+- [Hands, items and clicking](reference/hands.md)
 
 ## Writing a behaviour spec
 

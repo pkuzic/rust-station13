@@ -31,8 +31,17 @@ cargo run -p rs13-client -- 10.0.0.5:13013
 cargo run -p rs13-headless -- --dir east # a bot that walks east and reports what it saw
 ```
 
-In the client, arrow keys or WASD move; hold Shift to walk. Graphics are placeholder
-squares until the Luna sprites are imported.
+In the client (`rs13-client [ADDR] [--lang en|ru]`):
+
+| Input | Action |
+|---|---|
+| WASD / arrows | Move (hold Shift to walk) |
+| Left click | Use the active hand on something in reach: pick up, open/close a door |
+| Shift + click | Examine |
+| Q | Drop the active-hand item |
+| X | Swap hands |
+
+Graphics are placeholder squares until the Luna sprites are imported.
 
 ## Documentation
 

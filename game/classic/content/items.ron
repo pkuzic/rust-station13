@@ -1,0 +1,9 @@
+// Item prototypes. Each id is also its sprite id and its noun id in the locales.
+[
+    (id: "crowbar"),
+    (id: "wrench"),
+    (id: "screwdriver"),
+    (id: "wirecutters"),
+    (id: "oxygen-tank"),
+    (id: "metal-sheet"),
+]

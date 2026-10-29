@@ -7,11 +7,12 @@ use std::time::Duration;
 use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
+use rs13_i18n::LocMsg;
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{IntentChannel, MoveInput, Player};
-use rs13_world::{Dir, GridPos, TilePos};
+use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player};
+use rs13_world::{Appearance, Dir, GridPos, NetId, TilePos};
 
 /// Give up if no own player has been received after this long.
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -24,6 +25,8 @@ pub struct BotConfig {
     pub dir: Option<Dir>,
     /// How long to keep running after the bot's own player appears.
     pub hold: Duration,
+    /// Examine the first object with this sprite id once it is visible.
+    pub examine: Option<String>,
 }
 
 /// A player as the bot last saw it.
@@ -34,8 +37,20 @@ pub struct SeenPlayer {
     pub own: bool,
 }
 
-/// What the bot saw when it finished. `None` if it never received its own player.
-pub type BotReport = Arc<Mutex<Option<Vec<SeenPlayer>>>>;
+/// What the bot saw by the time it finished.
+#[derive(Debug, Clone, Default)]
+pub struct BotResult {
+    pub players: Vec<SeenPlayer>,
+    /// Notices from the server, unformatted, in arrival order.
+    pub notices: Vec<LocMsg>,
+}
+
+/// Filled in when the bot finishes. `None` if it never received its own player.
+pub type BotReport = Arc<Mutex<Option<BotResult>>>;
+
+/// Notices received so far.
+#[derive(Resource, Default)]
+struct Received(Vec<LocMsg>);
 
 #[derive(Resource)]
 struct ReportSink(BotReport);
@@ -56,8 +71,9 @@ pub fn bot_app(config: BotConfig, report: BotReport) -> App {
     .insert_resource(config)
     .insert_resource(ReportSink(report))
     .init_resource::<JoinedAt>()
+    .init_resource::<Received>()
     .add_systems(Startup, start)
-    .add_systems(Update, (send_input, finish).chain());
+    .add_systems(Update, (send_input, examine, receive_notices, finish).chain());
     app
 }
 
@@ -98,10 +114,40 @@ fn send_input(
     *sent = true;
 }
 
+/// Examine the configured object once, as soon as it has been replicated.
+fn examine(
+    config: Res<BotConfig>,
+    mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+    objects: Query<(&NetId, &Appearance)>,
+    mut done: Local<bool>,
+) {
+    let Some(sprite) = &config.examine else { return };
+    if *done {
+        return;
+    }
+    let Ok(mut sender) = sender.single_mut() else {
+        return;
+    };
+    if let Some((id, _)) = objects.iter().find(|(_, a)| &a.sprite == sprite) {
+        sender.send::<IntentChannel>(ActionInput::Examine(*id));
+        *done = true;
+    }
+}
+
+fn receive_notices(
+    mut receivers: Query<&mut MessageReceiver<Notice>, With<Client>>,
+    mut received: ResMut<Received>,
+) {
+    for mut receiver in &mut receivers {
+        received.0.extend(receiver.receive().map(|n| n.0));
+    }
+}
+
 fn finish(
     time: Res<Time>,
     config: Res<BotConfig>,
     sink: Res<ReportSink>,
+    received: Res<Received>,
     mut joined: ResMut<JoinedAt>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
     mut exit: MessageWriter<AppExit>,
@@ -126,7 +172,10 @@ fn finish(
                 })
                 .collect();
             seen.sort();
-            *sink.0.lock().unwrap() = Some(seen);
+            *sink.0.lock().unwrap() = Some(BotResult {
+                players: seen,
+                notices: received.0.clone(),
+            });
             exit.write(AppExit::Success);
         }
         _ => {}

@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **1**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **2**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -20,6 +20,12 @@ connect.
 | `MapLayer(TileMap)` | the map entity | One deck: size, tile palette, tiles, spawn points |
 | `GridPos(TilePos)` | mobs | Tile the mob stands on |
 | `Player { client_id }` | player mobs | Netcode id of the controlling client |
+| `NetId(u64)` | everything clients see | Stable id; clients name entities by it |
+| `Appearance { sprite, state }` | objects and mobs | Sprite / prototype / noun id and state, like BYOND `icon_state` |
+| `HandsView { left, right, active }` | mobs | Held items as `NetId`s and the active hand |
+
+An item in a hand has no `GridPos`; removing the component replicates, and clients
+stop drawing it on the map.
 
 The controlling client also receives Lightyear's `Controlled` marker on its own mob.
 Player mobs are despawned on the server when their client disconnects.
@@ -29,13 +35,15 @@ Player mobs are despawned on the server when their client disconnects.
 | Message | Direction | Channel | Meaning |
 |---|---|---|---|
 | `MoveInput { dir: Option<Dir>, run: bool }` | client → server | `IntentChannel` (ordered, reliable) | The movement the player is holding. Sent when it changes; the server applies the latest one every tick until a new one arrives. |
+| `ActionInput` | client → server | `IntentChannel` | `UseOn(NetId)`, `Examine(NetId)`, `Drop`, `SwapHands`. Queued and applied on the next tick; unknown ids are ignored. |
+| `Notice(LocMsg)` | server → one client | `NoticeChannel` (ordered, reliable) | A message for that player: message id + arguments, formatted by the client in its own language. |
 
 ## Rules
 
 - The server is authoritative. Clients only send intentions; the server decides positions.
 - Clients render `GridPos` with a short glide between tiles; there is no client-side
   prediction yet.
-- Player-visible text will be sent as **message id + arguments**, never formatted
+- Player-visible text is sent as **message id + arguments** (`LocMsg`), never formatted
   strings, so each client renders it in its own locale.
 
 ## To define

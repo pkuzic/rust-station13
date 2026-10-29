@@ -57,6 +57,9 @@ unsafe_code = "forbid"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
+# ECS queries and systems are long by nature; Bevy recommends allowing these.
+type_complexity = "allow"
+too_many_arguments = "allow"
 
 # Bevy is very slow in debug builds; optimise dependencies but keep our code debuggable.
 [profile.dev]

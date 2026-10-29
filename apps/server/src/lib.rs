@@ -5,13 +5,15 @@ use std::time::Duration;
 use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
+use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::movement::{Mob, MoveIntent};
+use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{MoveInput, Player};
+use rs13_network::protocol::{ActionInput, MoveInput, Notice, NoticeChannel, Player};
 use rs13_network::server::{ServerNetworkPlugin, start_server};
-use rs13_world::{GridPos, MapLayer, TileMap};
+use rs13_world::{GridPos, MapLayer, NetId, TileMap};
 
 #[derive(Resource)]
 struct Port(u16);
@@ -31,14 +33,15 @@ pub fn server_app(port: u16) -> App {
     .add_plugins((ServerNetworkPlugin, ClassicPlugin))
     .insert_resource(Port(port))
     .add_systems(Startup, (load_map, listen))
+    .add_observer(replicate_net_entities)
     .add_observer(spawn_player)
     // Lightyear drops messages not read in the frame they arrive, and a frame may
-    // have no fixed tick, so read inputs every frame; movement applies them on ticks.
-    .add_systems(Update, apply_move_inputs);
+    // have no fixed tick, so read inputs every frame; the game applies them on ticks.
+    .add_systems(Update, (apply_move_inputs, queue_actions, send_notices));
     app
 }
 
-fn load_map(mut commands: Commands) {
+fn load_map(world: &mut World) {
     let map = TileMap::from_ron(maps::ENGINEERING_CHAMBER, 0).expect("built-in map is valid");
     info!(
         width = map.width,
@@ -46,7 +49,9 @@ fn load_map(mut commands: Commands) {
         spawns = map.spawns.len(),
         "map loaded"
     );
-    commands.spawn((MapLayer(map), Replicate::to_clients(NetworkTarget::All)));
+    for proto in spawn_map(world, map) {
+        warn!(proto, "map places an unknown object; skipped");
+    }
 }
 
 fn listen(mut commands: Commands, port: Res<Port>) {
@@ -58,6 +63,13 @@ fn listen(mut commands: Commands, port: Res<Port>) {
         reference = rs13_classic::REFERENCE_COMMIT,
         "rs13-server listening"
     );
+}
+
+/// Everything with a `NetId` is visible to every client.
+fn replicate_net_entities(trigger: On<Add<NetId>>, mut commands: Commands) {
+    commands
+        .entity(trigger.entity)
+        .insert(Replicate::to_clients(NetworkTarget::All));
 }
 
 /// Once a client is fully connected, give it a mob on the first free spawn point.
@@ -78,21 +90,20 @@ fn spawn_player(
         return;
     };
 
-    let mob = commands
-        .spawn((
+    commands.queue(move |world: &mut World| {
+        let mob = spawn_player_mob(world, spawn);
+        world.entity_mut(mob).insert((
             Player { client_id },
-            GridPos(spawn),
-            Mob::default(),
-            MoveIntent::default(),
-            Replicate::to_clients(NetworkTarget::All),
             ControlledBy {
                 owner: link,
                 lifetime: Lifetime::SessionBased,
             },
-        ))
-        .id();
-    commands.entity(link).insert(Controls(mob));
-    info!(client_id, x = spawn.x, y = spawn.y, "player joined");
+        ));
+        if let Ok(mut link) = world.get_entity_mut(link) {
+            link.insert(Controls(mob));
+        }
+        info!(client_id, x = spawn.x, y = spawn.y, "player joined");
+    });
 }
 
 /// Copy the latest movement request from each client onto its mob.
@@ -107,6 +118,45 @@ fn apply_move_inputs(
         if let Ok(mut intent) = intents.get_mut(controls.0) {
             intent.dir = input.dir;
             intent.run = input.run;
+        }
+    }
+}
+
+/// Turn client actions into game actions for the next tick, resolving `NetId`s.
+fn queue_actions(
+    mut links: Query<(&Controls, &mut MessageReceiver<ActionInput>)>,
+    mut pending: Query<&mut PendingActions>,
+    ids: Query<(Entity, &NetId)>,
+) {
+    let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
+    for (controls, mut receiver) in &mut links {
+        let Ok(mut pending) = pending.get_mut(controls.0) else {
+            receiver.receive().for_each(drop);
+            continue;
+        };
+        for input in receiver.receive() {
+            let action = match input {
+                ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
+                ActionInput::Examine(id) => resolve(id).map(Action::Examine),
+                ActionInput::Drop => Some(Action::Drop),
+                ActionInput::SwapHands => Some(Action::SwapHands),
+            };
+            // Unknown ids: the entity is gone or never existed. Ignore, as a stale click.
+            if let Some(action) = action {
+                pending.0.push(action);
+            }
+        }
+    }
+}
+
+/// Deliver each mob's queued messages to the client controlling it.
+fn send_notices(mut links: Query<(&Controls, &mut MessageSender<Notice>)>, mut outboxes: Query<&mut Outbox>) {
+    for (controls, mut sender) in &mut links {
+        let Ok(mut outbox) = outboxes.get_mut(controls.0) else {
+            continue;
+        };
+        for msg in outbox.0.drain(..) {
+            sender.send::<NoticeChannel>(Notice(msg));
         }
     }
 }

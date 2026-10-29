@@ -4,7 +4,8 @@
 use bevy_app::{App, Plugin};
 use bevy_ecs::component::Component;
 use lightyear::prelude::*;
-use rs13_world::{Dir, GridPos, MapLayer};
+use rs13_i18n::LocMsg;
+use rs13_world::{Appearance, Dir, GridPos, HandsView, MapLayer, NetId};
 use serde::{Deserialize, Serialize};
 
 /// A player-controlled mob. Replicated to every client.
@@ -22,8 +23,27 @@ pub struct MoveInput {
     pub run: bool,
 }
 
+/// Client → server: a player intention other than movement. Entities are named by
+/// [`NetId`].
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ActionInput {
+    /// Click with the active hand.
+    UseOn(NetId),
+    Drop,
+    SwapHands,
+    Examine(NetId),
+}
+
+/// Server → one client: a message for the player, formatted by the client in its
+/// own language.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Notice(pub LocMsg);
+
 /// Reliable, ordered channel for player intentions.
 pub struct IntentChannel;
+
+/// Reliable, ordered channel for messages shown to the player.
+pub struct NoticeChannel;
 
 pub struct ProtocolPlugin;
 
@@ -35,11 +55,24 @@ impl Plugin for ProtocolPlugin {
         })
         .add_direction(NetworkDirection::ClientToServer);
 
+        app.add_channel::<NoticeChannel>(ChannelSettings {
+            mode: ChannelMode::OrderedReliable(ReliableSettings::default()),
+            ..Default::default()
+        })
+        .add_direction(NetworkDirection::ServerToClient);
+
         app.register_message::<MoveInput>()
             .add_direction(NetworkDirection::ClientToServer);
+        app.register_message::<ActionInput>()
+            .add_direction(NetworkDirection::ClientToServer);
+        app.register_message::<Notice>()
+            .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();
         app.component::<GridPos>().replicate();
         app.component::<Player>().replicate();
+        app.component::<NetId>().replicate();
+        app.component::<Appearance>().replicate();
+        app.component::<HandsView>().replicate();
     }
 }

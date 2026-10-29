@@ -6,8 +6,10 @@
 use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
-use rs13_world::{Dir, GridPos, MapLayer, TileMap, TilePos};
+use rs13_world::{Dense, Dir, GridPos, MapLayer, TileMap, TilePos};
 
+use crate::doors::{Airlock, BUMP_COOLDOWN_DS, DoorState};
+use crate::objects::PlayerControlled;
 use crate::time::WorldTime;
 
 /// Extra delay for the run intent, in deciseconds.
@@ -22,6 +24,8 @@ pub const HUMAN_BASE_DELAY_DS: f32 = 1.3;
 pub struct Mob {
     /// Earliest world time (deciseconds) at which the next step may start.
     pub next_move_ds: f32,
+    /// When this mob last bumped into something, for the bump cooldown.
+    pub last_bump_ds: Option<f32>,
 }
 
 /// What the controller of a mob is asking for this tick. Set from player input or AI.
@@ -60,19 +64,27 @@ pub fn resolve_step(map: &TileMap, occupied: &HashSet<TilePos>, from: TilePos, d
 }
 
 /// Moves every mob whose controller asks to move and whose delay has expired.
+/// A player-controlled mob that walks into a closed airlock opens it.
 /// Mobs are processed in entity order so results are deterministic.
 pub fn move_mobs(
     time: Res<WorldTime>,
     map: Single<&MapLayer>,
-    mut mobs: Query<(Entity, &mut GridPos, &mut Mob, &MoveIntent)>,
+    mut mobs: Query<(Entity, &mut GridPos, &mut Mob, &MoveIntent, Has<PlayerControlled>)>,
+    mut objects: Query<(&GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
 ) {
     let now = time.deciseconds();
-    let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, _, _)| pos.0).collect();
+    let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
+    occupied.extend(
+        objects
+            .iter()
+            .filter(|(_, dense, _)| *dense)
+            .map(|(pos, ..)| pos.0),
+    );
 
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent)) = mobs.get_mut(entity) else {
+        let Ok((_, mut pos, mut mob, intent, is_player)) = mobs.get_mut(entity) else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
@@ -84,6 +96,25 @@ pub fn move_mobs(
             occupied.insert(target);
             pos.0 = target;
             mob.next_move_ds = now + step_delay_ds(intent.run);
+            continue;
+        }
+
+        // Blocked: bump whatever is in the way.
+        let cooled_down = mob.last_bump_ds.is_none_or(|t| now - t > BUMP_COOLDOWN_DS);
+        if !is_player || !cooled_down {
+            continue;
+        }
+        let ahead = pos.0.step(dir);
+        for (obj_pos, _, airlock) in &mut objects {
+            if obj_pos.0 != ahead {
+                continue;
+            }
+            if let Some(mut airlock) = airlock
+                && airlock.state == DoorState::Closed
+            {
+                mob.last_bump_ds = Some(now);
+                airlock.toggle(now);
+            }
         }
     }
 }

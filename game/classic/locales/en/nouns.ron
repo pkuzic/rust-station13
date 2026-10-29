@@ -1,12 +1,13 @@
-// Nouns of the classic build, keyed by prototype id. English needs only `nom`,
-// plus plural `nom` for countable nouns.
+// Nouns of the classic build, keyed by prototype id. English needs `nom` and `indef`
+// (with its article), plus plural `nom` for countable nouns.
 {
-    "crowbar": (gender: neuter, sg: (nom: "crowbar"), pl: Some((nom: "crowbars"))),
-    "wrench": (gender: neuter, sg: (nom: "wrench"), pl: Some((nom: "wrenches"))),
-    "airlock": (gender: neuter, sg: (nom: "airlock"), pl: Some((nom: "airlocks"))),
-    "metal-sheet": (gender: neuter, sg: (nom: "metal sheet"), pl: Some((nom: "metal sheets"))),
-    "oxygen-tank": (gender: neuter, sg: (nom: "oxygen tank"), pl: Some((nom: "oxygen tanks"))),
-    "screwdriver": (gender: neuter, sg: (nom: "screwdriver"), pl: Some((nom: "screwdrivers"))),
-    "wirecutters": (gender: plural, sg: (nom: "wirecutters")),
-    "apc": (gender: neuter, sg: (nom: "APC")),
+    "crowbar": (gender: neuter, sg: (nom: "crowbar", indef: "a crowbar"), pl: Some((nom: "crowbars"))),
+    "wrench": (gender: neuter, sg: (nom: "wrench", indef: "a wrench"), pl: Some((nom: "wrenches"))),
+    "airlock": (gender: neuter, sg: (nom: "airlock", indef: "an airlock"), pl: Some((nom: "airlocks"))),
+    "metal-sheet": (gender: neuter, sg: (nom: "metal sheet", indef: "a metal sheet"), pl: Some((nom: "metal sheets"))),
+    "oxygen-tank": (gender: neuter, sg: (nom: "oxygen tank", indef: "an oxygen tank"), pl: Some((nom: "oxygen tanks"))),
+    "screwdriver": (gender: neuter, sg: (nom: "screwdriver", indef: "a screwdriver"), pl: Some((nom: "screwdrivers"))),
+    "wirecutters": (gender: plural, sg: (nom: "wirecutters", indef: "a pair of wirecutters")),
+    "apc": (gender: neuter, sg: (nom: "APC", indef: "an APC")),
+    "human": (gender: neuter, sg: (nom: "human", indef: "a human"), pl: Some((nom: "humans"))),
 }

@@ -3,9 +3,10 @@
 //! Connects to a server, holds one movement direction for a while, then prints every
 //! player it can see and exits.
 //!
-//! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N]`
+//! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]`
 //!
-//! Output (stdout, one line per player): `player <client_id> <x> <y> [self]`.
+//! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
+//! line per notice received, `notice <message id>`.
 //! Exit code 1 if the bot never received its own player.
 
 use std::net::SocketAddr;
@@ -29,12 +30,16 @@ fn main() -> AppExit {
     app.add_plugins(LogPlugin::default());
     let exit = app.run();
 
-    for player in report.lock().unwrap().iter().flatten() {
+    let result = report.lock().unwrap().take().unwrap_or_default();
+    for player in &result.players {
         let tag = if player.own { " self" } else { "" };
         println!(
             "player {} {} {}{tag}",
             player.client_id, player.pos.x, player.pos.y
         );
+    }
+    for notice in &result.notices {
+        println!("notice {}", notice.id);
     }
     exit
 }
@@ -45,6 +50,7 @@ fn parse_args() -> Result<BotConfig, String> {
         client_id: unique_client_id(),
         dir: None,
         hold: Duration::from_secs(3),
+        examine: None,
     };
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -52,6 +58,7 @@ fn parse_args() -> Result<BotConfig, String> {
         match arg.as_str() {
             "--server" => config.server = value.parse().map_err(|e| format!("--server: {e}"))?,
             "--dir" => config.dir = Some(parse_dir(&value)?),
+            "--examine" => config.examine = Some(value),
             "--seconds" => {
                 config.hold = Duration::from_secs_f32(value.parse().map_err(|e| format!("--seconds: {e}"))?)
             }
