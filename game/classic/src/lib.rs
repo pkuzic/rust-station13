@@ -3,7 +3,11 @@
 //! Luna is a behaviour reference only: see `docs/GAME_REFERENCE.md`. No DM code is
 //! translated into this crate.
 
+pub mod actions;
+pub mod doors;
+pub mod hands;
 pub mod movement;
+pub mod objects;
 pub mod time;
 
 use bevy_app::{App, FixedUpdate, Plugin};
@@ -32,6 +36,8 @@ pub struct ClassicPlugin;
 impl Plugin for ClassicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<time::WorldTime>()
+            .init_resource::<objects::NetIds>()
+            .init_resource::<objects::ItemProtos>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -43,6 +49,13 @@ impl Plugin for ClassicPlugin {
                     .chain(),
             )
             .add_systems(FixedUpdate, time::advance_time.before(TickSet::Commands))
-            .add_systems(FixedUpdate, movement::move_mobs.in_set(TickSet::Gameplay));
+            .add_systems(FixedUpdate, actions::process_actions.in_set(TickSet::Commands))
+            .add_systems(
+                FixedUpdate,
+                (doors::update_doors, movement::move_mobs)
+                    .chain()
+                    .in_set(TickSet::Gameplay),
+            )
+            .add_systems(FixedUpdate, hands::sync_hands_view.in_set(TickSet::Publish));
     }
 }

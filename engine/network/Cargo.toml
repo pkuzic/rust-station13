@@ -14,6 +14,7 @@ workspace = true
 [dependencies]
 rs13-core.workspace = true
 rs13-world.workspace = true
+rs13-i18n.workspace = true
 lightyear = { workspace = true, features = ["std", "replication", "netcode", "udp"] }
 bevy_app.workspace = true
 bevy_ecs.workspace = true

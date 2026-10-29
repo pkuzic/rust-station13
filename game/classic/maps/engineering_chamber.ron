@@ -1,25 +1,33 @@
 // The first-milestone test map. Top row first, as seen on screen.
-// Legend ids are tile prototype ids. Space surrounds the station.
+// Legend ids are tile prototype ids; `objects` are object prototype ids.
+// Space surrounds the station. A closet on the east side sits behind an airlock.
 (
     legend: {
         ' ': (tile: (id: "space")),
         '#': (tile: (id: "wall", solid: true)),
         '.': (tile: (id: "floor")),
         'S': (tile: (id: "floor"), spawn: true),
+        'A': (tile: (id: "floor"), objects: ["airlock"]),
+        'c': (tile: (id: "floor"), objects: ["crowbar"]),
+        'w': (tile: (id: "floor"), objects: ["wrench"]),
+        'd': (tile: (id: "floor"), objects: ["screwdriver"]),
+        'x': (tile: (id: "floor"), objects: ["wirecutters"]),
+        'o': (tile: (id: "floor"), objects: ["oxygen-tank"]),
+        'm': (tile: (id: "floor"), objects: ["metal-sheet"]),
     },
     rows: [
-        "                  ",
-        " ################ ",
-        " #..............# ",
-        " #.S..........S.# ",
-        " #..............# ",
-        " #.....####.....# ",
-        " #.....#..#.....# ",
-        " #.....#..#.....# ",
-        " #..............# ",
-        " #.S..........S.# ",
-        " #..............# ",
-        " ################ ",
-        "                  ",
+        "                      ",
+        " #################### ",
+        " #..............#...# ",
+        " #.S..........S.#.o.# ",
+        " #..............#...# ",
+        " #.....####.....#...# ",
+        " #..w..#..#.....A.m.# ",
+        " #.....#..#..d..#...# ",
+        " #..............#...# ",
+        " #.S..........S.#.c.# ",
+        " #...x..........#...# ",
+        " #################### ",
+        "                      ",
     ],
 )

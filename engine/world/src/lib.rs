@@ -3,7 +3,7 @@
 mod components;
 mod map;
 
-pub use components::{GridPos, MapLayer};
+pub use components::{Appearance, Dense, GridPos, Hand, HandsView, MapLayer, NetId};
 pub use map::{Dir, MapError, TileDef, TileMap};
 
 use serde::{Deserialize, Serialize};

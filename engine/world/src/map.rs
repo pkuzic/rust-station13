@@ -81,6 +81,8 @@ pub struct TileMap {
     pub tiles: Vec<u16>,
     /// Where players may appear.
     pub spawns: Vec<TilePos>,
+    /// Objects placed by the map: (tile, prototype id), in reading order.
+    pub objects: Vec<(TilePos, String)>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -108,6 +110,9 @@ struct LegendEntry {
     tile: TileDef,
     #[serde(default)]
     spawn: bool,
+    /// Prototype ids of objects to place on this tile.
+    #[serde(default)]
+    objects: Vec<String>,
 }
 
 impl TileMap {
@@ -119,6 +124,7 @@ impl TileMap {
     ///         '#': (tile: (id: "wall", solid: true)),
     ///         '.': (tile: (id: "floor")),
     ///         'S': (tile: (id: "floor"), spawn: true),
+    ///         'c': (tile: (id: "floor"), objects: ["crowbar"]),
     ///     },
     ///     rows: ["###", "#S#", "###"],
     /// )
@@ -131,6 +137,7 @@ impl TileMap {
         let mut palette: Vec<TileDef> = Vec::new();
         let mut tiles = vec![0u16; width * height];
         let mut spawns = Vec::new();
+        let mut objects = Vec::new();
         // The text lists the top row first; the map stores y = 0 at the bottom.
         for (row_index, row) in parsed.rows.iter().enumerate() {
             let len = row.chars().count();
@@ -155,9 +162,11 @@ impl TileMap {
                     }
                 };
                 tiles[y * width + x] = index as u16;
+                let pos = TilePos::new(x as i32, y as i32, z);
                 if entry.spawn {
-                    spawns.push(TilePos::new(x as i32, y as i32, z));
+                    spawns.push(pos);
                 }
+                objects.extend(entry.objects.iter().map(|id| (pos, id.clone())));
             }
         }
         spawns.sort();
@@ -169,6 +178,7 @@ impl TileMap {
             palette,
             tiles,
             spawns,
+            objects,
         })
     }
 
@@ -199,11 +209,12 @@ mod tests {
             'W': (tile: (id: "wall", solid: true)),
             '.': (tile: (id: "floor")),
             'S': (tile: (id: "floor"), spawn: true),
+            'c': (tile: (id: "floor"), objects: ["crowbar"]),
         },
         rows: [
             "WWWW",
             "WS.W",
-            "W..W",
+            "Wc.W",
             "WWWW",
         ],
     )"#;
@@ -217,6 +228,7 @@ mod tests {
         assert_eq!(map.spawns, vec![TilePos::new(1, 2, 0)]);
         assert!(map.is_solid(TilePos::new(0, 0, 0)));
         assert!(!map.is_solid(TilePos::new(2, 1, 0)));
+        assert_eq!(map.objects, vec![(TilePos::new(1, 1, 0), "crowbar".to_owned())]);
     }
 
     #[test]
@@ -229,12 +241,12 @@ mod tests {
 
     #[test]
     fn rejects_ragged_rows_and_unknown_symbols() {
-        let ragged = ROOM.replace("\"W..W\"", "\"W..\"");
+        let ragged = ROOM.replace("\"Wc.W\"", "\"Wc.\"");
         assert!(matches!(
             TileMap::from_ron(&ragged, 0),
             Err(MapError::RaggedRow { .. })
         ));
-        let unknown = ROOM.replace("\"W..W\"", "\"W.?W\"");
+        let unknown = ROOM.replace("\"Wc.W\"", "\"W.?W\"");
         assert!(matches!(
             TileMap::from_ron(&unknown, 0),
             Err(MapError::UnknownSymbol('?'))

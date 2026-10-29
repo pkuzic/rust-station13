@@ -12,7 +12,8 @@
 //! ```
 //!
 //! `NOUN($id, case: "...", number: "...")` returns the declined form, falling back to
-//! the nominative singular. `GENDER($id)` returns `masculine`, `feminine`, `neuter` or
+//! the nominative singular. Besides the six cases, `case: "indef"` asks for the
+//! indefinite form used by languages with articles ("a crowbar", "an airlock"). `GENDER($id)` returns `masculine`, `feminine`, `neuter` or
 //! `plural` for use in selectors. Player and character names are English-only and are
 //! passed as plain strings; they are never declined.
 
@@ -21,13 +22,13 @@ use std::sync::Arc;
 
 use fluent_bundle::concurrent::FluentBundle;
 use fluent_bundle::{FluentArgs, FluentResource, FluentValue};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use unic_langid::LanguageIdentifier;
 
 pub use fluent_bundle::FluentArgs as Args;
 pub use unic_langid::langid;
 
-/// Grammatical case. English nouns only need the nominative.
+/// Grammatical case. English nouns only need the nominative (and `Indef`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Case {
     Nom,
@@ -36,9 +37,12 @@ pub enum Case {
     Acc,
     Ins,
     Prep,
+    /// Not a case: the form with an indefinite article, for languages that have one.
+    Indef,
 }
 
 impl Case {
+    /// The six grammatical cases (without `Indef`).
     pub const ALL: [Case; 6] = [Case::Nom, Case::Gen, Case::Dat, Case::Acc, Case::Ins, Case::Prep];
 
     fn parse(s: &str) -> Option<Self> {
@@ -49,6 +53,7 @@ impl Case {
             "acc" => Case::Acc,
             "ins" => Case::Ins,
             "prep" => Case::Prep,
+            "indef" => Case::Indef,
             _ => return None,
         })
     }
@@ -89,6 +94,8 @@ pub struct Forms {
     pub ins: Option<String>,
     #[serde(default)]
     pub prep: Option<String>,
+    #[serde(default)]
+    pub indef: Option<String>,
 }
 
 impl Forms {
@@ -100,6 +107,7 @@ impl Forms {
             Case::Acc => self.acc.as_deref(),
             Case::Ins => self.ins.as_deref(),
             Case::Prep => self.prep.as_deref(),
+            Case::Indef => self.indef.as_deref(),
         }
     }
 }
@@ -163,6 +171,40 @@ impl Lexicon {
     }
 }
 
+/// A message to show a player, before localisation. The server sends these; each
+/// client formats them in its own language with [`Localizer::format_msg`].
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LocMsg {
+    pub id: String,
+    pub args: Vec<(String, LocArg)>,
+}
+
+/// An argument of a [`LocMsg`]. Noun ids are passed as `Str` and resolved with `NOUN()`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum LocArg {
+    Str(String),
+    Num(i64),
+}
+
+impl LocMsg {
+    pub fn new(id: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            args: Vec::new(),
+        }
+    }
+
+    pub fn arg(mut self, name: impl Into<String>, value: impl Into<String>) -> Self {
+        self.args.push((name.into(), LocArg::Str(value.into())));
+        self
+    }
+
+    pub fn num(mut self, name: impl Into<String>, value: i64) -> Self {
+        self.args.push((name.into(), LocArg::Num(value)));
+        self
+    }
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum I18nError {
     #[error("invalid noun lexicon: {0}")]
@@ -178,6 +220,7 @@ pub enum I18nError {
 /// Formats messages for one locale. `Send + Sync`, so the server can share one per locale.
 pub struct Localizer {
     bundle: FluentBundle<FluentResource>,
+    lexicon: Arc<Lexicon>,
 }
 
 impl Localizer {
@@ -219,6 +262,7 @@ impl Localizer {
             .map_err(|e| I18nError::Resource(e.to_string()))?;
 
         let genders = Arc::clone(&lexicon);
+        let lexicon_for_self = Arc::clone(&lexicon);
         bundle
             .add_function("GENDER", move |positional, _named| match positional.first() {
                 Some(FluentValue::String(id)) => match genders.get(id) {
@@ -229,7 +273,33 @@ impl Localizer {
             })
             .map_err(|e| I18nError::Resource(e.to_string()))?;
 
-        Ok(Self { bundle })
+        Ok(Self {
+            bundle,
+            lexicon: lexicon_for_self,
+        })
+    }
+
+    /// A noun form for UI labels, e.g. the name of a held item. Unknown ids come back
+    /// as `{id}`, like in messages.
+    pub fn noun(&self, id: &str, case: Case) -> String {
+        match self.lexicon.get(id) {
+            Some(noun) => noun.form(case, false).to_owned(),
+            None => format!("{{{id}}}"),
+        }
+    }
+
+    /// Format a [`LocMsg`]. On error, returns the message id so the player still sees
+    /// something reportable.
+    pub fn format_msg(&self, msg: &LocMsg) -> String {
+        let mut args = FluentArgs::new();
+        for (name, value) in &msg.args {
+            match value {
+                LocArg::Str(s) => args.set(name.as_str(), s.as_str()),
+                LocArg::Num(n) => args.set(name.as_str(), *n),
+            }
+        }
+        self.format(&msg.id, Some(&args))
+            .unwrap_or_else(|_| format!("[{}]", msg.id))
     }
 
     pub fn format(&self, id: &str, args: Option<&FluentArgs>) -> Result<String, I18nError> {

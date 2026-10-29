@@ -25,3 +25,12 @@ use-on = { $user } { $user_gender ->
         [female] открыла
        *[other] открыл
     } { NOUN($target, case: "acc") } с помощью { NOUN($item, case: "gen") }.
+
+# Args: $item (noun id).
+examine = Это { NOUN($item) }.
+
+airlock-pushed = Шлюз выталкивает вас с дороги!
+
+# Hands bar labels.
+hud-hand-left = Л
+hud-hand-right = П

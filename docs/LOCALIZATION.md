@@ -35,7 +35,8 @@ and in the plural when the noun can be counted:
 ```
 
 `gender` is one of `masculine`, `feminine`, `neuter`, `plural` (pluralia tantum such as
-"кусачки"). English nouns need only `nom`, plus plural `nom` for countable nouns.
+"кусачки"). English nouns need `nom` and `indef` (the form with its article: "a crowbar",
+"an airlock"), plus plural `nom` for countable nouns.
 
 Animacy is not modelled separately: the accusative is written out explicitly.
 
@@ -47,6 +48,7 @@ Two functions are available in every message:
 |---|---|
 | `NOUN($id)` | nominative singular |
 | `NOUN($id, case: "ins")` | the given case: `nom gen dat acc ins prep` |
+| `NOUN($id, case: "indef")` | the indefinite form ("a crowbar"); falls back to `nom` |
 | `NOUN($id, case: "gen", number: "pl")` | plural form |
 | `GENDER($id)` | `masculine` / `feminine` / `neuter` / `plural`, for selectors |
 
@@ -71,6 +73,12 @@ stack-count = { $count } { $count ->
 ```
 
 Numbers select CLDR plural categories automatically (1 лом, 3 лома, 5 ломов, 21 лом).
+
+## Server messages
+
+The server never formats text. Game code queues a `LocMsg` (message id + arguments) for
+the player's mob; the client formats it with `Localizer::format_msg`. If formatting
+fails, the client shows `[message-id]`.
 
 ## Missing translations
 

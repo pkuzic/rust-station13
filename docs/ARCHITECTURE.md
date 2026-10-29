@@ -26,7 +26,9 @@ Planned but not created until needed: `engine/actions` (interaction lifecycle),
 - `game/classic` depends only on engine crates.
 - `apps/*` assemble engine and game crates; they hold no gameplay logic.
 - The client never depends on `game/classic` gameplay code; it receives content and
-  presentation data from the server.
+  presentation data from the server. **Temporary exception:** the client links
+  `rs13-classic` only to embed its locale files, until locales arrive through the
+  server's asset manifest.
 
 ## Server model
 
