@@ -13,6 +13,7 @@ use crate::access::{AccessIds, IdCard};
 use crate::actions::{Outbox, PendingActions};
 use crate::combat::CombatIntent;
 use crate::doors::Airlock;
+use crate::environment::{Lungs, Surroundings};
 use crate::hands::{Hands, Item};
 use crate::health::{Body, HEALTH_FULL, Vitals};
 use crate::movement::{Mob, MoveIntent};
@@ -60,13 +61,21 @@ pub struct PlayerControlled;
 pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
     world.init_resource::<NetIds>();
     let objects = map.objects.clone();
+    let layout = map.clone();
     let id = world.resource_mut::<NetIds>().alloc();
-    world.spawn((MapLayer(map), id));
+    world.spawn((MapLayer(map), id, rs13_world::AtmosView::default()));
 
-    objects
+    let problems = objects
         .iter()
         .filter_map(|(pos, spec)| spawn_object(world, spec, *pos).err())
-        .collect()
+        .collect();
+
+    // Air: every door tile is a portal between zones.
+    let mut doors = world.query_filtered::<&GridPos, With<Airlock>>();
+    let portals: Vec<TilePos> = doors.iter(world).map(|p| p.0).collect();
+    let atmos = crate::atmos::build(&layout, &portals);
+    world.insert_resource(atmos);
+    problems
 }
 
 /// Spawn one object. Fails on an unknown prototype or access id.
@@ -138,6 +147,8 @@ pub fn spawn_player_mob(world: &mut World, pos: TilePos) -> Entity {
                     stat: MobStat::Conscious,
                 },
                 CombatIntent::default(),
+                Lungs::default(),
+                Surroundings::default(),
                 Outbox::default(),
                 PlayerControlled,
             ),

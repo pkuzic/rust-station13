@@ -4,7 +4,8 @@ mod components;
 mod map;
 
 pub use components::{
-    Appearance, Dense, DisplayName, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, Opaque,
+    Appearance, AtmosView, Dense, DisplayName, EnvAlert, GridPos, Hand, HandsView, Intent, MapLayer, MobStat,
+    NetId, Opaque,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

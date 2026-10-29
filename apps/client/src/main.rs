@@ -6,7 +6,7 @@
 //! Controls: arrow keys or WASD move (hold Shift to walk); left click uses the active
 //! hand on something in reach (a held item hits people on any intent); Shift+click
 //! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
-//! (Enter sends, Esc cancels).
+//! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay.
 //!
 //! Placeholder graphics: tiles and objects are flat coloured squares until the
 //! Luna sprite import lands.
@@ -25,7 +25,9 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
-use rs13_world::{Appearance, Dir, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, TilePos};
+use rs13_world::{
+    Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, TilePos,
+};
 
 /// On-screen size of one tile, in pixels.
 const TILE_PX: f32 = 32.0;
@@ -119,6 +121,7 @@ fn main() {
         .insert_resource(WantedName(args.name))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
+        .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
         .add_systems(Startup, (setup, spawn_hud))
@@ -141,6 +144,8 @@ fn main() {
                 update_log,
                 update_chat_line,
                 update_status_line,
+                spawn_overlay,
+                update_overlay,
             )
                 .chain(),
         )
@@ -519,7 +524,7 @@ fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut 
     if !own.is_changed() {
         return;
     }
-    let Some(status) = own.0 else { return };
+    let Some(status) = &own.0 else { return };
     let health = match status.stat {
         MobStat::Dead => loc.0.format("hud-health-dead", None),
         MobStat::Unconscious => loc.0.format("hud-health-crit", None),
@@ -539,7 +544,87 @@ fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut 
         },
     );
     let intent = loc.0.format("hud-intent", Some(&args)).unwrap_or_default();
-    text.0 = format!("{health}    {intent}");
+    let mut args = rs13_i18n::Args::new();
+    args.set("value", f64::from(status.pressure_dkpa) / 10.0);
+    let pressure = loc.0.format("hud-pressure", Some(&args)).unwrap_or_default();
+    let alerts: Vec<String> = status
+        .alerts
+        .iter()
+        .map(|a| {
+            let id = match a {
+                EnvAlert::Vacuum => "alert-vacuum",
+                EnvAlert::LowPressure => "alert-low-pressure",
+                EnvAlert::HighPressure => "alert-high-pressure",
+                EnvAlert::LowOxygen => "alert-low-oxygen",
+                EnvAlert::Cold => "alert-cold",
+                EnvAlert::Hot => "alert-hot",
+            };
+            loc.0.format(id, None).unwrap_or_default()
+        })
+        .collect();
+    text.0 = format!("{health}    {intent}    {pressure}");
+    if !alerts.is_empty() {
+        text.0.push_str(&format!("    ⚠ {}", alerts.join(" · ")));
+    }
+}
+
+/// One tinted square per tile, shown with F3: the atmos debug overlay.
+#[derive(Component)]
+struct OverlayTile(usize);
+
+#[derive(Resource, Default)]
+struct OverlayOn(bool);
+
+fn spawn_overlay(mut commands: Commands, maps: Query<&MapLayer, Added<MapLayer>>) {
+    for MapLayer(map) in &maps {
+        for y in 0..map.height as i32 {
+            for x in 0..map.width as i32 {
+                let index = (y * map.width as i32 + x) as usize;
+                commands.spawn((
+                    OverlayTile(index),
+                    Sprite::from_color(Color::NONE, Vec2::splat(TILE_PX - 1.0)),
+                    Transform::from_translation(world_pos(TilePos::new(x, y, map.z), 0.5)),
+                    Visibility::Hidden,
+                ));
+            }
+        }
+    }
+}
+
+/// Pressure colour: blue above one atmosphere, green at it, through yellow to red at vacuum.
+fn pressure_color(dkpa: u16) -> Color {
+    let atm = f32::from(dkpa) / 1013.25;
+    if atm > 1.05 {
+        Color::srgba(0.2, 0.4, 1.0, 0.45)
+    } else {
+        let t = atm.clamp(0.0, 1.0);
+        Color::srgba(1.0 - t, t, 0.1, 0.45)
+    }
+}
+
+fn update_overlay(
+    keys: Res<ButtonInput<KeyCode>>,
+    chat: Res<ChatInput>,
+    mut on: ResMut<OverlayOn>,
+    views: Query<&AtmosView>,
+    mut tiles: Query<(&OverlayTile, &mut Sprite, &mut Visibility)>,
+) {
+    if !chat.open && keys.just_pressed(KeyCode::F3) {
+        on.0 = !on.0;
+    }
+    let Ok(view) = views.single() else { return };
+    for (OverlayTile(i), mut sprite, mut visibility) in &mut tiles {
+        visibility.set_if_neq(if on.0 {
+            Visibility::Inherited
+        } else {
+            Visibility::Hidden
+        });
+        if on.0
+            && let Some(p) = view.pressure_dkpa.get(*i)
+        {
+            sprite.color = pressure_color(*p);
+        }
+    }
 }
 
 fn receive_notices(

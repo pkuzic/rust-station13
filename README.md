@@ -42,6 +42,7 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 | X | Swap hands |
 | T | Say something (Enter sends, Esc cancels) |
 | 1 / 4 | Help / harm intent (a held item hits people on any intent; fists need harm) |
+| F3 | Atmos debug overlay (pressure per tile) |
 
 Graphics are placeholder squares until the Luna sprites are imported.
 

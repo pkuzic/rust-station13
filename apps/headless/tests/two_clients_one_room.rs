@@ -114,10 +114,12 @@ fn two_clients_move_in_one_room() {
 
     // Each bot was told its own health, state and intent.
     for result in [&first, &second] {
-        let status = result.status.expect("status update received");
+        let status = result.status.clone().expect("status update received");
         assert_eq!(status.health, 100);
         assert_eq!(status.stat, MobStat::Conscious);
         assert_eq!(status.intent, Intent::Help);
+        assert_eq!(status.pressure_dkpa, 1013, "standard air where they stand");
+        assert!(status.alerts.is_empty());
     }
 
     // The examine answer went only to the bot that asked.

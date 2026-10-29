@@ -1,6 +1,6 @@
 # 0005: Atmos produces FEA-equivalent outcomes on a new solver
 
-- Status: accepted
+- Status: **superseded** by `0006-hybrid-atmos.md` (Luna turned out not to run FEA for gas)
 - Date: 2026-10-29
 
 ## Context

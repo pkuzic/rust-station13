@@ -7,6 +7,7 @@ use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::combat::CombatIntent;
+use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
@@ -205,10 +206,10 @@ fn send_notices(mut links: Query<(&Controls, &mut MessageSender<Notice>)>, mut o
 /// Tell each client its own health, state and intent whenever they change.
 fn send_status(
     mut links: Query<(&Controls, &mut SentStatus, &mut MessageSender<StatusUpdate>)>,
-    mobs: Query<(&Vitals, &CombatIntent)>,
+    mobs: Query<(&Vitals, &CombatIntent, &Surroundings, &Lungs)>,
 ) {
     for (controls, mut sent, mut sender) in &mut links {
-        let Ok((vitals, intent)) = mobs.get(controls.0) else {
+        let Ok((vitals, intent, around, lungs)) = mobs.get(controls.0) else {
             continue;
         };
         let status = StatusUpdate {
@@ -216,9 +217,11 @@ fn send_status(
             health: vitals.health.round() as i32,
             stat: vitals.stat,
             intent: intent.0,
+            pressure_dkpa: (around.pressure * 10.0).round().max(0.0) as u32,
+            alerts: alerts(around, lungs),
         };
-        if sent.0 != Some(status) {
-            sender.send::<NoticeChannel>(status);
+        if sent.0.as_ref() != Some(&status) {
+            sender.send::<NoticeChannel>(status.clone());
             sent.0 = Some(status);
         }
     }

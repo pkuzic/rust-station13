@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **4**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **5**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -24,6 +24,7 @@ connect.
 | `Appearance { sprite, state }` | objects and mobs | Sprite / prototype / noun id and state, like BYOND `icon_state` |
 | `HandsView { left, right, active }` | mobs | Held items as `NetId`s and the active hand |
 | `DisplayName(String)` | people | Character name (English only) |
+| `AtmosView { pressure_dkpa }` | the map entity | Pressure of every tile, 0.1 kPa, twice a second, for the F3 debug overlay |
 
 An item in a hand has no `GridPos`; removing the component replicates, and clients
 stop drawing it on the map.
@@ -38,7 +39,7 @@ Player mobs are despawned on the server when their client disconnects.
 | `MoveInput { dir: Option<Dir>, run: bool }` | client → server | `IntentChannel` (ordered, reliable) | The movement the player is holding. Sent when it changes; the server applies the latest one every tick until a new one arrives. |
 | `ActionInput` | client → server | `IntentChannel` | `UseOn(NetId)`, `Examine(NetId)`, `Drop`, `SwapHands`, `Say(String)`, `SetName(String)`, `SetIntent(Intent)`. Queued and applied on the next tick; unknown ids are ignored. `SetName` is accepted once per session; an invalid name keeps the random one and sends `name-rejected`. |
 | `Notice(LocMsg)` | server → one client | `NoticeChannel` (ordered, reliable) | A message for that player: message id + arguments, formatted by the client in its own language. |
-| `StatusUpdate { health, stat, intent }` | server → one client | `NoticeChannel` | The player's own health, state and intent, sent when they change. Nobody else's health is sent. |
+| `StatusUpdate { health, stat, intent, pressure_dkpa, alerts }` | server → one client | `NoticeChannel` | The player's own health, state, intent, the pressure where they stand and environment alerts (vacuum, low/high pressure, low oxygen, cold, hot), sent when they change. Nobody else's health is sent. |
 
 ## Rules
 

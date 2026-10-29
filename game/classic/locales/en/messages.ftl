@@ -55,3 +55,13 @@ hud-intent = Intent: { $intent ->
         [harm] harm
        *[help] help
     }
+
+# Environment. Args: $value (kPa).
+gasp = You gasp for air!
+hud-pressure = Pressure: { $value } kPa
+alert-vacuum = VACUUM
+alert-low-pressure = Low pressure
+alert-high-pressure = High pressure
+alert-low-oxygen = Not enough oxygen
+alert-cold = You are freezing
+alert-hot = You are overheating
