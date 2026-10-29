@@ -2,7 +2,8 @@
 // Legend ids are tile prototype ids; `objects` are object prototype ids.
 // Space surrounds the station. An engineering equipment closet on the east side sits
 // behind an airlock that needs `engine_equip` access. Two ID cards lie in the room:
-// an engineer's (opens it) and an assistant's (does not).
+// an engineer's (opens it) and an assistant's (does not). The closet's east wall has an
+// external airlock to space (`external_airlocks` access).
 (
     legend: {
         ' ': (tile: (id: "space")),
@@ -13,6 +14,8 @@
         // Luna's Engineer and Unassigned job access (luna:code/game/jobs/access.dm).
         'i': (tile: (id: "floor"), objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"])]),
         'a': (tile: (id: "floor"), objects: [(id: "id-card", access: ["maint_tunnels"])]),
+        // External airlock from the closet straight to space.
+        'E': (tile: (id: "floor"), objects: [(id: "airlock", access: ["external_airlocks"])]),
         'c': (tile: (id: "floor"), objects: ["crowbar"]),
         'w': (tile: (id: "floor"), objects: ["wrench"]),
         'd': (tile: (id: "floor"), objects: ["screwdriver"]),
@@ -27,7 +30,7 @@
         " #.S..........S.#.o.# ",
         " #..............#...# ",
         " #.....####.....#...# ",
-        " #..w..#..#.....A.m.# ",
+        " #..w..#..#.....A.m.E ",
         " #.....#..#..d..#...# ",
         " #.......a...i..#...# ",
         " #.S..........S.#.c.# ",

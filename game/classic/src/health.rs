@@ -123,6 +123,15 @@ impl Body {
         organ.burn += burn * scale;
     }
 
+    /// Spread damage evenly over every body part, as whole-body effects (pressure, cold)
+    /// do in /tg/station.
+    pub fn take_damage_spread(&mut self, brute: f32, burn: f32) {
+        let n = Zone::ALL.len() as f32;
+        for zone in Zone::ALL {
+            self.take_damage(zone, brute / n, burn / n);
+        }
+    }
+
     pub fn health(&self) -> f32 {
         let organs: f32 = self.organs.iter().map(|o| o.brute + o.burn).sum();
         HEALTH_FULL - (self.oxy + self.tox + organs)

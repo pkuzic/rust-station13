@@ -59,6 +59,8 @@ Record findings here as they are verified, with the Luna path.
 - [Speech and character names](reference/speech.md)
 - [Access and ID cards](reference/access.md)
 - [Health, attacks, unconsciousness and death](reference/health.md)
+- [Luna's atmos, as it actually ran](reference/atmos.md) (background only; we follow `docs/ATMOSPHERICS.md`)
+- [Environment: air, bodies and space](reference/environment.md) (our design and tuning)
 
 ## Writing a behaviour spec
 

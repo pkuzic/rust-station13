@@ -59,9 +59,11 @@ fn heard(app: &mut App, who: Entity) -> Vec<String> {
 }
 
 fn airlock(app: &mut App) -> Entity {
-    let mut q = app.world_mut().query::<(Entity, &Appearance)>();
+    let mut q = app
+        .world_mut()
+        .query::<(Entity, &Appearance, &rs13_world::GridPos)>();
     q.iter(app.world())
-        .find(|(_, a)| a.sprite == "airlock")
+        .find(|(_, a, p)| a.sprite == "airlock" && p.0 == TilePos::new(16, 6, 0))
         .unwrap()
         .0
 }

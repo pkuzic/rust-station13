@@ -66,3 +66,13 @@ hud-intent = Намерение: { $intent ->
         [harm] вред
        *[help] помощь
     }
+
+# Окружение. Аргументы: $value (кПа).
+gasp = Вы задыхаетесь!
+hud-pressure = Давление: { $value } кПа
+alert-vacuum = ВАКУУМ
+alert-low-pressure = Низкое давление
+alert-high-pressure = Высокое давление
+alert-low-oxygen = Не хватает кислорода
+alert-cold = Вы замерзаете
+alert-hot = Вы перегреваетесь

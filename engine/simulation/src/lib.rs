@@ -6,6 +6,8 @@
 
 use bevy_ecs::schedule::SystemSet;
 
+pub mod atmos;
+
 /// Ordering of work inside one server tick.
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TickSet {

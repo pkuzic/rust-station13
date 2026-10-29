@@ -6,7 +6,7 @@
 |---|---|---|
 | `rs13-core` | `engine/core` | Tick, stable entity ids, shared constants |
 | `rs13-world` | `engine/world` | Chunked x/y/z tile grid, spatial types; later containment, visibility, collision |
-| `rs13-simulation` | `engine/simulation` | Tick schedule ordering, solver contracts |
+| `rs13-simulation` | `engine/simulation` | Tick schedule ordering; the atmos solver (`atmos`: gas mixtures, zones, flow, wind) |
 | `rs13-network` | `engine/network` | Protocol version, sessions, replication (Lightyear) |
 | `rs13-content` | `engine/content` | Prototype ids, RON loading and validation |
 | `rs13-i18n` | `engine/i18n` | Fluent localisation, noun lexicon with case/number/gender |
@@ -43,7 +43,9 @@ Planned but not created until needed: `engine/actions` (interaction lifecycle),
 - Simulation systems use explicit contracts rather than each other's storage.
 - Dense data (the atmos grid, power graphs) lives in solver-owned structures, not as one
   ECS entity per tile or cable. ECS components hold references into them.
-- Atmos targets FEA-equivalent outcomes (see `docs/adr/0005-atmos-fea-equivalence.md`).
+- Atmos follows `docs/ATMOSPHERICS.md` and `docs/adr/0006-hybrid-atmos.md`: bulk zones now,
+  local cells later. The solver is plain Rust in `rs13-simulation`; the game wires it to
+  doors, bodies and wind.
 
 ## World
 

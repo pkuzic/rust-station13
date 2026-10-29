@@ -5,8 +5,10 @@
 
 pub mod access;
 pub mod actions;
+pub mod atmos;
 pub mod combat;
 pub mod doors;
+pub mod environment;
 pub mod hands;
 pub mod health;
 pub mod movement;
@@ -48,6 +50,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<rng::GameRng>()
             .init_resource::<combat::PendingAttacks>()
             .init_resource::<combat::VisibleEvents>()
+            .init_resource::<atmos::WindCooldowns>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -76,7 +79,20 @@ impl Plugin for ClassicPlugin {
                     .chain()
                     .in_set(TickSet::Gameplay),
             )
-            .add_systems(FixedUpdate, health::update_vitals.in_set(TickSet::Simulation))
+            .add_systems(
+                FixedUpdate,
+                (
+                    atmos::step_atmos,
+                    atmos::space_wind,
+                    atmos::drift,
+                    environment::sense_surroundings,
+                    environment::life,
+                    health::update_vitals,
+                    atmos::publish_atmos_view,
+                )
+                    .chain()
+                    .in_set(TickSet::Simulation),
+            )
             .add_systems(FixedUpdate, hands::sync_hands_view.in_set(TickSet::Publish));
     }
 }

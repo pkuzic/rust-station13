@@ -5,7 +5,9 @@ use bevy_app::{App, Plugin};
 use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dir, DisplayName, GridPos, HandsView, Intent, MapLayer, MobStat, NetId};
+use rs13_world::{
+    Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer, MobStat, NetId,
+};
 use serde::{Deserialize, Serialize};
 
 /// A player-controlled mob. Replicated to every client.
@@ -41,11 +43,14 @@ pub enum ActionInput {
 
 /// Server → the controlling client: its own health, state and intent. Sent when any of
 /// them changes. Other players' health is not sent.
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct StatusUpdate {
     pub health: i32,
     pub stat: MobStat,
     pub intent: Intent,
+    /// Pressure where the player stands, tenths of a kPa.
+    pub pressure_dkpa: u32,
+    pub alerts: Vec<EnvAlert>,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its
@@ -91,5 +96,6 @@ impl Plugin for ProtocolPlugin {
         app.component::<Appearance>().replicate();
         app.component::<HandsView>().replicate();
         app.component::<DisplayName>().replicate();
+        app.component::<AtmosView>().replicate();
     }
 }

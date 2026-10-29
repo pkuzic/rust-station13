@@ -220,7 +220,7 @@ fn finish(
             *sink.0.lock().unwrap() = Some(BotResult {
                 players: seen,
                 notices: received.0.clone(),
-                status: received.1,
+                status: received.1.clone(),
             });
             exit.write(AppExit::Success);
         }

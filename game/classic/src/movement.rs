@@ -9,6 +9,7 @@ use bevy_ecs::prelude::*;
 use rs13_world::{Dense, Dir, GridPos, MapLayer, MobStat, TileMap, TilePos};
 
 use crate::access::IdCard;
+use crate::atmos::{has_handhold, is_space};
 use crate::doors::{Airlock, BUMP_COOLDOWN_DS, DoorState};
 use crate::hands::Hands;
 use crate::health::Vitals;
@@ -101,6 +102,10 @@ pub fn move_mobs(
         };
         let Some(dir) = intent.dir else { continue };
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            continue;
+        }
+        // In open space there is nothing to walk on: only push off from something nearby.
+        if is_space(&map.0, pos.0) && !has_handhold(&map.0, pos.0) {
             continue;
         }
         if now < mob.next_move_ds {

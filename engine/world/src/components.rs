@@ -65,6 +65,25 @@ pub enum Intent {
     Harm,
 }
 
+/// A danger the player's own HUD warns about.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum EnvAlert {
+    /// Hazardously low pressure: hurts every couple of seconds.
+    Vacuum,
+    LowPressure,
+    HighPressure,
+    LowOxygen,
+    Cold,
+    Hot,
+}
+
+/// Pressure of every tile of the deck in tenths of a kPa, row-major like the map. For
+/// the atmos debug overlay.
+#[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct AtmosView {
+    pub pressure_dkpa: Vec<u16>,
+}
+
 /// Which hand is in use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Hand {

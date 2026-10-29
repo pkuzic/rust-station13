@@ -15,7 +15,7 @@ use rs13_world::{Appearance, Dense, Dir, GridPos, Hand, HandsView, NetId, TileMa
 /// The chamber with its airlock made public, for tests about door timing.
 fn setup() -> App {
     let mut app = setup_as_mapped();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     app.world_mut()
         .get_mut::<Airlock>(door)
         .unwrap()
@@ -38,6 +38,15 @@ fn tick(app: &mut App, n: usize) {
     for _ in 0..n {
         app.world_mut().run_schedule(FixedUpdate);
     }
+}
+
+/// The airlock between the room and the closet (the map also has one to space).
+fn closet_door(app: &mut App) -> Entity {
+    let mut q = app.world_mut().query::<(Entity, &Appearance, &GridPos)>();
+    q.iter(app.world())
+        .find(|(_, a, p)| a.sprite == "airlock" && p.0 == TilePos::new(16, 6, 0))
+        .unwrap()
+        .0
 }
 
 /// The only entity with this sprite.
@@ -121,7 +130,7 @@ fn only_one_mob_gets_an_item_grabbed_in_the_same_tick() {
 #[test]
 fn airlock_opens_in_6ds_and_autocloses_after_150ds() {
     let mut app = setup();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
 
@@ -154,7 +163,7 @@ fn airlock_opens_in_6ds_and_autocloses_after_150ds() {
 #[test]
 fn walking_into_the_airlock_opens_it_and_lets_the_player_through() {
     let mut app = setup();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West).step(Dir::West));
     app.world_mut().get_mut::<MoveIntent>(mob).unwrap().dir = Some(Dir::East);
@@ -167,7 +176,7 @@ fn walking_into_the_airlock_opens_it_and_lets_the_player_through() {
 #[test]
 fn closing_airlock_pushes_the_mob_out_of_the_way() {
     let mut app = setup();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
 
@@ -190,7 +199,7 @@ fn closing_airlock_pushes_the_mob_out_of_the_way() {
 #[test]
 fn bolted_or_unpowered_airlock_refuses() {
     let mut app = setup();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
 
@@ -239,7 +248,7 @@ fn hold(app: &mut App, mob: Entity, item: Entity) {
 #[test]
 fn engineering_door_needs_an_id_card_in_the_active_hand() {
     let mut app = setup_as_mapped();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
 
@@ -278,7 +287,7 @@ fn engineering_door_needs_an_id_card_in_the_active_hand() {
 #[test]
 fn bumping_a_restricted_door_needs_access_too() {
     let mut app = setup_as_mapped();
-    let door = find(&mut app, "airlock");
+    let door = closet_door(&mut app);
     let door_pos = pos_of(&app, door).unwrap();
     let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
     app.world_mut().get_mut::<MoveIntent>(mob).unwrap().dir = Some(Dir::East);
