@@ -14,6 +14,7 @@ workspace = true
 [dependencies]
 rs13-core.workspace = true
 rs13-world.workspace = true
+rs13-i18n.workspace = true
 rs13-network = { workspace = true, features = ["server"] }
 rs13-classic.workspace = true
 bevy = { workspace = true, features = ["std", "multi_threaded", "async_executor", "bevy_log", "bevy_state"] }

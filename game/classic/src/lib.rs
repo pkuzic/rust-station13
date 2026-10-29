@@ -7,7 +7,9 @@ pub mod actions;
 pub mod doors;
 pub mod hands;
 pub mod movement;
+pub mod names;
 pub mod objects;
+pub mod speech;
 pub mod time;
 
 use bevy_app::{App, FixedUpdate, Plugin};
@@ -49,7 +51,12 @@ impl Plugin for ClassicPlugin {
                     .chain(),
             )
             .add_systems(FixedUpdate, time::advance_time.before(TickSet::Commands))
-            .add_systems(FixedUpdate, actions::process_actions.in_set(TickSet::Commands))
+            .add_systems(
+                FixedUpdate,
+                (actions::process_actions, speech::speak)
+                    .chain()
+                    .in_set(TickSet::Commands),
+            )
             .add_systems(
                 FixedUpdate,
                 (doors::update_doors, movement::move_mobs)

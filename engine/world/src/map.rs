@@ -68,6 +68,16 @@ pub struct TileDef {
     /// Whether the tile blocks movement.
     #[serde(default)]
     pub solid: bool,
+    /// Whether the tile blocks sight. Defaults to `solid` (walls block both; windows
+    /// will set `opaque: Some(false)`).
+    #[serde(default)]
+    pub opaque: Option<bool>,
+}
+
+impl TileDef {
+    pub fn is_opaque(&self) -> bool {
+        self.opaque.unwrap_or(self.solid)
+    }
 }
 
 /// One deck of tiles. Tiles outside the map count as solid.
@@ -197,6 +207,11 @@ impl TileMap {
     /// Whether movement into `pos` is blocked by the map itself.
     pub fn is_solid(&self, pos: TilePos) -> bool {
         self.tile(pos).is_none_or(|t| t.solid)
+    }
+
+    /// Whether sight through `pos` is blocked by the map itself. Outside the map: no.
+    pub fn is_opaque(&self, pos: TilePos) -> bool {
+        self.tile(pos).is_some_and(|t| t.is_opaque())
     }
 }
 

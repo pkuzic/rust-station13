@@ -3,7 +3,8 @@
 //! Connects to a server, holds one movement direction for a while, then prints every
 //! player it can see and exits.
 //!
-//! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]`
+//! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
+//! [--name NAME] [--say TEXT]`
 //!
 //! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
 //! line per notice received, `notice <message id>`.
@@ -51,6 +52,8 @@ fn parse_args() -> Result<BotConfig, String> {
         dir: None,
         hold: Duration::from_secs(3),
         examine: None,
+        name: None,
+        say: None,
     };
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -59,6 +62,8 @@ fn parse_args() -> Result<BotConfig, String> {
             "--server" => config.server = value.parse().map_err(|e| format!("--server: {e}"))?,
             "--dir" => config.dir = Some(parse_dir(&value)?),
             "--examine" => config.examine = Some(value),
+            "--name" => config.name = Some(value),
+            "--say" => config.say = Some(value),
             "--seconds" => {
                 config.hold = Duration::from_secs_f32(value.parse().map_err(|e| format!("--seconds: {e}"))?)
             }

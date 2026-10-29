@@ -5,7 +5,7 @@ use bevy_app::{App, Plugin};
 use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dir, GridPos, HandsView, MapLayer, NetId};
+use rs13_world::{Appearance, Dir, DisplayName, GridPos, HandsView, MapLayer, NetId};
 use serde::{Deserialize, Serialize};
 
 /// A player-controlled mob. Replicated to every client.
@@ -25,13 +25,17 @@ pub struct MoveInput {
 
 /// Client → server: a player intention other than movement. Entities are named by
 /// [`NetId`].
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum ActionInput {
     /// Click with the active hand.
     UseOn(NetId),
     Drop,
     SwapHands,
     Examine(NetId),
+    /// Say something out loud. The server cleans it up and limits its length.
+    Say(String),
+    /// Choose a character name. Accepted once per session, if valid.
+    SetName(String),
 }
 
 /// Server → one client: a message for the player, formatted by the client in its
@@ -74,5 +78,6 @@ impl Plugin for ProtocolPlugin {
         app.component::<NetId>().replicate();
         app.component::<Appearance>().replicate();
         app.component::<HandsView>().replicate();
+        app.component::<DisplayName>().replicate();
     }
 }

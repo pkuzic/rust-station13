@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, GridPos, TilePos};
+use rs13_world::{Appearance, DisplayName, GridPos, TilePos};
 
 use crate::doors::Airlock;
 use crate::hands::{Hands, HeldBy, Item};
@@ -47,7 +47,7 @@ pub fn process_actions(
     time: Res<WorldTime>,
     mut mobs: Query<ActingMob, With<Mob>>,
     mut targets: Query<(Option<&GridPos>, Has<Item>, Option<&mut Airlock>), Without<Mob>>,
-    appearances: Query<&Appearance>,
+    appearances: Query<(&Appearance, Option<&DisplayName>)>,
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
@@ -67,13 +67,19 @@ pub fn process_actions(
                             .insert(GridPos(mob_pos.0));
                     }
                 }
-                Action::Examine(target) => {
-                    if let Ok(appearance) = appearances.get(target) {
+                Action::Examine(target) => match appearances.get(target) {
+                    Ok((_, Some(name))) => {
+                        outbox
+                            .0
+                            .push(LocMsg::new("examine-person").arg("name", name.0.clone()));
+                    }
+                    Ok((appearance, None)) => {
                         outbox
                             .0
                             .push(LocMsg::new("examine").arg("item", appearance.sprite.clone()));
                     }
-                }
+                    Err(_) => {}
+                },
                 Action::UseOn(target) => {
                     let Ok((Some(target_pos), is_item, airlock)) = targets.get_mut(target) else {
                         // Held by someone, or gone.
