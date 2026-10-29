@@ -51,6 +51,10 @@ Record findings here as they are verified, with the Luna path.
 - `ONE_ATMOSPHERE` 101.325 kPa, `T20C` 293.15 K, `CELL_VOLUME` 2500 L per tile
   (`luna:code/setup.dm`).
 
+## Specs written so far
+
+- [Movement](reference/movement.md)
+
 ## Writing a behaviour spec
 
 Before implementing a system, write a short spec under `docs/reference/<system>.md`:

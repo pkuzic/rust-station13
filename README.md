@@ -25,9 +25,14 @@ Requires Rust 1.98 (pinned in `rust-toolchain.toml`). On Linux the client also n
 
 ```sh
 cargo test --workspace
-cargo run -p rs13-server
-cargo run -p rs13-client
+cargo run -p rs13-server                 # listens on UDP 13013
+cargo run -p rs13-client                 # connects to 127.0.0.1:13013
+cargo run -p rs13-client -- 10.0.0.5:13013
+cargo run -p rs13-headless -- --dir east # a bot that walks east and reports what it saw
 ```
+
+In the client, arrow keys or WASD move; hold Shift to walk. Graphics are placeholder
+squares until the Luna sprites are imported.
 
 ## Documentation
 

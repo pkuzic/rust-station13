@@ -17,7 +17,8 @@ CI runs the same commands on Linux and Windows (`.github/workflows/ci.yml`).
 | Unit | `#[cfg(test)]` in each crate | Pure logic: coordinates, gas maths, formatting |
 | Crate integration | `<crate>/tests/` | Public API contracts of one crate |
 | Property | `proptest` in unit or integration tests | Invariants: conservation of gas moles and energy, containment never cyclic |
-| Scenario | `tests/` driven by `rs13-headless` | Load a small map, run N ticks with scripted commands, assert world state |
+| Scenario | `<crate>/tests/` | Load a small map, run N ticks with scripted commands, assert world state (e.g. `game/classic/tests/two_mobs_in_a_room.rs`) |
+| Network | `apps/headless/tests/` | Real server and bot clients over localhost UDP, in one process |
 | Benchmark | `benches/` (criterion) | Tick time for atmos, power and replication |
 
 ## Simulation regression

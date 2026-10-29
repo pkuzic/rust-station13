@@ -12,6 +12,6 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-rs13-core.workspace = true
-rs13-network.workspace = true
-bevy.workspace = true
+rs13-world.workspace = true
+rs13-network = { workspace = true, features = ["client"] }
+bevy = { workspace = true, features = ["default"] }

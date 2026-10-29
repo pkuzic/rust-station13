@@ -17,3 +17,5 @@ rs13-world.workspace = true
 rs13-simulation.workspace = true
 rs13-content.workspace = true
 rs13-i18n.workspace = true
+bevy_ecs.workspace = true
+bevy_app.workspace = true

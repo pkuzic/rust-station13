@@ -12,8 +12,10 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-rs13-core.workspace = true
-rs13-network.workspace = true
+rs13-world.workspace = true
+rs13-network = { workspace = true, features = ["client"] }
+bevy = { workspace = true, features = ["std", "multi_threaded", "async_executor", "bevy_log", "bevy_state"] }
+
+[dev-dependencies]
+rs13-server.workspace = true
 rs13-classic.workspace = true
-tracing.workspace = true
-tracing-subscriber.workspace = true
