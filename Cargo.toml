@@ -31,10 +31,12 @@ rs13-network = { path = "engine/network" }
 rs13-content = { path = "engine/content" }
 rs13-i18n = { path = "engine/i18n" }
 rs13-classic = { path = "game/classic" }
+rs13-server = { path = "apps/server" }
 
 # Engine stack: exact pins, see docs/adr/0002-bevy-lightyear-pin.md.
 # Bevy and Lightyear must be upgraded together.
-bevy = "=0.20.1"
+# Members opt into features: the client takes "default", headless apps stay minimal.
+bevy = { version = "=0.20.1", default-features = false }
 bevy_ecs = "=0.20.1"
 bevy_app = "=0.20.1"
 lightyear = { version = "=0.31.0", default-features = false }

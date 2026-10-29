@@ -1,0 +1,25 @@
+// The first-milestone test map. Top row first, as seen on screen.
+// Legend ids are tile prototype ids. Space surrounds the station.
+(
+    legend: {
+        ' ': (tile: (id: "space")),
+        '#': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        'S': (tile: (id: "floor"), spawn: true),
+    },
+    rows: [
+        "                  ",
+        " ################ ",
+        " #..............# ",
+        " #.S..........S.# ",
+        " #..............# ",
+        " #.....####.....# ",
+        " #.....#..#.....# ",
+        " #.....#..#.....# ",
+        " #..............# ",
+        " #.S..........S.# ",
+        " #..............# ",
+        " ################ ",
+        "                  ",
+    ],
+)

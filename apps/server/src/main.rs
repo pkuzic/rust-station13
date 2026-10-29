@@ -1,17 +1,23 @@
 //! Dedicated server: engine plus the classic game build.
+//!
+//! Usage: `rs13-server [--port N]`
 
-fn main() {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
-        )
-        .init();
-    tracing::info!(
-        version = env!("CARGO_PKG_VERSION"),
-        protocol = rs13_network::PROTOCOL_VERSION,
-        tick_rate = rs13_core::TICK_RATE_HZ,
-        reference = rs13_classic::REFERENCE_COMMIT,
-        "rs13-server starting"
-    );
-    tracing::warn!("no world loop yet: see the first milestone in docs/SCOPE.md");
+use bevy::log::LogPlugin;
+use bevy::prelude::*;
+
+fn main() -> AppExit {
+    let port = parse_port().unwrap_or(rs13_network::DEFAULT_PORT);
+    let mut app = rs13_server::server_app(port);
+    app.add_plugins(LogPlugin::default());
+    app.run()
+}
+
+fn parse_port() -> Option<u16> {
+    let mut args = std::env::args().skip(1);
+    while let Some(arg) = args.next() {
+        if arg == "--port" {
+            return args.next()?.parse().ok();
+        }
+    }
+    None
 }

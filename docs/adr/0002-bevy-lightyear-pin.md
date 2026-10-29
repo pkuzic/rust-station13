@@ -15,7 +15,9 @@ Candidates on 2026-10-29:
 
 ## Decision
 
-Use Bevy `=0.20.1` (client: full `bevy`; server: `bevy_ecs` / `bevy_app` only) and
+Use Bevy `=0.20.1` (client: `bevy` with default features; server and headless bots: `bevy`
+with `default-features = false` and only `std`, `multi_threaded`, `async_executor`,
+`bevy_log`, `bevy_state`) and
 Lightyear `=0.31.0`, pinned exactly in the workspace `Cargo.toml`. Pin the toolchain to
 Rust 1.98.0 in `rust-toolchain.toml`.
 
@@ -28,4 +30,4 @@ features.
 - Bevy and Lightyear are upgraded together, in one PR, with an ADR update.
 - Lightyear 0.31 is young; if it blocks progress, falling back to Bevy 0.19.1 +
   Lightyear 0.30.1 costs little while the code base is small.
-- The server stays headless: it must not depend on the full `bevy` crate.
+- The server stays headless: it must never enable rendering, windowing or audio features.

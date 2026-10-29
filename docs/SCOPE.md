@@ -24,7 +24,7 @@ Sequence from the master plan. Estimates are speculative and phases overlap.
 | Phase | Exit criterion |
 |---|---|
 | Research | Reference spec (`GAME_REFERENCE.md`) and this executable skeleton |
-| Engine foundation | Two clients moving in one room |
+| Engine foundation | Two clients moving in one room (**done**: `apps/headless/tests/two_clients_one_room.rs`) |
 | Gameplay prototype | Recognisable classic interaction loop |
 | Engineering | Functional engineering test chamber (the first milestone above) |
 | Modding and ecosystem | Custom server join with new assets and gameplay |

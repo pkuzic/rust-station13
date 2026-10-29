@@ -1,10 +1,18 @@
 //! Chunked tile grid with x, y and z (station deck) coordinates.
 
+mod components;
+mod map;
+
+pub use components::{GridPos, MapLayer};
+pub use map::{Dir, MapError, TileDef, TileMap};
+
+use serde::{Deserialize, Serialize};
+
 /// Width and height of a chunk, in tiles.
 pub const CHUNK_SIZE: i32 = 16;
 
 /// A tile on the map. `z` is the deck (floor) index.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct TilePos {
     pub x: i32,
     pub y: i32,
@@ -12,7 +20,7 @@ pub struct TilePos {
 }
 
 /// A chunk of `CHUNK_SIZE` x `CHUNK_SIZE` tiles on one deck.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ChunkPos {
     pub x: i32,
     pub y: i32,
@@ -35,6 +43,12 @@ impl TilePos {
     /// Position inside the chunk, each component in `0..CHUNK_SIZE`.
     pub fn local(self) -> (i32, i32) {
         (self.x.rem_euclid(CHUNK_SIZE), self.y.rem_euclid(CHUNK_SIZE))
+    }
+
+    /// The neighbouring tile in `dir` on the same deck.
+    pub fn step(self, dir: Dir) -> Self {
+        let (dx, dy) = dir.offset();
+        Self::new(self.x + dx, self.y + dy, self.z)
     }
 }
 

@@ -7244,6 +7244,8 @@ dependencies = [
 name = "rs13-classic"
 version = "0.1.0"
 dependencies = [
+ "bevy_app",
+ "bevy_ecs",
  "rs13-content",
  "rs13-core",
  "rs13-i18n",
@@ -7256,8 +7258,8 @@ name = "rs13-client"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "rs13-core",
  "rs13-network",
+ "rs13-world",
 ]
 
 [[package]]
@@ -7277,11 +7279,11 @@ version = "0.1.0"
 name = "rs13-headless"
 version = "0.1.0"
 dependencies = [
+ "bevy",
  "rs13-classic",
- "rs13-core",
  "rs13-network",
- "tracing",
- "tracing-subscriber",
+ "rs13-server",
+ "rs13-world",
 ]
 
 [[package]]
@@ -7308,8 +7310,11 @@ dependencies = [
 name = "rs13-network"
 version = "0.1.0"
 dependencies = [
+ "bevy_app",
+ "bevy_ecs",
  "lightyear",
  "rs13-core",
+ "rs13-world",
  "serde",
 ]
 
@@ -7317,11 +7322,11 @@ dependencies = [
 name = "rs13-server"
 version = "0.1.0"
 dependencies = [
+ "bevy",
  "rs13-classic",
  "rs13-core",
  "rs13-network",
- "tracing",
- "tracing-subscriber",
+ "rs13-world",
 ]
 
 [[package]]
@@ -7336,6 +7341,12 @@ dependencies = [
 [[package]]
 name = "rs13-world"
 version = "0.1.0"
+dependencies = [
+ "bevy_ecs",
+ "ron",
+ "serde",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "rstar"
