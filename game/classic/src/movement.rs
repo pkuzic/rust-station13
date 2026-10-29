@@ -8,7 +8,9 @@ use std::collections::HashSet;
 use bevy_ecs::prelude::*;
 use rs13_world::{Dense, Dir, GridPos, MapLayer, TileMap, TilePos};
 
+use crate::access::IdCard;
 use crate::doors::{Airlock, BUMP_COOLDOWN_DS, DoorState};
+use crate::hands::Hands;
 use crate::objects::PlayerControlled;
 use crate::time::WorldTime;
 
@@ -69,8 +71,16 @@ pub fn resolve_step(map: &TileMap, occupied: &HashSet<TilePos>, from: TilePos, d
 pub fn move_mobs(
     time: Res<WorldTime>,
     map: Single<&MapLayer>,
-    mut mobs: Query<(Entity, &mut GridPos, &mut Mob, &MoveIntent, Has<PlayerControlled>)>,
+    mut mobs: Query<(
+        Entity,
+        &mut GridPos,
+        &mut Mob,
+        &MoveIntent,
+        Has<PlayerControlled>,
+        Option<&Hands>,
+    )>,
     mut objects: Query<(&GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
+    cards: Query<&IdCard>,
 ) {
     let now = time.deciseconds();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
@@ -84,7 +94,7 @@ pub fn move_mobs(
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent, is_player)) = mobs.get_mut(entity) else {
+        let Ok((_, mut pos, mut mob, intent, is_player, hands)) = mobs.get_mut(entity) else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
@@ -113,7 +123,10 @@ pub fn move_mobs(
                 && airlock.state == DoorState::Closed
             {
                 mob.last_bump_ds = Some(now);
-                airlock.toggle(now);
+                let card = hands
+                    .and_then(|h| h.active_item())
+                    .and_then(|e| cards.get(e).ok());
+                airlock.use_by(now, card);
             }
         }
     }

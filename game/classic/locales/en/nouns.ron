@@ -9,5 +9,6 @@
     "screwdriver": (gender: neuter, sg: (nom: "screwdriver", indef: "a screwdriver"), pl: Some((nom: "screwdrivers"))),
     "wirecutters": (gender: plural, sg: (nom: "wirecutters", indef: "a pair of wirecutters")),
     "apc": (gender: neuter, sg: (nom: "APC", indef: "an APC")),
+    "id-card": (gender: neuter, sg: (nom: "ID card", indef: "an ID card"), pl: Some((nom: "ID cards"))),
     "human": (gender: neuter, sg: (nom: "human", indef: "a human"), pl: Some((nom: "humans"))),
 }

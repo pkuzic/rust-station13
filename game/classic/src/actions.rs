@@ -7,6 +7,7 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, DisplayName, GridPos, TilePos};
 
+use crate::access::IdCard;
 use crate::doors::Airlock;
 use crate::hands::{Hands, HeldBy, Item};
 use crate::movement::Mob;
@@ -47,6 +48,7 @@ pub fn process_actions(
     time: Res<WorldTime>,
     mut mobs: Query<ActingMob, With<Mob>>,
     mut targets: Query<(Option<&GridPos>, Has<Item>, Option<&mut Airlock>), Without<Mob>>,
+    cards: Query<&IdCard>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     mut commands: Commands,
 ) {
@@ -93,8 +95,10 @@ pub fn process_actions(
                         *hands.slot_mut(active) = Some(target);
                         commands.entity(target).remove::<GridPos>().insert(HeldBy(mob));
                     } else if let Some(mut airlock) = airlock {
-                        // By hand or with any item: Luna's door `attackby` ignores what it is.
-                        airlock.toggle(now);
+                        // By hand or with any item; only an ID card in the active hand
+                        // counts for access.
+                        let card = hands.active_item().and_then(|e| cards.get(e).ok());
+                        airlock.use_by(now, card);
                     }
                 }
             }

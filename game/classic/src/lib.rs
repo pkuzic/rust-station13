@@ -3,6 +3,7 @@
 //! Luna is a behaviour reference only: see `docs/GAME_REFERENCE.md`. No DM code is
 //! translated into this crate.
 
+pub mod access;
 pub mod actions;
 pub mod doors;
 pub mod hands;
@@ -40,6 +41,7 @@ impl Plugin for ClassicPlugin {
         app.init_resource::<time::WorldTime>()
             .init_resource::<objects::NetIds>()
             .init_resource::<objects::ItemProtos>()
+            .init_resource::<access::AccessIds>()
             .configure_sets(
                 FixedUpdate,
                 (

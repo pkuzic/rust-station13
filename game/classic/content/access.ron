@@ -1,0 +1,22 @@
+// Access ids, with the matching Luna constant (luna:code/game/jobs/access.dm) for reference.
+// Doors list the ids they require (any one is enough); ID cards list the ids they grant.
+[
+    (id: "security", luna: 1),
+    (id: "brig", luna: 2),
+    (id: "armory", luna: 3),
+    (id: "medical", luna: 5),
+    (id: "morgue", luna: 6),
+    (id: "tox", luna: 7),
+    (id: "engine", luna: 10),
+    (id: "engine_equip", luna: 11),
+    (id: "maint_tunnels", luna: 12),
+    (id: "external_airlocks", luna: 13),
+    (id: "emergency_storage", luna: 14),
+    (id: "change_ids", luna: 15),
+    (id: "eva", luna: 18),
+    (id: "heads", luna: 19),
+    (id: "captain", luna: 20),
+    (id: "tech_storage", luna: 23),
+    (id: "atmospherics", luna: 24),
+    (id: "construction", luna: 32),
+]

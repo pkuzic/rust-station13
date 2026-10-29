@@ -4,6 +4,7 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, Dense, Dir, GridPos, MapLayer, Opaque, TilePos};
 
+use crate::access::{IdCard, allowed};
 use crate::actions::Outbox;
 use crate::hands::Item;
 use crate::movement::Mob;
@@ -19,6 +20,9 @@ pub const CLOSE_DS: f32 = 6.0;
 pub const AUTOCLOSE_DS: f32 = 150.0;
 /// Minimum time between two bumps by the same mob.
 pub const BUMP_COOLDOWN_DS: f32 = 5.0;
+/// How long the "deny" animation shows. Luna flicks `door_deny`; its length comes from
+/// the sprite's frame delays, so this is an estimate until the sprites are imported.
+pub const DENY_DS: f32 = 3.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum DoorState {
@@ -48,13 +52,17 @@ impl DoorState {
     }
 }
 
-#[derive(Component, Debug, Clone, Copy, PartialEq)]
+#[derive(Component, Debug, Clone, PartialEq)]
 pub struct Airlock {
     pub state: DoorState,
     /// Bolted doors refuse to open or close.
     pub bolted: bool,
     /// Stands in for the powernet until it exists.
     pub powered: bool,
+    /// Access ids, any one of which opens the door. Empty: anyone.
+    pub req_access: Vec<String>,
+    /// Until when the "deny" animation shows.
+    pub deny_until: Option<f32>,
 }
 
 impl Default for Airlock {
@@ -63,11 +71,26 @@ impl Default for Airlock {
             state: DoorState::Closed,
             bolted: false,
             powered: true,
+            req_access: Vec::new(),
+            deny_until: None,
         }
     }
 }
 
 impl Airlock {
+    /// Luna's door `attackby`, also reached by hand and by bumping: ignored while
+    /// operating; with access, toggle; without, a closed door shows "deny".
+    pub fn use_by(&mut self, now: f32, card: Option<&IdCard>) {
+        if matches!(self.state, DoorState::Opening { .. } | DoorState::Closing { .. }) {
+            return;
+        }
+        if allowed(&self.req_access, card) {
+            self.toggle(now);
+        } else if self.is_dense() {
+            self.deny_until = Some(now + DENY_DS);
+        }
+    }
+
     /// Open a closed door or close an open one. Returns whether anything started.
     pub fn toggle(&mut self, now: f32) -> bool {
         if self.bolted || !self.powered {
@@ -167,7 +190,14 @@ pub fn update_doors(
         } else {
             entity.remove::<Opaque>();
         }
-        let state = door.state.name();
+        if door.deny_until.is_some_and(|until| now >= until) {
+            door.deny_until = None;
+        }
+        let state = if door.state == DoorState::Closed && door.deny_until.is_some() {
+            "deny"
+        } else {
+            door.state.name()
+        };
         if appearance.state != state {
             appearance.state = state.to_owned();
         }

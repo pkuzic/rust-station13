@@ -252,6 +252,7 @@ fn tile_color(id: &str) -> Color {
 fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
     match (appearance.sprite.as_str(), appearance.state.as_str()) {
         ("human", _) => (Color::srgb(0.35, 0.55, 0.95), TILE_PX * 0.7, 3.0),
+        ("airlock", "deny") => (Color::srgb(0.85, 0.20, 0.15), TILE_PX - 1.0, 2.0),
         ("airlock", "open") => (Color::srgb(0.22, 0.20, 0.14), TILE_PX - 1.0, 2.0),
         ("airlock", "opening" | "closing") => (Color::srgb(0.70, 0.58, 0.30), TILE_PX - 1.0, 2.0),
         ("airlock", _) => (Color::srgb(0.55, 0.45, 0.25), TILE_PX - 1.0, 2.0),
@@ -261,6 +262,7 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("wirecutters", _) => (Color::srgb(0.95, 0.55, 0.15), 14.0, 1.0),
         ("oxygen-tank", _) => (Color::srgb(0.25, 0.45, 0.95), 14.0, 1.0),
         ("metal-sheet", _) => (Color::srgb(0.80, 0.80, 0.82), 14.0, 1.0),
+        ("id-card", _) => (Color::srgb(0.30, 0.80, 0.85), 12.0, 1.0),
         _ => (Color::srgb(1.0, 0.0, 1.0), 14.0, 1.0),
     }
 }

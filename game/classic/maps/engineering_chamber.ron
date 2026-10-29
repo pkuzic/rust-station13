@@ -1,13 +1,18 @@
 // The first-milestone test map. Top row first, as seen on screen.
 // Legend ids are tile prototype ids; `objects` are object prototype ids.
-// Space surrounds the station. A closet on the east side sits behind an airlock.
+// Space surrounds the station. An engineering equipment closet on the east side sits
+// behind an airlock that needs `engine_equip` access. Two ID cards lie in the room:
+// an engineer's (opens it) and an assistant's (does not).
 (
     legend: {
         ' ': (tile: (id: "space")),
         '#': (tile: (id: "wall", solid: true)),
         '.': (tile: (id: "floor")),
         'S': (tile: (id: "floor"), spawn: true),
-        'A': (tile: (id: "floor"), objects: ["airlock"]),
+        'A': (tile: (id: "floor"), objects: [(id: "airlock", access: ["engine_equip"])]),
+        // Luna's Engineer and Unassigned job access (luna:code/game/jobs/access.dm).
+        'i': (tile: (id: "floor"), objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"])]),
+        'a': (tile: (id: "floor"), objects: [(id: "id-card", access: ["maint_tunnels"])]),
         'c': (tile: (id: "floor"), objects: ["crowbar"]),
         'w': (tile: (id: "floor"), objects: ["wrench"]),
         'd': (tile: (id: "floor"), objects: ["screwdriver"]),
@@ -24,7 +29,7 @@
         " #.....####.....#...# ",
         " #..w..#..#.....A.m.# ",
         " #.....#..#..d..#...# ",
-        " #..............#...# ",
+        " #.......a...i..#...# ",
         " #.S..........S.#.c.# ",
         " #...x..........#...# ",
         " #################### ",

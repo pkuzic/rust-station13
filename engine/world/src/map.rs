@@ -60,6 +60,46 @@ impl Dir {
     }
 }
 
+/// An object placed by a map: a prototype id plus optional per-instance settings.
+/// In map files it is written either as a bare id, `"crowbar"`, or in full,
+/// `(id: "airlock", access: ["engine_equip"])`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(from = "ObjectEntry")]
+pub struct ObjectSpec {
+    pub id: String,
+    /// Access ids: required to open (doors) or granted (ID cards).
+    pub access: Vec<String>,
+}
+
+impl ObjectSpec {
+    pub fn new(id: impl Into<String>) -> Self {
+        Self {
+            id: id.into(),
+            access: Vec::new(),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum ObjectEntry {
+    Id(String),
+    Full {
+        id: String,
+        #[serde(default)]
+        access: Vec<String>,
+    },
+}
+
+impl From<ObjectEntry> for ObjectSpec {
+    fn from(entry: ObjectEntry) -> Self {
+        match entry {
+            ObjectEntry::Id(id) => ObjectSpec::new(id),
+            ObjectEntry::Full { id, access } => ObjectSpec { id, access },
+        }
+    }
+}
+
 /// A kind of tile in a map's palette.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TileDef {
@@ -91,8 +131,11 @@ pub struct TileMap {
     pub tiles: Vec<u16>,
     /// Where players may appear.
     pub spawns: Vec<TilePos>,
-    /// Objects placed by the map: (tile, prototype id), in reading order.
-    pub objects: Vec<(TilePos, String)>,
+    /// Objects placed by the map, in reading order. Server-side only: clients receive
+    /// the spawned objects as entities, so this is not serialized (and `ObjectSpec`'s
+    /// map-file shorthand only reads from self-describing formats like RON).
+    #[serde(skip)]
+    pub objects: Vec<(TilePos, ObjectSpec)>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -122,7 +165,7 @@ struct LegendEntry {
     spawn: bool,
     /// Prototype ids of objects to place on this tile.
     #[serde(default)]
-    objects: Vec<String>,
+    objects: Vec<ObjectSpec>,
 }
 
 impl TileMap {
@@ -176,7 +219,7 @@ impl TileMap {
                 if entry.spawn {
                     spawns.push(pos);
                 }
-                objects.extend(entry.objects.iter().map(|id| (pos, id.clone())));
+                objects.extend(entry.objects.iter().map(|spec| (pos, spec.clone())));
             }
         }
         spawns.sort();
@@ -225,10 +268,11 @@ mod tests {
             '.': (tile: (id: "floor")),
             'S': (tile: (id: "floor"), spawn: true),
             'c': (tile: (id: "floor"), objects: ["crowbar"]),
+            'D': (tile: (id: "floor"), objects: [(id: "airlock", access: ["engine"])]),
         },
         rows: [
             "WWWW",
-            "WS.W",
+            "WSDW",
             "Wc.W",
             "WWWW",
         ],
@@ -243,7 +287,19 @@ mod tests {
         assert_eq!(map.spawns, vec![TilePos::new(1, 2, 0)]);
         assert!(map.is_solid(TilePos::new(0, 0, 0)));
         assert!(!map.is_solid(TilePos::new(2, 1, 0)));
-        assert_eq!(map.objects, vec![(TilePos::new(1, 1, 0), "crowbar".to_owned())]);
+        assert_eq!(
+            map.objects,
+            vec![
+                (
+                    TilePos::new(2, 2, 0),
+                    ObjectSpec {
+                        id: "airlock".into(),
+                        access: vec!["engine".into()]
+                    }
+                ),
+                (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),
+            ]
+        );
     }
 
     #[test]
