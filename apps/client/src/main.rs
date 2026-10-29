@@ -289,7 +289,29 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("oxygen-tank", _) => (Color::srgb(0.25, 0.45, 0.95), 14.0, 1.0),
         ("metal-sheet", _) => (Color::srgb(0.80, 0.80, 0.82), 14.0, 1.0),
         ("id-card", _) => (Color::srgb(0.30, 0.80, 0.85), 12.0, 1.0),
+        ("pipe", _) => (Color::srgb(0.35, 0.40, 0.55), 8.0, 0.6),
+        ("air-tank", _) => (Color::srgb(0.30, 0.45, 0.75), TILE_PX - 4.0, 1.5),
+        ("canister", "on") => (Color::srgb(0.55, 0.75, 1.0), 20.0, 1.5),
+        ("canister", _) => (Color::srgb(0.35, 0.55, 0.85), 20.0, 1.5),
+        ("pump" | "vent" | "scrubber", "off") => (Color::srgb(0.30, 0.30, 0.30), 16.0, 0.7),
+        ("pump", _) => (Color::srgb(0.90, 0.85, 0.40), 16.0, 0.7),
+        ("vent", _) => (Color::srgb(0.70, 0.80, 0.90), 16.0, 0.7),
+        ("scrubber", _) => (Color::srgb(0.55, 0.85, 0.60), 16.0, 0.7),
+        ("valve", "open") => (Color::srgb(0.40, 0.80, 0.40), 12.0, 0.7),
+        ("valve", _) => (Color::srgb(0.80, 0.30, 0.30), 12.0, 0.7),
+        ("connector", _) => (Color::srgb(0.50, 0.50, 0.50), 14.0, 0.65),
         _ => (Color::srgb(1.0, 0.0, 1.0), 14.0, 1.0),
+    }
+}
+
+/// Which thing on a tile a click picks: lowest rank wins.
+fn click_rank(appearance: &Appearance) -> u8 {
+    match appearance.sprite.as_str() {
+        "human" => 3,
+        "airlock" => 2,
+        "pipe" => 4,
+        "pump" | "vent" | "scrubber" | "valve" | "connector" | "canister" | "air-tank" => 1,
+        _ => 0,
     }
 }
 
@@ -494,11 +516,11 @@ fn send_clicks(
         (world.y / TILE_PX).round() as i32,
     );
 
-    // Lowest draw layer first: items over doors over mobs, so the item on a tile wins.
+    // Items first, then machines, doors, people, and bare pipes last.
     let target = objects
         .iter()
         .filter(|(_, pos, _)| (pos.0.x, pos.0.y) == tile)
-        .min_by(|a, b| object_look(a.2).2.total_cmp(&object_look(b.2).2))
+        .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
     let Some(target) = target else { return };
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);

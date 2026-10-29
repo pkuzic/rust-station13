@@ -69,6 +69,8 @@ pub struct ObjectSpec {
     pub id: String,
     /// Access ids: required to open (doors) or granted (ID cards).
     pub access: Vec<String>,
+    /// Facing, for directional machines such as pumps.
+    pub dir: Option<Dir>,
 }
 
 impl ObjectSpec {
@@ -76,6 +78,7 @@ impl ObjectSpec {
         Self {
             id: id.into(),
             access: Vec::new(),
+            dir: None,
         }
     }
 }
@@ -88,6 +91,8 @@ enum ObjectEntry {
         id: String,
         #[serde(default)]
         access: Vec<String>,
+        #[serde(default)]
+        dir: Option<Dir>,
     },
 }
 
@@ -95,7 +100,7 @@ impl From<ObjectEntry> for ObjectSpec {
     fn from(entry: ObjectEntry) -> Self {
         match entry {
             ObjectEntry::Id(id) => ObjectSpec::new(id),
-            ObjectEntry::Full { id, access } => ObjectSpec { id, access },
+            ObjectEntry::Full { id, access, dir } => ObjectSpec { id, access, dir },
         }
     }
 }
@@ -294,7 +299,8 @@ mod tests {
                     TilePos::new(2, 2, 0),
                     ObjectSpec {
                         id: "airlock".into(),
-                        access: vec!["engine".into()]
+                        access: vec!["engine".into()],
+                        dir: None,
                     }
                 ),
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),

@@ -115,7 +115,6 @@ All tuning values live in those files. This page records them and where they cam
 
 ## Not yet
 
-- Pipes, pumps, vents, scrubbers, tanks and canisters (phase 1, part 2).
 - Internals and space suits.
 - Local cells, fire, heat conduction between zones and surfaces.
 - Door pressure ratings.

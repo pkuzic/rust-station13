@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, VecDeque};
 
 use rs13_world::{Dir, TileMap, TilePos};
 
-use super::gas::{GasMix, R, T_SPACE, TILE_VOLUME, VACUUM_MOLES};
+use super::gas::{Gas, GasMix, R, T_SPACE, TILE_VOLUME, VACUUM_MOLES};
 
 /// Open area of a doorway, m² (1 m × 2 m).
 pub const DOOR_AREA: f64 = 2.0;
@@ -225,6 +225,50 @@ impl AtmosGrid {
         if let Some(z) = self.air_zone(pos) {
             self.zones[z].mix.merge(gas);
         }
+    }
+
+    /// Take a `fraction` of only the listed gases from a tile's share of its zone.
+    pub fn remove_gases_at(&mut self, pos: TilePos, gases: &[Gas], fraction: f64) -> GasMix {
+        let Some(z) = self.air_zone(pos) else {
+            return GasMix::default();
+        };
+        let zone = &mut self.zones[z];
+        let share = (TILE_VOLUME / zone.volume) * fraction.clamp(0.0, 1.0);
+        let mut out = GasMix {
+            temperature: zone.mix.temperature,
+            ..GasMix::default()
+        };
+        for gas in gases {
+            let have = zone.mix.get(*gas);
+            let taken = have * share;
+            zone.mix.set(*gas, have - taken);
+            out.set(*gas, taken);
+        }
+        out
+    }
+
+    /// Whether the zone a tile belongs to is losing gas to space right now (a breach or an
+    /// open airlock). Air alarms use this to lock vents out instead of feeding the leak.
+    pub fn venting_to_space(&self, pos: TilePos) -> bool {
+        let Some(z) = self.air_zone(pos) else { return false };
+        if self.zone_leaks_to_space(z) {
+            return true;
+        }
+        // One door away from a leaking zone, with gas flowing between them.
+        self.openings.iter().any(|o| {
+            let neighbour = match o.other {
+                Side::Zone(other) if o.zone == z => Some(other),
+                Side::Zone(other) if other == z => Some(o.zone),
+                _ => None,
+            };
+            o.flow != 0.0 && neighbour.is_some_and(|n| self.zone_leaks_to_space(n))
+        })
+    }
+
+    fn zone_leaks_to_space(&self, z: usize) -> bool {
+        self.openings
+            .iter()
+            .any(|o| o.zone == z && o.other == Side::Space && o.flow > 0.0)
     }
 
     pub fn wind_at(&self, pos: TilePos) -> Option<Wind> {

@@ -12,6 +12,7 @@ use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::Airlock;
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::{Body, Vitals};
+use crate::machines::{Canister, Connector, GasStore, PipeMember, PipeNets, Switch, Valve};
 use crate::movement::Mob;
 use crate::time::WorldTime;
 
@@ -52,7 +53,21 @@ type ActingMob<'a> = (
 pub fn process_actions(
     time: Res<WorldTime>,
     mut mobs: Query<ActingMob, With<Mob>>,
-    mut targets: Query<(Option<&GridPos>, Has<Item>, Option<&mut Airlock>), Without<Mob>>,
+    mut targets: Query<
+        (
+            Option<&GridPos>,
+            Has<Item>,
+            Option<&mut Airlock>,
+            Option<&mut Switch>,
+            Option<&mut PipeMember>,
+            Has<Canister>,
+            Has<Valve>,
+        ),
+        Without<Mob>,
+    >,
+    ports: Query<&GridPos, (With<Connector>, Without<Mob>)>,
+    stores: Query<&GasStore>,
+    mut nets: ResMut<PipeNets>,
     cards: Query<&IdCard>,
     people: Query<(), With<Body>>,
     mut attacks: ResMut<PendingAttacks>,
@@ -95,6 +110,13 @@ pub fn process_actions(
                         outbox
                             .0
                             .push(LocMsg::new("examine").arg("item", appearance.sprite.clone()));
+                        // Anything holding gas has a pressure gauge.
+                        if let Ok((_, _, _, _, Some(member), ..)) = targets.get(target) {
+                            let kpa = nets.gauge(target, stores.get(target).ok(), member.volume);
+                            outbox
+                                .0
+                                .push(LocMsg::new("examine-gauge").num("value", kpa.round() as i64));
+                        }
                     }
                     Err(_) => {}
                 },
@@ -103,7 +125,9 @@ pub fn process_actions(
                     attacks.0.push((mob, target));
                 }
                 Action::UseOn(target) => {
-                    let Ok((Some(target_pos), is_item, airlock)) = targets.get_mut(target) else {
+                    let Ok((Some(target_pos), is_item, airlock, switch, member, is_canister, is_valve)) =
+                        targets.get_mut(target)
+                    else {
                         // Held by someone, or gone.
                         continue;
                     };
@@ -114,6 +138,36 @@ pub fn process_actions(
                         let active = hands.active;
                         *hands.slot_mut(active) = Some(target);
                         commands.entity(target).remove::<GridPos>().insert(HeldBy(mob));
+                    } else if is_canister && holding(&hands, &appearances, "wrench") {
+                        // Wrench a canister on or off the port under it.
+                        let Some(mut member) = member else { continue };
+                        if member.open || ports.iter().any(|p| p.0 == target_pos.0) {
+                            member.open = !member.open;
+                            nets.dirty = true;
+                            let id = if member.open {
+                                "canister-connected"
+                            } else {
+                                "canister-disconnected"
+                            };
+                            outbox.0.push(LocMsg::new(id).arg("item", "canister"));
+                        }
+                    } else if let Some(mut switch) = switch {
+                        switch.0 = !switch.0;
+                        let sprite = appearances
+                            .get(target)
+                            .map(|(a, _)| a.sprite.clone())
+                            .unwrap_or_default();
+                        let id = match (is_valve, switch.0) {
+                            (true, true) => "valve-opened",
+                            (true, false) => "valve-closed",
+                            (false, true) => "switched-on",
+                            (false, false) => "switched-off",
+                        };
+                        if is_valve && let Some(mut member) = member {
+                            member.open = switch.0;
+                            nets.dirty = true;
+                        }
+                        outbox.0.push(LocMsg::new(id).arg("item", sprite));
                     } else if let Some(mut airlock) = airlock {
                         // By hand or with any item; only an ID card in the active hand
                         // counts for access.
@@ -124,4 +178,12 @@ pub fn process_actions(
             }
         }
     }
+}
+
+/// Whether the active hand holds an item with this sprite id.
+fn holding(hands: &Hands, appearances: &Query<(&Appearance, Option<&DisplayName>)>, sprite: &str) -> bool {
+    hands
+        .active_item()
+        .and_then(|e| appearances.get(e).ok())
+        .is_some_and(|(a, _)| a.sprite == sprite)
 }

@@ -70,6 +70,17 @@ pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
         .filter_map(|(pos, spec)| spawn_object(world, spec, *pos).err())
         .collect();
 
+    // Canisters placed on a connector port start connected to its pipes.
+    let mut ports = world.query_filtered::<&GridPos, With<crate::machines::Connector>>();
+    let port_tiles: Vec<TilePos> = ports.iter(world).map(|p| p.0).collect();
+    let mut canisters = world
+        .query_filtered::<(&GridPos, &mut crate::machines::PipeMember), With<crate::machines::Canister>>();
+    for (pos, mut member) in canisters.iter_mut(world) {
+        member.open = port_tiles.contains(&pos.0);
+    }
+    world.init_resource::<crate::machines::PipeNets>();
+    world.resource_mut::<crate::machines::PipeNets>().dirty = true;
+
     // Air: every door tile is a portal between zones.
     let mut doors = world.query_filtered::<&GridPos, With<Airlock>>();
     let portals: Vec<TilePos> = doors.iter(world).map(|p| p.0).collect();
@@ -91,6 +102,13 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
         return Err(format!("{} at {pos:?}: unknown access id {bad:?}", spec.id));
     }
     let proto = spec.id.as_str();
+    if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        let appearance = Appearance::new(machine.sprite, machine.state);
+        let mut entity = world.spawn((GridPos(pos), id, appearance));
+        machine.apply(&mut entity);
+        return Ok(entity.id());
+    }
     let force = world.resource::<ItemProtos>().0.get(proto).copied();
     if proto != "airlock" && force.is_none() {
         return Err(format!("unknown prototype {proto:?} at {pos:?}"));

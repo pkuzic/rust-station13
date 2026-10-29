@@ -76,3 +76,12 @@ alert-high-pressure = Высокое давление
 alert-low-oxygen = Не хватает кислорода
 alert-cold = Вы замерзаете
 alert-hot = Вы перегреваетесь
+
+# Оборудование. Аргументы: $item (id предмета), $value (кПа).
+switched-on = Вы включаете { NOUN($item, case: "acc") }.
+switched-off = Вы выключаете { NOUN($item, case: "acc") }.
+valve-opened = Вы открываете { NOUN($item, case: "acc") }.
+valve-closed = Вы закрываете { NOUN($item, case: "acc") }.
+canister-connected = Вы подключаете { NOUN($item, case: "acc") } к порту.
+canister-disconnected = Вы отключаете { NOUN($item, case: "acc") } от порта.
+examine-gauge = Манометр показывает { $value } кПа.

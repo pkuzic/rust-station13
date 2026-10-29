@@ -65,3 +65,12 @@ alert-high-pressure = High pressure
 alert-low-oxygen = Not enough oxygen
 alert-cold = You are freezing
 alert-hot = You are overheating
+
+# Machinery. Args: $item (noun id), $value (kPa).
+switched-on = You switch the { NOUN($item) } on.
+switched-off = You switch the { NOUN($item) } off.
+valve-opened = You open the { NOUN($item) }.
+valve-closed = You close the { NOUN($item) }.
+canister-connected = You connect the { NOUN($item) } to the port.
+canister-disconnected = You disconnect the { NOUN($item) } from the port.
+examine-gauge = The gauge reads { $value } kPa.

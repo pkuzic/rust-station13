@@ -11,6 +11,7 @@ pub mod doors;
 pub mod environment;
 pub mod hands;
 pub mod health;
+pub mod machines;
 pub mod movement;
 pub mod names;
 pub mod objects;
@@ -51,6 +52,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<combat::PendingAttacks>()
             .init_resource::<combat::VisibleEvents>()
             .init_resource::<atmos::WindCooldowns>()
+            .init_resource::<machines::PipeNets>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -82,6 +84,8 @@ impl Plugin for ClassicPlugin {
             .add_systems(
                 FixedUpdate,
                 (
+                    machines::rebuild_networks,
+                    machines::run_machines,
                     atmos::step_atmos,
                     atmos::space_wind,
                     atmos::drift,
@@ -93,6 +97,9 @@ impl Plugin for ClassicPlugin {
                     .chain()
                     .in_set(TickSet::Simulation),
             )
-            .add_systems(FixedUpdate, hands::sync_hands_view.in_set(TickSet::Publish));
+            .add_systems(
+                FixedUpdate,
+                (hands::sync_hands_view, machines::update_machine_looks).in_set(TickSet::Publish),
+            );
     }
 }
