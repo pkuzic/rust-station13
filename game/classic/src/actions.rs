@@ -7,13 +7,14 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, DisplayName, GridPos, Intent, MobStat, TilePos};
 
-use crate::access::IdCard;
+use crate::access::{IdCard, allowed};
 use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::Airlock;
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::{Body, Vitals};
 use crate::machines::{Canister, Connector, GasStore, PipeMember, PipeNets, Switch, Valve};
 use crate::movement::Mob;
+use crate::power::{APC_ACCESS, Apc, Channel, Smes};
 use crate::time::WorldTime;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -68,6 +69,8 @@ pub fn process_actions(
     ports: Query<&GridPos, (With<Connector>, Without<Mob>)>,
     stores: Query<&GasStore>,
     mut nets: ResMut<PipeNets>,
+    mut apcs: Query<&mut Apc>,
+    batteries: Query<&Smes>,
     cards: Query<&IdCard>,
     people: Query<(), With<Body>>,
     mut attacks: ResMut<PendingAttacks>,
@@ -110,6 +113,26 @@ pub fn process_actions(
                         outbox
                             .0
                             .push(LocMsg::new("examine").arg("item", appearance.sprite.clone()));
+                        if let Ok(apc) = apcs.get(target) {
+                            let mode = |c: Channel| {
+                                if apc.operating && apc.channels[c as usize].is_on() {
+                                    "on"
+                                } else {
+                                    "off"
+                                }
+                            };
+                            outbox.0.push(
+                                LocMsg::new("examine-apc")
+                                    .num("value", apc.cell_percent().round() as i64)
+                                    .arg("equipment", mode(Channel::Equipment))
+                                    .arg("lighting", mode(Channel::Lighting))
+                                    .arg("environment", mode(Channel::Environment)),
+                            );
+                        }
+                        if let Ok(smes) = batteries.get(target) {
+                            let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
+                            outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
+                        }
                         // Anything holding gas has a pressure gauge.
                         if let Ok((_, _, _, _, Some(member), ..)) = targets.get(target) {
                             let kpa = nets.gauge(target, stores.get(target).ok(), member.volume);
@@ -151,6 +174,19 @@ pub fn process_actions(
                             };
                             outbox.0.push(LocMsg::new(id).arg("item", "canister"));
                         }
+                    } else if let Ok(mut apc) = apcs.get_mut(target) {
+                        let card = hands.active_item().and_then(|e| cards.get(e).ok());
+                        if allowed(&[APC_ACCESS.to_owned()], card) {
+                            apc.operating = !apc.operating;
+                            let id = if apc.operating {
+                                "apc-breaker-on"
+                            } else {
+                                "apc-breaker-off"
+                            };
+                            outbox.0.push(LocMsg::new(id));
+                        } else {
+                            outbox.0.push(LocMsg::new("apc-locked"));
+                        }
                     } else if let Some(mut switch) = switch {
                         switch.0 = !switch.0;
                         let sprite = appearances
@@ -169,6 +205,10 @@ pub fn process_actions(
                         }
                         outbox.0.push(LocMsg::new(id).arg("item", sprite));
                     } else if let Some(mut airlock) = airlock {
+                        if holding(&hands, &appearances, "crowbar") && airlock.force(now) {
+                            outbox.0.push(LocMsg::new("door-forced").arg("item", "airlock"));
+                            continue;
+                        }
                         // By hand or with any item; only an ID card in the active hand
                         // counts for access.
                         let card = hands.active_item().and_then(|e| cards.get(e).ok());

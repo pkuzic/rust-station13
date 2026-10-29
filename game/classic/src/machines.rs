@@ -9,6 +9,7 @@ use rs13_simulation::atmos::{Gas, GasMix};
 use rs13_world::{Appearance, Dir, GridPos, TilePos};
 
 use crate::atmos::StationAtmos;
+use crate::power::PowerUser;
 use crate::time::WorldTime;
 
 /// Machines run every this many ticks (2 s), like SS13's machinery cycle.
@@ -206,9 +207,9 @@ pub fn run_machines(
     time: Res<WorldTime>,
     atmos: Option<ResMut<StationAtmos>>,
     mut nets: ResMut<PipeNets>,
-    pumps: Query<(&GridPos, &Pump, &Switch)>,
-    vents: Query<(&GridPos, &Vent, &Switch)>,
-    scrubbers: Query<(&GridPos, &Switch), With<Scrubber>>,
+    pumps: Query<(&GridPos, &Pump, &Switch, &PowerUser)>,
+    vents: Query<(&GridPos, &Vent, &Switch, &PowerUser)>,
+    scrubbers: Query<(&GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
 ) {
     let Some(mut atmos) = atmos else { return };
@@ -217,8 +218,8 @@ pub fn run_machines(
     }
     let nets = &mut *nets;
 
-    for (pos, pump, on) in &pumps {
-        if !on.0 {
+    for (pos, pump, on, power) in &pumps {
+        if !on.0 || !power.powered {
             continue;
         }
         let behind = pos.0.step(opposite(pump.dir));
@@ -239,8 +240,8 @@ pub fn run_machines(
         nets.nets[to].mix.merge(&moved);
     }
 
-    for (pos, vent, on) in &vents {
-        if !on.0 {
+    for (pos, vent, on, power) in &vents {
+        if !on.0 || !power.powered {
             continue;
         }
         // Air alarm behaviour: never feed a breach.
@@ -258,8 +259,8 @@ pub fn run_machines(
         atmos.0.add_at(pos.0, &moved);
     }
 
-    for (pos, on) in &scrubbers {
-        if !on.0 {
+    for (pos, on, power) in &scrubbers {
+        if !on.0 || !power.powered {
             continue;
         }
         let Some(&id) = nets.net_at.get(&pos.0) else {
@@ -312,7 +313,7 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .member(member(TANK_VOLUME))
             .gas(air_at_pressure(TANK_VOLUME, TANK_PRESSURE))
             .dense(),
-        "pump" => MachineSpawn::new("pump", "on").switch(true).pump(Pump {
+        "pump" => MachineSpawn::new("pump", "on").switch(true).powered().pump(Pump {
             dir: dir.unwrap_or(Dir::East),
             target: PUMP_TARGET,
         }),
@@ -320,10 +321,13 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .switch(true)
             .member(member(PIPE_VOLUME))
             .valve(),
-        "vent" => MachineSpawn::new("vent", "on").switch(true).vent(Vent {
+        "vent" => MachineSpawn::new("vent", "on").switch(true).powered().vent(Vent {
             target: ONE_ATMOSPHERE,
         }),
-        "scrubber" => MachineSpawn::new("scrubber", "on").switch(true).scrubber(),
+        "scrubber" => MachineSpawn::new("scrubber", "on")
+            .switch(true)
+            .powered()
+            .scrubber(),
         "connector" => MachineSpawn::new("connector", "").connector(),
         "canister" => MachineSpawn::new("canister", "off")
             .switch(false)
@@ -356,6 +360,7 @@ pub struct MachineSpawn {
     pub scrubber: bool,
     pub connector: bool,
     pub dense: bool,
+    pub power: Option<crate::power::PowerUser>,
 }
 
 impl MachineSpawn {
@@ -373,7 +378,15 @@ impl MachineSpawn {
             scrubber: false,
             connector: false,
             dense: false,
+            power: None,
         }
+    }
+    fn powered(mut self) -> Self {
+        self.power = Some(crate::power::PowerUser::new(
+            crate::power::Channel::Environment,
+            crate::power::ATMOS_MACHINE_POWER,
+        ));
+        self
     }
     fn member(mut self, m: PipeMember) -> Self {
         self.member = Some(m);
@@ -444,6 +457,9 @@ impl MachineSpawn {
         }
         if self.dense {
             entity.insert(rs13_world::Dense);
+        }
+        if let Some(power) = self.power {
+            entity.insert(power);
         }
     }
 }

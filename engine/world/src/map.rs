@@ -141,6 +141,10 @@ pub struct TileMap {
     /// map-file shorthand only reads from self-describing formats like RON).
     #[serde(skip)]
     pub objects: Vec<(TilePos, ObjectSpec)>,
+    /// Area names; `areas` refers to them by index + 1.
+    pub area_names: Vec<String>,
+    /// Row-major area of every tile: 0 for none, otherwise index + 1 into `area_names`.
+    pub areas: Vec<u16>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -161,6 +165,12 @@ struct MapText {
     legend: BTreeMap<char, LegendEntry>,
     /// Top row first, as drawn.
     rows: Vec<String>,
+    /// Optional second layer, the same size as `rows`: which area each tile is in.
+    /// A space character means no area.
+    #[serde(default)]
+    area_legend: BTreeMap<char, String>,
+    #[serde(default)]
+    area_rows: Vec<String>,
 }
 
 #[derive(Deserialize)]
@@ -229,6 +239,42 @@ impl TileMap {
         }
         spawns.sort();
 
+        let area_names: Vec<String> = parsed.area_legend.values().cloned().collect();
+        let mut areas = vec![0u16; width * height];
+        if !parsed.area_rows.is_empty() {
+            if parsed.area_rows.len() != height {
+                return Err(MapError::Parse(format!(
+                    "area_rows has {} rows, rows has {height}",
+                    parsed.area_rows.len()
+                )));
+            }
+            for (row_index, row) in parsed.area_rows.iter().enumerate() {
+                let len = row.chars().count();
+                if len != width {
+                    return Err(MapError::RaggedRow {
+                        row: row_index,
+                        len,
+                        width,
+                    });
+                }
+                let y = height - 1 - row_index;
+                for (x, symbol) in row.chars().enumerate() {
+                    if symbol == ' ' {
+                        continue;
+                    }
+                    let name = parsed
+                        .area_legend
+                        .get(&symbol)
+                        .ok_or(MapError::UnknownSymbol(symbol))?;
+                    let index = area_names
+                        .iter()
+                        .position(|n| n == name)
+                        .expect("from the legend");
+                    areas[y * width + x] = index as u16 + 1;
+                }
+            }
+        }
+
         Ok(Self {
             width: width as u32,
             height: height as u32,
@@ -237,7 +283,28 @@ impl TileMap {
             tiles,
             spawns,
             objects,
+            area_names,
+            areas,
         })
+    }
+
+    /// The area a tile belongs to, if any.
+    pub fn area(&self, pos: TilePos) -> Option<&str> {
+        if pos.z != self.z
+            || pos.x < 0
+            || pos.y < 0
+            || pos.x >= self.width as i32
+            || pos.y >= self.height as i32
+        {
+            return None;
+        }
+        let index = self
+            .areas
+            .get((pos.y as u32 * self.width + pos.x as u32) as usize)?;
+        if *index == 0 {
+            return None;
+        }
+        self.area_names.get(*index as usize - 1).map(String::as_str)
     }
 
     pub fn tile(&self, pos: TilePos) -> Option<&TileDef> {
@@ -306,6 +373,21 @@ mod tests {
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),
             ]
         );
+    }
+
+    #[test]
+    fn areas_come_from_the_second_layer() {
+        let text = ROOM.replace(
+            "rows: [",
+            r#"area_legend: { 'a': "office", 'b': "closet" },
+        area_rows: ["    ", " aa ", " ab ", "    "],
+        rows: ["#,
+        );
+        let map = TileMap::from_ron(&text, 0).unwrap();
+        assert_eq!(map.area(TilePos::new(1, 2, 0)), Some("office"));
+        assert_eq!(map.area(TilePos::new(2, 1, 0)), Some("closet"));
+        assert_eq!(map.area(TilePos::new(0, 0, 0)), None);
+        assert_eq!(map.area(TilePos::new(9, 9, 0)), None);
     }
 
     #[test]

@@ -74,3 +74,20 @@ valve-closed = You close the { NOUN($item) }.
 canister-connected = You connect the { NOUN($item) } to the port.
 canister-disconnected = You disconnect the { NOUN($item) } from the port.
 examine-gauge = The gauge reads { $value } kPa.
+
+# Power. Args: $value (percent); $equipment, $lighting, $environment (on/off); $item (noun id).
+examine-apc = The APC's cell is at { $value }%. Equipment: { $equipment ->
+        [on] on
+       *[off] off
+    }, lighting: { $lighting ->
+        [on] on
+       *[off] off
+    }, environment: { $environment ->
+        [on] on
+       *[off] off
+    }.
+examine-smes = The SMES is { $value }% charged.
+apc-breaker-on = You switch the APC's main breaker on.
+apc-breaker-off = You switch the APC's main breaker off.
+apc-locked = Access denied.
+door-forced = You force the { NOUN($item) } with the crowbar.

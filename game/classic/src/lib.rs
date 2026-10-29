@@ -15,6 +15,7 @@ pub mod machines;
 pub mod movement;
 pub mod names;
 pub mod objects;
+pub mod power;
 pub mod rng;
 pub mod speech;
 pub mod time;
@@ -53,6 +54,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<combat::VisibleEvents>()
             .init_resource::<atmos::WindCooldowns>()
             .init_resource::<machines::PipeNets>()
+            .init_resource::<power::Powernets>()
+            .init_resource::<power::AreaPower>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -85,6 +88,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     machines::rebuild_networks,
+                    power::rebuild_powernets,
+                    power::power_cycle,
                     machines::run_machines,
                     atmos::step_atmos,
                     atmos::space_wind,
@@ -99,7 +104,12 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (hands::sync_hands_view, machines::update_machine_looks).in_set(TickSet::Publish),
+                (
+                    hands::sync_hands_view,
+                    machines::update_machine_looks,
+                    power::update_power_looks,
+                )
+                    .in_set(TickSet::Publish),
             );
     }
 }

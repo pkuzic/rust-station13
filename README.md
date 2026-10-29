@@ -44,6 +44,9 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 | 1 / 4 | Help / harm intent (a held item hits people on any intent; fists need harm) |
 | F3 | Atmos debug overlay (pressure per tile) |
 
+A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
+`engine_equip` access in the active hand.
+
 Graphics are placeholder squares until the Luna sprites are imported.
 
 ## Documentation
