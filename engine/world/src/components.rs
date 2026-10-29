@@ -40,6 +40,14 @@ impl Appearance {
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dense;
 
+/// Blocks sight through its tile while present (BYOND `opacity`).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Opaque;
+
+/// A person's name, as others see it. English only, never declined.
+#[derive(Component, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DisplayName(pub String);
+
 /// Which hand is in use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Hand {

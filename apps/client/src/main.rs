@@ -1,9 +1,11 @@
 //! Universal player client.
 //!
-//! Usage: `rs13-client [SERVER_ADDR] [--lang en|ru]` (default `127.0.0.1:13013`, English).
+//! Usage: `rs13-client [SERVER_ADDR] [--lang en|ru] [--name "First Last"]`
+//! (default `127.0.0.1:13013`, English, a random name).
 //!
 //! Controls: arrow keys or WASD move (hold Shift to walk); left click uses the active
-//! hand on something in reach; Shift+click examines; Q drops; X swaps hands.
+//! hand on something in reach; Shift+click examines; Q drops; X swaps hands; T opens
+//! the say line (Enter sends, Esc cancels).
 //!
 //! Placeholder graphics: tiles and objects are flat coloured squares until the
 //! Luna sprite import lands.
@@ -11,6 +13,8 @@
 use std::collections::VecDeque;
 use std::net::SocketAddr;
 
+use bevy::input::ButtonState;
+use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::text::{FontSize, FontSource};
 use bevy::window::PrimaryWindow;
@@ -32,10 +36,28 @@ const LOG_LINES: usize = 8;
 /// A Windows 2000-era UI font with Cyrillic, with fallbacks for other systems.
 const UI_FONT: &str = "Tahoma, 'DejaVu Sans', sans-serif";
 
+/// Longest line the say box accepts; the server enforces the same limit.
+const MAX_SAY_LEN: usize = 1024;
+
 struct Args {
     server: SocketAddr,
     russian: bool,
+    name: Option<String>,
 }
+
+/// The name to ask for once connected.
+#[derive(Resource)]
+struct WantedName(Option<String>);
+
+/// The say line: open while the player is typing.
+#[derive(Resource, Default)]
+struct ChatInput {
+    open: bool,
+    buffer: String,
+}
+
+#[derive(Component)]
+struct ChatLine;
 
 #[derive(Resource)]
 struct ServerAddr(SocketAddr);
@@ -84,6 +106,8 @@ fn main() {
         .add_plugins(ClientNetworkPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
+        .insert_resource(WantedName(args.name))
+        .init_resource::<ChatInput>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
         .add_systems(Startup, (setup, spawn_hud))
@@ -95,12 +119,15 @@ fn main() {
                 update_appearance,
                 show_only_placed,
                 mark_own_player,
+                send_name,
+                chat_typing,
                 (send_move_input, send_hotkeys, send_clicks),
                 receive_notices,
                 glide,
                 follow_own_player,
                 update_hands_bar,
                 update_log,
+                update_chat_line,
             )
                 .chain(),
         )
@@ -111,11 +138,13 @@ fn parse_args() -> Args {
     let mut args = Args {
         server: SocketAddr::from(([127, 0, 0, 1], rs13_network::DEFAULT_PORT)),
         russian: false,
+        name: None,
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
         match arg.as_str() {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
+            "--name" => args.name = it.next(),
             addr => args.server = addr.parse().expect("SERVER_ADDR must look like 127.0.0.1:13013"),
         }
     }
@@ -177,6 +206,12 @@ fn spawn_hud(mut commands: Commands) {
                 Text::new(""),
                 ui_text_font(15.0),
                 TextColor(Color::srgb(0.85, 0.85, 0.85))
+            ),
+            (
+                ChatLine,
+                Text::new(""),
+                ui_text_font(15.0),
+                TextColor(Color::srgb(1.0, 1.0, 0.75))
             ),
             (
                 Node {
@@ -291,8 +326,67 @@ fn mark_own_player(
     }
 }
 
+/// Ask for the chosen name once, right after connecting.
+fn send_name(
+    mut wanted: ResMut<WantedName>,
+    mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+) {
+    let Ok(mut sender) = sender.single_mut() else {
+        return;
+    };
+    if let Some(name) = wanted.0.take() {
+        sender.send::<IntentChannel>(ActionInput::SetName(name));
+    }
+}
+
+/// T opens the say line; typed text goes into it; Enter sends, Esc cancels.
+fn chat_typing(
+    mut keys: MessageReader<KeyboardInput>,
+    mut chat: ResMut<ChatInput>,
+    mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+) {
+    for key in keys.read() {
+        if key.state != ButtonState::Pressed {
+            continue;
+        }
+        if !chat.open {
+            if key.key_code == KeyCode::KeyT && !key.repeat {
+                chat.open = true;
+                chat.buffer.clear();
+            }
+            continue;
+        }
+        match key.key_code {
+            KeyCode::Enter | KeyCode::NumpadEnter => {
+                let line = std::mem::take(&mut chat.buffer);
+                chat.open = false;
+                if !line.trim().is_empty()
+                    && let Ok(mut sender) = sender.single_mut()
+                {
+                    sender.send::<IntentChannel>(ActionInput::Say(line));
+                }
+            }
+            KeyCode::Escape => {
+                chat.open = false;
+                chat.buffer.clear();
+            }
+            KeyCode::Backspace => {
+                chat.buffer.pop();
+            }
+            _ => {
+                if let Some(text) = &key.text {
+                    let room = MAX_SAY_LEN.saturating_sub(chat.buffer.chars().count());
+                    let typed: String = text.chars().filter(|c| !c.is_control()).take(room).collect();
+                    chat.buffer.push_str(&typed);
+                }
+            }
+        }
+    }
+}
+
 /// Send the held direction to the server whenever it changes.
 fn send_move_input(
+    chat: Res<ChatInput>,
     keys: Res<ButtonInput<KeyCode>>,
     mut sender: Query<&mut MessageSender<MoveInput>, (With<Client>, With<Connected>)>,
     mut last_sent: Local<Option<MoveInput>>,
@@ -300,7 +394,8 @@ fn send_move_input(
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
-    let held = |a: KeyCode, b: KeyCode| keys.pressed(a) || keys.pressed(b);
+    // While typing, letters are text, not movement.
+    let held = |a: KeyCode, b: KeyCode| !chat.open && (keys.pressed(a) || keys.pressed(b));
     let dx = held(KeyCode::KeyD, KeyCode::ArrowRight) as i32 - held(KeyCode::KeyA, KeyCode::ArrowLeft) as i32;
     let dy = held(KeyCode::KeyW, KeyCode::ArrowUp) as i32 - held(KeyCode::KeyS, KeyCode::ArrowDown) as i32;
     let input = MoveInput {
@@ -314,12 +409,17 @@ fn send_move_input(
 }
 
 fn send_hotkeys(
+    chat: Res<ChatInput>,
     keys: Res<ButtonInput<KeyCode>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
+    // `chat` may have just closed this frame on Enter; only a closed line takes hotkeys.
+    if chat.open || chat.is_changed() {
+        return;
+    }
     if keys.just_pressed(KeyCode::KeyQ) {
         sender.send::<IntentChannel>(ActionInput::Drop);
     }
@@ -449,4 +549,16 @@ fn update_log(log: Res<MessageLog>, mut text: Single<&mut Text, With<LogText>>) 
     if log.is_changed() {
         text.0 = log.0.iter().cloned().collect::<Vec<_>>().join("\n");
     }
+}
+
+fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut Text, With<ChatLine>>) {
+    if !chat.is_changed() {
+        return;
+    }
+    text.0 = if chat.open {
+        let prompt = loc.0.format("hud-say", None).unwrap_or_default();
+        format!("{prompt} {}_", chat.buffer)
+    } else {
+        String::new()
+    };
 }

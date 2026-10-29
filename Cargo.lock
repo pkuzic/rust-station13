@@ -7357,6 +7357,7 @@ dependencies = [
  "bevy",
  "rs13-classic",
  "rs13-core",
+ "rs13-i18n",
  "rs13-network",
  "rs13-world",
 ]

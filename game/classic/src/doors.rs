@@ -2,7 +2,7 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dense, Dir, GridPos, MapLayer, TilePos};
+use rs13_world::{Appearance, Dense, Dir, GridPos, MapLayer, Opaque, TilePos};
 
 use crate::actions::Outbox;
 use crate::hands::Item;
@@ -98,6 +98,12 @@ impl Airlock {
     pub fn is_dense(&self) -> bool {
         !matches!(self.state, DoorState::Open { .. })
     }
+
+    /// Luna changes opacity at the end of each animation: a door blocks sight while
+    /// closed or opening, and stays see-through while closing.
+    pub fn is_opaque(&self) -> bool {
+        matches!(self.state, DoorState::Closed | DoorState::Opening { .. })
+    }
 }
 
 /// Advance door timers, push things out of closing doors, and keep `Dense` and
@@ -150,10 +156,16 @@ pub fn update_doors(
             _ => {}
         }
 
+        let mut entity = commands.entity(entity);
         if door.is_dense() {
-            commands.entity(entity).insert(Dense);
+            entity.insert(Dense);
         } else {
-            commands.entity(entity).remove::<Dense>();
+            entity.remove::<Dense>();
+        }
+        if door.is_opaque() {
+            entity.insert(Opaque);
+        } else {
+            entity.remove::<Opaque>();
         }
         let state = door.state.name();
         if appearance.state != state {

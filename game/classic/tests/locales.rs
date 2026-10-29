@@ -56,6 +56,22 @@ fn use_on_declines_both_nouns() {
 }
 
 #[test]
+fn speech_frame_is_localised_but_the_words_are_not() {
+    let mut args = Args::new();
+    args.set("name", "John Smith");
+    args.set("verb", "exclaim");
+    args.set("text", "Help!");
+    assert_eq!(
+        en().format("say", Some(&args)).unwrap(),
+        "John Smith exclaims, \"Help!\""
+    );
+    assert_eq!(
+        ru().format("say", Some(&args)).unwrap(),
+        "John Smith восклицает: «Help!»"
+    );
+}
+
+#[test]
 fn every_message_formats_in_both_locales() {
     let mut args = Args::new();
     args.set("user", "John Smith");
@@ -64,6 +80,9 @@ fn every_message_formats_in_both_locales() {
     args.set("weapon", "wrench");
     args.set("item", "screwdriver");
     args.set("count", 2);
+    args.set("name", "John Smith");
+    args.set("verb", "ask");
+    args.set("text", "Hello?");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

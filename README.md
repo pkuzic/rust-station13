@@ -31,7 +31,7 @@ cargo run -p rs13-client -- 10.0.0.5:13013
 cargo run -p rs13-headless -- --dir east # a bot that walks east and reports what it saw
 ```
 
-In the client (`rs13-client [ADDR] [--lang en|ru]`):
+In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 
 | Input | Action |
 |---|---|
@@ -40,6 +40,7 @@ In the client (`rs13-client [ADDR] [--lang en|ru]`):
 | Shift + click | Examine |
 | Q | Drop the active-hand item |
 | X | Swap hands |
+| T | Say something (Enter sends, Esc cancels) |
 
 Graphics are placeholder squares until the Luna sprites are imported.
 

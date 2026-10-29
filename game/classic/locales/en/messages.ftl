@@ -24,3 +24,19 @@ airlock-pushed = The airlock forces you out of the way!
 # Hands bar labels.
 hud-hand-left = L
 hud-hand-right = R
+
+# Args: $name (English, never declined).
+examine-person = That's { $name }.
+
+# Args: $name, $verb (say/ask/exclaim), $text (the player's own words, any language).
+say = { $name } { $verb ->
+        [ask] asks
+        [exclaim] exclaims
+       *[say] says
+    }, "{ $text }"
+
+# Args: $name (the name the player keeps instead).
+name-rejected = That name is not allowed. You are { $name }.
+
+# Prompt of the say line.
+hud-say = Say:

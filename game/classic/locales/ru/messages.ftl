@@ -34,3 +34,19 @@ airlock-pushed = Шлюз выталкивает вас с дороги!
 # Hands bar labels.
 hud-hand-left = Л
 hud-hand-right = П
+
+# Args: $name (English, never declined).
+examine-person = Это { $name }.
+
+# Args: $name, $verb (say/ask/exclaim), $text (the player's own words, any language).
+say = { $name } { $verb ->
+        [ask] спрашивает
+        [exclaim] восклицает
+       *[say] говорит
+    }: «{ $text }»
+
+# Args: $name (the name the player keeps instead).
+name-rejected = Это имя недопустимо. Вас зовут { $name }.
+
+# Prompt of the say line.
+hud-say = Сказать:

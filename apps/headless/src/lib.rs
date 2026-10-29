@@ -27,6 +27,10 @@ pub struct BotConfig {
     pub hold: Duration,
     /// Examine the first object with this sprite id once it is visible.
     pub examine: Option<String>,
+    /// Character name to ask for after connecting.
+    pub name: Option<String>,
+    /// Something to say one second before finishing.
+    pub say: Option<String>,
 }
 
 /// A player as the bot last saw it.
@@ -73,7 +77,10 @@ pub fn bot_app(config: BotConfig, report: BotReport) -> App {
     .init_resource::<JoinedAt>()
     .init_resource::<Received>()
     .add_systems(Startup, start)
-    .add_systems(Update, (send_input, examine, receive_notices, finish).chain());
+    .add_systems(
+        Update,
+        (send_input, examine, talk, receive_notices, finish).chain(),
+    );
     app
 }
 
@@ -95,23 +102,51 @@ fn start(mut commands: Commands, config: Res<BotConfig>) -> Result {
     Ok(())
 }
 
-/// Ask once, after connecting, for the configured movement. The server keeps applying it.
+/// Ask once, after connecting, for the configured name and movement. The server keeps
+/// applying the movement.
 fn send_input(
     config: Res<BotConfig>,
-    mut sender: Query<&mut MessageSender<MoveInput>, (With<Client>, With<Connected>)>,
+    mut senders: Query<
+        (&mut MessageSender<MoveInput>, &mut MessageSender<ActionInput>),
+        (With<Client>, With<Connected>),
+    >,
     mut sent: Local<bool>,
 ) {
     if *sent {
         return;
     }
-    let Ok(mut sender) = sender.single_mut() else {
+    let Ok((mut moves, mut actions)) = senders.single_mut() else {
         return;
     };
-    sender.send::<IntentChannel>(MoveInput {
+    if let Some(name) = &config.name {
+        actions.send::<IntentChannel>(ActionInput::SetName(name.clone()));
+    }
+    moves.send::<IntentChannel>(MoveInput {
         dir: config.dir,
         run: true,
     });
     *sent = true;
+}
+
+/// Say the configured line once, a second before the bot finishes.
+fn talk(
+    time: Res<Time>,
+    config: Res<BotConfig>,
+    joined: Res<JoinedAt>,
+    mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+    mut done: Local<bool>,
+) {
+    let (Some(line), Some(at)) = (&config.say, joined.0) else {
+        return;
+    };
+    if *done || time.elapsed() + Duration::from_secs(1) < at + config.hold {
+        return;
+    }
+    let Ok(mut sender) = sender.single_mut() else {
+        return;
+    };
+    sender.send::<IntentChannel>(ActionInput::Say(line.clone()));
+    *done = true;
 }
 
 /// Examine the configured object once, as soon as it has been replicated.

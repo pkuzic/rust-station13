@@ -3,13 +3,17 @@
 use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
-use rs13_world::{Appearance, Dense, GridPos, HandsView, MapLayer, NetId, TileMap, TilePos};
+use rs13_world::{
+    Appearance, Dense, DisplayName, GridPos, HandsView, MapLayer, NetId, Opaque, TileMap, TilePos,
+};
 use serde::Deserialize;
 
 use crate::actions::{Outbox, PendingActions};
 use crate::doors::Airlock;
 use crate::hands::{Hands, Item};
 use crate::movement::{Mob, MoveIntent};
+use crate::names::default_name;
+use crate::speech::PendingSpeech;
 
 /// Hands out [`NetId`]s. Every entity clients need to see or name gets one.
 #[derive(Resource, Debug, Default)]
@@ -72,7 +76,11 @@ pub fn spawn_object(world: &mut World, proto: &str, pos: TilePos) -> Option<Enti
     if proto == "airlock" {
         let airlock = Airlock::default();
         let appearance = Appearance::new("airlock", airlock.state.name());
-        return Some(world.spawn((GridPos(pos), id, appearance, airlock, Dense)).id());
+        return Some(
+            world
+                .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
+                .id(),
+        );
     }
     if world.resource::<ItemProtos>().0.contains(proto) {
         return Some(
@@ -93,12 +101,14 @@ pub fn spawn_player_mob(world: &mut World, pos: TilePos) -> Entity {
             GridPos(pos),
             id,
             Appearance::new("human", ""),
+            DisplayName(default_name(id.0)),
             Dense,
             Mob::default(),
             MoveIntent::default(),
             Hands::default(),
             HandsView::default(),
             PendingActions::default(),
+            PendingSpeech::default(),
             Outbox::default(),
             PlayerControlled,
         ))

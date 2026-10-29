@@ -7,13 +7,16 @@ use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::movement::{Mob, MoveIntent};
+use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::speech::PendingSpeech;
 use rs13_classic::{ClassicPlugin, maps};
+use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, MoveInput, Notice, NoticeChannel, Player};
 use rs13_network::server::{ServerNetworkPlugin, start_server};
-use rs13_world::{GridPos, MapLayer, NetId, TileMap};
+use rs13_world::{DisplayName, GridPos, MapLayer, NetId, TileMap};
 
 #[derive(Resource)]
 struct Port(u16);
@@ -21,6 +24,10 @@ struct Port(u16);
 /// On a client's link entity: the mob that client controls.
 #[derive(Component)]
 struct Controls(Entity);
+
+/// On a mob whose player has already chosen a name this session.
+#[derive(Component)]
+struct NameChosen;
 
 /// A server listening on UDP `port`, ready to `run()`. Logging is left to the caller.
 pub fn server_app(port: u16) -> App {
@@ -125,12 +132,20 @@ fn apply_move_inputs(
 /// Turn client actions into game actions for the next tick, resolving `NetId`s.
 fn queue_actions(
     mut links: Query<(&Controls, &mut MessageReceiver<ActionInput>)>,
-    mut pending: Query<&mut PendingActions>,
+    mut mobs: Query<(
+        &mut PendingActions,
+        &mut PendingSpeech,
+        &mut DisplayName,
+        &mut Outbox,
+        Has<NameChosen>,
+    )>,
     ids: Query<(Entity, &NetId)>,
+    mut commands: Commands,
 ) {
     let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
     for (controls, mut receiver) in &mut links {
-        let Ok(mut pending) = pending.get_mut(controls.0) else {
+        let Ok((mut pending, mut speech, mut name, mut outbox, name_chosen)) = mobs.get_mut(controls.0)
+        else {
             receiver.receive().for_each(drop);
             continue;
         };
@@ -140,6 +155,22 @@ fn queue_actions(
                 ActionInput::Examine(id) => resolve(id).map(Action::Examine),
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::SwapHands => Some(Action::SwapHands),
+                ActionInput::Say(text) => {
+                    speech.0.push(text);
+                    None
+                }
+                ActionInput::SetName(requested) => {
+                    if !name_chosen {
+                        match sanitize_name(&requested) {
+                            Some(clean) => name.0 = clean,
+                            None => outbox
+                                .0
+                                .push(LocMsg::new("name-rejected").arg("name", name.0.clone())),
+                        }
+                        commands.entity(controls.0).insert(NameChosen);
+                    }
+                    None
+                }
             };
             // Unknown ids: the entity is gone or never existed. Ignore, as a stale click.
             if let Some(action) = action {
