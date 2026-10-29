@@ -26,7 +26,7 @@ Sequence from the master plan. Estimates are speculative and phases overlap.
 | Research | Reference spec (`GAME_REFERENCE.md`) and this executable skeleton |
 | Engine foundation | Two clients moving in one room (**done**: `apps/headless/tests/two_clients_one_room.rs`) |
 | Gameplay prototype | Recognisable classic interaction loop (**in progress**: hands, items, airlock, examine, names, speech, ID access and basic health/combat done) |
-| Engineering | Functional engineering test chamber (the first milestone above). **In progress:** atmos zones, decompression, space wind, breathing and vacuum damage done; pipes and machinery next |
+| Engineering | Functional engineering test chamber (the first milestone above). **In progress:** atmos zones, decompression, space wind, breathing, vacuum damage, pipes and machinery done (atmos phase 1); powernet next |
 | Modding and ecosystem | Custom server join with new assets and gameplay |
 | Station alpha | Full 1–15 player round on NSV Luna |
 

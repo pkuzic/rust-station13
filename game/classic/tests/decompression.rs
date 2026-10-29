@@ -109,8 +109,43 @@ fn closing_the_door_again_stops_the_loss() {
     seconds(&mut app, 1);
     let held = pressure(&app, CLOSET);
     assert!(held > 10.0);
-    seconds(&mut app, 10);
-    assert!((pressure(&app, CLOSET) - held).abs() < 1e-6);
+    // Sealed again: it never loses more, and the vent starts topping it up.
+    let mut last = held;
+    for _ in 0..10 {
+        seconds(&mut app, 1);
+        let now = pressure(&app, CLOSET);
+        assert!(now >= last - 1e-9, "{now} < {last}");
+        last = now;
+    }
+    assert!(last > held);
+}
+
+#[test]
+fn after_a_blowout_the_vents_restore_the_closet() {
+    // Phase 1 acceptance (docs/ATMOSPHERICS.md): opening an airlock depressurises a room
+    // and machinery restores pressure.
+    let mut app = setup();
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 30);
+    assert!(pressure(&app, CLOSET) < 1.0, "vented");
+    let door = door_at(&mut app, OUTER_DOOR);
+    app.world_mut().get_mut::<Airlock>(door).unwrap().state = DoorState::Closed;
+
+    let mut restored_at = None;
+    for s in 1..=180 {
+        seconds(&mut app, 1);
+        if pressure(&app, CLOSET) > 95.0 {
+            restored_at = Some(s);
+            break;
+        }
+    }
+    let at = restored_at.unwrap_or_else(|| panic!("still {:.1} kPa after 3 min", pressure(&app, CLOSET)));
+    assert!(at >= 10, "refilling is not instant: {at} s");
+    // The vent closes in on one atmosphere (each cycle closes part of the gap) and never
+    // overshoots it.
+    seconds(&mut app, 60);
+    let p = pressure(&app, CLOSET);
+    assert!((98.0..=ONE_ATMOSPHERE + 1e-6).contains(&p), "{p}");
 }
 
 #[test]

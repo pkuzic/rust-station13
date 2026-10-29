@@ -23,4 +23,13 @@
     "zone-r_leg": (gender: neuter, sg: (nom: "right leg")),
     "zone-l_foot": (gender: neuter, sg: (nom: "left foot")),
     "zone-r_foot": (gender: neuter, sg: (nom: "right foot")),
+    // Atmospherics machinery.
+    "pipe": (gender: neuter, sg: (nom: "pipe", indef: "a pipe"), pl: Some((nom: "pipes"))),
+    "air-tank": (gender: neuter, sg: (nom: "air tank", indef: "an air tank"), pl: Some((nom: "air tanks"))),
+    "pump": (gender: neuter, sg: (nom: "gas pump", indef: "a gas pump"), pl: Some((nom: "gas pumps"))),
+    "valve": (gender: neuter, sg: (nom: "manual valve", indef: "a manual valve"), pl: Some((nom: "manual valves"))),
+    "vent": (gender: neuter, sg: (nom: "air vent", indef: "an air vent"), pl: Some((nom: "air vents"))),
+    "scrubber": (gender: neuter, sg: (nom: "air scrubber", indef: "an air scrubber"), pl: Some((nom: "air scrubbers"))),
+    "connector": (gender: neuter, sg: (nom: "connector port", indef: "a connector port"), pl: Some((nom: "connector ports"))),
+    "canister": (gender: neuter, sg: (nom: "canister", indef: "a canister"), pl: Some((nom: "canisters"))),
 }

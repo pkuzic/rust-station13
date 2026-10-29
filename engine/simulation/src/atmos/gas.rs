@@ -67,7 +67,7 @@ impl Gas {
 /// An amount of gas at one temperature.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct GasMix {
-    moles: [f64; 5],
+    pub(crate) moles: [f64; 5],
     pub temperature: f64,
 }
 
