@@ -4,10 +4,11 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use rs13_world::{
-    Appearance, Dense, DisplayName, GridPos, HandsView, MapLayer, NetId, Opaque, TileMap, TilePos,
+    Appearance, Dense, DisplayName, GridPos, HandsView, MapLayer, NetId, ObjectSpec, Opaque, TileMap, TilePos,
 };
 use serde::Deserialize;
 
+use crate::access::{AccessIds, IdCard};
 use crate::actions::{Outbox, PendingActions};
 use crate::doors::Airlock;
 use crate::hands::{Hands, Item};
@@ -50,46 +51,56 @@ impl Default for ItemProtos {
 #[derive(Component, Debug)]
 pub struct PlayerControlled;
 
-/// Spawn the map entity and every object it places. Returns the prototype ids that
-/// are not known, so the caller can report them.
+/// Spawn the map entity and every object it places. Returns a description of each
+/// object that could not be placed, so the caller can report them.
 pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
     world.init_resource::<NetIds>();
-    world.init_resource::<ItemProtos>();
     let objects = map.objects.clone();
     let id = world.resource_mut::<NetIds>().alloc();
     world.spawn((MapLayer(map), id));
 
-    let mut unknown = Vec::new();
-    for (pos, proto) in objects {
-        if spawn_object(world, &proto, pos).is_none() {
-            unknown.push(proto);
-        }
-    }
-    unknown
+    objects
+        .iter()
+        .filter_map(|(pos, spec)| spawn_object(world, spec, *pos).err())
+        .collect()
 }
 
-/// Spawn one object by prototype id, or `None` if the id is unknown.
-pub fn spawn_object(world: &mut World, proto: &str, pos: TilePos) -> Option<Entity> {
+/// Spawn one object. Fails on an unknown prototype or access id.
+pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     world.init_resource::<NetIds>();
     world.init_resource::<ItemProtos>();
+    world.init_resource::<AccessIds>();
+    if let Some(bad) = spec
+        .access
+        .iter()
+        .find(|a| !world.resource::<AccessIds>().0.contains(*a))
+    {
+        return Err(format!("{} at {pos:?}: unknown access id {bad:?}", spec.id));
+    }
+    let proto = spec.id.as_str();
+    let is_item = world.resource::<ItemProtos>().0.contains(proto);
+    if proto != "airlock" && !is_item {
+        return Err(format!("unknown prototype {proto:?} at {pos:?}"));
+    }
+
     let id = world.resource_mut::<NetIds>().alloc();
     if proto == "airlock" {
-        let airlock = Airlock::default();
+        let airlock = Airlock {
+            req_access: spec.access.clone(),
+            ..Airlock::default()
+        };
         let appearance = Appearance::new("airlock", airlock.state.name());
-        return Some(
-            world
-                .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
-                .id(),
-        );
+        return Ok(world
+            .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
+            .id());
     }
-    if world.resource::<ItemProtos>().0.contains(proto) {
-        return Some(
-            world
-                .spawn((GridPos(pos), id, Appearance::new(proto, ""), Item))
-                .id(),
-        );
+    let mut item = world.spawn((GridPos(pos), id, Appearance::new(proto, ""), Item));
+    if proto == "id-card" {
+        item.insert(IdCard {
+            access: spec.access.clone(),
+        });
     }
-    None
+    Ok(item.id())
 }
 
 /// Spawn a human mob for a player at `pos`.

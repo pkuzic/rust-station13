@@ -45,4 +45,9 @@
         sg: (nom: "человек", gen: "человека", dat: "человеку", acc: "человека", ins: "человеком", prep: "человеке"),
         pl: Some((nom: "люди", gen: "людей", dat: "людям", acc: "людей", ins: "людьми", prep: "людях")),
     ),
+    "id-card": (
+        gender: feminine,
+        sg: (nom: "ID-карта", gen: "ID-карты", dat: "ID-карте", acc: "ID-карту", ins: "ID-картой", prep: "ID-карте"),
+        pl: Some((nom: "ID-карты", gen: "ID-карт", dat: "ID-картам", acc: "ID-карты", ins: "ID-картами", prep: "ID-картах")),
+    ),
 }

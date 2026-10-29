@@ -3,6 +3,7 @@
 
 use bevy_app::{App, FixedUpdate};
 use bevy_ecs::prelude::*;
+use rs13_classic::access::IdCard;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::doors::{Airlock, DoorState};
 use rs13_classic::hands::{Hands, HeldBy};
@@ -11,12 +12,25 @@ use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_world::{Appearance, Dense, Dir, GridPos, Hand, HandsView, NetId, TileMap, TilePos};
 
+/// The chamber with its airlock made public, for tests about door timing.
 fn setup() -> App {
+    let mut app = setup_as_mapped();
+    let door = find(&mut app, "airlock");
+    app.world_mut()
+        .get_mut::<Airlock>(door)
+        .unwrap()
+        .req_access
+        .clear();
+    app
+}
+
+/// The chamber exactly as the map defines it.
+fn setup_as_mapped() -> App {
     let mut app = App::new();
     app.add_plugins(ClassicPlugin);
     let map = TileMap::from_ron(maps::ENGINEERING_CHAMBER, 0).unwrap();
-    let unknown = spawn_map(app.world_mut(), map);
-    assert!(unknown.is_empty(), "unknown prototypes on the map: {unknown:?}");
+    let problems = spawn_map(app.world_mut(), map);
+    assert!(problems.is_empty(), "map problems: {problems:?}");
     app
 }
 
@@ -51,7 +65,7 @@ fn act(app: &mut App, mob: Entity, action: Action) {
 }
 
 fn airlock(app: &App, e: Entity) -> Airlock {
-    *app.world().get::<Airlock>(e).unwrap()
+    app.world().get::<Airlock>(e).unwrap().clone()
 }
 
 #[test]
@@ -203,4 +217,93 @@ fn examine_reports_what_it_is() {
     let outbox = &app.world().get::<Outbox>(mob).unwrap().0;
     assert_eq!(outbox.len(), 1);
     assert_eq!(outbox[0].id, "examine");
+}
+
+/// The ID card granting exactly `access`.
+fn card_with(app: &mut App, access: &[&str]) -> Entity {
+    let mut q = app.world_mut().query::<(Entity, &IdCard)>();
+    q.iter(app.world())
+        .find(|(_, c)| c.access.iter().map(String::as_str).eq(access.iter().copied()))
+        .unwrap()
+        .0
+}
+
+fn hold(app: &mut App, mob: Entity, item: Entity) {
+    app.world_mut()
+        .entity_mut(item)
+        .remove::<GridPos>()
+        .insert(HeldBy(mob));
+    app.world_mut().get_mut::<Hands>(mob).unwrap().right = Some(item);
+}
+
+#[test]
+fn engineering_door_needs_an_id_card_in_the_active_hand() {
+    let mut app = setup_as_mapped();
+    let door = find(&mut app, "airlock");
+    let door_pos = pos_of(&app, door).unwrap();
+    let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
+
+    // Empty-handed: denied, and the door shows it.
+    act(&mut app, mob, Action::UseOn(door));
+    tick(&mut app, 1);
+    assert_eq!(airlock(&app, door).state, DoorState::Closed);
+    assert_eq!(app.world().get::<Appearance>(door).unwrap().state, "deny");
+    tick(&mut app, 6);
+    assert_eq!(app.world().get::<Appearance>(door).unwrap().state, "closed");
+
+    // The assistant card lacks engine_equip.
+    let assistant = card_with(&mut app, &["maint_tunnels"]);
+    hold(&mut app, mob, assistant);
+    act(&mut app, mob, Action::UseOn(door));
+    tick(&mut app, 1);
+    assert_eq!(airlock(&app, door).state, DoorState::Closed);
+
+    // The engineer card has it: any one matching access is enough.
+    let engineer = card_with(
+        &mut app,
+        &[
+            "engine",
+            "engine_equip",
+            "tech_storage",
+            "maint_tunnels",
+            "external_airlocks",
+        ],
+    );
+    hold(&mut app, mob, engineer);
+    act(&mut app, mob, Action::UseOn(door));
+    tick(&mut app, 1);
+    assert!(matches!(airlock(&app, door).state, DoorState::Opening { .. }));
+}
+
+#[test]
+fn bumping_a_restricted_door_needs_access_too() {
+    let mut app = setup_as_mapped();
+    let door = find(&mut app, "airlock");
+    let door_pos = pos_of(&app, door).unwrap();
+    let mob = spawn_player_mob(app.world_mut(), door_pos.step(Dir::West));
+    app.world_mut().get_mut::<MoveIntent>(mob).unwrap().dir = Some(Dir::East);
+
+    tick(&mut app, 40);
+    assert_eq!(
+        pos_of(&app, mob),
+        Some(door_pos.step(Dir::West)),
+        "no card, no entry"
+    );
+
+    let engineer = card_with(
+        &mut app,
+        &[
+            "engine",
+            "engine_equip",
+            "tech_storage",
+            "maint_tunnels",
+            "external_airlocks",
+        ],
+    );
+    hold(&mut app, mob, engineer);
+    tick(&mut app, 60);
+    assert!(
+        pos_of(&app, mob).unwrap().x > door_pos.x,
+        "with the card, through the door"
+    );
 }
