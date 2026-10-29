@@ -1,0 +1,19 @@
+[package]
+name = "rs13-classic"
+description = "The classic SS13 (NSV Luna) game build: rules, content and maps."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+rs13-core.workspace = true
+rs13-world.workspace = true
+rs13-simulation.workspace = true
+rs13-content.workspace = true
+rs13-i18n.workspace = true
