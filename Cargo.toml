@@ -12,6 +12,7 @@ members = [
     "engine/content",
     "engine/i18n",
     "game/classic",
+    "tools/dmi-import",
 ]
 
 [workspace.package]
@@ -32,6 +33,7 @@ rs13-content = { path = "engine/content" }
 rs13-i18n = { path = "engine/i18n" }
 rs13-classic = { path = "game/classic" }
 rs13-server = { path = "apps/server" }
+rs13-dmi-import = { path = "tools/dmi-import" }
 
 # Engine stack: exact pins, see docs/adr/0002-bevy-lightyear-pin.md.
 # Bevy and Lightyear must be upgraded together.

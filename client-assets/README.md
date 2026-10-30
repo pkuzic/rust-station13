@@ -1,10 +1,30 @@
 # Client assets
 
-Sprites, sounds and UI art delivered to clients.
+Sprites the client draws, imported from NSV Luna's `.dmi` icon files.
 
-The starting set will be imported from NSV Luna (`icons/`, `sound/`) and converted from
-`.dmi` by a tool in `tools/`. Luna-derived assets are licensed **CC-BY-SA 3.0**; every
-imported file is listed with its origin in `ATTRIBUTION.md`. See
-`docs/adr/0003-licensing.md` and `docs/ART_DIRECTION.md`.
+| File | What |
+|---|---|
+| `sprites.ron` | **Hand-edited.** Which Luna icon and state each of our sprites uses. |
+| `sprites/atlas.png` | Generated. Every frame we use, packed into 32×32 cells. |
+| `sprites/atlas.ron` | Generated. Sprite → state → frames, directions, delays, cells. |
+| `sprites/ATTRIBUTION.md` | Generated. Every imported sprite with its source file and state. |
 
-Nothing has been imported yet.
+The client embeds `atlas.png` and `atlas.ron` at build time, until the server's asset
+manifest delivers them instead.
+
+## Updating the sprites
+
+Edit `sprites.ron`, then regenerate (with a Luna checkout next to this repository):
+
+```sh
+cargo run -p rs13-dmi-import -- ../luna client-assets/sprites.ron client-assets/sprites
+```
+
+Commit `sprites.ron` and the three generated files together.
+
+## Licence
+
+Luna's art and that of its upstreams (/tg/station, Baystation12) is **CC-BY-SA 3.0**,
+and so are the atlas and anything derived from it. `sprites/ATTRIBUTION.md` must list
+every imported sprite. Never import from Luna's `icons/Goon*` folders: Goonstation art is
+non-commercial (CC-BY-NC-SA). See `docs/adr/0003-licensing.md`.

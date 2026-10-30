@@ -47,7 +47,8 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
 `engine_equip` access in the active hand.
 
-Graphics are placeholder squares until the Luna sprites are imported.
+Graphics are NSV Luna's sprites (see `client-assets/`). `--screenshot PATH` saves the view a
+few seconds after joining, then quits.
 
 ## Documentation
 
@@ -68,4 +69,5 @@ Graphics are placeholder squares until the Luna sprites are imported.
 ## Licence
 
 Code: [AGPL-3.0-or-later](LICENSE). Assets in `client-assets/` derived from NSV Luna and
-its upstreams are CC-BY-SA 3.0; see [client-assets/README.md](client-assets/README.md).
+its upstreams are CC-BY-SA 3.0; see [client-assets/README.md](client-assets/README.md) and
+[client-assets/sprites/ATTRIBUTION.md](client-assets/sprites/ATTRIBUTION.md).

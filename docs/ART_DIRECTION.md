@@ -14,9 +14,12 @@ machinery, pipes, corporate bureaucracy).
 - New sprites match that style: 32×32 grid, 4 directions (some objects 1 or 8),
   overlays for worn and held items, the same restrained palette.
 - No 3D models and no 3D-to-sprite pipeline. All art is 2D.
-- `.dmi` files are PNGs with direction and state metadata in a `zTXt` chunk. A
-  converter in `tools/` turns them into our atlas format plus metadata; we never ship
-  `.dmi` files directly.
+- `.dmi` files are PNGs with direction and state metadata in a `zTXt` chunk.
+  `tools/dmi-import` copies only the frames named in `client-assets/sprites.ron` into our
+  atlas (`client-assets/sprites/`); we never ship `.dmi` files.
+- Walls join by neighbour (Luna's `metal0`–`metal15`); cables and pipes join toward
+  neighbouring pieces; people wear a grey jumpsuit and shoes, face the way they move, and
+  lie down when unconscious or dead.
 
 ## UI
 

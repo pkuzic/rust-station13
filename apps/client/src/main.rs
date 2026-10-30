@@ -11,6 +11,8 @@
 //! Placeholder graphics: tiles and objects are flat coloured squares until the
 //! Luna sprite import lands.
 
+mod sprites;
+
 use std::collections::VecDeque;
 use std::net::SocketAddr;
 
@@ -28,6 +30,7 @@ use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Play
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, TilePos,
 };
+use sprites::{Look, SpriteAtlas};
 
 /// On-screen size of one tile, in pixels.
 const TILE_PX: f32 = 32.0;
@@ -48,7 +51,12 @@ struct Args {
     server: SocketAddr,
     russian: bool,
     name: Option<String>,
+    /// Save a screenshot here a few seconds after joining, then quit (for checking).
+    screenshot: Option<String>,
 }
+
+#[derive(Resource)]
+struct ScreenshotPlan(Option<String>);
 
 /// The name to ask for once connected.
 #[derive(Resource)]
@@ -108,29 +116,36 @@ fn main() {
     .expect("built-in messages are valid");
 
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: format!("rust-station13 (protocol {})", rs13_network::PROTOCOL_VERSION),
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: format!("rust-station13 (protocol {})", rs13_network::PROTOCOL_VERSION),
+                        ..default()
+                    }),
+                    ..default()
+                })
+                // Crisp pixel art.
+                .set(ImagePlugin::default_nearest()),
+        )
         .add_plugins(ClientNetworkPlugin)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
+        .insert_resource(ScreenshotPlan(args.screenshot))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
-        .add_systems(Startup, (setup, spawn_hud))
+        .add_systems(Startup, (sprites::load_atlas, setup, spawn_hud))
         .add_systems(
             Update,
             (
                 draw_map,
                 add_sprites,
                 update_appearance,
+                sprites::join_lines,
                 show_only_placed,
                 mark_own_player,
                 send_name,
@@ -139,13 +154,18 @@ fn main() {
                 receive_notices,
                 receive_status,
                 glide,
+                (sprites::dress, sprites::animate).chain(),
                 follow_own_player,
-                update_hands_bar,
-                update_log,
-                update_chat_line,
-                update_status_line,
-                spawn_overlay,
-                update_overlay,
+                (
+                    update_hands_bar,
+                    update_log,
+                    update_chat_line,
+                    update_status_line,
+                    spawn_overlay,
+                    update_overlay,
+                    take_screenshot,
+                )
+                    .chain(),
             )
                 .chain(),
         )
@@ -157,12 +177,14 @@ fn parse_args() -> Args {
         server: SocketAddr::from(([127, 0, 0, 1], rs13_network::DEFAULT_PORT)),
         russian: false,
         name: None,
+        screenshot: None,
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
         match arg.as_str() {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
+            "--screenshot" => args.screenshot = it.next(),
             addr => args.server = addr.parse().expect("SERVER_ADDR must look like 127.0.0.1:13013"),
         }
     }
@@ -320,45 +342,109 @@ fn click_rank(appearance: &Appearance) -> u8 {
     }
 }
 
-/// Spawn one square per tile when the map arrives.
-fn draw_map(mut commands: Commands, maps: Query<&MapLayer, Added<MapLayer>>) {
+/// Draw the map's tiles when it arrives: Luna sprites, or flat squares as a fallback.
+fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLayer, Added<MapLayer>>) {
     for MapLayer(map) in &maps {
         info!(width = map.width, height = map.height, "map received");
         for y in 0..map.height as i32 {
             for x in 0..map.width as i32 {
                 let pos = TilePos::new(x, y, map.z);
                 let Some(tile) = map.tile(pos) else { continue };
-                commands.spawn((
-                    Sprite::from_color(tile_color(&tile.id), Vec2::splat(TILE_PX - 1.0)),
-                    Transform::from_translation(world_pos(pos, 0.0)),
-                ));
+                let (sprite, state) = match tile.id.as_str() {
+                    "wall" => ("tile:wall", sprites::wall_state(map, pos)),
+                    "space" => ("tile:space", sprites::space_state(pos)),
+                    other => (
+                        if other == "floor" {
+                            "tile:floor"
+                        } else {
+                            "tile:plating"
+                        },
+                        String::new(),
+                    ),
+                };
+                let transform = Transform::from_translation(world_pos(pos, 0.0));
+                match atlas.sprite(sprite, &state, 0) {
+                    Some(image) => commands.spawn((image, transform)),
+                    None => commands.spawn((
+                        Sprite::from_color(tile_color(&tile.id), Vec2::splat(TILE_PX - 1.0)),
+                        transform,
+                    )),
+                };
             }
         }
     }
 }
 
+/// Give new objects their look: an animated Luna sprite (people also get clothes), or a
+/// flat square if the atlas has nothing for them.
 fn add_sprites(
     mut commands: Commands,
+    time: Res<Time>,
+    atlas: Res<SpriteAtlas>,
     objects: Query<(Entity, &Appearance, Option<&GridPos>), Added<Appearance>>,
 ) {
     for (entity, appearance, pos) in &objects {
         let (color, size, z) = object_look(appearance);
         let pos = pos.map(|p| p.0).unwrap_or(TilePos::new(0, 0, 0));
-        commands.entity(entity).insert((
-            Sprite::from_color(color, Vec2::splat(size)),
-            Transform::from_translation(world_pos(pos, z)),
-        ));
+        let transform = Transform::from_translation(world_pos(pos, z));
+        let state = sprites::state_for(appearance);
+        let Some(image) = atlas.sprite(&appearance.sprite, &state, 0) else {
+            commands
+                .entity(entity)
+                .insert((Sprite::from_color(color, Vec2::splat(size)), transform));
+            continue;
+        };
+        let look = Look {
+            sprite: appearance.sprite.clone(),
+            state: state.clone(),
+            facing: 0,
+            since: time.elapsed_secs(),
+        };
+        let mut e = commands.entity(entity);
+        e.insert((image, transform, look));
+        if appearance.sprite == "human" {
+            for (i, layer) in ["human:uniform", "human:shoes"].into_iter().enumerate() {
+                if let Some(image) = atlas.sprite(layer, &state, 0) {
+                    e.with_child((
+                        image,
+                        // Slightly in front of the body, in the parent's space.
+                        Transform::from_xyz(0.0, 0.0, 0.01 * (i + 1) as f32),
+                        Look {
+                            sprite: layer.to_owned(),
+                            state: state.clone(),
+                            facing: 0,
+                            since: 0.0,
+                        },
+                        sprites::Layer,
+                    ));
+                }
+            }
+        }
     }
 }
 
-fn update_appearance(mut objects: Query<(&Appearance, &mut Sprite, Has<OwnPlayer>), Changed<Appearance>>) {
-    for (appearance, mut sprite, own) in &mut objects {
-        // Our own player stays green while it is up and about.
-        sprite.color = if own && appearance.state.is_empty() {
-            OWN_PLAYER_COLOR
-        } else {
-            object_look(appearance).0
-        };
+fn update_appearance(
+    time: Res<Time>,
+    mut objects: Query<(&Appearance, &mut Sprite, Option<&mut Look>, Has<OwnPlayer>), Changed<Appearance>>,
+) {
+    for (appearance, mut sprite, look, own) in &mut objects {
+        match look {
+            Some(mut look) => {
+                let state = sprites::state_for(appearance);
+                if look.state != state {
+                    look.state = state;
+                    look.since = time.elapsed_secs();
+                }
+            }
+            // Flat squares: our own player stays green while it is up and about.
+            None => {
+                sprite.color = if own && appearance.state.is_empty() {
+                    OWN_PLAYER_COLOR
+                } else {
+                    object_look(appearance).0
+                };
+            }
+        }
     }
 }
 
@@ -375,10 +461,12 @@ fn show_only_placed(mut objects: Query<(&mut Visibility, Has<GridPos>), With<App
 
 fn mark_own_player(
     mut commands: Commands,
-    mut own: Query<(Entity, &mut Sprite), (Added<Controlled>, With<Player>)>,
+    mut own: Query<(Entity, &mut Sprite, Has<Look>), (Added<Controlled>, With<Player>)>,
 ) {
-    for (entity, mut sprite) in &mut own {
-        sprite.color = OWN_PLAYER_COLOR;
+    for (entity, mut sprite, has_look) in &mut own {
+        if !has_look {
+            sprite.color = OWN_PLAYER_COLOR;
+        }
         commands.entity(entity).insert(OwnPlayer);
         info!("own player received");
     }
@@ -670,11 +758,27 @@ fn receive_notices(
 }
 
 /// Slide mobs towards their server position, like BYOND's glide; other objects snap.
-fn glide(time: Res<Time>, mut movers: Query<(&GridPos, &mut Transform, Has<Player>)>) {
+fn glide(time: Res<Time>, mut movers: Query<(&GridPos, &mut Transform, Has<Player>, Option<&mut Look>)>) {
     let max_step = GLIDE_TILES_PER_SEC * TILE_PX * time.delta_secs();
-    for (pos, mut transform, is_player) in &mut movers {
+    for (pos, mut transform, is_player, look) in &mut movers {
         let target = world_pos(pos.0, transform.translation.z);
         let offset = target - transform.translation;
+        // People face the way they are moving (DMI order: S, N, E, W).
+        if is_player
+            && let Some(mut look) = look
+            && offset.length() > 0.5
+        {
+            let facing = if offset.x.abs() > offset.y.abs() {
+                if offset.x > 0.0 { 2 } else { 3 }
+            } else if offset.y > 0.0 {
+                1
+            } else {
+                0
+            };
+            if look.facing != facing {
+                look.facing = facing;
+            }
+        }
         // Teleports and large corrections snap instead of sliding across the map.
         if !is_player || offset.length() > TILE_PX * 2.0 {
             transform.translation = target;
@@ -744,4 +848,36 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
     } else {
         String::new()
     };
+}
+
+/// With `--screenshot PATH`: four seconds after our player appears, save the window to PATH;
+/// a second later, quit.
+fn take_screenshot(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut plan: ResMut<ScreenshotPlan>,
+    own: Query<(), With<OwnPlayer>>,
+    mut joined_at: Local<Option<f32>>,
+    mut taken_at: Local<Option<f32>>,
+    mut exit: MessageWriter<AppExit>,
+) {
+    let now = time.elapsed_secs();
+    if let Some(at) = *taken_at {
+        if now > at + 1.0 {
+            exit.write(AppExit::Success);
+        }
+        return;
+    }
+    if plan.0.is_none() || own.is_empty() {
+        return;
+    }
+    let joined = *joined_at.get_or_insert(now);
+    if now > joined + 4.0
+        && let Some(path) = plan.0.take()
+    {
+        commands
+            .spawn(bevy::render::view::screenshot::Screenshot::primary_window())
+            .observe(bevy::render::view::screenshot::save_to_disk(path));
+        *taken_at = Some(now);
+    }
 }
