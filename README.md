@@ -77,6 +77,9 @@ gone, and floor tiles put back hide them again (`docs/reference/floors.md`).
 Pressure meters on the pipes show the pressure on their dial. Click one from up to three
 tiles away to read it (`docs/reference/meters.md`).
 
+Pressure tanks and canisters of oxygen, nitrogen, CO2, plasma and N2O hold their own gas,
+in Luna's colours. A canister's light shows how full it is (`docs/reference/gas-tanks.md`).
+
 Each area has an air alarm on its wall. Click it to read the room's air. When the pressure
 turns dangerous it seals the area: every powered door around it closes and bolts until the
 air recovers. Standing next to it you can seal or unseal by hand and turn on panic fill

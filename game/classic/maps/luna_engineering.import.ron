@@ -4,8 +4,8 @@
 //       game/classic/maps/luna_engineering.import.ron game/classic/maps/luna_engineering.ron
 //
 // Luna types without a prototype yet are skipped and listed at the top of the output.
-// Luna's other gas tanks, canisters, filters, injectors and the engine's cooling machines
-// have no prototype yet, so the pipes that join them end there.
+// Luna's filters, injectors and the engine's cooling machines have no prototype yet, so
+// the pipes that join them end there.
 // Spec: docs/reference/map-import.md.
 (
     source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
@@ -42,12 +42,23 @@
         (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),
         (path: "/obj/machinery/atmospherics/pipe/manifold", id: "manifold", dir: true),
         (path: "/obj/machinery/atmospherics/pipe/tank/air", id: "air-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/oxygen", id: "oxygen-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/nitrogen", id: "nitrogen-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/carbon_dioxide", id: "carbon-dioxide-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/toxins", id: "plasma-pressure-tank", dir: true),
         (path: "/obj/machinery/atmospherics/unary/vent_pump", id: "vent", dir: true),
         (path: "/obj/machinery/atmospherics/unary/vent_filter", id: "vent", dir: true),
         (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
         (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
         (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
         (path: "/obj/machinery/meter", id: "meter"),
+        // Canisters. A canister on a connector port starts connected.
+        (path: "/obj/machinery/portable_atmospherics/canister/air", id: "canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/oxygen", id: "oxygen-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/nitrogen", id: "nitrogen-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/carbon_dioxide", id: "carbon-dioxide-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/toxins", id: "plasma-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/sleeping_agent", id: "nitrous-oxide-canister"),
 
         (path: "/obj/item/weapon/screwdriver", id: "screwdriver"),
         (path: "/obj/item/weapon/wrench", id: "wrench"),
