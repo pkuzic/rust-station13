@@ -4,6 +4,8 @@
 //       game/classic/maps/luna_engineering.import.ron game/classic/maps/luna_engineering.ron
 //
 // Luna types without a prototype yet are skipped and listed at the top of the output.
+// Luna's other gas tanks, canisters, filters, injectors and the engine's cooling machines
+// have no prototype yet, so the pipes that join them end there.
 // Spec: docs/reference/map-import.md.
 (
     source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
@@ -34,6 +36,16 @@
         (path: "/obj/machinery/power/smes", id: "smes"),
         (path: "/obj/cabling/power", id: "cable"),
         (path: "/obj/machinery/alarm", id: "air-alarm"),
+
+        // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
+        (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/manifold", id: "manifold", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/air", id: "air-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_pump", id: "vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_filter", id: "vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
+        (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
+        (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
 
         (path: "/obj/item/weapon/screwdriver", id: "screwdriver"),
         (path: "/obj/item/weapon/wrench", id: "wrench"),

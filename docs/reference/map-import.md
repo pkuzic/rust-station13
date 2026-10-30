@@ -52,12 +52,13 @@ counted from 0 with the top row first.
 - **Power:**
   - APCs, SMES units and all of Luna's cabling. Every APC's area is powered from the engine's SMES.
   - Air alarms.
+- **Atmos piping:** pipes, bends and manifolds (insulated ones too), vents, scrubbers, connectors, valves and air tanks, all with Luna's directions. The supply and scrubber lines stay separate networks. The supply line is empty: Luna feeds it from deck 4 through a pipe between decks, outside the region, so the vents have nothing to give.
 - **Items:** screwdrivers, wrenches, insulated gloves, breath masks, the engineering hardsuits (as our space suit and helmet) and oxygen tanks.
 - **Toolboxes and utility belts:** their tools lie on the tile, minus welders, cable coils and scanners, which have no prototype yet.
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Skipped for now** (120 types, listed in the generated file):
-- **Atmos piping:** every pipe, vent, scrubber, tank and filter. Our pipes connect to every neighbour, so Luna's parallel supply, scrubber and coolant lines would merge into one network. They come back once pipes have directions.
+**Skipped for now** (109 types, listed in the generated file):
+- **Atmos machines without a prototype:** tanks of other gases, canisters, filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** tables, racks, closets, chairs.
 - **Machines:** computers, vending machines, the engine itself, lights, cameras, firedoors, disposals.
 - **Stairs and ladders:** multi-z.
@@ -68,4 +69,5 @@ counted from 0 with the top row first.
 - The core floor (`floor/engine/vacuum`) starts with air, because every zone does.
 - Luna's `req_access_txt` lists every access a door needs, but our doors open for any one. In this region every door needs a single access, so the result is the same.
 - The map stops at the region's edge. Tiles beyond it count as solid, so corridors that leave the section end in an invisible wall.
+- Open pipe ends don't leak, unlike in Luna.
 - Cables connect to every neighbouring cable, ignoring Luna's directions. Power lines that run side by side are joined.

@@ -101,7 +101,7 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     }
     if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
         let id = world.resource_mut::<NetIds>().alloc();
-        let appearance = Appearance::new(machine.sprite, machine.state);
+        let appearance = Appearance::new(machine.sprite, machine.state.clone());
         let mut entity = world.spawn((GridPos(pos), id, appearance));
         machine.apply(&mut entity);
         return Ok(entity.id());

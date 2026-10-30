@@ -11,8 +11,28 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 
 ## Pipe networks
 
-**Members** connect to members on the same tile and on the four neighbouring tiles. Each
-member holds part of the network's gas, in proportion to its volume:
+**Connections:**
+- Each member connects on some of its four sides, as in Luna's `initialize_directions`. It
+  joins a member on the neighbouring tile that connects back, and a member on its own tile
+  that shares a side.
+- A placed piece takes its sides from its direction:
+
+  | Piece | Sides |
+  |---|---|
+  | Straight pipe, valve | along its direction (N/S or E/W) |
+  | Bent pipe (diagonal direction) | the two sides of the diagonal |
+  | Manifold (105 L) | every side but the one it faces |
+  | Vent, scrubber, connector, air tank | the side it faces |
+
+- Without a direction, as in the hand-drawn chamber, a piece connects on every side.
+- So Luna's supply and scrubber lines can run side by side, or cross on one tile, and stay
+  apart.
+- Vents, scrubbers and connectors are members with no volume of their own: they reach the
+  network through the pipe they face.
+- A pump is not a member. It takes from the member behind it that connects toward it, and
+  gives to the one ahead that connects back.
+
+**Gas:** each member holds part of the network's gas, in proportion to its volume:
 
 | Member | Volume | Starts with |
 |---|---|---|
@@ -65,6 +85,5 @@ member holds part of the network's gas, in proportion to its volume:
 - Heat exchangers.
 - Vents in siphon mode.
 - Console UIs, and air alarm control of vent and scrubber settings.
-- Directional pipe pieces: every pipe connects to every neighbour.
 - Canisters of other gases.
 - Pulling and dragging canisters.

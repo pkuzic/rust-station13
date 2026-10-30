@@ -194,6 +194,24 @@ pub struct ObjectRule {
     /// What it holds, placed loose on its tile (for containers we can't model yet).
     #[serde(default)]
     pub contents: Vec<Placed>,
+    /// Keep the atom's direction (BYOND `dir`, south when the map doesn't set it).
+    #[serde(default)]
+    pub dir: bool,
+}
+
+/// BYOND direction numbers → our direction names.
+fn dir_name(byond: &str) -> Option<&'static str> {
+    Some(match byond.trim() {
+        "1" => "North",
+        "2" => "South",
+        "4" => "East",
+        "8" => "West",
+        "5" => "NorthEast",
+        "6" => "SouthEast",
+        "9" => "NorthWest",
+        "10" => "SouthWest",
+        _ => return None,
+    })
 }
 
 #[derive(Debug, Deserialize)]
@@ -433,29 +451,39 @@ fn object_ron(
     problems: &mut Vec<String>,
     (c, r): (usize, usize),
 ) -> String {
-    let Some(text) = rule.access_var.as_ref().and_then(|v| atom.vars.get(v)) else {
-        return format!("{id:?}");
-    };
-    let ids: Vec<String> = text
-        .split(';')
-        .filter(|n| !n.trim().is_empty())
-        .filter_map(
-            |n| match n.trim().parse::<u32>().ok().and_then(|n| access.get(&n)) {
-                Some(id) => Some(format!("{id:?}")),
-                None => {
-                    problems.push(format!(
-                        "column {c}, row {r}: unknown access {n:?} on {}",
-                        atom.path
-                    ));
-                    None
-                }
-            },
-        )
-        .collect();
-    if ids.is_empty() {
+    let mut fields = Vec::new();
+    if let Some(text) = rule.access_var.as_ref().and_then(|v| atom.vars.get(v)) {
+        let ids: Vec<String> = text
+            .split(';')
+            .filter(|n| !n.trim().is_empty())
+            .filter_map(
+                |n| match n.trim().parse::<u32>().ok().and_then(|n| access.get(&n)) {
+                    Some(id) => Some(format!("{id:?}")),
+                    None => {
+                        problems.push(format!(
+                            "column {c}, row {r}: unknown access {n:?} on {}",
+                            atom.path
+                        ));
+                        None
+                    }
+                },
+            )
+            .collect();
+        if !ids.is_empty() {
+            fields.push(format!("access: [{}]", ids.join(", ")));
+        }
+    }
+    if rule.dir {
+        let byond = atom.vars.get("dir").map_or("2", String::as_str);
+        match dir_name(byond) {
+            Some(name) => fields.push(format!("dir: {name}")),
+            None => problems.push(format!("column {c}, row {r}: odd dir {byond:?} on {}", atom.path)),
+        }
+    }
+    if fields.is_empty() {
         format!("{id:?}")
     } else {
-        format!("(id: {id:?}, access: [{}])", ids.join(", "))
+        format!("(id: {id:?}, {})", fields.join(", "))
     }
 }
 
@@ -468,9 +496,10 @@ mod tests {
 "ac" = (/obj/machinery/door/airlock/glass{name = "Core; Access"; req_access_txt = "10"},/turf/simulated/floor,/area/engine)
 "ad" = (/obj/effect/landmark/start{name = "Engineer"},/obj/item/weapon/wrench,/obj/effect/decal/sign,/turf/simulated/floor/plating,/area/engine)
 "ae" = (/obj/structure/grille,/obj/structure/window/reinforced{dir = 4},/turf/simulated/floor/plating,/area/engine)
+"af" = (/obj/machinery/atmospherics/pipe/simple{dir = 6},/obj/machinery/atmospherics/pipe/simple,/turf/simulated/floor,/area/engine)
 
 (1,1,1) = {"
-aaabaaaa
+aaabafaa
 aaacadae
 aaabaaaa
 "}
@@ -495,6 +524,7 @@ aaabaaaa
                 objects: [
                     (path: "/obj/machinery/door/airlock", id: "airlock", access_var: Some("req_access_txt")),
                     (path: "/obj/item/weapon/wrench", id: "wrench"),
+                    (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),
                     (path: "/obj/item/weapon/storage/toolbox", contents: [(id: "crowbar"), (id: "wrench")]),
                 ],
                 spawns: [(path: "/obj/effect/landmark/start", with: [(id: "id-card", access: ["engine"])])],
@@ -540,13 +570,24 @@ aaabaaaa
             (map.spawns[0], vec!["engine".to_owned()])
         );
         assert_eq!(map.area(rs13_world::TilePos::new(0, 1, 0)), Some("engine"));
+        // Directions come across; an unset one is BYOND's south.
+        let pipes: Vec<Option<rs13_world::Dir>> = map
+            .objects
+            .iter()
+            .filter(|(_, o)| o.id == "pipe")
+            .map(|(_, o)| o.dir)
+            .collect();
+        assert_eq!(
+            pipes,
+            [Some(rs13_world::Dir::SouthEast), Some(rs13_world::Dir::South)]
+        );
     }
 
     #[test]
     fn unmapped_types_are_reported() {
         let dmm = Dmm::parse(MAP).unwrap();
         let mut rules = rules();
-        rules.objects.remove(1);
+        rules.objects.retain(|o| o.path != "/obj/item/weapon/wrench");
         rules.ignore.clear();
         let imported = convert(&dmm, &rules).unwrap();
         assert_eq!(imported.skipped["/obj/item/weapon/wrench"], 1);

@@ -5,6 +5,7 @@ use bevy_app::{App, FixedUpdate};
 use rs13_classic::access::IdCard;
 use rs13_classic::atmos::StationAtmos;
 use rs13_classic::doors::Airlock;
+use rs13_classic::machines::{PipeNets, Scrubber, Vent};
 use rs13_classic::objects::spawn_map;
 use rs13_classic::power::{Apc, AreaPower, Channel};
 use rs13_classic::{ClassicPlugin, maps};
@@ -66,6 +67,31 @@ fn the_imported_map_loads_and_runs() {
             "{area} is unpowered"
         );
     }
+
+    // Luna's supply and scrubber lines run side by side but stay two networks: every vent
+    // on one, every scrubber on the other.
+    let mut vents = app
+        .world_mut()
+        .query_filtered::<bevy_ecs::entity::Entity, bevy_ecs::query::With<Vent>>();
+    let vents: Vec<_> = vents.iter(app.world()).collect();
+    let mut scrubbers = app
+        .world_mut()
+        .query_filtered::<bevy_ecs::entity::Entity, bevy_ecs::query::With<Scrubber>>();
+    let scrubbers: Vec<_> = scrubbers.iter(app.world()).collect();
+    let nets = app.world().resource::<PipeNets>();
+    let supply = nets.net_of[&vents[0]];
+    let waste = nets.net_of[&scrubbers[0]];
+    assert_ne!(supply, waste);
+    let on_supply = vents
+        .iter()
+        .filter(|v| nets.net_of.get(v) == Some(&supply))
+        .count();
+    assert!(
+        on_supply >= vents.len() - 1,
+        "{on_supply} of {} vents",
+        vents.len()
+    );
+    assert!(scrubbers.iter().all(|s| nets.net_of.get(s) == Some(&waste)));
 
     // The air is standard everywhere inside.
     let atmos = app.world().resource::<StationAtmos>();

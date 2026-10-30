@@ -220,6 +220,13 @@
             "2-8": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 5),
             "1-8": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 7),
         },
+        // Three-way manifold, by the sides it joins (the fourth is the way it faces).
+        "manifold": {
+            "1-4-8": (dmi: "icons/obj/atmospherics/pipe_manifold.dmi", state: "manifold", dir: 0),
+            "2-4-8": (dmi: "icons/obj/atmospherics/pipe_manifold.dmi", state: "manifold", dir: 1),
+            "1-2-8": (dmi: "icons/obj/atmospherics/pipe_manifold.dmi", state: "manifold", dir: 2),
+            "1-2-4": (dmi: "icons/obj/atmospherics/pipe_manifold.dmi", state: "manifold", dir: 3),
+        },
         "vent": {
             "on": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "out", dir: 0),
             "off": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "off", dir: 0),

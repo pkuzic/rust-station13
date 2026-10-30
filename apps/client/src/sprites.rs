@@ -163,11 +163,18 @@ pub fn join_lines(
     }
     let links = |kind: &str, sprite: &str| match kind {
         "cable" => matches!(sprite, "cable" | "smes" | "apc"),
-        _ => matches!(sprite, "pipe" | "valve" | "pump" | "air-tank"),
+        _ => matches!(
+            sprite,
+            "pipe" | "manifold" | "valve" | "pump" | "air-tank" | "vent" | "scrubber" | "connector"
+        ),
     };
     for (pos, appearance, mut look) in &mut lines {
         let kind = appearance.sprite.as_str();
         if kind != "cable" && kind != "pipe" {
+            continue;
+        }
+        // A pipe placed with a direction already says which sides it joins.
+        if kind == "pipe" && !appearance.state.is_empty() {
             continue;
         }
         let mut dirs: Vec<u8> = Vec::new();
