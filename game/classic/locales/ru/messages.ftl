@@ -285,3 +285,13 @@ examine-light-off = Он выключен.
 examine-light-empty = Лампы в нём нет.
 examine-light-burned = Лампа в нём перегорела.
 examine-light-broken = Лампа в нём разбита.
+
+# Шкафы, шкафчики и ящики (docs/reference/closets.md).
+closet-wont-budge = Не поддаётся!
+closet-welded = { $name } заваривает { NOUN($item, case: "acc") }.
+closet-unwelded = { $name } срезает сварной шов с { NOUN($item, case: "gen") }.
+closet-cut-apart = { $name } разрезает { NOUN($item, case: "acc") } сварочным аппаратом.
+locker-locked = { $name } запирает шкафчик.
+locker-unlocked = { $name } отпирает шкафчик.
+locker-access-denied = Доступ запрещён
+locker-locked-inside = Шкафчик заперт!

@@ -64,6 +64,8 @@ pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
         .filter_map(|(pos, spec)| spawn_object(world, spec, *pos).err())
         .collect();
 
+    crate::closets::take_in_loose_items(world);
+
     // Canisters placed on a connector port start connected to its pipes.
     let mut ports = world.query_filtered::<&GridPos, With<crate::machines::Connector>>();
     let port_tiles: Vec<TilePos> = ports.iter(world).map(|p| p.0).collect();
@@ -106,6 +108,17 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     let proto = spec.id.as_str();
     if matches!(proto, "cable" | "smes" | "apc") {
         return spawn_power_object(world, spec, pos);
+    }
+    world.init_resource::<crate::closets::ClosetProtos>();
+    if world
+        .resource::<crate::closets::ClosetProtos>()
+        .0
+        .contains_key(proto)
+    {
+        let id = world.resource_mut::<NetIds>().alloc();
+        if let Some(closet) = crate::closets::spawn_closet(world, spec, pos, id) {
+            return closet;
+        }
     }
     if crate::lights::is_light_proto(proto) {
         let id = world.resource_mut::<NetIds>().alloc();

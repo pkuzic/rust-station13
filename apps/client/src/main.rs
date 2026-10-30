@@ -399,6 +399,9 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
         // Under what is put on them.
+        (closet, _) if rs13_classic::closets::is_closet(closet) => {
+            (Color::srgb(0.45, 0.50, 0.55), TILE_PX - 2.0, 0.9)
+        }
         ("table" | "table-reinforced" | "table-wood" | "rack", _) => {
             (Color::srgb(0.55, 0.55, 0.60), TILE_PX - 2.0, 0.9)
         }
@@ -411,6 +414,7 @@ fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
         "human" => 3,
         "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
+        closet if rs13_classic::closets::is_closet(closet) => 2,
         "pipe" | "cable" => 4,
         "pump" | "vent" | "scrubber" | "valve" | "connector" | "meter" | "smes" | "apc" | "light"
         | "light-small" | "light-switch" => 1,

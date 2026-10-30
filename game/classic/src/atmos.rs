@@ -57,7 +57,10 @@ pub fn space_wind(
     atmos: Option<Res<StationAtmos>>,
     map: Single<&MapLayer>,
     mut cooldowns: ResMut<WindCooldowns>,
-    mut movers: Query<(Entity, &mut GridPos, Has<Mob>), Or<(With<Mob>, With<Item>)>>,
+    mut movers: Query<
+        (Entity, &mut GridPos, Has<Mob>),
+        (Or<(With<Mob>, With<Item>)>, Without<crate::closets::InCloset>),
+    >,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<Item>)>,
     mut commands: Commands,
 ) {

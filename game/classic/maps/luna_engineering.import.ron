@@ -94,6 +94,19 @@
         (path: "/obj/machinery/light", id: "light", dir: true),
         (path: "/obj/machinery/light/small", id: "light-small", dir: true),
         (path: "/obj/machinery/light_switch", id: "light-switch"),
+
+        // Closets, lockers and crates come with what Luna puts in them (`closets.md`). No
+        // rule for the plain closet: it would catch every other kind.
+        (path: "/obj/structure/closet/emcloset", id: "closet-emergency"),
+        (path: "/obj/structure/closet/toolcloset", id: "closet-tools"),
+        (path: "/obj/structure/closet/secure_closet/engineering_chief", id: "locker-chief-engineer"),
+        (path: "/obj/structure/closet/secure_closet/engineering_electrical", id: "locker-electrical"),
+        (path: "/obj/structure/closet/secure_closet/engineering_welding", id: "locker-welding"),
+        (path: "/obj/structure/closet/secure_closet/engineering_personal", id: "locker-engineer"),
+        (path: "/obj/structure/closet/crate", id: "crate"),
+        (path: "/obj/structure/closet/crate/internals", id: "crate-internals"),
+        (path: "/obj/structure/closet/crate/radiation", id: "crate-radiation"),
+        (path: "/obj/structure/closet/crate/rcd", id: "crate-rcd"),
     ],
 
     // Luna's Engineer start points. Until jobs exist, an engineer's ID card lies on each

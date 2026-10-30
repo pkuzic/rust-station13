@@ -85,12 +85,14 @@ pub fn move_mobs(
         Option<&Hands>,
         Option<&Vitals>,
         Option<&crate::equipment::Equipment>,
+        Option<&crate::closets::InCloset>,
     )>,
     mut objects: Query<(Entity, &GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
     wearables: Query<&crate::equipment::Wearable>,
     electrified: Query<&crate::wires::Wiring>,
     mut shocks: ResMut<crate::wires::PendingShocks>,
+    mut exits: ResMut<crate::closets::PendingClosetExits>,
 ) {
     let now = time.deciseconds();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
@@ -104,12 +106,21 @@ pub fn move_mobs(
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals, equipment)) = mobs.get_mut(entity)
+        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals, equipment, inside)) =
+            mobs.get_mut(entity)
         else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            continue;
+        }
+        // Inside a closet, walking pushes at the door (`closets.md`).
+        if let Some(inside) = inside {
+            if now >= mob.next_move_ds {
+                exits.0.push((entity, inside.0));
+                mob.next_move_ds = now + step_delay_ds(intent.run);
+            }
             continue;
         }
         // In open space there is nothing to walk on: only push off from something nearby.

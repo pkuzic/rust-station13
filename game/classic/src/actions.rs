@@ -104,7 +104,19 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture, meters, mut lights): (
+    (
+        mut alarms,
+        mut storage,
+        mut cable,
+        hidden,
+        mut welding,
+        places,
+        mut furniture,
+        meters,
+        mut lights,
+        mut closets,
+        inside,
+    ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
@@ -114,6 +126,8 @@ pub fn process_actions(
         crate::furniture::FurnitureWork,
         Query<(&GridPos, &crate::meters::Meter, &crate::power::PowerUser)>,
         crate::lights::LightWork,
+        crate::closets::ClosetWork,
+        Query<(), With<crate::closets::InCloset>>,
     ),
     mut commands: Commands,
 ) {
@@ -132,6 +146,12 @@ pub fn process_actions(
             // Things under floor tiles can't be seen or touched.
             if let Action::UseOn(target) | Action::Examine(target) = action
                 && hidden.contains(target)
+            {
+                continue;
+            }
+            // From inside a closet nothing outside can be reached (`closets.md`).
+            if inside.contains(mob)
+                && matches!(action, Action::UseOn(_) | Action::UseOnTile(_) | Action::Drop)
             {
                 continue;
             }
@@ -260,6 +280,24 @@ pub fn process_actions(
                     // (`meters.md`).
                     if let Some(said) = crate::meters::click(mob_pos.0, target, &meters) {
                         outbox.0.extend(said);
+                    }
+                }
+                Action::UseOn(target) if closets.contains(target) => {
+                    // Closets, lockers and crates (`closets.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    let lit = welding.lit(hands.active_item()).is_some();
+                    if let Some(outcome) = closets.use_on(mob, &mut hands, lit, target, &mut commands) {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
                     }
                 }
                 Action::UseOn(target) if lights.contains(target) => {
