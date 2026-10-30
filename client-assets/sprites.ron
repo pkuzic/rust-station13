@@ -34,6 +34,28 @@
             "14": (dmi: "icons/turf/walls.dmi", state: "metal14"),
             "15": (dmi: "icons/turf/walls.dmi", state: "metal15"),
         },
+        // Reinforced walls join with walls of either kind.
+        "tile:r-wall": {
+            "0": (dmi: "icons/turf/walls.dmi", state: "rwall0"),
+            "1": (dmi: "icons/turf/walls.dmi", state: "rwall1"),
+            "2": (dmi: "icons/turf/walls.dmi", state: "rwall2"),
+            "3": (dmi: "icons/turf/walls.dmi", state: "rwall3"),
+            "4": (dmi: "icons/turf/walls.dmi", state: "rwall4"),
+            "5": (dmi: "icons/turf/walls.dmi", state: "rwall5"),
+            "6": (dmi: "icons/turf/walls.dmi", state: "rwall6"),
+            "7": (dmi: "icons/turf/walls.dmi", state: "rwall7"),
+            "8": (dmi: "icons/turf/walls.dmi", state: "rwall8"),
+            "9": (dmi: "icons/turf/walls.dmi", state: "rwall9"),
+            "10": (dmi: "icons/turf/walls.dmi", state: "rwall10"),
+            "11": (dmi: "icons/turf/walls.dmi", state: "rwall11"),
+            "12": (dmi: "icons/turf/walls.dmi", state: "rwall12"),
+            "13": (dmi: "icons/turf/walls.dmi", state: "rwall13"),
+            "14": (dmi: "icons/turf/walls.dmi", state: "rwall14"),
+            "15": (dmi: "icons/turf/walls.dmi", state: "rwall15"),
+        },
+        // A window tile: a grille and a full window over plating.
+        "tile:grille": { "": (dmi: "icons/obj/structures.dmi", state: "grille") },
+        "tile:window": { "": (dmi: "icons/obj/structures.dmi", state: "fwindow") },
 
         // People: the body, with what they wear drawn on top. "lying" for out cold or dead.
         "human": {

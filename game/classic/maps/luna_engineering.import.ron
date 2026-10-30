@@ -1,0 +1,107 @@
+// Rules for importing NSV Luna's engineering section (deck 2) with rs13-dmm-import:
+//
+//   cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
+//       game/classic/maps/luna_engineering.import.ron game/classic/maps/luna_engineering.ron
+//
+// Luna types without a prototype yet are skipped and listed at the top of the output.
+// Spec: docs/reference/map-import.md.
+(
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 2,
+    // The engineering block: engine hallway, control, monitoring and core, electrical
+    // storage and the Chief Engineer's office.
+    columns: (23, 56),
+    rows: (56, 80),
+
+    turfs: [
+        (path: "/turf/space", tile: (id: "space")),
+        (path: "/turf/simulated/floor", tile: (id: "floor")),
+        (path: "/turf/simulated/floor/plating", tile: (id: "plating")),
+        // The engine core's floor. It should start in vacuum; zones all start with air.
+        (path: "/turf/simulated/floor/engine", tile: (id: "plating")),
+        (path: "/turf/simulated/wall", tile: (id: "wall", solid: true)),
+        (path: "/turf/simulated/wall/r_wall", tile: (id: "r-wall", solid: true)),
+        (path: "/turf/simulated/wall/heatshield", tile: (id: "r-wall", solid: true)),
+    ],
+
+    // Grilles and windows (including Luna's one-sided panes) make a window tile.
+    windows: ["/obj/structure/grille", "/obj/structure/window", "/obj/structure/window_pod"],
+    window_tile: (id: "window", solid: true, opaque: false),
+
+    objects: [
+        (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),
+        (path: "/obj/machinery/power/apc", id: "apc"),
+        (path: "/obj/machinery/power/smes", id: "smes"),
+        (path: "/obj/cabling/power", id: "cable"),
+        (path: "/obj/machinery/alarm", id: "air-alarm"),
+
+        (path: "/obj/item/weapon/screwdriver", id: "screwdriver"),
+        (path: "/obj/item/weapon/wrench", id: "wrench"),
+        (path: "/obj/item/weapon/crowbar", id: "crowbar"),
+        (path: "/obj/item/weapon/wirecutters", id: "wirecutters"),
+        (path: "/obj/item/device/multitool", id: "multitool"),
+        (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
+        (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
+        (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),
+        (path: "/obj/item/clothing/suit/space/rig", id: "space-suit"),
+        (path: "/obj/item/clothing/head/helmet/space/rig", id: "space-helmet"),
+        (path: "/obj/item/weapon/tank/oxygen", id: "oxygen-tank"),
+
+        // Containers we can't model yet: their tools lie on the tile instead
+        // (luna:code/game/objects/storage/toolbox.dm and belts.dm, without the items we
+        // have no prototype for).
+        (path: "/obj/item/weapon/storage/toolbox/mechanical", contents: [
+            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
+        ]),
+        (path: "/obj/item/weapon/storage/toolbox/electrical", contents: [
+            (id: "screwdriver"), (id: "wirecutters"), (id: "crowbar"),
+        ]),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded", contents: [
+            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
+        ]),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded/full", contents: [
+            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
+            (id: "multitool"),
+        ]),
+    ],
+
+    // Luna's Engineer start points. Until jobs exist, an engineer's ID card lies on each
+    // (Luna's Engineer access, luna:code/game/jobs/access.dm).
+    spawns: [
+        (path: "/obj/effect/landmark/start", with: [
+            (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]),
+        ]),
+    ],
+
+    // Not worth reporting: decorations, mapping helpers, things on space tiles.
+    ignore: [
+        "/obj/effect/decal",
+        "/obj/effect/landmark/derelict",
+        "/obj/structure/lattice",
+    ],
+
+    areas: {
+        "/area/engine/engine_hallway": "engine-hallway",
+        "/area/engine/engine_control": "engine-control",
+        "/area/engine/engine_mon": "engine-monitoring",
+        "/area/engine/combustion": "engine-combustion",
+        "/area/engine/engine_walls": "engine-walls",
+        "/area/storage/electrical": "electrical-storage",
+        "/area/crew_quarters/chief": "chief-engineer",
+        "/area/maintenance/fsmaint3": "maint-fore-starboard",
+        "/area/maintenance/starboard1": "maint-starboard",
+        "/area/maintenance/port3": "maint-port",
+        "/area/maintenance/pmaintcentral3": "maint-port-central",
+        "/area/shieldgen": "shield-generation",
+        "/area/hangar/escape/crew": "escape-hangar",
+    },
+
+    // Luna access numbers (luna:code/game/jobs/access.dm) → our ids; as in
+    // game/classic/content/access.ron.
+    access: {
+        1: "security", 2: "brig", 3: "armory", 5: "medical", 6: "morgue", 7: "tox",
+        10: "engine", 11: "engine_equip", 12: "maint_tunnels", 13: "external_airlocks",
+        14: "emergency_storage", 15: "change_ids", 18: "eva", 19: "heads", 20: "captain",
+        23: "tech_storage", 24: "atmospherics", 32: "construction",
+    },
+)

@@ -29,6 +29,10 @@ use rs13_world::{AlarmPanelView, DisplayName, GridPos, MapLayer, NetId, TileMap,
 #[derive(Resource)]
 struct Port(u16);
 
+/// The map to load, in the RON map format.
+#[derive(Resource)]
+struct MapText(&'static str);
+
 /// On a client's link entity: the mob that client controls.
 #[derive(Component)]
 struct Controls(Entity);
@@ -45,8 +49,14 @@ struct SentPanel(Option<WirePanelView>, Option<AlarmPanelView>);
 #[derive(Component)]
 struct NameChosen;
 
-/// A server listening on UDP `port`, ready to `run()`. Logging is left to the caller.
+/// A server listening on UDP `port` with the engineering chamber, ready to `run()`.
+/// Logging is left to the caller.
 pub fn server_app(port: u16) -> App {
+    server_app_with_map(port, maps::ENGINEERING_CHAMBER)
+}
+
+/// A server listening on UDP `port` with the given map (RON map format).
+pub fn server_app_with_map(port: u16, map: &'static str) -> App {
     let mut app = App::new();
     app.add_plugins((
         // Wake often enough to service the network; the game itself runs on fixed ticks.
@@ -55,6 +65,7 @@ pub fn server_app(port: u16) -> App {
     ))
     .add_plugins((ServerNetworkPlugin, ClassicPlugin))
     .insert_resource(Port(port))
+    .insert_resource(MapText(map))
     .add_systems(Startup, (load_map, listen))
     .add_observer(replicate_net_entities)
     .add_observer(spawn_player)
@@ -74,7 +85,8 @@ pub fn server_app(port: u16) -> App {
 }
 
 fn load_map(world: &mut World) {
-    let map = TileMap::from_ron(maps::ENGINEERING_CHAMBER, 0).expect("built-in map is valid");
+    let text = world.resource::<MapText>().0;
+    let map = TileMap::from_ron(text, 0).expect("built-in map is valid");
     info!(
         width = map.width,
         height = map.height,

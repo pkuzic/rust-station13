@@ -104,7 +104,7 @@ pub fn state_for(appearance: &Appearance) -> String {
 pub fn wall_state(map: &TileMap, pos: TilePos) -> String {
     let wall = |dx: i32, dy: i32| {
         map.tile(TilePos::new(pos.x + dx, pos.y + dy, pos.z))
-            .is_some_and(|t| t.id == "wall")
+            .is_some_and(|t| t.id == "wall" || t.id == "r-wall")
     };
     let junction = u8::from(wall(0, 1))
         | u8::from(wall(0, -1)) << 1

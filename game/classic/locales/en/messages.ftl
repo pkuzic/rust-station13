@@ -185,3 +185,17 @@ alarm-no-vents = No vents connected!
 # Area names.
 area-engineering = Engineering
 area-eng-storage = Engineering storage
+# NSV Luna's engineering section (Luna's area names).
+area-engine-hallway = Engine Hallway
+area-engine-control = Engine Control
+area-engine-monitoring = Engine Monitoring
+area-engine-combustion = Engine Combustion Chamber
+area-engine-walls = Engine Walls
+area-electrical-storage = Electrical Storage
+area-chief-engineer = Chief Engineer's Office
+area-maint-fore-starboard = Engineering Deck Fore Starboard Maintenance
+area-maint-starboard = Sub Deck Starboard Maintenance
+area-maint-port = Engineering Deck Port Maintenance
+area-maint-port-central = Engineering Port Central Maintenance
+area-shield-generation = Shield Generation
+area-escape-hangar = Crew Escape Hangar

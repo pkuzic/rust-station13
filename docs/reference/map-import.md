@@ -1,0 +1,71 @@
+# Importing maps from Luna
+
+Tool: `tools/dmm-import` (`rs13-dmm-import`).
+Rules: `game/classic/maps/luna_engineering.import.ron`.
+Output: `game/classic/maps/luna_engineering.ron`.
+Tests: `tools/dmm-import/src/lib.rs`, `game/classic/tests/luna_map.rs`.
+
+```sh
+cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
+    game/classic/maps/luna_engineering.import.ron game/classic/maps/luna_engineering.ron
+cargo run -p rs13-server -- --map luna-engineering
+```
+
+## How it works
+
+**Reading the map:**
+- A `.dmm` file is a dictionary of tile keys, each a list of atoms (type path plus the
+  variables the map overrides), followed by one grid of keys per z level.
+- NSV Luna's map has 8 levels of 90 × 149 tiles. Decks 1–4 are the station; engineering is
+  on deck 2.
+
+**Region:** the rules pick a z level and a block of columns and rows of the file's text,
+counted from 0 with the top row first.
+
+**Each tile becomes:**
+- **Tile:** from its turf, by the longest matching type-path prefix.
+- **Window:** a grille or any window on the tile makes it a window tile instead (solid, see-through).
+- **Objects:** from the object rules, again by longest matching prefix.
+  - An airlock's `req_access_txt` (Luna access numbers separated by `;`) becomes our access ids.
+  - A container we can't model yet places its contents loose on its tile instead.
+- **Spawns:** a landmark rule makes the tile a spawn and can place things there.
+- **Area:** from the area table.
+
+**Output:**
+- Our RON map format, with a generated legend. Plain tiles get memorable characters (space,
+  `.`, `,`, `#`, `X`, `=`), and the rest come from a pool.
+- Anything the rules don't map is skipped and listed at the top of the output, which makes
+  it a to-do list for content.
+- The tool checks that the result loads before writing it.
+
+## The engineering section
+
+**Region:** deck 2, columns 23–56 and rows 56–80, giving a 34 × 25 map. It holds:
+- the engine hallway, control room, monitoring room and core;
+- electrical storage;
+- the Chief Engineer's office;
+- bits of the surrounding maintenance.
+
+**What came across:**
+- **Tiles:** floors, plating, walls, reinforced and heat-shield walls (both drawn as reinforced), windows and space.
+- **Airlocks:** with Luna's access, for example the Chief Engineer's office needs `construction`. External airlocks have no access in Luna either.
+- **Power:**
+  - APCs, SMES units and all of Luna's cabling. Every APC's area is powered from the engine's SMES.
+  - Air alarms.
+- **Items:** screwdrivers, wrenches, insulated gloves, breath masks, the engineering hardsuits (as our space suit and helmet) and oxygen tanks.
+- **Toolboxes and utility belts:** their tools lie on the tile, minus welders, cable coils and scanners, which have no prototype yet.
+- **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
+
+**Skipped for now** (120 types, listed in the generated file):
+- **Atmos piping:** every pipe, vent, scrubber, tank and filter. Our pipes connect to every neighbour, so Luna's parallel supply, scrubber and coolant lines would merge into one network. They come back once pipes have directions.
+- **Furniture and structures:** tables, racks, closets, chairs.
+- **Machines:** computers, vending machines, the engine itself, lights, cameras, firedoors, disposals.
+- **Stairs and ladders:** multi-z.
+- **Most items.**
+
+## Limits
+
+- The core floor (`floor/engine/vacuum`) starts with air, because every zone does.
+- Luna's `req_access_txt` lists every access a door needs, but our doors open for any one. In this region every door needs a single access, so the result is the same.
+- The map stops at the region's edge. Tiles beyond it count as solid, so corridors that leave the section end in an invisible wall.
+- Cables connect to every neighbouring cable, ignoring Luna's directions. Power lines that run side by side are joined.

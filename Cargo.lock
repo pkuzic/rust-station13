@@ -7318,6 +7318,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rs13-dmm-import"
+version = "0.1.0"
+dependencies = [
+ "ron",
+ "rs13-world",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "rs13-headless"
 version = "0.1.0"
 dependencies = [
