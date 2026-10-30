@@ -337,7 +337,10 @@ pub fn process_actions(
                             } else {
                                 "canister-disconnected"
                             };
-                            outbox.0.push(LocMsg::new(id).arg("item", "canister"));
+                            let noun = appearances
+                                .get(target)
+                                .map_or("canister", |(a, _)| a.sprite.as_str());
+                            outbox.0.push(LocMsg::new(id).arg("item", noun));
                         }
                     } else if let Ok(mut apc) = apcs.get_mut(target) {
                         let card = hands.active_item().and_then(|e| cards.get(e).ok());

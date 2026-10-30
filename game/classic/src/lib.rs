@@ -138,6 +138,7 @@ impl Plugin for ClassicPlugin {
                     alarms::update_alarm_views,
                     storage::update_storage_views,
                     machines::update_machine_looks,
+                    machines::update_canister_looks,
                     power::update_power_looks,
                     cables::update_cable_looks,
                     floors::hide_under_floors,

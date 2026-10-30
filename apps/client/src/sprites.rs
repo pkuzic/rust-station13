@@ -163,10 +163,12 @@ pub fn join_lines(
     }
     let links = |kind: &str, sprite: &str| match kind {
         "cable" => matches!(sprite, "cable" | "smes" | "apc"),
-        _ => matches!(
-            sprite,
-            "pipe" | "manifold" | "valve" | "pump" | "air-tank" | "vent" | "scrubber" | "connector"
-        ),
+        _ => {
+            matches!(
+                sprite,
+                "pipe" | "manifold" | "valve" | "pump" | "vent" | "scrubber" | "connector"
+            ) || rs13_classic::machines::is_pipe_tank(sprite)
+        }
     };
     for (pos, appearance, mut look) in &mut lines {
         let kind = appearance.sprite.as_str();

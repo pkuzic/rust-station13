@@ -4,7 +4,7 @@
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 use bevy_ecs::prelude::*;
-use rs13_simulation::atmos::gas::{ONE_ATMOSPHERE, R, TILE_VOLUME};
+use rs13_simulation::atmos::gas::{ONE_ATMOSPHERE, R, T20C, TILE_VOLUME};
 use rs13_simulation::atmos::{Gas, GasMix};
 use rs13_world::{Appearance, Dir, GridPos, TilePos};
 
@@ -26,6 +26,26 @@ pub const TANK_PRESSURE: f64 = 9_000.0;
 pub const CANISTER_VOLUME: f64 = 1_000.0;
 /// Starting pressure of an air canister, kPa.
 pub const CANISTER_PRESSURE: f64 = 4_500.0;
+/// Litres of one of Luna's gas pressure tanks (`pipe/tank`: 0.9 m by 0.9 m by 2 m).
+pub const GAS_TANK_VOLUME: f64 = 2_620.0;
+/// Starting pressure of a gas pressure tank, kPa (Luna: 2 × 35 atm).
+pub const GAS_TANK_PRESSURE: f64 = 70.0 * ONE_ATMOSPHERE;
+/// Luna's gas pressure tanks, and the gas each is filled with.
+pub const GAS_TANKS: [(&str, Gas); 4] = [
+    ("oxygen-pressure-tank", Gas::Oxygen),
+    ("nitrogen-pressure-tank", Gas::Nitrogen),
+    ("carbon-dioxide-pressure-tank", Gas::CarbonDioxide),
+    ("plasma-pressure-tank", Gas::Plasma),
+];
+/// Luna's canisters of one gas, and the gas each is filled with. The plain `canister`
+/// holds air.
+pub const GAS_CANISTERS: [(&str, Gas); 5] = [
+    ("oxygen-canister", Gas::Oxygen),
+    ("nitrogen-canister", Gas::Nitrogen),
+    ("carbon-dioxide-canister", Gas::CarbonDioxide),
+    ("plasma-canister", Gas::Plasma),
+    ("nitrous-oxide-canister", Gas::NitrousOxide),
+];
 /// Default output pressure of a gas pump, kPa.
 pub const PUMP_TARGET: f64 = 300.0;
 /// Litres of room air a scrubber processes per cycle (SS13 `volume_rate`).
@@ -194,6 +214,38 @@ impl PipeNets {
 /// Air at `pressure` kPa and 20 °C in `volume` litres.
 pub fn air_at_pressure(volume: f64, pressure: f64) -> GasMix {
     GasMix::standard_air(volume).scaled(pressure / ONE_ATMOSPHERE)
+}
+
+/// One gas alone at `pressure` kPa and 20 °C in `volume` litres.
+pub fn gas_at_pressure(gas: Gas, volume: f64, pressure: f64) -> GasMix {
+    let mut mix = GasMix::default();
+    mix.temperature = T20C;
+    mix.set(gas, pressure * volume / (R * T20C));
+    mix
+}
+
+/// Is this sprite a pipe tank (air or one gas)? Tanks are pipe pieces meters sit on.
+pub fn is_pipe_tank(sprite: &str) -> bool {
+    sprite == "air-tank" || GAS_TANKS.iter().any(|(id, _)| *id == sprite)
+}
+
+/// Is this sprite a canister (air or one gas)?
+pub fn is_canister(sprite: &str) -> bool {
+    sprite == "canister" || GAS_CANISTERS.iter().any(|(id, _)| *id == sprite)
+}
+
+/// Luna's canister gauge light: `can-o0` below 10 kPa, `can-o1` below one atmosphere,
+/// `can-o2` below 15 atm, `can-o3` above.
+pub fn canister_light(kpa: f64) -> u8 {
+    if kpa < 10.0 {
+        0
+    } else if kpa < ONE_ATMOSPHERE {
+        1
+    } else if kpa < 15.0 * ONE_ATMOSPHERE {
+        2
+    } else {
+        3
+    }
 }
 
 /// SS13's pump formula: moles to move from gas at `source_temperature` into `volume`
@@ -406,8 +458,10 @@ pub fn run_machines(
     }
 }
 
-/// Keep machine sprites in step with their switches.
-pub fn update_machine_looks(mut machines: Query<(&Switch, &mut Appearance, Has<Valve>), Changed<Switch>>) {
+/// Keep machine sprites in step with their switches. Canisters show their gauge instead.
+pub fn update_machine_looks(
+    mut machines: Query<(&Switch, &mut Appearance, Has<Valve>), (Changed<Switch>, Without<Canister>)>,
+) {
     for (switch, mut appearance, is_valve) in &mut machines {
         let state = match (is_valve, switch.0) {
             (true, true) => "open",
@@ -419,6 +473,41 @@ pub fn update_machine_looks(mut machines: Query<(&Switch, &mut Appearance, Has<V
             appearance.state = state.to_owned();
         }
     }
+}
+
+/// A canister shows its gauge light, and the connector when it is on a port (Luna
+/// `canister/update_icon`).
+pub fn update_canister_looks(
+    nets: Res<PipeNets>,
+    mut canisters: Query<(Entity, &PipeMember, &GasStore, &mut Appearance), With<Canister>>,
+) {
+    for (entity, member, store, mut look) in &mut canisters {
+        let kpa = nets.gauge(entity, Some(store), member.volume);
+        let mut state = format!("+can-o{}", canister_light(kpa));
+        if member.open {
+            state.push_str("+can-connector");
+        }
+        if look.state != state {
+            look.state = state;
+        }
+    }
+}
+
+/// A canister of air or of one gas, released into the room toward one atmosphere.
+fn canister(sprite: &'static str, gas: GasMix) -> MachineSpawn {
+    MachineSpawn::new(sprite, "+can-o3")
+        .switch(false)
+        // Starts connected if spawned on a port (`spawn_map` checks).
+        .member(PipeMember {
+            volume: CANISTER_VOLUME,
+            open: false,
+            connects: ALL_SIDES,
+        })
+        .gas(gas)
+        .canister(Canister {
+            release_target: ONE_ATMOSPHERE,
+        })
+        .dense()
 }
 
 /// The components a machine prototype spawns with, or `None` if `proto` is not a machine.
@@ -480,20 +569,19 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .member(device)
             .scrubber(),
         "connector" => MachineSpawn::new("connector", "").member(device).connector(),
-        "canister" => MachineSpawn::new("canister", "off")
-            .switch(false)
-            // Starts connected if spawned on a port (`spawn_object` checks).
-            .member(PipeMember {
-                volume: CANISTER_VOLUME,
-                open: false,
-                connects: ALL_SIDES,
-            })
-            .gas(air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE))
-            .canister(Canister {
-                release_target: ONE_ATMOSPHERE,
-            })
-            .dense(),
-        _ => return None,
+        "canister" => canister("canister", air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE)),
+        _ => {
+            if let Some(&(id, gas)) = GAS_TANKS.iter().find(|(id, _)| *id == proto) {
+                MachineSpawn::new(id, "")
+                    .member(member(GAS_TANK_VOLUME))
+                    .gas(gas_at_pressure(gas, GAS_TANK_VOLUME, GAS_TANK_PRESSURE))
+                    .dense()
+            } else if let Some(&(id, gas)) = GAS_CANISTERS.iter().find(|(id, _)| *id == proto) {
+                canister(id, gas_at_pressure(gas, CANISTER_VOLUME, CANISTER_PRESSURE))
+            } else {
+                return None;
+            }
+        }
     })
 }
 
@@ -624,7 +712,6 @@ impl MachineSpawn {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rs13_simulation::atmos::gas::T20C;
 
     #[test]
     fn tank_and_canister_hold_what_they_say() {

@@ -477,7 +477,66 @@
             "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0", dir: 2),
         },
         "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
-        "air-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact", dir: 2) },
-        "canister": { "": (dmi: "icons/obj/atmos.dmi", state: "grey") },
+        // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).
+        "air-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact", dir: 2) },
+        "oxygen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/blue_pipe_tank.dmi", state: "intact", dir: 2) },
+        "nitrogen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact", dir: 2) },
+        "carbon-dioxide-pressure-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact", dir: 2) },
+        "plasma-pressure-tank": { "": (dmi: "icons/obj/atmospherics/orange_pipe_tank.dmi", state: "intact", dir: 2) },
+        // Canisters: one colour per gas; grey is air.
+        "canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "grey"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
+        "oxygen-canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "blue"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
+        "nitrogen-canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "red"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
+        "carbon-dioxide-canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "black"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
+        "plasma-canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "orange"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
+        "nitrous-oxide-canister": {
+            "": (dmi: "icons/obj/atmos.dmi", state: "redws"),
+            // Overlays: the gauge light, and the connector while on a port.
+            "can-o0": (dmi: "icons/obj/atmos.dmi", state: "can-o0"),
+            "can-o1": (dmi: "icons/obj/atmos.dmi", state: "can-o1"),
+            "can-o2": (dmi: "icons/obj/atmos.dmi", state: "can-o2"),
+            "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
+            "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
+        },
     },
 )

@@ -23,7 +23,7 @@ pub struct Meter {
 
 /// The pipe pieces a meter can sit on (Luna `/obj/machinery/atmospherics/pipe`).
 fn is_pipe(sprite: &str) -> bool {
-    matches!(sprite, "pipe" | "manifold" | "air-tank")
+    matches!(sprite, "pipe" | "manifold") || crate::machines::is_pipe_tank(sprite)
 }
 
 /// Luna's dial: one of six steps in each pressure band.

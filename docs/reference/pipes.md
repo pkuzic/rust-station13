@@ -54,7 +54,7 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 | **Air vent** (on a pipe) | Lets network gas into the room toward its target (101.325 kPa): `Δp = min(target − P_room, P_pipe − P_room)`, `moles = Δp × 2500 L / (T × R)`. Click to switch on/off. |
 | **Air scrubber** (on a pipe) | Takes 120 L of the tile's air (SS13 `volume_rate`) and moves its CO₂, plasma and N₂O into the network. Click to switch on/off. |
 | **Connector port** (on a pipe) | A canister on it can be connected with a wrench. |
-| **Canister** | Click to open or close its release valve. While disconnected and open, it releases into the room toward 101.325 kPa, by the vent formula. Wrench it on or off a port. |
+| **Canister** | Click to open or close its release valve. While disconnected and open, it releases into the room toward 101.325 kPa, by the vent formula. Wrench it on or off a port. Canisters of one gas, and pressure tanks of one gas: `gas-tanks.md`. |
 
 **Breach lockout.** Vents do not run while their zone is losing gas to space, either directly or through an open door into a leaking zone. This keeps the station's air from pouring out of a hole. Panic fill from an air alarm overrides it (`air-alarm.md`).
 
@@ -85,5 +85,5 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 - Heat exchangers.
 - Vents in siphon mode.
 - Console UIs, and air alarm control of vent and scrubber settings.
-- Canisters of other gases.
+- Canister pressure and damage, labels, and holding a tank in a canister.
 - Pulling and dragging canisters.
