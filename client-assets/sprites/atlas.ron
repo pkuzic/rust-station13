@@ -970,7 +970,7 @@
                 ],
             ),
         },
-        "tile:plating": {
+        "tile:grille": {
             "": (
                 dirs: 1,
                 frames: 1,
@@ -980,8 +980,8 @@
                 ],
             ),
         },
-        "tile:space": {
-            "0": (
+        "tile:plating": {
+            "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -989,7 +989,9 @@
                     165,
                 ],
             ),
-            "1": (
+        },
+        "tile:r-wall": {
+            "0": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -997,7 +999,7 @@
                     166,
                 ],
             ),
-            "2": (
+            "1": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -1005,7 +1007,7 @@
                     167,
                 ],
             ),
-            "3": (
+            "10": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -1013,12 +1015,150 @@
                     168,
                 ],
             ),
-            "4": (
+            "11": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
                     169,
+                ],
+            ),
+            "12": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    170,
+                ],
+            ),
+            "13": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    171,
+                ],
+            ),
+            "14": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    172,
+                ],
+            ),
+            "15": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    173,
+                ],
+            ),
+            "2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    174,
+                ],
+            ),
+            "3": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    175,
+                ],
+            ),
+            "4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    176,
+                ],
+            ),
+            "5": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    177,
+                ],
+            ),
+            "6": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    178,
+                ],
+            ),
+            "7": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    179,
+                ],
+            ),
+            "8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    180,
+                ],
+            ),
+            "9": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    181,
+                ],
+            ),
+        },
+        "tile:space": {
+            "0": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    182,
+                ],
+            ),
+            "1": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    183,
+                ],
+            ),
+            "2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    184,
+                ],
+            ),
+            "3": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    185,
+                ],
+            ),
+            "4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    186,
                 ],
             ),
         },
@@ -1028,7 +1168,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    170,
+                    187,
                 ],
             ),
             "1": (
@@ -1036,7 +1176,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    171,
+                    188,
                 ],
             ),
             "10": (
@@ -1044,7 +1184,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    172,
+                    189,
                 ],
             ),
             "11": (
@@ -1052,7 +1192,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    173,
+                    190,
                 ],
             ),
             "12": (
@@ -1060,7 +1200,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    174,
+                    191,
                 ],
             ),
             "13": (
@@ -1068,7 +1208,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    175,
+                    192,
                 ],
             ),
             "14": (
@@ -1076,7 +1216,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    176,
+                    193,
                 ],
             ),
             "15": (
@@ -1084,7 +1224,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    177,
+                    194,
                 ],
             ),
             "2": (
@@ -1092,7 +1232,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    178,
+                    195,
                 ],
             ),
             "3": (
@@ -1100,7 +1240,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    179,
+                    196,
                 ],
             ),
             "4": (
@@ -1108,7 +1248,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    180,
+                    197,
                 ],
             ),
             "5": (
@@ -1116,7 +1256,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    181,
+                    198,
                 ],
             ),
             "6": (
@@ -1124,7 +1264,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    182,
+                    199,
                 ],
             ),
             "7": (
@@ -1132,7 +1272,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    183,
+                    200,
                 ],
             ),
             "8": (
@@ -1140,7 +1280,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    184,
+                    201,
                 ],
             ),
             "9": (
@@ -1148,7 +1288,24 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    185,
+                    202,
+                ],
+            ),
+        },
+        "tile:window": {
+            "": (
+                dirs: 8,
+                frames: 1,
+                delays: [],
+                cells: [
+                    203,
+                    204,
+                    205,
+                    206,
+                    207,
+                    208,
+                    209,
+                    210,
                 ],
             ),
         },
@@ -1158,7 +1315,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    186,
+                    211,
                 ],
             ),
             "open": (
@@ -1166,7 +1323,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    187,
+                    212,
                 ],
             ),
         },
@@ -1176,7 +1333,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    188,
+                    213,
                 ],
             ),
             "on": (
@@ -1193,14 +1350,14 @@
                     1.0,
                 ],
                 cells: [
-                    189,
-                    190,
-                    191,
-                    192,
-                    193,
-                    194,
-                    195,
-                    196,
+                    214,
+                    215,
+                    216,
+                    217,
+                    218,
+                    219,
+                    220,
+                    221,
                 ],
             ),
         },
@@ -1210,116 +1367,11 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    197,
-                ],
-            ),
-        },
-        "worn:black-shoes": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    198,
-                    199,
-                    200,
-                    201,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    202,
-                ],
-            ),
-        },
-        "worn:breath-mask": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    203,
-                    204,
-                    205,
-                    206,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    207,
-                ],
-            ),
-        },
-        "worn:emergency-oxygen": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    208,
-                    209,
-                    210,
-                    211,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    212,
-                ],
-            ),
-        },
-        "worn:grey-jumpsuit": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    213,
-                    214,
-                    215,
-                    216,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    217,
-                ],
-            ),
-        },
-        "worn:id-card": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    218,
-                    219,
-                    220,
-                    221,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
                     222,
                 ],
             ),
         },
-        "worn:insulated-gloves": {
+        "worn:black-shoes": {
             "": (
                 dirs: 4,
                 frames: 1,
@@ -1340,7 +1392,7 @@
                 ],
             ),
         },
-        "worn:insulated-gloves:l": {
+        "worn:breath-mask": {
             "": (
                 dirs: 4,
                 frames: 1,
@@ -1361,7 +1413,7 @@
                 ],
             ),
         },
-        "worn:oxygen-tank": {
+        "worn:emergency-oxygen": {
             "": (
                 dirs: 4,
                 frames: 1,
@@ -1382,7 +1434,7 @@
                 ],
             ),
         },
-        "worn:space-helmet": {
+        "worn:grey-jumpsuit": {
             "": (
                 dirs: 4,
                 frames: 1,
@@ -1403,7 +1455,7 @@
                 ],
             ),
         },
-        "worn:space-suit": {
+        "worn:id-card": {
             "": (
                 dirs: 4,
                 frames: 1,
@@ -1424,13 +1476,118 @@
                 ],
             ),
         },
+        "worn:insulated-gloves": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    248,
+                    249,
+                    250,
+                    251,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    252,
+                ],
+            ),
+        },
+        "worn:insulated-gloves:l": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    253,
+                    254,
+                    255,
+                    256,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    257,
+                ],
+            ),
+        },
+        "worn:oxygen-tank": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    258,
+                    259,
+                    260,
+                    261,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    262,
+                ],
+            ),
+        },
+        "worn:space-helmet": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    263,
+                    264,
+                    265,
+                    266,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    267,
+                ],
+            ),
+        },
+        "worn:space-suit": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    268,
+                    269,
+                    270,
+                    271,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    272,
+                ],
+            ),
+        },
         "wrench": {
             "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
-                    248,
+                    273,
                 ],
             ),
         },

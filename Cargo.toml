@@ -13,6 +13,7 @@ members = [
     "engine/i18n",
     "game/classic",
     "tools/dmi-import",
+    "tools/dmm-import",
 ]
 
 [workspace.package]

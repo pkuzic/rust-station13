@@ -1,6 +1,6 @@
 //! The shipped locales load, cover the same messages, and Russian nouns are fully declined.
 
-use rs13_classic::locales;
+use rs13_classic::{locales, maps};
 use rs13_i18n::{Args, Lexicon, Localizer, langid};
 
 fn ru() -> Localizer {
@@ -118,4 +118,17 @@ fn attack_message_declines_item_and_body_part() {
         en().format("attacked-with", Some(&args)).unwrap(),
         "Bob Barnes has been attacked in the left arm with the crowbar by Alice Abbott!"
     );
+}
+
+#[test]
+fn every_area_of_every_map_has_a_name() {
+    for map in [maps::ENGINEERING_CHAMBER, maps::LUNA_ENGINEERING] {
+        let map = rs13_world::TileMap::from_ron(map, 0).unwrap();
+        for area in &map.area_names {
+            for loc in [en(), ru()] {
+                let id = format!("area-{area}");
+                assert!(loc.format(&id, None).is_ok(), "{id} is missing");
+            }
+        }
+    }
 }

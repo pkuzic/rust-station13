@@ -41,6 +41,9 @@ pub mod locales {
 /// Maps shipped with the classic build.
 pub mod maps {
     pub const ENGINEERING_CHAMBER: &str = include_str!("../maps/engineering_chamber.ron");
+    /// NSV Luna's engineering section, imported from `NSV_Luna.dmm` (see
+    /// `maps/luna_engineering.import.ron`).
+    pub const LUNA_ENGINEERING: &str = include_str!("../maps/luna_engineering.ron");
 }
 
 /// Server-side game rules. Runs every fixed tick.

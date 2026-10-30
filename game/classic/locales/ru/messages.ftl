@@ -196,3 +196,17 @@ alarm-no-vents = Вентиляция не подключена!
 # Названия зон.
 area-engineering = Инженерный отсек
 area-eng-storage = Инженерный склад
+# Инженерная секция NSV Luna.
+area-engine-hallway = Коридор двигателя
+area-engine-control = Управление двигателем
+area-engine-monitoring = Наблюдение за двигателем
+area-engine-combustion = Камера сгорания
+area-engine-walls = Стены двигателя
+area-electrical-storage = Электрический склад
+area-chief-engineer = Кабинет главного инженера
+area-maint-fore-starboard = Носовое правое техобслуживание инженерной палубы
+area-maint-starboard = Правое техобслуживание нижней палубы
+area-maint-port = Левое техобслуживание инженерной палубы
+area-maint-port-central = Центральное левое техобслуживание инженерной палубы
+area-shield-generation = Генератор щитов
+area-escape-hangar = Ангар эвакуации экипажа

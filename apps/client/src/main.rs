@@ -412,6 +412,7 @@ fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLay
                 let Some(tile) = map.tile(pos) else { continue };
                 let (sprite, state) = match tile.id.as_str() {
                     "wall" => ("tile:wall", sprites::wall_state(map, pos)),
+                    "r-wall" => ("tile:r-wall", sprites::wall_state(map, pos)),
                     "space" => ("tile:space", sprites::space_state(pos)),
                     other => (
                         if other == "floor" {
@@ -423,6 +424,15 @@ fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLay
                     ),
                 };
                 let transform = Transform::from_translation(world_pos(pos, 0.0));
+                // A window tile: grille and glass over the plating.
+                if tile.id == "window" {
+                    for (layer, part) in ["tile:grille", "tile:window"].into_iter().enumerate() {
+                        if let Some(image) = atlas.sprite(part, "", 0) {
+                            let z = 0.001 * (layer + 1) as f32;
+                            commands.spawn((image, Transform::from_translation(world_pos(pos, z))));
+                        }
+                    }
+                }
                 match atlas.sprite(sprite, &state, 0) {
                     Some(image) => commands.spawn((image, transform)),
                     None => commands.spawn((
