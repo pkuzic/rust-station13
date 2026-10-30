@@ -17,6 +17,7 @@ pub mod furniture;
 pub mod hands;
 pub mod health;
 pub mod machines;
+pub mod meters;
 pub mod movement;
 pub mod names;
 pub mod objects;
@@ -115,6 +116,7 @@ impl Plugin for ClassicPlugin {
                     power::rebuild_powernets,
                     power::power_cycle,
                     machines::run_machines,
+                    meters::update_meters,
                     alarms::process_alarms,
                     atmos::step_atmos,
                     atmos::space_wind,

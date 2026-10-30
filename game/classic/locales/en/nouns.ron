@@ -16,6 +16,7 @@
     "table-parts-reinforced": (gender: neuter, sg: (nom: "reinforced table parts", indef: "reinforced table parts"), pl: Some((nom: "reinforced table parts"))),
     "table-parts-wood": (gender: neuter, sg: (nom: "wooden table parts", indef: "wooden table parts"), pl: Some((nom: "wooden table parts"))),
     "rack-parts": (gender: neuter, sg: (nom: "rack parts", indef: "rack parts"), pl: Some((nom: "rack parts"))),
+    "meter": (gender: neuter, sg: (nom: "pressure meter", indef: "a pressure meter"), pl: Some((nom: "pressure meters"))),
     "welder": (gender: neuter, sg: (nom: "welding tool", indef: "a welding tool"), pl: Some((nom: "welding tools"))),
     "fuel-tank": (gender: neuter, sg: (nom: "fuel tank", indef: "a fuel tank"), pl: Some((nom: "fuel tanks"))),
     "wirecutters": (gender: plural, sg: (nom: "wirecutters", indef: "a pair of wirecutters")),

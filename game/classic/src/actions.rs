@@ -104,7 +104,7 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture): (
+    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture, meters): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
@@ -112,6 +112,7 @@ pub fn process_actions(
         crate::welding::WeldWork,
         Query<&GridPos>,
         crate::furniture::FurnitureWork,
+        Query<(&GridPos, &crate::meters::Meter, &crate::power::PowerUser)>,
     ),
     mut commands: Commands,
 ) {
@@ -205,6 +206,9 @@ pub fn process_actions(
                         if let Some(more) = welding.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = crate::meters::examine(target, &meters) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -246,6 +250,13 @@ pub fn process_actions(
                         outbox.0.extend(outcome.to_mob);
                     }
                     furniture.use_self(mob_pos.0, &mut hands, target, &mut commands);
+                }
+                Action::UseOn(target) if meters.contains(target) => {
+                    // A meter reads out to anyone clicking it nearby, whatever they hold
+                    // (`meters.md`).
+                    if let Some(said) = crate::meters::click(mob_pos.0, target, &meters) {
+                        outbox.0.extend(said);
+                    }
                 }
                 Action::UseOn(target) => {
                     // Containers, their contents and things the mob carries
