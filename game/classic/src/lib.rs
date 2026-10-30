@@ -16,6 +16,7 @@ pub mod floors;
 pub mod furniture;
 pub mod hands;
 pub mod health;
+pub mod lights;
 pub mod machines;
 pub mod meters;
 pub mod movement;
@@ -71,6 +72,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<wires::WireLayout>()
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
+            .init_resource::<lights::AreaLights>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -115,6 +117,7 @@ impl Plugin for ClassicPlugin {
                     machines::rebuild_networks,
                     power::rebuild_powernets,
                     power::power_cycle,
+                    lights::run_lights,
                     machines::run_machines,
                     meters::update_meters,
                     alarms::process_alarms,
@@ -143,6 +146,7 @@ impl Plugin for ClassicPlugin {
                     cables::update_cable_looks,
                     floors::hide_under_floors,
                     welding::update_welder_looks,
+                    lights::update_light_looks,
                 )
                     .in_set(TickSet::Publish),
             );

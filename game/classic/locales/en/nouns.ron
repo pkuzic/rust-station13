@@ -61,6 +61,14 @@
     "nitrous-oxide-canister": (gender: neuter, sg: (nom: "nitrous oxide canister", indef: "a nitrous oxide canister"), pl: Some((nom: "nitrous oxide canisters"))),
     "smes": (gender: neuter, sg: (nom: "SMES", indef: "a SMES unit"), pl: Some((nom: "SMES units"))),
     "cable": (gender: neuter, sg: (nom: "power cable", indef: "a power cable"), pl: Some((nom: "power cables"))),
+    // Lights.
+    "light": (gender: neuter, sg: (nom: "light fixture", indef: "a light fixture"), pl: Some((nom: "light fixtures"))),
+    "light-small": (gender: neuter, sg: (nom: "small light fixture", indef: "a small light fixture"), pl: Some((nom: "small light fixtures"))),
+    "light-switch": (gender: neuter, sg: (nom: "light switch", indef: "a light switch"), pl: Some((nom: "light switches"))),
+    "light-tube": (gender: neuter, sg: (nom: "light tube", indef: "a light tube"), pl: Some((nom: "light tubes"))),
+    "light-bulb": (gender: neuter, sg: (nom: "light bulb", indef: "a light bulb"), pl: Some((nom: "light bulbs"))),
+    "light-tubes-box": (gender: neuter, sg: (nom: "box of replacement tubes", indef: "a box of replacement tubes"), pl: Some((nom: "boxes of replacement tubes"))),
+    "light-bulbs-box": (gender: neuter, sg: (nom: "box of replacement bulbs", indef: "a box of replacement bulbs"), pl: Some((nom: "boxes of replacement bulbs"))),
     // Clothing and gas tanks.
     "emergency-oxygen": (gender: neuter, sg: (nom: "emergency oxygen tank", indef: "an emergency oxygen tank"), pl: Some((nom: "emergency oxygen tanks"))),
     "grey-jumpsuit": (gender: neuter, sg: (nom: "grey jumpsuit", indef: "a grey jumpsuit"), pl: Some((nom: "grey jumpsuits"))),

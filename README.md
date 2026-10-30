@@ -80,6 +80,10 @@ tiles away to read it (`docs/reference/meters.md`).
 Pressure tanks and canisters of oxygen, nitrogen, CO2, plasma and N2O hold their own gas,
 in Luna's colours. A canister's light shows how full it is (`docs/reference/gas-tanks.md`).
 
+Lights run on their APC's lighting channel. A light switch turns off every light in its
+area. Take a tube out with an empty hand, but switch it off first or wear gloves: a lit
+one burns. Put in a new tube or bulb from a box of spares (`docs/reference/lights.md`).
+
 Each area has an air alarm on its wall. Click it to read the room's air. When the pressure
 turns dangerous it seals the area: every powered door around it closes and bolts until the
 air recovers. Standing next to it you can seal or unseal by hand and turn on panic fill

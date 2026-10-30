@@ -107,6 +107,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if matches!(proto, "cable" | "smes" | "apc") {
         return spawn_power_object(world, spec, pos);
     }
+    if crate::lights::is_light_proto(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::lights::spawn_light(world, spec, pos, id));
+    }
     if crate::furniture::is_furniture(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::furniture::spawn_furniture(world, spec, pos, id));
@@ -186,6 +190,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if let Some(tank) = &def.tank {
         item.insert(TankGas::filled(tank));
+    }
+    if def.conducts {
+        item.insert(crate::hands::Conducts);
     }
     if let Some(max) = def.stack {
         item.insert(crate::hands::Stack { amount: max, max });

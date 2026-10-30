@@ -92,5 +92,5 @@ one cycle is 2 J.
 
 ## Not yet
 
-PACMAN generators and fuel, solar panels, SMES charging input, lights and the lighting
-channel's load, APC wires and hacking, shocks, power monitors.
+PACMAN generators and fuel, solar panels, SMES charging input, APC wires and hacking,
+power monitors. Lights draw on the lighting channel (`lights.md`).
