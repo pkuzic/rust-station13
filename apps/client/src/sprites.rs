@@ -88,9 +88,11 @@ impl SpriteAtlas {
     }
 }
 
-/// Atlas state for an object's server-side appearance.
+/// Atlas state for an object's server-side appearance. Overlays after `+` (as in
+/// `closed+panel`) are drawn by `overlays`.
 pub fn state_for(appearance: &Appearance) -> String {
-    match (appearance.sprite.as_str(), appearance.state.as_str()) {
+    let base = appearance.state.split('+').next().unwrap_or_default();
+    match (appearance.sprite.as_str(), base) {
         ("human", "unconscious" | "dead") => "lying".to_owned(),
         // Until `join_lines` sees the neighbours, draw a straight east–west run.
         ("cable" | "pipe", _) => "4-8".to_owned(),
@@ -327,5 +329,46 @@ pub fn wear_layers(
             }
         }
         e.insert(Dressed(keys));
+    }
+}
+
+/// An overlay drawn on top of its parent, from the parent's `+state` suffixes.
+#[derive(Component, Debug, Clone, Copy)]
+pub struct OverlayPart;
+
+/// The overlay states an object's overlays were last built from.
+#[derive(Component, Debug, Default, PartialEq)]
+pub struct Overlaid(Vec<String>);
+
+/// Keep each object's overlay children in step with its appearance: `closed+panel` draws
+/// the `panel` state of the same sprite over the door (Luna `overlays`).
+pub fn overlays(
+    mut commands: Commands,
+    atlas: Option<Res<SpriteAtlas>>,
+    things: Query<(Entity, &Appearance, Option<&Overlaid>, Option<&Children>), With<Look>>,
+    parts: Query<(), With<OverlayPart>>,
+) {
+    let Some(atlas) = atlas else { return };
+    for (entity, appearance, overlaid, children) in &things {
+        let wanted: Vec<String> = appearance.state.split('+').skip(1).map(str::to_owned).collect();
+        if overlaid.map_or(wanted.is_empty(), |o| o.0 == wanted) {
+            continue;
+        }
+        for child in children.into_iter().flatten() {
+            if parts.contains(*child) {
+                commands.entity(*child).despawn();
+            }
+        }
+        let mut e = commands.entity(entity);
+        for (i, state) in wanted.iter().enumerate() {
+            if let Some(image) = atlas.sprite(&appearance.sprite, state, 0) {
+                e.with_child((
+                    image,
+                    Transform::from_xyz(0.0, 0.0, 0.001 * (i + 1) as f32),
+                    OverlayPart,
+                ));
+            }
+        }
+        e.insert(Overlaid(wanted));
     }
 }

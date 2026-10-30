@@ -11,8 +11,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `airlock:closed` | `icons/obj/doors/Doorint.dmi : "door_closed"` | CC-BY-SA 3.0 |
 | `airlock:closing` | `icons/obj/doors/Doorint.dmi : "door_closing"` | CC-BY-SA 3.0 |
 | `airlock:deny` | `icons/obj/doors/Doorint.dmi : "door_deny"` | CC-BY-SA 3.0 |
+| `airlock:locked` | `icons/obj/doors/Doorint.dmi : "door_locked"` | CC-BY-SA 3.0 |
+| `airlock:o_closing` | `icons/obj/doors/Doorint.dmi : "o_door_closing"` | CC-BY-SA 3.0 |
+| `airlock:o_opening` | `icons/obj/doors/Doorint.dmi : "o_door_opening"` | CC-BY-SA 3.0 |
 | `airlock:open` | `icons/obj/doors/Doorint.dmi : "door_open"` | CC-BY-SA 3.0 |
 | `airlock:opening` | `icons/obj/doors/Doorint.dmi : "door_opening"` | CC-BY-SA 3.0 |
+| `airlock:panel` | `icons/obj/doors/Doorint.dmi : "panel_open"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |
@@ -82,6 +86,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `metal-sheet:` | `icons/obj/items.dmi : "sheet-metal"` | CC-BY-SA 3.0 |
+| `multitool:` | `icons/obj/device.dmi : "multitool"` | CC-BY-SA 3.0 |
 | `oxygen-tank:` | `icons/obj/tank.dmi : "oxygen"` | CC-BY-SA 3.0 |
 | `pipe:1-2` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:1-4` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |

@@ -9,6 +9,7 @@ use crate::actions::Outbox;
 use crate::hands::Item;
 use crate::movement::Mob;
 use crate::time::WorldTime;
+use crate::wires::Wiring;
 
 /// From the start of opening until passable.
 pub const OPEN_DS: f32 = 6.0;
@@ -65,6 +66,13 @@ pub struct Airlock {
     pub deny_until: Option<f32>,
     /// Powered opens and closes since the power system last billed them.
     pub operations: u32,
+    /// The maintenance panel is open (Luna `p_open`).
+    pub panel_open: bool,
+    /// Main or backup power is up inside the door (Luna `arePowerSystemsOn`, less the
+    /// area power). Set by `wires::update_wiring`.
+    pub systems_on: bool,
+    /// The ID scanner wire is whole. Without it the door recognises no card.
+    pub id_scan: bool,
 }
 
 impl Default for Airlock {
@@ -76,17 +84,27 @@ impl Default for Airlock {
             req_access: Vec::new(),
             deny_until: None,
             operations: 0,
+            panel_open: false,
+            systems_on: true,
+            id_scan: true,
         }
     }
 }
 
 impl Airlock {
+    /// Area power and the door's own power systems.
+    pub fn has_power(&self) -> bool {
+        self.powered && self.systems_on
+    }
+
     /// Luna's door `attackby`, also reached by hand and by bumping: ignored while
     /// operating; with access, toggle; without, a closed door shows "deny".
     pub fn use_by(&mut self, now: f32, card: Option<&IdCard>) {
         if matches!(self.state, DoorState::Opening { .. } | DoorState::Closing { .. }) {
             return;
         }
+        // A cut ID scanner wire: no card counts (Luna `requiresID`).
+        let card = if self.id_scan { card } else { None };
         if allowed(&self.req_access, card) {
             self.toggle(now);
         } else if self.is_dense() {
@@ -96,7 +114,7 @@ impl Airlock {
 
     /// Open a closed door or close an open one. Returns whether anything started.
     pub fn toggle(&mut self, now: f32) -> bool {
-        if self.bolted || !self.powered {
+        if self.bolted || !self.has_power() {
             return false;
         }
         match self.state {
@@ -120,7 +138,7 @@ impl Airlock {
             return false;
         }
         match self.state {
-            DoorState::Closed if !self.powered => {
+            DoorState::Closed if !self.has_power() => {
                 self.state = DoorState::Opening {
                     done_at: now + OPEN_DS,
                 };
@@ -159,7 +177,7 @@ impl Airlock {
 pub fn update_doors(
     time: Res<WorldTime>,
     map: Single<&MapLayer>,
-    mut doors: Query<(Entity, &GridPos, &mut Airlock, &mut Appearance), Without<Mob>>,
+    mut doors: Query<(Entity, &GridPos, &mut Airlock, &mut Appearance, Option<&Wiring>), Without<Mob>>,
     mut occupants: Query<
         (&mut GridPos, Has<Mob>, Option<&mut Outbox>),
         (Or<(With<Mob>, With<Item>)>, Without<Airlock>),
@@ -168,7 +186,7 @@ pub fn update_doors(
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
-    for (entity, door_pos, mut door, mut appearance) in &mut doors {
+    for (entity, door_pos, mut door, mut appearance, wiring) in &mut doors {
         match door.state {
             DoorState::Opening { done_at } if now >= done_at => {
                 door.state = DoorState::Open {
@@ -180,7 +198,7 @@ pub fn update_doors(
             } if now >= at => {
                 // Luna checks once; a bolted or unpowered door stays open for good.
                 door.state = DoorState::Open { autoclose_at: None };
-                if !door.bolted && door.powered {
+                if !door.bolted && door.has_power() {
                     door.start_closing(now);
                     door.operations += 1;
                 }
@@ -219,14 +237,29 @@ pub fn update_doors(
         if door.deny_until.is_some_and(|until| now >= until) {
             door.deny_until = None;
         }
-        let state = if door.state == DoorState::Closed && door.deny_until.is_some() {
-            "deny"
-        } else {
-            door.state.name()
-        };
+        let bolt_light = wiring.is_none_or(|w| w.bolt_light);
+        let state = door_look(&door, bolt_light);
         if appearance.state != state {
-            appearance.state = state.to_owned();
+            appearance.state = state;
         }
+    }
+}
+
+/// Luna's airlock `update_icon`: bolted doors show the bolted sprite while the bolt light
+/// works, and an open panel shows on a closed door (`+panel` overlay) and in the
+/// animations (`o_` states). An open door shows no panel.
+pub fn door_look(door: &Airlock, bolt_light: bool) -> String {
+    let base = match door.state {
+        DoorState::Closed if door.deny_until.is_some() => "deny",
+        DoorState::Closed if door.bolted && bolt_light => "locked",
+        DoorState::Opening { .. } if door.panel_open => "o_opening",
+        DoorState::Closing { .. } if door.panel_open => "o_closing",
+        state => state.name(),
+    };
+    if door.panel_open && door.state == DoorState::Closed {
+        format!("{base}+panel")
+    } else {
+        base.to_owned()
     }
 }
 

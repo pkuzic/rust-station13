@@ -127,3 +127,40 @@ hud-tip = { $what ->
         [temperature] Body temperature
        *[health] Health
     }
+
+# Airlock maintenance panel and wires. Args: $item (noun id), $name, $colour.
+door-panel-opened = You open the maintenance panel of the { NOUN($item) }.
+door-panel-closed = You close the maintenance panel of the { NOUN($item) }.
+wire-need-cutters = You need wirecutters!
+wire-need-multitool = You need a multitool!
+wire-pulse-cut = You can't pulse a cut wire.
+shocked = You feel a powerful shock course through your body!
+shocked-seen = { $name } was shocked!
+panel-title = Access panel
+panel-wire = { $colour ->
+        [orange] Orange
+        [dark-red] Dark red
+        [white] White
+        [yellow] Yellow
+        [red] Red
+        [blue] Blue
+        [green] Green
+        [grey] Grey
+        [black] Black
+        [pink] Pink
+       *[brown] Brown
+    } wire:
+panel-cut = Cut
+panel-mend = Mend
+panel-pulse = Pulse
+panel-close = Close
+panel-bolts-down = The door bolts have dropped!
+panel-bolts-up = The door bolts are up.
+panel-test-light-on = The test light is on.
+panel-test-light-off = The test light is off!
+panel-ai-light-on = The "AI control allowed" light is on.
+panel-ai-light-off = The "AI control allowed" light is off.
+panel-safety-flashing = The safety light is flashing!
+panel-safety-on = The safety light is on.
+panel-hydraulics-green = The hydraulics light is solid green.
+panel-hydraulics-red = The hydraulics light is flashing red.

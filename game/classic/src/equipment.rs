@@ -33,6 +33,13 @@ pub struct ItemDef {
     pub internals: bool,
     #[serde(default)]
     pub tank: Option<TankSpec>,
+    /// Gloves: how much of an electric shock gets through (Luna `siemens_coefficient`).
+    #[serde(default = "one")]
+    pub siemens: f32,
+}
+
+fn one() -> f32 {
+    1.0
 }
 
 /// Something that can be worn.
@@ -45,6 +52,8 @@ pub struct Wearable {
     pub space: bool,
     /// A mask that can feed from a tank.
     pub internals: bool,
+    /// Share of an electric shock that gets through (gloves).
+    pub siemens: f32,
 }
 
 /// A gas tank: its contents and the pressure it releases breaths at.
@@ -172,6 +181,7 @@ mod tests {
             slowdown: 0.0,
             space: false,
             internals: false,
+            siemens: 1.0,
         }
     }
 

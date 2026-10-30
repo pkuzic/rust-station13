@@ -14,13 +14,16 @@ use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::speech::PendingSpeech;
+use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, MoveInput, Notice, NoticeChannel, Player, StatusUpdate};
+use rs13_network::protocol::{
+    ActionInput, MoveInput, Notice, NoticeChannel, Player, StatusUpdate, WirePanel,
+};
 use rs13_network::server::{ServerNetworkPlugin, start_server};
-use rs13_world::{DisplayName, GridPos, MapLayer, NetId, TileMap};
+use rs13_world::{DisplayName, GridPos, MapLayer, NetId, TileMap, WirePanelView};
 
 #[derive(Resource)]
 struct Port(u16);
@@ -32,6 +35,10 @@ struct Controls(Entity);
 /// On a client's link entity: the status last sent to it.
 #[derive(Component, Default)]
 struct SentStatus(Option<StatusUpdate>);
+
+/// The wire panel last sent to this client.
+#[derive(Component, Default)]
+struct SentPanel(Option<WirePanelView>);
 
 /// On a mob whose player has already chosen a name this session.
 #[derive(Component)]
@@ -54,7 +61,13 @@ pub fn server_app(port: u16) -> App {
     // have no fixed tick, so read inputs every frame; the game applies them on ticks.
     .add_systems(
         Update,
-        (apply_move_inputs, queue_actions, send_notices, send_status),
+        (
+            apply_move_inputs,
+            queue_actions,
+            send_notices,
+            send_status,
+            send_panels,
+        ),
     );
     app
 }
@@ -118,7 +131,7 @@ fn spawn_player(
             },
         ));
         if let Ok(mut link) = world.get_entity_mut(link) {
-            link.insert((Controls(mob), SentStatus::default()));
+            link.insert((Controls(mob), SentStatus::default(), SentPanel::default()));
         }
         info!(client_id, x = spawn.x, y = spawn.y, "player joined");
     });
@@ -149,6 +162,7 @@ fn queue_actions(
         &mut DisplayName,
         &mut Outbox,
         &mut PendingEquipment,
+        &mut PendingWires,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -156,7 +170,7 @@ fn queue_actions(
 ) {
     let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
     for (controls, mut receiver) in &mut links {
-        let Ok((mut pending, mut speech, mut name, mut outbox, mut equipment, name_chosen)) =
+        let Ok((mut pending, mut speech, mut name, mut outbox, mut equipment, mut wires, name_chosen)) =
             mobs.get_mut(controls.0)
         else {
             receiver.receive().for_each(drop);
@@ -179,6 +193,25 @@ fn queue_actions(
                 }
                 ActionInput::ToggleInternals => {
                     equipment.0.push(EquipAction::ToggleInternals);
+                    None
+                }
+                ActionInput::Wire {
+                    target,
+                    colour,
+                    pulse,
+                } => {
+                    if let Some(door) = resolve(target) {
+                        let colour = usize::from(colour);
+                        wires.0.push(if pulse {
+                            WireOp::Pulse { door, colour }
+                        } else {
+                            WireOp::CutOrMend { door, colour }
+                        });
+                    }
+                    None
+                }
+                ActionInput::ClosePanel => {
+                    wires.0.push(WireOp::Close);
                     None
                 }
                 ActionInput::Say(text) => {
@@ -240,6 +273,22 @@ fn send_status(
         if sent.0.as_ref() != Some(&status) {
             sender.send::<NoticeChannel>(status.clone());
             sent.0 = Some(status);
+        }
+    }
+}
+
+/// Open, update or close each client's wire panel window.
+fn send_panels(
+    mut links: Query<(&Controls, &mut SentPanel, &mut MessageSender<WirePanel>)>,
+    panels: Query<&WirePanelOut>,
+) {
+    for (controls, mut sent, mut sender) in &mut links {
+        let Ok(panel) = panels.get(controls.0) else {
+            continue;
+        };
+        if sent.0 != panel.0 {
+            sender.send::<NoticeChannel>(WirePanel(panel.0.clone()));
+            sent.0 = panel.0.clone();
         }
     }
 }

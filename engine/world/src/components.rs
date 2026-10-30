@@ -156,6 +156,17 @@ impl Slot {
     }
 }
 
+/// An open airlock wire panel, as shown to the player using it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct WirePanelView {
+    /// The door.
+    pub target: NetId,
+    /// Wire colour id and whether it is cut, in panel order.
+    pub wires: Vec<(String, bool)>,
+    /// Indicator lights, as message ids.
+    pub lights: Vec<String>,
+}
+
 /// What a person wears, as seen by clients: slot → item.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct WornView(pub Vec<(Slot, NetId)>);

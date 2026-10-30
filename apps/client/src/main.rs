@@ -15,6 +15,7 @@
 
 mod hud;
 mod sprites;
+mod wire_panel;
 
 use std::collections::VecDeque;
 use std::net::SocketAddr;
@@ -140,6 +141,7 @@ fn main() {
         .init_resource::<OwnStatus>()
         .init_resource::<hud::WalkMode>()
         .init_resource::<hud::HudTip>()
+        .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
@@ -161,8 +163,15 @@ fn main() {
                 (send_move_input, send_hotkeys, send_clicks),
                 receive_notices,
                 receive_status,
+                (wire_panel::receive_panel, wire_panel::show_panel).chain(),
                 glide,
-                (sprites::wear_layers, sprites::dress, sprites::animate).chain(),
+                (
+                    sprites::wear_layers,
+                    sprites::overlays,
+                    sprites::dress,
+                    sprites::animate,
+                )
+                    .chain(),
                 (fit_camera, follow_own_player),
                 (
                     hud::update_hud,

@@ -83,17 +83,19 @@ pub fn move_mobs(
         Option<&Vitals>,
         Option<&crate::equipment::Equipment>,
     )>,
-    mut objects: Query<(&GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
+    mut objects: Query<(Entity, &GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
     wearables: Query<&crate::equipment::Wearable>,
+    electrified: Query<&crate::wires::Wiring>,
+    mut shocks: ResMut<crate::wires::PendingShocks>,
 ) {
     let now = time.deciseconds();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
     occupied.extend(
         objects
             .iter()
-            .filter(|(_, dense, _)| *dense)
-            .map(|(pos, ..)| pos.0),
+            .filter(|(_, _, dense, _)| *dense)
+            .map(|(_, pos, ..)| pos.0),
     );
 
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
@@ -129,14 +131,20 @@ pub fn move_mobs(
             continue;
         }
         let ahead = pos.0.step(dir);
-        for (obj_pos, _, airlock) in &mut objects {
+        for (obj_entity, obj_pos, _, airlock) in &mut objects {
             if obj_pos.0 != ahead {
                 continue;
             }
+            // Luna `Bumped`: ignored while the panel is open.
             if let Some(mut airlock) = airlock
                 && airlock.state == DoorState::Closed
+                && !airlock.panel_open
             {
                 mob.last_bump_ds = Some(now);
+                if electrified.get(obj_entity).is_ok_and(|w| w.is_electrified()) && airlock.powered {
+                    shocks.0.push((entity, crate::wires::HAND_SHOCK));
+                    continue;
+                }
                 let card = hands
                     .and_then(|h| h.active_item())
                     .and_then(|e| cards.get(e).ok());

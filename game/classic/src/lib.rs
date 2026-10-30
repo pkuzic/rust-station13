@@ -20,6 +20,7 @@ pub mod power;
 pub mod rng;
 pub mod speech;
 pub mod time;
+pub mod wires;
 
 use bevy_app::{App, FixedUpdate, Plugin};
 use bevy_ecs::prelude::*;
@@ -57,6 +58,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<machines::PipeNets>()
             .init_resource::<power::Powernets>()
             .init_resource::<power::AreaPower>()
+            .init_resource::<wires::WireLayout>()
+            .init_resource::<wires::PendingShocks>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -73,6 +76,8 @@ impl Plugin for ClassicPlugin {
                 (
                     actions::process_actions,
                     equipment::process_equipment,
+                    wires::process_wire_ops,
+                    wires::resolve_shocks,
                     combat::resolve_attacks,
                     speech::speak,
                     combat::deliver_visible,
@@ -82,7 +87,7 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (doors::update_doors, movement::move_mobs)
+                (wires::update_wiring, doors::update_doors, movement::move_mobs)
                     .chain()
                     .in_set(TickSet::Gameplay),
             )
@@ -109,6 +114,7 @@ impl Plugin for ClassicPlugin {
                 (
                     hands::sync_hands_view,
                     equipment::sync_worn_view,
+                    wires::update_panel_views,
                     machines::update_machine_looks,
                     power::update_power_looks,
                 )

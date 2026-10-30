@@ -49,6 +49,5 @@ welded. There is a single check, 150 ds after opening.
 
 ## Not implemented yet
 
-Access (everyone is allowed), power use and the powernet (an airlock has a `powered` flag),
-welding, wires and the hacking panel, emag, electrification, crushing, `closeOther`
-pairs, sounds, opacity and lighting, the deny animation.
+Wires, the maintenance panel, electrification and bolts are covered in `wires.md`. Still
+missing: welding, emag, crushing, `closeOther` pairs and sounds.

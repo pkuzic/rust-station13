@@ -50,7 +50,9 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 The EVA closet by the outer airlock has a space suit, a helmet, a breath mask and an
 emergency oxygen tank. Suit up, then turn internals on before you open the door.
 
-A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
+A screwdriver opens an airlock's maintenance panel. Then use the door to see its wires:
+wirecutters cut or mend them, and a multitool pulses them. Wear the insulated gloves, or
+the power wires may shock you (`docs/reference/wires.md`). A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
 `engine_equip` access in the active hand.
 
 Graphics are NSV Luna's sprites (see `client-assets/`). `--screenshot PATH` saves the view a

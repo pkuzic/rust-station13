@@ -89,6 +89,7 @@
         "wrench": { "": (dmi: "icons/obj/items.dmi", state: "wrench") },
         "screwdriver": { "": (dmi: "icons/obj/items.dmi", state: "screwdriver") },
         "wirecutters": { "": (dmi: "icons/obj/items.dmi", state: "cutters") },
+        "multitool": { "": (dmi: "icons/obj/device.dmi", state: "multitool") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
@@ -158,6 +159,12 @@
             "open": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_open"),
             "closing": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_closing"),
             "deny": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_deny"),
+            // Bolted, and the animations with the maintenance panel open.
+            "locked": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_locked"),
+            "o_opening": (dmi: "icons/obj/doors/Doorint.dmi", state: "o_door_opening"),
+            "o_closing": (dmi: "icons/obj/doors/Doorint.dmi", state: "o_door_closing"),
+            // Overlay on a closed door ("closed+panel").
+            "panel": (dmi: "icons/obj/doors/Doorint.dmi", state: "panel_open"),
         },
 
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).

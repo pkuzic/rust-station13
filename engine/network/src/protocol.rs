@@ -7,7 +7,7 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer, MobStat, NetId,
-    Slot, WornView,
+    Slot, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -46,6 +46,15 @@ pub enum ActionInput {
     Unequip(Slot),
     /// Connect the mask to a gas tank, or disconnect it.
     ToggleInternals,
+    /// On an open wire panel: cut or mend a wire (wirecutters), or pulse it (multitool).
+    /// `colour` is the wire's index in the panel.
+    Wire {
+        target: NetId,
+        colour: u8,
+        pulse: bool,
+    },
+    /// Close the wire panel.
+    ClosePanel,
 }
 
 /// Server → the controlling client: its own health, state and intent. Sent when any of
@@ -68,6 +77,11 @@ pub struct StatusUpdate {
 /// own language.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Notice(pub LocMsg);
+
+/// Server → one client: the wire panel it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct WirePanel(pub Option<WirePanelView>);
 
 /// Reliable, ordered channel for player intentions.
 pub struct IntentChannel;
@@ -98,6 +112,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<Notice>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<StatusUpdate>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<WirePanel>()
             .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();
