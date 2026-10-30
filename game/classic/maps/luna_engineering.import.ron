@@ -34,7 +34,8 @@
         (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),
         (path: "/obj/machinery/power/apc", id: "apc"),
         (path: "/obj/machinery/power/smes", id: "smes"),
-        (path: "/obj/cabling/power", id: "cable"),
+        // Cables keep their ends (Luna's icon state, "0-1" by default).
+        (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
         (path: "/obj/machinery/alarm", id: "air-alarm"),
 
         // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
@@ -60,6 +61,7 @@
         (path: "/obj/item/weapon/tank/oxygen", id: "oxygen-tank"),
 
         // Containers come with their tools inside (luna:code/game/objects/storage).
+        (path: "/obj/item/weapon/cable_coil", id: "cable-coil"),
         (path: "/obj/item/weapon/storage/toolbox/mechanical", id: "toolbox-mechanical"),
         (path: "/obj/item/weapon/storage/toolbox/electrical", id: "toolbox-electrical"),
         (path: "/obj/item/weapon/storage/belt/utility", id: "utility-belt"),

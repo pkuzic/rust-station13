@@ -7,7 +7,7 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer,
-    MobStat, NetId, Slot, StorageView, WirePanelView, WornView,
+    MobStat, NetId, Slot, StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -62,6 +62,8 @@ pub enum ActionInput {
     },
     /// Close the open container.
     CloseStorage,
+    /// Click on a tile with nothing on it to click: lay cable from a coil.
+    UseOnTile(TilePos),
 }
 
 /// Air alarm window buttons.

@@ -97,7 +97,7 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     }
     let proto = spec.id.as_str();
     if matches!(proto, "cable" | "smes" | "apc") {
-        return Ok(spawn_power_object(world, proto, pos));
+        return spawn_power_object(world, spec, pos);
     }
     if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
         let id = world.resource_mut::<NetIds>().alloc();
@@ -151,6 +151,9 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     }
     if let Some(tank) = &def.tank {
         item.insert(TankGas::filled(tank));
+    }
+    if let Some(max) = def.stack {
+        item.insert(crate::hands::Stack { amount: max, max });
     }
     if proto == "id-card" {
         item.insert(IdCard {
@@ -245,8 +248,12 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
 }
 
 /// Cables, SMES units and APCs. An APC powers the area its tile is in.
-fn spawn_power_object(world: &mut World, proto: &str, pos: TilePos) -> Entity {
+fn spawn_power_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     use crate::power::{Apc, Cable, PowerNode, SMES_CAPACITY, SMES_OUTPUT, Smes};
+    let cable = Cable::from_ends(&spec.ends);
+    if spec.id == "cable" && cable.is_none() {
+        return Err(format!("cable at {pos:?}: odd ends {:?}", spec.ends));
+    }
     let id = world.resource_mut::<NetIds>().alloc();
     let area = {
         let mut maps = world.query::<&MapLayer>();
@@ -257,9 +264,10 @@ fn spawn_power_object(world: &mut World, proto: &str, pos: TilePos) -> Entity {
             .to_owned()
     };
     let mut entity = world.spawn((GridPos(pos), id, PowerNode));
-    match proto {
+    match spec.id.as_str() {
         "cable" => {
-            entity.insert((Appearance::new("cable", ""), Cable));
+            let cable = cable.expect("checked above");
+            entity.insert((Appearance::new("cable", cable.state()), cable));
         }
         "smes" => {
             let smes = Smes {
@@ -274,5 +282,5 @@ fn spawn_power_object(world: &mut World, proto: &str, pos: TilePos) -> Entity {
             entity.insert((Appearance::new("apc", "on"), Apc::new(area)));
         }
     }
-    entity.id()
+    Ok(entity.id())
 }

@@ -28,6 +28,26 @@ pub enum Action {
     SetIntent(Intent),
     /// Close the open container.
     CloseStorage,
+    /// Click on a tile itself, where nothing on it took the click: lay cable with a coil.
+    UseOnTile(TilePos),
+}
+
+/// Messages from a click: one for the mob, one for everyone who can see it (needs the
+/// mob's `$name` added).
+#[derive(Debug, Default)]
+pub struct ClickOutcome {
+    pub to_mob: Option<LocMsg>,
+    pub seen: Option<LocMsg>,
+}
+
+impl ClickOutcome {
+    /// Just a message for the mob.
+    pub fn told(id: &str) -> Self {
+        Self {
+            to_mob: Some(LocMsg::new(id)),
+            seen: None,
+        }
+    }
 }
 
 /// Actions waiting for the next tick, in the order they were requested.
@@ -51,6 +71,7 @@ type ActingMob<'a> = (
     &'a mut Outbox,
     Option<&'a mut CombatIntent>,
     Option<&'a Vitals>,
+    &'a Mob,
 );
 
 pub fn process_actions(
@@ -82,9 +103,10 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage): (
+    (mut alarms, mut storage, mut cable): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
+        crate::cables::CableWork,
     ),
     mut commands: Commands,
 ) {
@@ -92,7 +114,7 @@ pub fn process_actions(
     // Items picked up earlier this tick (component changes apply after the system).
     let mut taken: HashSet<Entity> = HashSet::new();
 
-    for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals) in &mut mobs {
+    for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mob_state) in &mut mobs {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
@@ -143,6 +165,9 @@ pub fn process_actions(
                                     .arg("environment", mode(Channel::Environment)),
                             );
                         }
+                        if let Some(more) = cable.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -157,6 +182,13 @@ pub fn process_actions(
                     }
                     Err(_) => {}
                 },
+                Action::UseOnTile(tile) => {
+                    if let Some(outcome) =
+                        cable.use_on_tile((mob_pos.0, mob_state.facing), &mut hands, tile, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
                 Action::UseOn(target) if people.contains(target) => {
                     // Reach and the outcome are worked out by `resolve_attacks`.
                     attacks.0.push((mob, target));
@@ -169,6 +201,20 @@ pub fn process_actions(
                         .is_ok_and(|(p, ..)| p.is_none_or(|p| in_reach(mob_pos.0, p.0)));
                     if reachable && let Some(outcome) = storage.use_on(mob, &mut hands, target, &mut commands)
                     {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
+                        continue;
+                    }
+                    // Cable coils and wirecutters on cables, coils and power machines
+                    // (`docs/reference/cables.md`).
+                    if let Some(outcome) = cable.use_on(mob, mob_pos.0, &mut hands, target, &mut commands) {
                         outbox.0.extend(outcome.to_mob);
                         if let Some(seen) = outcome.seen {
                             let name = appearances

@@ -204,3 +204,19 @@ area-escape-hangar = Crew Escape Hangar
 storage-added = { $name } has added { NOUN($item) } to { NOUN($target) }!
 storage-cannot-hold = The { NOUN($target) } can't hold { NOUN($item) }.
 hud-storage-close = Close
+
+# Cables and cable coils. Args: $name (who), $item (noun id), $count (lengths of cable).
+cable-too-far = You can't lay cable at a place that far away.
+cable-floor-intact = You can't lay cable there unless the floor tiles are removed.
+cable-exists = There's already a cable at that position.
+cable-cut = { $name } disconnects the { NOUN($item) }.
+coil-cut-piece = You cut a piece off the cable coil.
+coil-joined = You join the cable coils together.
+coil-transferred = You transfer { $count } { $count ->
+        [one] length
+       *[other] lengths
+    } of cable from one coil to the other.
+coil-full = The coil is too long, you cannot add any more cable to it.
+examine-coil-short = A short piece of power cable.
+examine-coil-piece = A piece of power cable.
+examine-coil = A coil of power cable. There are { $count } lengths of cable in the coil.

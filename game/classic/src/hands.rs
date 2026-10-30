@@ -12,6 +12,13 @@ pub struct Item {
     pub size: u8,
 }
 
+/// Several of the same item piled into one, such as lengths of cable in a coil.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Stack {
+    pub amount: u32,
+    pub max: u32,
+}
+
 /// On a held item: the mob holding it. A held item has no `GridPos`.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct HeldBy(pub Entity);

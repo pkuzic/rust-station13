@@ -122,10 +122,20 @@ fn a_toolbox_takes_only_smaller_things_and_only_seven() {
         Some(suit),
         "a space suit is as big as a toolbox"
     );
-    assert_eq!(contents(&app, toolbox).len(), 3);
+    assert_eq!(
+        contents(&app, toolbox),
+        [
+            "screwdriver",
+            "wirecutters",
+            "crowbar",
+            "cable-coil",
+            "cable-coil",
+            "cable-coil"
+        ]
+    );
     act(&mut app, mob, Action::Drop);
 
-    for _ in 0..5 {
+    for _ in 0..2 {
         let card = spawn(&mut app, "id-card");
         act(&mut app, mob, Action::UseOn(card));
         act(&mut app, mob, Action::UseOn(toolbox));
@@ -156,7 +166,7 @@ fn a_worn_belt_holds_only_tools() {
 
     // Clicking the worn belt with an empty hand opens it.
     act(&mut app, mob, Action::UseOn(belt));
-    assert_eq!(shown(&app, mob), Some(4));
+    assert_eq!(shown(&app, mob), Some(5));
 
     let card = spawn(&mut app, "id-card");
     act(&mut app, mob, Action::UseOn(card));
@@ -169,7 +179,7 @@ fn a_worn_belt_holds_only_tools() {
     let multitool = spawn(&mut app, "multitool");
     act(&mut app, mob, Action::UseOn(multitool));
     act(&mut app, mob, Action::UseOn(belt));
-    assert_eq!(shown(&app, mob), Some(5));
+    assert_eq!(shown(&app, mob), Some(6));
 }
 
 #[test]

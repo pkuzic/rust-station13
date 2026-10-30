@@ -6,6 +6,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, MobStat, NetId, StorageView};
 use serde::Deserialize;
 
+use crate::actions::ClickOutcome;
 use crate::equipment::{EquipAction, PendingEquipment, Wearable, WornBy};
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::Vitals;
@@ -99,7 +100,7 @@ impl StorageAccess<'_, '_> {
         hands: &mut Hands,
         target: Entity,
         commands: &mut Commands,
-    ) -> Option<StorageOutcome> {
+    ) -> Option<ClickOutcome> {
         let active = hands.active_item();
         // Something in a container the mob carries: take it out into the empty hand.
         if let Ok(InStorage(container)) = self.inside.get(target).copied() {
@@ -110,7 +111,7 @@ impl StorageAccess<'_, '_> {
                 *hands.slot_mut(hands.active) = Some(target);
                 commands.entity(target).remove::<InStorage>().insert(HeldBy(mob));
             }
-            return Some(StorageOutcome::default());
+            return Some(ClickOutcome::default());
         }
         let carried = self.on(mob, target);
         if self.storages.contains(target) {
@@ -119,11 +120,11 @@ impl StorageAccess<'_, '_> {
                 // from the floor, an empty hand picks it up as usual.
                 None if carried => {
                     commands.entity(mob).insert(OpenStorage(target));
-                    return Some(StorageOutcome::default());
+                    return Some(ClickOutcome::default());
                 }
                 None => return None,
                 Some(item) if item != target => return Some(self.insert(hands, item, target, commands)),
-                Some(_) => return Some(StorageOutcome::default()),
+                Some(_) => return Some(ClickOutcome::default()),
             }
         }
         if carried && active.is_none() {
@@ -140,7 +141,7 @@ impl StorageAccess<'_, '_> {
                     *hands.slot_mut(hands.active) = Some(target);
                 }
             }
-            return Some(StorageOutcome::default());
+            return Some(ClickOutcome::default());
         }
         None
     }
@@ -151,11 +152,11 @@ impl StorageAccess<'_, '_> {
         item: Entity,
         container: Entity,
         commands: &mut Commands,
-    ) -> StorageOutcome {
+    ) -> ClickOutcome {
         let (Ok((item_info, item_look)), Ok((container_item, container_look))) =
             (self.sizes.get(item), self.sizes.get(container))
         else {
-            return StorageOutcome::default();
+            return ClickOutcome::default();
         };
         let item_size = item_info.size;
         let item_sprite = item_look.sprite.clone();
@@ -163,7 +164,7 @@ impl StorageAccess<'_, '_> {
         let container_size = container_item.size;
         let is_container = self.storages.contains(item);
         let Ok(mut storage) = self.storages.get_mut(container) else {
-            return StorageOutcome::default();
+            return ClickOutcome::default();
         };
         match check_insert(&storage, container_size, &item_sprite, item_size, is_container) {
             Ok(()) => {
@@ -173,7 +174,7 @@ impl StorageAccess<'_, '_> {
                     .entity(item)
                     .remove::<HeldBy>()
                     .insert(InStorage(container));
-                StorageOutcome {
+                ClickOutcome {
                     to_mob: None,
                     seen: Some(
                         LocMsg::new("storage-added")
@@ -182,7 +183,7 @@ impl StorageAccess<'_, '_> {
                     ),
                 }
             }
-            Err(Refusal::NotAllowed) => StorageOutcome {
+            Err(Refusal::NotAllowed) => ClickOutcome {
                 to_mob: Some(
                     LocMsg::new("storage-cannot-hold")
                         .arg("item", item_sprite)
@@ -191,17 +192,9 @@ impl StorageAccess<'_, '_> {
                 seen: None,
             },
             // Luna says nothing when it is full or the thing is too big.
-            Err(Refusal::Full | Refusal::TooBig) => StorageOutcome::default(),
+            Err(Refusal::Full | Refusal::TooBig) => ClickOutcome::default(),
         }
     }
-}
-
-/// Messages from a container click: one for the mob, one for everyone who can see it
-/// (needs the mob's `$name` added).
-#[derive(Debug, Default)]
-pub struct StorageOutcome {
-    pub to_mob: Option<LocMsg>,
-    pub seen: Option<LocMsg>,
 }
 
 /// Keep each mob's open container view current; close it once the mob no longer carries
