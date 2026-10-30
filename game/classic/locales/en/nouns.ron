@@ -11,6 +11,7 @@
     "wirecutters": (gender: plural, sg: (nom: "wirecutters", indef: "a pair of wirecutters")),
     "apc": (gender: neuter, sg: (nom: "APC", indef: "an APC")),
     "cable-coil": (gender: neuter, sg: (nom: "cable coil", indef: "a cable coil"), pl: Some((nom: "cable coils"))),
+    "floor-tile": (gender: neuter, sg: (nom: "floor tiles", indef: "floor tiles"), pl: Some((nom: "floor tiles"))),
     "toolbox-mechanical": (gender: neuter, sg: (nom: "mechanical toolbox", indef: "a mechanical toolbox"), pl: Some((nom: "mechanical toolboxes"))),
     "toolbox-electrical": (gender: neuter, sg: (nom: "electrical toolbox", indef: "an electrical toolbox"), pl: Some((nom: "electrical toolboxes"))),
     "utility-belt": (gender: neuter, sg: (nom: "utility belt", indef: "a utility belt"), pl: Some((nom: "utility belts"))),

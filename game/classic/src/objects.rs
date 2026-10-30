@@ -85,6 +85,14 @@ pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
 
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
+    let entity = spawn_thing(world, spec, pos)?;
+    if crate::floors::lies_under_floor(spec) {
+        world.entity_mut(entity).insert(crate::floors::UnderFloor);
+    }
+    Ok(entity)
+}
+
+fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     world.init_resource::<NetIds>();
     world.init_resource::<ItemProtos>();
     world.init_resource::<AccessIds>();
@@ -178,6 +186,15 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
         });
     }
     Ok(container)
+}
+
+/// A pile of `amount` of a stacking item (floor tiles, cable) on the floor at `pos`.
+pub fn spawn_stack(world: &mut World, proto: &str, pos: TilePos, amount: u32) -> Result<Entity, String> {
+    let pile = spawn_object(world, &ObjectSpec::new(proto), pos)?;
+    if let Some(mut stack) = world.get_mut::<crate::hands::Stack>(pile) {
+        stack.amount = amount.clamp(1, stack.max);
+    }
+    Ok(pile)
 }
 
 /// What every new crew member wears (Luna's assistant: grey jumpsuit, black shoes).

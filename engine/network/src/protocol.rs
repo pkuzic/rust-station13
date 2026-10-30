@@ -6,8 +6,8 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer,
-    MobStat, NetId, Slot, StorageView, TilePos, WirePanelView, WornView,
+    AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Hidden, Intent,
+    MapLayer, MobStat, NetId, Slot, StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -153,6 +153,7 @@ impl Plugin for ProtocolPlugin {
         app.component::<Player>().replicate();
         app.component::<NetId>().replicate();
         app.component::<Appearance>().replicate();
+        app.component::<Hidden>().replicate();
         app.component::<HandsView>().replicate();
         app.component::<WornView>().replicate();
         app.component::<DisplayName>().replicate();

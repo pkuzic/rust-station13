@@ -66,6 +66,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `connector:` | `icons/obj/atmospherics/portables_connector.dmi : "intact"` | CC-BY-SA 3.0 |
 | `crowbar:` | `icons/obj/items.dmi : "crowbar"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
+| `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
 | `hud:bar-e` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-nw` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |

@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, Intent, MobStat, TilePos};
+use rs13_world::{Appearance, DisplayName, GridPos, Hidden, Intent, MobStat, TilePos};
 
 use crate::access::{IdCard, allowed};
 use crate::combat::{CombatIntent, PendingAttacks};
@@ -28,7 +28,8 @@ pub enum Action {
     SetIntent(Intent),
     /// Close the open container.
     CloseStorage,
-    /// Click on a tile itself, where nothing on it took the click: lay cable with a coil.
+    /// Click on a tile itself, where nothing on it took the click: lay cable with a coil,
+    /// pry up floor tiles or put them back.
     UseOnTile(TilePos),
 }
 
@@ -103,10 +104,11 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable): (
+    (mut alarms, mut storage, mut cable, hidden): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
+        Query<(), With<Hidden>>,
     ),
     mut commands: Commands,
 ) {
@@ -120,6 +122,12 @@ pub fn process_actions(
             continue;
         }
         for action in pending.0.drain(..) {
+            // Things under floor tiles can't be seen or touched.
+            if let Action::UseOn(target) | Action::Examine(target) = action
+                && hidden.contains(target)
+            {
+                continue;
+            }
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
                 Action::CloseStorage => {
@@ -168,6 +176,9 @@ pub fn process_actions(
                         if let Some(more) = cable.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = cable.floors.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -183,9 +194,15 @@ pub fn process_actions(
                     Err(_) => {}
                 },
                 Action::UseOnTile(tile) => {
-                    if let Some(outcome) =
-                        cable.use_on_tile((mob_pos.0, mob_state.facing), &mut hands, tile, &mut commands)
-                    {
+                    // Cable coils (`cables.md`), then crowbars and floor tiles (`floors.md`).
+                    let outcome = cable
+                        .use_on_tile((mob_pos.0, mob_state.facing), &mut hands, tile, &mut commands)
+                        .or_else(|| {
+                            cable
+                                .floors
+                                .use_on_tile(mob_pos.0, &mut hands, tile, &mut commands)
+                        });
+                    if let Some(outcome) = outcome {
                         outbox.0.extend(outcome.to_mob);
                     }
                 }
@@ -224,6 +241,10 @@ pub fn process_actions(
                                 .unwrap_or_default();
                             visible.0.push((mob_pos.0, seen.arg("name", name), None));
                         }
+                        continue;
+                    }
+                    // Floor tiles onto a pile of floor tiles (`floors.md`).
+                    if reachable && cable.floors.use_on(&mut hands, target, &mut commands).is_some() {
                         continue;
                     }
                     let Ok((Some(target_pos), is_item, airlock, switch, member, is_canister, is_valve)) =

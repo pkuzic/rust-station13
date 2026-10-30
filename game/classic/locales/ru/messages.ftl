@@ -236,3 +236,8 @@ examine-coil = Моток силового кабеля. В нём { $count } { 
         [few] отрезка
        *[many] отрезков
     } кабеля.
+examine-floor-tiles = В стопке { $count } { $count ->
+        [one] плитка
+        [few] плитки
+       *[many] плиток
+    } пола.

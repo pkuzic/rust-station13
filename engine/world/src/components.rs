@@ -36,6 +36,11 @@ impl Appearance {
     }
 }
 
+/// Seen by no one and out of reach while present, such as a pipe or cable under floor
+/// tiles (BYOND `invisibility = 101`).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Hidden;
+
 /// Blocks movement into its tile while present (BYOND `density`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dense;

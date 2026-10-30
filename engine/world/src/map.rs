@@ -87,6 +87,9 @@ pub struct ObjectSpec {
     /// Where a cable runs: two directions, or one for a cable that ends in a knot on its
     /// own tile.
     pub ends: Vec<Dir>,
+    /// For pipes and cables: laid over the floor tiles rather than under them (Luna
+    /// `level = 2`), so floor tiles don't hide it.
+    pub above_floor: bool,
 }
 
 impl ObjectSpec {
@@ -96,6 +99,7 @@ impl ObjectSpec {
             access: Vec::new(),
             dir: None,
             ends: Vec::new(),
+            above_floor: false,
         }
     }
 }
@@ -112,6 +116,8 @@ enum ObjectEntry {
         dir: Option<Dir>,
         #[serde(default)]
         ends: Vec<Dir>,
+        #[serde(default)]
+        above_floor: bool,
     },
 }
 
@@ -124,11 +130,13 @@ impl From<ObjectEntry> for ObjectSpec {
                 access,
                 dir,
                 ends,
+                above_floor,
             } => ObjectSpec {
                 id,
                 access,
                 dir,
                 ends,
+                above_floor,
             },
         }
     }
@@ -348,6 +356,23 @@ impl TileMap {
         self.palette.get(index as usize)
     }
 
+    /// Change the tile at `pos`, adding `tile` to the palette if it is new. Returns false
+    /// (and changes nothing) outside the map.
+    pub fn set_tile(&mut self, pos: TilePos, tile: TileDef) -> bool {
+        if self.tile(pos).is_none() {
+            return false;
+        }
+        let index = match self.palette.iter().position(|t| *t == tile) {
+            Some(index) => index,
+            None => {
+                self.palette.push(tile);
+                self.palette.len() - 1
+            }
+        };
+        self.tiles[(pos.y as u32 * self.width + pos.x as u32) as usize] = index as u16;
+        true
+    }
+
     /// Whether movement into `pos` is blocked by the map itself.
     pub fn is_solid(&self, pos: TilePos) -> bool {
         self.tile(pos).is_none_or(|t| t.solid)
@@ -398,11 +423,27 @@ mod tests {
                         access: vec!["engine".into()],
                         dir: None,
                         ends: Vec::new(),
+                        above_floor: false,
                     }
                 ),
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),
             ]
         );
+    }
+
+    #[test]
+    fn set_tile_reuses_or_extends_the_palette() {
+        let mut map = TileMap::from_ron(ROOM, 0).unwrap();
+        let plating = TileDef {
+            id: "plating".into(),
+            solid: false,
+            opaque: None,
+        };
+        assert!(map.set_tile(TilePos::new(2, 1, 0), plating.clone()));
+        assert!(map.set_tile(TilePos::new(1, 1, 0), plating.clone()));
+        assert_eq!(map.palette.len(), 3);
+        assert_eq!(map.tile(TilePos::new(1, 1, 0)), Some(&plating));
+        assert!(!map.set_tile(TilePos::new(9, 9, 0), plating));
     }
 
     #[test]

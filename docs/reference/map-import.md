@@ -28,6 +28,7 @@ counted from 0 with the top row first.
 - **Objects:** from the object rules, again by longest matching prefix.
   - An airlock's `req_access_txt` (Luna access numbers separated by `;`) becomes our access ids.
   - A cable's `icon_state` (`"1-2"`, with 0 for a knot) becomes its ends. Ends that lead up or down to another deck are dropped and reported.
+  - Any object with `level = 2` gets `above_floor: true`: Luna lays those pipes over the floor tiles, so they show (`floors.md`).
   - A rule can also place a container's contents loose on its tile (for containers we can't model yet).
 - **Spawns:** a landmark rule makes the tile a spawn and can place things there.
 - **Area:** from the area table.
