@@ -81,7 +81,7 @@ pub struct WalkMode(pub bool);
 #[derive(Resource, Default)]
 pub struct HudTip(pub String);
 
-fn place(x: u8, y: u8) -> Node {
+pub fn place(x: u8, y: u8) -> Node {
     Node {
         position_type: PositionType::Absolute,
         left: Val::VMin((f32::from(x) - 1.0) * CELL_VMIN),
@@ -280,6 +280,13 @@ pub fn update_hud(
     }
 }
 
+fn hand_item(hands: &HandsView, hand: Hand) -> Option<NetId> {
+    match hand {
+        Hand::Left => hands.left,
+        Hand::Right => hands.right,
+    }
+}
+
 fn set_index(image: &mut ImageNode, index: usize) {
     if let Some(texture) = image.texture_atlas.as_mut()
         && texture.index != index
@@ -319,7 +326,7 @@ fn click_cell(
     cells: Query<&HudCell>,
     status: Res<OwnStatus>,
     mut walk: ResMut<WalkMode>,
-    own: Query<&HandsView, With<OwnPlayer>>,
+    own: Query<(&HandsView, &WornView), With<OwnPlayer>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     let Ok(HudCell(cell)) = cells.get(click.entity) else {
@@ -332,20 +339,24 @@ fn click_cell(
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
-    let hands = own.single().ok();
+    let (hands, worn) = own.single().ok().unzip();
+    let holding = hands.is_some_and(|h| hand_item(h, h.active).is_some());
     let action = match *cell {
-        Cell::Slot(slot) => {
-            let holding = hands.is_some_and(|h| match h.active {
-                Hand::Left => h.left.is_some(),
-                Hand::Right => h.right.is_some(),
-            });
-            Some(if holding {
-                ActionInput::Equip(slot)
-            } else {
-                ActionInput::Unequip(slot)
-            })
-        }
-        Cell::Hand(hand) => hands.filter(|h| h.active != hand).map(|_| ActionInput::SwapHands),
+        // With an empty hand, clicking what you wear is clicking the thing itself: a
+        // container opens, clothes come off (Luna `attack_hand`).
+        Cell::Slot(slot) => match worn.and_then(|w| w.get(slot)) {
+            _ if holding => Some(ActionInput::Equip(slot)),
+            Some(item) => Some(ActionInput::UseOn(item)),
+            None => None,
+        },
+        // The other hand: with the active one empty, its item (a container opens, anything
+        // else moves over); otherwise just swap.
+        Cell::Hand(hand) => hands
+            .filter(|h| h.active != hand)
+            .map(|h| match hand_item(h, hand) {
+                Some(item) if !holding => ActionInput::UseOn(item),
+                _ => ActionInput::SwapHands,
+            }),
         Cell::SwapHands => Some(ActionInput::SwapHands),
         Cell::Drop => Some(ActionInput::Drop),
         Cell::Intent => Some(ActionInput::SetIntent(

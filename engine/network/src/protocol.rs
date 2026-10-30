@@ -7,7 +7,7 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer,
-    MobStat, NetId, Slot, WirePanelView, WornView,
+    MobStat, NetId, Slot, StorageView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -60,6 +60,8 @@ pub enum ActionInput {
         target: NetId,
         command: AlarmCommand,
     },
+    /// Close the open container.
+    CloseStorage,
 }
 
 /// Air alarm window buttons.
@@ -102,6 +104,11 @@ pub struct WirePanel(pub Option<WirePanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AlarmPanel(pub Option<AlarmPanelView>);
 
+/// Server → one client: the container it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct StoragePanel(pub Option<StorageView>);
+
 /// Reliable, ordered channel for player intentions.
 pub struct IntentChannel;
 
@@ -135,6 +142,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<WirePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<AlarmPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<StoragePanel>()
             .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();

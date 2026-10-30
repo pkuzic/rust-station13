@@ -26,6 +26,8 @@ pub enum Action {
     SwapHands,
     Examine(Entity),
     SetIntent(Intent),
+    /// Close the open container.
+    CloseStorage,
 }
 
 /// Actions waiting for the next tick, in the order they were requested.
@@ -80,7 +82,10 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    mut alarms: Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
+    (mut alarms, mut storage): (
+        Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
+        crate::storage::StorageAccess,
+    ),
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
@@ -95,6 +100,9 @@ pub fn process_actions(
         for action in pending.0.drain(..) {
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
+                Action::CloseStorage => {
+                    commands.entity(mob).remove::<crate::storage::OpenStorage>();
+                }
                 Action::SetIntent(new) => {
                     if let Some(intent) = intent.as_mut() {
                         intent.0 = new;
@@ -154,6 +162,24 @@ pub fn process_actions(
                     attacks.0.push((mob, target));
                 }
                 Action::UseOn(target) => {
+                    // Containers, their contents and things the mob carries
+                    // (`docs/reference/storage.md`). A container on the floor must be in reach.
+                    let reachable = targets
+                        .get(target)
+                        .is_ok_and(|(p, ..)| p.is_none_or(|p| in_reach(mob_pos.0, p.0)));
+                    if reachable && let Some(outcome) = storage.use_on(mob, &mut hands, target, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
+                        continue;
+                    }
                     let Ok((Some(target_pos), is_item, airlock, switch, member, is_canister, is_valve)) =
                         targets.get_mut(target)
                     else {

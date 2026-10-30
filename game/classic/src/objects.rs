@@ -134,8 +134,12 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             .id());
     }
     let def = def.expect("checked above");
-    let item = Item { force: def.force };
-    let mut item = world.spawn((GridPos(pos), id, Appearance::new(proto, ""), item));
+    let item = Item {
+        force: def.force,
+        size: def.size,
+    };
+    let look = def.base.clone().unwrap_or_else(|| proto.to_owned());
+    let mut item = world.spawn((GridPos(pos), id, Appearance::new(look, ""), item));
     if let Some(slot) = def.slot.as_deref().and_then(Slot::parse) {
         item.insert(Wearable {
             slot,
@@ -153,7 +157,24 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             access: spec.access.clone(),
         });
     }
-    Ok(item.id())
+    let container = item.id();
+    if let Some(storage) = &def.storage {
+        // Fill it as Luna's `New()` does.
+        let mut items = Vec::new();
+        for inner in &def.contents {
+            let thing = spawn_object(world, &ObjectSpec::new(inner.as_str()), pos)?;
+            world
+                .entity_mut(thing)
+                .remove::<GridPos>()
+                .insert(crate::storage::InStorage(container));
+            items.push(thing);
+        }
+        world.entity_mut(container).insert(crate::storage::Storage {
+            items,
+            holds: storage.holds.clone(),
+        });
+    }
+    Ok(container)
 }
 
 /// What every new crew member wears (Luna's assistant: grey jumpsuit, black shoes).
@@ -217,6 +238,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 crate::wires::WirePanelOut::default(),
                 crate::alarms::PendingAlarmOps::default(),
                 crate::alarms::AlarmPanelOut::default(),
+                crate::storage::StorageOut::default(),
             ),
         ))
         .id()

@@ -8,6 +8,8 @@ use rs13_world::{Hand, HandsView, NetId};
 pub struct Item {
     /// Brute damage when hitting someone with it (Luna `force`).
     pub force: f32,
+    /// Luna `w_class`: what it fits into.
+    pub size: u8,
 }
 
 /// On a held item: the mob holding it. A held item has no `GridPos`.

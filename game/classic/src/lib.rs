@@ -20,6 +20,7 @@ pub mod objects;
 pub mod power;
 pub mod rng;
 pub mod speech;
+pub mod storage;
 pub mod time;
 pub mod wires;
 
@@ -128,6 +129,7 @@ impl Plugin for ClassicPlugin {
                     equipment::sync_worn_view,
                     wires::update_panel_views,
                     alarms::update_alarm_views,
+                    storage::update_storage_views,
                     machines::update_machine_looks,
                     power::update_power_looks,
                 )

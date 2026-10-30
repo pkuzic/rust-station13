@@ -36,6 +36,22 @@ pub struct ItemDef {
     /// Gloves: how much of an electric shock gets through (Luna `siemens_coefficient`).
     #[serde(default = "one")]
     pub siemens: f32,
+    /// Luna `w_class`: 1 tiny … 5 huge. Luna's default is 3.
+    #[serde(default = "normal_size")]
+    pub size: u8,
+    /// A container, and what it takes.
+    #[serde(default)]
+    pub storage: Option<crate::storage::StorageSpec>,
+    /// Prototypes it starts with inside (Luna's container `New()`).
+    #[serde(default)]
+    pub contents: Vec<String>,
+    /// Looks like, and is called, this other prototype (a loaded belt is a belt).
+    #[serde(default)]
+    pub base: Option<String>,
+}
+
+fn normal_size() -> u8 {
+    3
 }
 
 fn one() -> f32 {

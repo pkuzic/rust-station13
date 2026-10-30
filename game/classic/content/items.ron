@@ -1,28 +1,47 @@
 // Item prototypes. Each id is also its sprite id and its noun id in the locales.
 //
 // force:     brute damage when hitting someone with it (Luna values, docs/reference/health.md)
+// size:      Luna `w_class`, 1 tiny … 5 huge (default 3, Luna's default); what fits where
 // slot:      where it can be worn (docs/reference/equipment.md)
 // slowdown:  added to the wearer's movement delay, deciseconds (Luna: space suit 3, shoes -1)
 // space:     a space suit or helmet; both together seal the wearer against vacuum
 // internals: a mask that can be connected to a gas tank
 // tank:      a gas tank: volume L, pressure kPa, gas
 // siemens:   gloves: share of an electric shock that gets through (default 1; insulated 0)
+// storage:   a container (docs/reference/storage.md); `holds` limits it to those ids
+// contents:  what a container starts with (Luna's container `New()`)
+// base:      looks like and is called this other prototype (a loaded belt is a belt)
 [
-    (id: "crowbar", force: 5.0),
-    (id: "wrench", force: 5.0),
-    (id: "screwdriver", force: 5.0),
-    (id: "wirecutters", force: 6.0),
-    (id: "multitool", force: 5.0),
+    (id: "crowbar", force: 5.0, size: 2),
+    (id: "wrench", force: 5.0, size: 2),
+    (id: "screwdriver", force: 5.0, size: 1),
+    (id: "wirecutters", force: 6.0, size: 2),
+    (id: "multitool", force: 5.0, size: 2),
     (id: "metal-sheet", force: 5.0),
-    (id: "id-card", force: 0.0, slot: "id"),
+    (id: "id-card", force: 0.0, size: 1, slot: "id"),
     // Luna: 70 L of pure oxygen at 6 atm, worn on the back.
     (id: "oxygen-tank", force: 5.0, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     // Luna: 15 L at 2 atm, worn on the belt.
-    (id: "emergency-oxygen", force: 7.0, slot: "belt", tank: (volume: 15.0, pressure: 202.65, gas: "oxygen")),
+    (id: "emergency-oxygen", force: 7.0, size: 2, slot: "belt", tank: (volume: 15.0, pressure: 202.65, gas: "oxygen")),
     (id: "grey-jumpsuit", force: 0.0, slot: "uniform"),
     (id: "black-shoes", force: 0.0, slot: "shoes", slowdown: -1.0),
-    (id: "insulated-gloves", force: 0.0, slot: "gloves", siemens: 0.0),
-    (id: "breath-mask", force: 0.0, slot: "mask", internals: true),
-    (id: "space-suit", force: 0.0, slot: "suit", slowdown: 3.0, space: true),
+    (id: "insulated-gloves", force: 0.0, size: 2, slot: "gloves", siemens: 0.0),
+    (id: "breath-mask", force: 0.0, size: 2, slot: "mask", internals: true),
+    (id: "space-suit", force: 0.0, size: 4, slot: "suit", slowdown: 3.0, space: true),
     (id: "space-helmet", force: 0.0, slot: "head", space: true),
+
+    // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's welders,
+    // cable coils, analyzers and scanners have no prototype yet and are left out.
+    (id: "toolbox-mechanical", force: 10.0, size: 4, storage: (),
+        contents: ["screwdriver", "wrench", "crowbar", "wirecutters"]),
+    (id: "toolbox-electrical", force: 10.0, size: 4, storage: (),
+        contents: ["screwdriver", "wirecutters", "crowbar"]),
+    (id: "utility-belt", force: 0.0, slot: "belt",
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool"])),
+    (id: "utility-belt-loaded", base: "utility-belt", force: 0.0, slot: "belt",
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool"]),
+        contents: ["screwdriver", "wrench", "crowbar", "wirecutters"]),
+    (id: "utility-belt-full", base: "utility-belt", force: 0.0, slot: "belt",
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool"]),
+        contents: ["screwdriver", "wrench", "crowbar", "wirecutters", "multitool"]),
 ]
