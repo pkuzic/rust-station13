@@ -42,5 +42,5 @@ Sequence from the master plan. Estimates are speculative and phases overlap.
 
 - A BYOND clone or a Dream Maker interpreter.
 - Translating Luna's DM code. Luna is a behaviour reference only.
-- 3D models or a Blender sprite pipeline. Sprites are 2D, starting from Luna's art.
+- 3D models or a Blender sprite pipeline. Sprites are 2D, from Luna's art (imported).
 - Declining player names. Character names are English-only.

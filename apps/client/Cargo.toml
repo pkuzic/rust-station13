@@ -14,6 +14,8 @@ workspace = true
 [dependencies]
 rs13-world.workspace = true
 rs13-i18n.workspace = true
+rs13-dmi-import.workspace = true
+ron.workspace = true
 # Only for its locale files, until locales are delivered by the server's asset manifest.
 rs13-classic.workspace = true
 rs13-network = { workspace = true, features = ["client"] }

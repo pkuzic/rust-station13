@@ -1,0 +1,675 @@
+(
+    tile: 32,
+    columns: 16,
+    sprites: {
+        "air-tank": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    0,
+                ],
+            ),
+        },
+        "airlock": {
+            "closed": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    1,
+                ],
+            ),
+            "closing": (
+                dirs: 1,
+                frames: 6,
+                delays: [
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                ],
+                cells: [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                ],
+            ),
+            "deny": (
+                dirs: 1,
+                frames: 3,
+                delays: [
+                    1.0,
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    8,
+                    9,
+                    10,
+                ],
+            ),
+            "open": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    11,
+                ],
+            ),
+            "opening": (
+                dirs: 1,
+                frames: 6,
+                delays: [
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                    2.0,
+                ],
+                cells: [
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                ],
+            ),
+        },
+        "apc": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    18,
+                ],
+            ),
+        },
+        "cable": {
+            "0-1": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    19,
+                ],
+            ),
+            "0-2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    20,
+                ],
+            ),
+            "0-4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    21,
+                ],
+            ),
+            "0-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    22,
+                ],
+            ),
+            "1-2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    23,
+                ],
+            ),
+            "1-4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    24,
+                ],
+            ),
+            "1-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    25,
+                ],
+            ),
+            "2-4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    26,
+                ],
+            ),
+            "2-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    27,
+                ],
+            ),
+            "4-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    28,
+                ],
+            ),
+        },
+        "canister": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    29,
+                ],
+            ),
+        },
+        "connector": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    30,
+                ],
+            ),
+        },
+        "crowbar": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    31,
+                ],
+            ),
+        },
+        "human": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    32,
+                    33,
+                    34,
+                    35,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    36,
+                ],
+            ),
+        },
+        "human:shoes": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    37,
+                    38,
+                    39,
+                    40,
+                ],
+            ),
+        },
+        "human:uniform": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    41,
+                    42,
+                    43,
+                    44,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    45,
+                ],
+            ),
+        },
+        "id-card": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    46,
+                ],
+            ),
+        },
+        "metal-sheet": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    47,
+                ],
+            ),
+        },
+        "oxygen-tank": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    48,
+                ],
+            ),
+        },
+        "pipe": {
+            "1-2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    49,
+                ],
+            ),
+            "1-4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    50,
+                ],
+            ),
+            "1-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    51,
+                ],
+            ),
+            "2-4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    52,
+                ],
+            ),
+            "2-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    53,
+                ],
+            ),
+            "4-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    54,
+                ],
+            ),
+        },
+        "pump": {
+            "off": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    55,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 5,
+                delays: [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    56,
+                    57,
+                    58,
+                    59,
+                    60,
+                ],
+            ),
+        },
+        "screwdriver": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    61,
+                ],
+            ),
+        },
+        "scrubber": {
+            "off": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    62,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    63,
+                ],
+            ),
+        },
+        "smes": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    64,
+                ],
+            ),
+        },
+        "tile:floor": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    65,
+                ],
+            ),
+        },
+        "tile:plating": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    66,
+                ],
+            ),
+        },
+        "tile:space": {
+            "0": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    67,
+                ],
+            ),
+            "1": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    68,
+                ],
+            ),
+            "2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    69,
+                ],
+            ),
+            "3": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    70,
+                ],
+            ),
+            "4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    71,
+                ],
+            ),
+        },
+        "tile:wall": {
+            "0": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    72,
+                ],
+            ),
+            "1": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    73,
+                ],
+            ),
+            "10": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    74,
+                ],
+            ),
+            "11": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    75,
+                ],
+            ),
+            "12": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    76,
+                ],
+            ),
+            "13": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    77,
+                ],
+            ),
+            "14": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    78,
+                ],
+            ),
+            "15": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    79,
+                ],
+            ),
+            "2": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    80,
+                ],
+            ),
+            "3": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    81,
+                ],
+            ),
+            "4": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    82,
+                ],
+            ),
+            "5": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    83,
+                ],
+            ),
+            "6": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    84,
+                ],
+            ),
+            "7": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    85,
+                ],
+            ),
+            "8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    86,
+                ],
+            ),
+            "9": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    87,
+                ],
+            ),
+        },
+        "valve": {
+            "closed": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    88,
+                ],
+            ),
+            "open": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    89,
+                ],
+            ),
+        },
+        "vent": {
+            "off": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    90,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 8,
+                delays: [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    91,
+                    92,
+                    93,
+                    94,
+                    95,
+                    96,
+                    97,
+                    98,
+                ],
+            ),
+        },
+        "wirecutters": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    99,
+                ],
+            ),
+        },
+        "wrench": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    100,
+                ],
+            ),
+        },
+    },
+)

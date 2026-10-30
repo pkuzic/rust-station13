@@ -1,0 +1,112 @@
+// Which NSV Luna icon each of our sprites uses. Run `rs13-dmi-import` to rebuild the atlas
+// (see client-assets/README.md). Keys: our sprite id → our state → Luna .dmi and state.
+// `dir` picks one DMI direction (0 S, 1 N, 2 E, 3 W, 4 SE, 5 SW, 6 NE, 7 NW).
+// Never take files from icons/Goon*: Goonstation art is non-commercial (ADR 0003).
+(
+    source: "NSV Luna (https://github.com/SS13/luna, commit e13cf12) and its upstreams /tg/station and Baystation12",
+    licence: "CC-BY-SA 3.0",
+    sprites: {
+        // Tiles. Walls join with neighbouring walls: state = N 1 + S 2 + E 4 + W 8.
+        "tile:floor": { "": (dmi: "icons/turf/floors.dmi", state: "floor") },
+        "tile:plating": { "": (dmi: "icons/turf/floors.dmi", state: "plating") },
+        "tile:space": {
+            "0": (dmi: "icons/turf/space.dmi", state: "0"),
+            "1": (dmi: "icons/turf/space.dmi", state: "1"),
+            "2": (dmi: "icons/turf/space.dmi", state: "2"),
+            "3": (dmi: "icons/turf/space.dmi", state: "3"),
+            "4": (dmi: "icons/turf/space.dmi", state: "4"),
+        },
+        "tile:wall": {
+            "0": (dmi: "icons/turf/walls.dmi", state: "metal0"),
+            "1": (dmi: "icons/turf/walls.dmi", state: "metal1"),
+            "2": (dmi: "icons/turf/walls.dmi", state: "metal2"),
+            "3": (dmi: "icons/turf/walls.dmi", state: "metal3"),
+            "4": (dmi: "icons/turf/walls.dmi", state: "metal4"),
+            "5": (dmi: "icons/turf/walls.dmi", state: "metal5"),
+            "6": (dmi: "icons/turf/walls.dmi", state: "metal6"),
+            "7": (dmi: "icons/turf/walls.dmi", state: "metal7"),
+            "8": (dmi: "icons/turf/walls.dmi", state: "metal8"),
+            "9": (dmi: "icons/turf/walls.dmi", state: "metal9"),
+            "10": (dmi: "icons/turf/walls.dmi", state: "metal10"),
+            "11": (dmi: "icons/turf/walls.dmi", state: "metal11"),
+            "12": (dmi: "icons/turf/walls.dmi", state: "metal12"),
+            "13": (dmi: "icons/turf/walls.dmi", state: "metal13"),
+            "14": (dmi: "icons/turf/walls.dmi", state: "metal14"),
+            "15": (dmi: "icons/turf/walls.dmi", state: "metal15"),
+        },
+
+        // People: body, then jumpsuit and shoes drawn on top. "lying" for out cold or dead.
+        "human": {
+            "": (dmi: "icons/mob/human.dmi", state: "body_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "body_m_l"),
+        },
+        "human:uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "grey_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "grey_l"),
+        },
+        "human:shoes": { "": (dmi: "icons/mob/feet.dmi", state: "black") },
+
+        // Items.
+        "crowbar": { "": (dmi: "icons/obj/items.dmi", state: "crowbar") },
+        "wrench": { "": (dmi: "icons/obj/items.dmi", state: "wrench") },
+        "screwdriver": { "": (dmi: "icons/obj/items.dmi", state: "screwdriver") },
+        "wirecutters": { "": (dmi: "icons/obj/items.dmi", state: "cutters") },
+        "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
+        "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
+        "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
+
+        // Doors.
+        "airlock": {
+            "closed": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_closed"),
+            "opening": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_opening"),
+            "open": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_open"),
+            "closing": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_closing"),
+            "deny": (dmi: "icons/obj/doors/Doorint.dmi", state: "door_deny"),
+        },
+
+        // Power. Cables: state = the two directions joined (0 = a knot in the middle).
+        "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
+        "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        "cable": {
+            "0-1": (dmi: "icons/obj/power_cond.dmi", state: "0-1"),
+            "0-2": (dmi: "icons/obj/power_cond.dmi", state: "0-2"),
+            "0-4": (dmi: "icons/obj/power_cond.dmi", state: "0-4"),
+            "0-8": (dmi: "icons/obj/power_cond.dmi", state: "0-8"),
+            "1-2": (dmi: "icons/obj/power_cond.dmi", state: "1-2"),
+            "1-4": (dmi: "icons/obj/power_cond.dmi", state: "1-4"),
+            "1-8": (dmi: "icons/obj/power_cond.dmi", state: "1-8"),
+            "2-4": (dmi: "icons/obj/power_cond.dmi", state: "2-4"),
+            "2-8": (dmi: "icons/obj/power_cond.dmi", state: "2-8"),
+            "4-8": (dmi: "icons/obj/power_cond.dmi", state: "4-8"),
+        },
+
+        // Atmospherics. Pipes: state = the two directions joined, as for cables.
+        "pipe": {
+            "1-2": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 1),
+            "4-8": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 2),
+            "1-4": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 6),
+            "2-4": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 4),
+            "2-8": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 5),
+            "1-8": (dmi: "icons/obj/pipes.dmi", state: "intact", dir: 7),
+        },
+        "vent": {
+            "on": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "out", dir: 0),
+            "off": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "off", dir: 0),
+        },
+        "scrubber": {
+            "on": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "on", dir: 0),
+            "off": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "off", dir: 0),
+        },
+        "pump": {
+            "on": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: 2),
+            "off": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: 2),
+        },
+        "valve": {
+            "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1", dir: 2),
+            "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0", dir: 2),
+        },
+        "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
+        "air-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact", dir: 2) },
+        "canister": { "": (dmi: "icons/obj/atmos.dmi", state: "grey") },
+    },
+)

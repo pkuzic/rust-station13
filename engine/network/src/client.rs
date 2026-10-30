@@ -35,7 +35,8 @@ pub fn connect(commands: &mut Commands, server_addr: SocketAddr, client_id: u64)
     let netcode = NetcodeClient::new(
         auth,
         NetcodeConfig {
-            client_timeout_secs: 3,
+            // Generous: a first launch compiles shaders and can stall for several seconds.
+            client_timeout_secs: 15,
             token_expire_secs: -1,
             ..Default::default()
         },

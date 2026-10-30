@@ -7286,7 +7286,9 @@ name = "rs13-client"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "ron",
  "rs13-classic",
+ "rs13-dmi-import",
  "rs13-i18n",
  "rs13-network",
  "rs13-world",
@@ -7304,6 +7306,16 @@ dependencies = [
 [[package]]
 name = "rs13-core"
 version = "0.1.0"
+
+[[package]]
+name = "rs13-dmi-import"
+version = "0.1.0"
+dependencies = [
+ "png",
+ "ron",
+ "serde",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "rs13-headless"
