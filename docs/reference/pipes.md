@@ -36,7 +36,7 @@ member holds part of the network's gas, in proportion to its volume:
 | **Connector port** (on a pipe) | A canister on it can be connected with a wrench. |
 | **Canister** | Click to open or close its release valve. While disconnected and open, it releases into the room toward 101.325 kPa, by the vent formula. Wrench it on or off a port. |
 
-**Breach lockout.** Vents do not run while their zone is losing gas to space, either directly or through an open door into a leaking zone. This stands in for an air alarm's breach mode and keeps the station's air from pouring out of a hole.
+**Breach lockout.** Vents do not run while their zone is losing gas to space, either directly or through an open door into a leaking zone. This keeps the station's air from pouring out of a hole. Panic fill from an air alarm overrides it (`air-alarm.md`).
 
 **Feedback.** Examining anything that holds gas also reads its pressure gauge. Switching machines on and off gives a localized notice.
 
@@ -64,7 +64,7 @@ member holds part of the network's gas, in proportion to its volume:
 - Gas filters and mixers.
 - Heat exchangers.
 - Vents in siphon mode.
-- Air alarm and console UIs.
+- Console UIs, and air alarm control of vent and scrubber settings.
 - Directional pipe pieces: every pipe connects to every neighbour.
 - Canisters of other gases.
 - Pulling and dragging canisters.

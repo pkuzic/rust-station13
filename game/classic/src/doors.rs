@@ -73,6 +73,13 @@ pub struct Airlock {
     pub systems_on: bool,
     /// The ID scanner wire is whole. Without it the door recognises no card.
     pub id_scan: bool,
+    /// Next to an area whose air alarm seal is on. Set by `alarms::apply_seals`.
+    pub in_seal: bool,
+    /// The seal still has to close and bolt this door.
+    pub seal_pending: bool,
+    /// The bolts were dropped by the seal (Luna `air_locked`), so lifting the seal
+    /// raises them again.
+    pub air_locked: bool,
 }
 
 impl Default for Airlock {
@@ -87,6 +94,9 @@ impl Default for Airlock {
             panel_open: false,
             systems_on: true,
             id_scan: true,
+            in_seal: false,
+            seal_pending: false,
+            air_locked: false,
         }
     }
 }

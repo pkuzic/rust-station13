@@ -164,3 +164,24 @@ panel-safety-flashing = The safety light is flashing!
 panel-safety-on = The safety light is on.
 panel-hydraulics-green = The hydraulics light is solid green.
 panel-hydraulics-red = The hydraulics light is flashing red.
+
+# Air alarm. Args: $item (noun id), $name, $area (formatted area name), $value.
+alarm-deactivated = { $name } has deactivated the { NOUN($item) }!
+alarm-reactivated = { $name } has reactivated the { NOUN($item) }!
+alarm-title = { $area } atmosphere
+alarm-pressure = Pressure: { $value } kPa
+alarm-nitrogen = Nitrogen: { $value }%
+alarm-oxygen = Oxygen: { $value }%
+alarm-co2 = CO₂: { $value }%
+alarm-plasma = Plasma: { $value }%
+alarm-unknown = Unknown: { $value }%
+alarm-temperature = Temperature: { $value } °C
+alarm-seal-on = Activate emergency seal
+alarm-seal-off = Deactivate emergency seal
+alarm-panic-on = Activate panic fill
+alarm-panic-off = Deactivate panic fill
+alarm-no-vents = No vents connected!
+
+# Area names.
+area-engineering = Engineering
+area-eng-storage = Engineering storage

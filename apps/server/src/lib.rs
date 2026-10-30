@@ -6,6 +6,7 @@ use bevy::app::ScheduleRunnerPlugin;
 use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
+use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
@@ -20,10 +21,10 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, MoveInput, Notice, NoticeChannel, Player, StatusUpdate, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, Player, StatusUpdate, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
-use rs13_world::{DisplayName, GridPos, MapLayer, NetId, TileMap, WirePanelView};
+use rs13_world::{AlarmPanelView, DisplayName, GridPos, MapLayer, NetId, TileMap, WirePanelView};
 
 #[derive(Resource)]
 struct Port(u16);
@@ -36,9 +37,9 @@ struct Controls(Entity);
 #[derive(Component, Default)]
 struct SentStatus(Option<StatusUpdate>);
 
-/// The wire panel last sent to this client.
+/// The wire panel and air alarm window last sent to this client.
 #[derive(Component, Default)]
-struct SentPanel(Option<WirePanelView>);
+struct SentPanel(Option<WirePanelView>, Option<AlarmPanelView>);
 
 /// On a mob whose player has already chosen a name this session.
 #[derive(Component)]
@@ -163,6 +164,7 @@ fn queue_actions(
         &mut Outbox,
         &mut PendingEquipment,
         &mut PendingWires,
+        &mut PendingAlarmOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -170,8 +172,16 @@ fn queue_actions(
 ) {
     let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
     for (controls, mut receiver) in &mut links {
-        let Ok((mut pending, mut speech, mut name, mut outbox, mut equipment, mut wires, name_chosen)) =
-            mobs.get_mut(controls.0)
+        let Ok((
+            mut pending,
+            mut speech,
+            mut name,
+            mut outbox,
+            mut equipment,
+            mut wires,
+            mut alarm_ops,
+            name_chosen,
+        )) = mobs.get_mut(controls.0)
         else {
             receiver.receive().for_each(drop);
             continue;
@@ -212,6 +222,16 @@ fn queue_actions(
                 }
                 ActionInput::ClosePanel => {
                     wires.0.push(WireOp::Close);
+                    None
+                }
+                ActionInput::Alarm { target, command } => {
+                    if let Some(alarm) = resolve(target) {
+                        let command = match command {
+                            AlarmCommand::Seal(on) => rs13_classic::alarms::AlarmCommand::Seal(on),
+                            AlarmCommand::PanicFill(on) => rs13_classic::alarms::AlarmCommand::PanicFill(on),
+                        };
+                        alarm_ops.0.push((alarm, command));
+                    }
                     None
                 }
                 ActionInput::Say(text) => {
@@ -277,18 +297,27 @@ fn send_status(
     }
 }
 
-/// Open, update or close each client's wire panel window.
+/// Open, update or close each client's machine windows.
 fn send_panels(
-    mut links: Query<(&Controls, &mut SentPanel, &mut MessageSender<WirePanel>)>,
-    panels: Query<&WirePanelOut>,
+    mut links: Query<(
+        &Controls,
+        &mut SentPanel,
+        &mut MessageSender<WirePanel>,
+        &mut MessageSender<AlarmPanel>,
+    )>,
+    panels: Query<(&WirePanelOut, &AlarmPanelOut)>,
 ) {
-    for (controls, mut sent, mut sender) in &mut links {
-        let Ok(panel) = panels.get(controls.0) else {
+    for (controls, mut sent, mut wires, mut alarms) in &mut links {
+        let Ok((wire_panel, alarm_panel)) = panels.get(controls.0) else {
             continue;
         };
-        if sent.0 != panel.0 {
-            sender.send::<NoticeChannel>(WirePanel(panel.0.clone()));
-            sent.0 = panel.0.clone();
+        if sent.0 != wire_panel.0 {
+            wires.send::<NoticeChannel>(WirePanel(wire_panel.0.clone()));
+            sent.0 = wire_panel.0.clone();
+        }
+        if sent.1 != alarm_panel.0 {
+            alarms.send::<NoticeChannel>(AlarmPanel(alarm_panel.0.clone()));
+            sent.1 = alarm_panel.0.clone();
         }
     }
 }

@@ -55,6 +55,11 @@ wirecutters cut or mend them, and a multitool pulses them. Wear the insulated gl
 the power wires may shock you (`docs/reference/wires.md`). A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
 `engine_equip` access in the active hand.
 
+Each area has an air alarm on its wall. Click it to read the room's air. When the pressure
+turns dangerous it seals the area: every powered door around it closes and bolts until the
+air recovers. Standing next to it you can seal or unseal by hand and turn on panic fill
+(`docs/reference/air-alarm.md`).
+
 Graphics are NSV Luna's sprites (see `client-assets/`). `--screenshot PATH` saves the view a
 few seconds after joining, then quits.
 

@@ -62,6 +62,8 @@ pub struct Valve;
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct Vent {
     pub target: f64,
+    /// Panic fill, set from the air alarm: refill the whole room at once.
+    pub panic: bool,
 }
 
 /// Pulls CO2, plasma and N2O out of the room into the network under it.
@@ -208,7 +210,7 @@ pub fn run_machines(
     atmos: Option<ResMut<StationAtmos>>,
     mut nets: ResMut<PipeNets>,
     pumps: Query<(&GridPos, &Pump, &Switch, &PowerUser)>,
-    vents: Query<(&GridPos, &Vent, &Switch, &PowerUser)>,
+    mut vents: Query<(&GridPos, &mut Vent, &Switch, &PowerUser)>,
     scrubbers: Query<(&GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
 ) {
@@ -240,9 +242,24 @@ pub fn run_machines(
         nets.nets[to].mix.merge(&moved);
     }
 
-    for (pos, vent, on, power) in &vents {
+    for (pos, mut vent, on, power) in &mut vents {
         if !on.0 || !power.powered {
             continue;
+        }
+        // Panic fill (Luna `panic_fill`): while the room is below 95 kPa, pour in enough
+        // to bring the whole zone to one atmosphere, breach or not.
+        if vent.panic {
+            let zone = atmos.0.zone_at(pos.0).map(|z| &atmos.0.zones()[z]);
+            if let (Some(zone), Some(&id)) = (zone, nets.net_at.get(&pos.0))
+                && zone.pressure() < crate::alarms::PANIC_FILL_UNTIL * ONE_ATMOSPHERE
+            {
+                let net = &mut nets.nets[id];
+                let moles = moles_for(ONE_ATMOSPHERE - zone.pressure(), zone.volume, net.mix.temperature);
+                let moved = net.mix.remove_moles(moles);
+                atmos.0.add_at(pos.0, &moved);
+                continue;
+            }
+            vent.panic = false;
         }
         // Air alarm behaviour: never feed a breach.
         if atmos.0.venting_to_space(pos.0) {
@@ -323,7 +340,17 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .valve(),
         "vent" => MachineSpawn::new("vent", "on").switch(true).powered().vent(Vent {
             target: ONE_ATMOSPHERE,
+            panic: false,
         }),
+        "air-alarm" => {
+            let mut alarm = MachineSpawn::new("air-alarm", "alarm0");
+            alarm.power = Some(crate::power::PowerUser::new(
+                crate::power::Channel::Environment,
+                crate::alarms::ALARM_POWER,
+            ));
+            alarm.alarm = true;
+            alarm
+        }
         "scrubber" => MachineSpawn::new("scrubber", "on")
             .switch(true)
             .powered()
@@ -361,6 +388,7 @@ pub struct MachineSpawn {
     pub connector: bool,
     pub dense: bool,
     pub power: Option<crate::power::PowerUser>,
+    pub alarm: bool,
 }
 
 impl MachineSpawn {
@@ -379,6 +407,7 @@ impl MachineSpawn {
             connector: false,
             dense: false,
             power: None,
+            alarm: false,
         }
     }
     fn powered(mut self) -> Self {
@@ -460,6 +489,9 @@ impl MachineSpawn {
         }
         if let Some(power) = self.power {
             entity.insert(power);
+        }
+        if self.alarm {
+            entity.insert(crate::alarms::AirAlarm::default());
         }
     }
 }

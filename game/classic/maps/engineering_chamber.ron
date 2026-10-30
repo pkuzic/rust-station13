@@ -48,6 +48,8 @@
         'm': (tile: (id: "floor"), objects: ["metal-sheet"]),
         'u': (tile: (id: "floor"), objects: ["multitool"]),
         'g': (tile: (id: "floor"), objects: ["insulated-gloves"]),
+        // An air alarm on the wall of each area, watching the floor tile beside it.
+        'L': (tile: (id: "wall", solid: true), objects: ["air-alarm"]),
     },
     // Areas: each one is powered by its own APC.
     area_legend: { 'e': "engineering", 's': "eng-storage" },
@@ -74,9 +76,9 @@
         " #..............#U.H# ",
         " #.....####.....#M.e# ",
         " #..w..#..#.....A.m.E ",
-        " #.....#..#..d..#...# ",
+        " L.....#..#..d..#...# ",
         " #.......a...i.u#...# ",
-        " #.S..........S.#.c.# ",
+        " #.S..........S.#.c.L ",
         " #...x..spp...g.#...# ",
         " #################### ",
         "                      ",

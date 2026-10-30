@@ -207,11 +207,16 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 CombatIntent::default(),
                 Lungs::default(),
                 Surroundings::default(),
+                Outbox::default(),
+                PlayerControlled,
+            ),
+            // Machine windows and requests.
+            (
                 crate::equipment::PendingEquipment::default(),
                 crate::wires::PendingWires::default(),
                 crate::wires::WirePanelOut::default(),
-                Outbox::default(),
-                PlayerControlled,
+                crate::alarms::PendingAlarmOps::default(),
+                crate::alarms::AlarmPanelOut::default(),
             ),
         ))
         .id()
