@@ -138,3 +138,40 @@ hud-tip = { $what ->
         [temperature] Температура тела
        *[health] Здоровье
     }
+
+# Панель техобслуживания шлюза и провода. Аргументы: $item (id предмета), $name, $colour.
+door-panel-opened = Вы открываете панель техобслуживания { NOUN($item, case: "gen") }.
+door-panel-closed = Вы закрываете панель техобслуживания { NOUN($item, case: "gen") }.
+wire-need-cutters = Нужны кусачки!
+wire-need-multitool = Нужен мультитул!
+wire-pulse-cut = На перерезанный провод импульс не подать.
+shocked = Вас пронзает мощный разряд тока!
+shocked-seen = { $name } бьёт током!
+panel-title = Панель доступа
+panel-wire = { $colour ->
+        [orange] Оранжевый
+        [dark-red] Тёмно-красный
+        [white] Белый
+        [yellow] Жёлтый
+        [red] Красный
+        [blue] Синий
+        [green] Зелёный
+        [grey] Серый
+        [black] Чёрный
+        [pink] Розовый
+       *[brown] Коричневый
+    } провод:
+panel-cut = Перерезать
+panel-mend = Починить
+panel-pulse = Импульс
+panel-close = Закрыть
+panel-bolts-down = Болты двери опущены!
+panel-bolts-up = Болты двери подняты.
+panel-test-light-on = Контрольная лампа горит.
+panel-test-light-off = Контрольная лампа не горит!
+panel-ai-light-on = Лампа «Управление ИИ разрешено» горит.
+panel-ai-light-off = Лампа «Управление ИИ разрешено» не горит.
+panel-safety-flashing = Лампа безопасности мигает!
+panel-safety-on = Лампа безопасности горит.
+panel-hydraulics-green = Лампа гидравлики горит ровным зелёным.
+panel-hydraulics-red = Лампа гидравлики мигает красным.

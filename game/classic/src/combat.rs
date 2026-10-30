@@ -22,7 +22,8 @@ pub struct PendingAttacks(pub Vec<(Entity, Entity)>);
 
 /// Things that happened at a place, to be shown to everyone who can see it.
 #[derive(Resource, Debug, Default)]
-pub struct VisibleEvents(pub Vec<(TilePos, LocMsg)>);
+/// Where it happened, the message, and who should not get it (they get their own).
+pub struct VisibleEvents(pub Vec<(TilePos, LocMsg, Option<Entity>)>);
 
 /// Without a zone selector, every blow is aimed at the chest (Luna's default).
 const AIMED_ZONE: Zone = Zone::Chest;
@@ -61,7 +62,7 @@ pub fn resolve_attacks(
                 .arg("victim", victim)
                 .arg("item", appearance.sprite.clone())
                 .arg("zone", zone.noun_id());
-            visible.0.push((at, msg));
+            visible.0.push((at, msg, None));
         } else if intent == Intent::Harm {
             let damage = rng.range(1, 9) as f32;
             let zone = ran_zone(AIMED_ZONE, &mut rng);
@@ -78,7 +79,7 @@ pub fn resolve_attacks(
             let msg = LocMsg::new(id)
                 .arg("attacker", attacker_name)
                 .arg("victim", victim);
-            visible.0.push((at, msg));
+            visible.0.push((at, msg, None));
         }
         // Help intent, empty hand: shaking and hugging are not implemented yet.
     }
@@ -88,15 +89,18 @@ pub fn resolve_attacks(
 pub fn deliver_visible(
     mut visible: ResMut<VisibleEvents>,
     map: Single<&MapLayer>,
-    mut viewers: Query<(&GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
+    mut viewers: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
 ) {
     if visible.0.is_empty() {
         return;
     }
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
-    for (at, msg) in visible.0.drain(..) {
-        for (pos, mut outbox, vitals) in &mut viewers {
+    for (at, msg, except) in visible.0.drain(..) {
+        for (viewer, pos, mut outbox, vitals) in &mut viewers {
+            if except == Some(viewer) {
+                continue;
+            }
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
             if awake && can_see(&map.0, &opaque, at, pos.0, HEARING_RANGE) {
                 outbox.0.push(msg.clone());

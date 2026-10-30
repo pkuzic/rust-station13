@@ -16,6 +16,9 @@ impl WorldTime {
     }
 }
 
+/// One fixed tick, in deciseconds.
+pub const TICK_DS: f32 = 10.0 / TICK_RATE_HZ as f32;
+
 pub fn advance_time(mut time: ResMut<WorldTime>) {
     time.tick = time.tick.next();
 }

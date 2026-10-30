@@ -119,8 +119,18 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
         };
         let appearance = Appearance::new("airlock", airlock.state.name());
         let power = crate::power::PowerUser::new(crate::power::Channel::Equipment, 0.0);
+        let wiring = crate::wires::Wiring::default();
         return Ok(world
-            .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque, power))
+            .spawn((
+                GridPos(pos),
+                id,
+                appearance,
+                airlock,
+                wiring,
+                Dense,
+                Opaque,
+                power,
+            ))
             .id());
     }
     let def = def.expect("checked above");
@@ -132,6 +142,7 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             slowdown: def.slowdown,
             space: def.space,
             internals: def.internals,
+            siemens: def.siemens,
         });
     }
     if let Some(tank) = &def.tank {
@@ -197,6 +208,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 Lungs::default(),
                 Surroundings::default(),
                 crate::equipment::PendingEquipment::default(),
+                crate::wires::PendingWires::default(),
+                crate::wires::WirePanelOut::default(),
                 Outbox::default(),
                 PlayerControlled,
             ),

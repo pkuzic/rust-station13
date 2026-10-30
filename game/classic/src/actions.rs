@@ -75,6 +75,8 @@ pub fn process_actions(
     people: Query<(), With<Body>>,
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
+    electrified: Query<&crate::wires::Wiring>,
+    mut shocks: ResMut<crate::wires::PendingShocks>,
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
@@ -205,8 +207,33 @@ pub fn process_actions(
                         }
                         outbox.0.push(LocMsg::new(id).arg("item", sprite));
                     } else if let Some(mut airlock) = airlock {
+                        // Luna `attackby` / `attack_hand`: an electrified door shocks first.
+                        if electrified.get(target).is_ok_and(|w| w.is_electrified()) && airlock.powered {
+                            let chance = if hands.active_item().is_some() {
+                                crate::wires::TOOL_SHOCK
+                            } else {
+                                crate::wires::HAND_SHOCK
+                            };
+                            shocks.0.push((mob, chance));
+                            continue;
+                        }
+                        if holding(&hands, &appearances, "screwdriver") {
+                            airlock.panel_open = !airlock.panel_open;
+                            let id = if airlock.panel_open {
+                                "door-panel-opened"
+                            } else {
+                                "door-panel-closed"
+                            };
+                            outbox.0.push(LocMsg::new(id).arg("item", "airlock"));
+                            continue;
+                        }
                         if holding(&hands, &appearances, "crowbar") && airlock.force(now) {
                             outbox.0.push(LocMsg::new("door-forced").arg("item", "airlock"));
+                            continue;
+                        }
+                        // With the panel open, using the door shows its wires instead.
+                        if airlock.panel_open {
+                            commands.entity(mob).insert(crate::wires::PanelViewer(target));
                             continue;
                         }
                         // By hand or with any item; only an ID card in the active hand
