@@ -60,6 +60,8 @@ pub struct StatusUpdate {
     pub alerts: Vec<EnvAlert>,
     /// Breathing from a tank.
     pub internals: bool,
+    /// Body temperature, kelvin.
+    pub body_temperature: u16,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its

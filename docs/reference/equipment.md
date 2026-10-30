@@ -5,7 +5,7 @@ Code:
 - `game/classic/src/environment.rs` (breathing from a tank, suit protection)
 - `game/classic/content/items.ron` (item values)
 
-Client: `apps/client/src/inventory.rs` (panel) and `apps/client/src/sprites.rs` (`wear_layers`).
+Client: the HUD slots in `apps/client/src/hud.rs` (`docs/reference/hud.md`) and `apps/client/src/sprites.rs` (`wear_layers`).
 
 Tests: `game/classic/tests/equipment.rs`.
 
@@ -55,7 +55,7 @@ thinner breaths.
 Internals need a breath mask on the face and a tank in a hand, on the back or on the belt. Tanks are
 tried in that order: active hand, other hand, back, belt.
 
-Toggle with the Internals button or E. Internals switch off when:
+Toggle with the internals indicator on the HUD or E. Internals switch off when:
 - the mask comes off;
 - the tank is taken off the back or belt;
 - the tank leaves the wearer in any other way (it is checked every breath).

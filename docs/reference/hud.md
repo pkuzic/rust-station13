@@ -1,0 +1,70 @@
+# HUD and screen layout
+
+Code: `apps/client/src/hud.rs` (HUD), `apps/client/src/main.rs` (camera, text panel).
+Icons: Luna `icons/mob/screen1.dmi`, the `hud` sprite in `client-assets/sprites.ron`.
+
+## Layout
+
+The window follows the classic BYOND client:
+- **Left:** a square map screen, as tall as the window.
+- **Right:** a grey text panel. It has stats and the hover tip on top, the white message
+  output below, and the say line at the bottom.
+
+The screen square is 16 × 16 cells:
+- the 15 × 15 map view, centred on the player (view range 7);
+- one row of the HUD below the map;
+- one column of the HUD to its right.
+
+Cells use Luna's `screen_loc` coordinates: x 1–16 from the left, y 0–15 from the bottom
+(`code/game/hud.dm`). The map is scaled to fit the square, so cells are not always 32 px.
+
+| Cell | Where (x, y) | Luna icon |
+|---|---|---|
+| Mask, head, back | (1, 2), (2, 2), (3, 2) | `equip` N, `hair`, `equip` NE |
+| Right hand, suit, left hand | (1, 1), (2, 1), (3, 1) | `equip` W, `equip` S, `equip` E |
+| Shoes, gloves | (4, 1), (5, 1) | `shoes`, `gloves` |
+| ID, uniform, belt | (1, 0), (2, 0), (3, 0) | `equip` SW, `center`, `belt` |
+| Swap hands | (6, 0) | `hand`: S when the left hand is active, N for the right |
+| Drop | (7, 0) | `act_drop` |
+| Intent | (12, 0) | `help` / `harm` |
+| Run / walk | (14, 0) | `running` / `walking` |
+| Internals | (16, 13) | `internal0/1` |
+| Oxygen, toxins, fire | (16, 11), (16, 9), (16, 7) | `oxy0/1`, `tox0`, `fire0/1` |
+| Body temperature | (16, 5) | `temp-4` … `temp4` |
+| Health | (16, 4) | `health0` … `health7` |
+
+**Inventory slots:**
+- The right hand is on the left of the screen: you face the player.
+- The slots overlap the bottom-left corner of the map, as in Luna.
+- Luna hides shoes and gloves behind an "other" toggle. We show them all the time.
+
+**Left out, with nothing behind them yet:**
+- pockets, ears and glasses slots;
+- throw, pull and resist buttons;
+- sleep and rest indicators.
+
+## Indicators
+
+| Indicator | Shows | Thresholds (Luna `human_life.dm`) |
+|---|---|---|
+| Health | health and state | ≥100 → 0; 80 → 1; 60 → 2; 40 → 3; 20 → 4; 0 → 5; below 0 → 6; dead → 7 |
+| Body temperature | body temperature (K) | ≥370 → 4; 350 → 3; 335 → 2; 320 → 1; 300 → 0; 295 → −1; 285 → −2; 280 → −3; colder → −4 |
+| Oxygen | the low-oxygen alert | |
+| Fire | the hot alert | |
+| Toxins | always off: nothing toxic is breathed yet | |
+| Internals | breathing from a tank | |
+
+Pressure is not one of Luna's icons, so it stays as text in the stat panel.
+
+## Clicks
+
+| Cell | Click |
+|---|---|
+| Slot | Holding something: put it on. Empty hand: take off what is there. |
+| Inactive hand | Make it active |
+| Swap hands, drop | As X and Q |
+| Intent | Toggle help and harm |
+| Run / walk | Toggle the default. Shift held does the opposite. |
+| Internals | Turn internals on or off (also E) |
+
+Hovering over a cell shows its name, and what is in it, in the stat panel. A click on the HUD never reaches the map underneath.

@@ -22,8 +22,6 @@ examine = That's { NOUN($item, case: "indef") }.
 airlock-pushed = The airlock forces you out of the way!
 
 # Hands bar labels.
-hud-hand-left = L
-hud-hand-right = R
 
 # Args: $name (English, never declined).
 examine-person = That's { $name }.
@@ -102,7 +100,6 @@ internals-no-mask = You are not wearing a breath mask.
 internals-no-tank = You have no gas tank to connect to.
 
 # Inventory bar.
-hud-internals = Internals
 hud-slot = { $slot ->
         [uniform] Uniform
         [suit] Suit
@@ -113,4 +110,20 @@ hud-slot = { $slot ->
         [back] Back
         [belt] Belt
        *[id] ID
+    }
+
+# HUD hover tips (Luna's screen object names). Args: $what.
+hud-tip = { $what ->
+        [hand-left] Left hand
+        [hand-right] Right hand
+        [swap] Swap hands
+        [drop] Drop
+        [intent] Intent
+        [move] Run / walk
+        [internals] Internals
+        [oxygen] Oxygen
+        [toxin] Toxins
+        [fire] Fire
+        [temperature] Body temperature
+       *[health] Health
     }

@@ -59,6 +59,22 @@ pub fn load_atlas(
 }
 
 impl SpriteAtlas {
+    /// Atlas cell of the first frame of `sprite:state` facing `facing`.
+    pub fn index(&self, sprite: &str, state: &str, facing: u32) -> Option<usize> {
+        Some(self.atlas.get(sprite, state)?.cell(0, facing) as usize)
+    }
+
+    /// A UI image of the first frame of `sprite:state`, if the atlas has it.
+    pub fn ui_image(&self, sprite: &str, state: &str, facing: u32) -> Option<ImageNode> {
+        Some(ImageNode::from_atlas_image(
+            self.image.clone(),
+            TextureAtlas {
+                layout: self.layout.clone(),
+                index: self.index(sprite, state, facing)?,
+            },
+        ))
+    }
+
     /// A sprite showing the first frame of `sprite:state`, if the atlas has it.
     pub fn sprite(&self, sprite: &str, state: &str, facing: u32) -> Option<Sprite> {
         let anim = self.atlas.get(sprite, state)?;

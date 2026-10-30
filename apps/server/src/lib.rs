@@ -235,6 +235,7 @@ fn send_status(
             pressure_dkpa: (around.pressure * 10.0).round().max(0.0) as u32,
             alerts: alerts(around, lungs),
             internals: lungs.internal.is_some(),
+            body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
         };
         if sent.0.as_ref() != Some(&status) {
             sender.send::<NoticeChannel>(status.clone());

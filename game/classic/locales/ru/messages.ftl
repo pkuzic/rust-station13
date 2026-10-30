@@ -32,8 +32,6 @@ examine = Это { NOUN($item) }.
 airlock-pushed = Шлюз выталкивает вас с дороги!
 
 # Hands bar labels.
-hud-hand-left = Л
-hud-hand-right = П
 
 # Args: $name (English, never declined).
 examine-person = Это { $name }.
@@ -113,7 +111,6 @@ internals-no-mask = На вас нет дыхательной маски.
 internals-no-tank = Вам не к чему подключиться: нет баллона.
 
 # Панель снаряжения.
-hud-internals = Баллон
 hud-slot = { $slot ->
         [uniform] Форма
         [suit] Костюм
@@ -124,4 +121,20 @@ hud-slot = { $slot ->
         [back] Спина
         [belt] Пояс
        *[id] ID
+    }
+
+# Подсказки HUD. Аргументы: $what.
+hud-tip = { $what ->
+        [hand-left] Левая рука
+        [hand-right] Правая рука
+        [swap] Сменить руку
+        [drop] Бросить
+        [intent] Намерение
+        [move] Бег / шаг
+        [internals] Баллон
+        [oxygen] Кислород
+        [toxin] Токсины
+        [fire] Жар
+        [temperature] Температура тела
+       *[health] Здоровье
     }

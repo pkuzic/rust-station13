@@ -8,11 +8,12 @@
 //! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
 //! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay.
 //!
-//! Equipment panel (bottom right): click a slot to put on what the active hand holds, or with
-//! an empty hand to take off what is there; the Internals button (or E) connects the
-//! breath mask to a gas tank.
+//! The screen is laid out like the classic BYOND client: the map with Luna's HUD on the
+//! left (`hud.rs`), messages on the right. Click an inventory slot to put on what the
+//! active hand holds, or with an empty hand to take off what is there. E or the
+//! internals indicator connects the breath mask to a gas tank.
 
-mod inventory;
+mod hud;
 mod sprites;
 
 use std::collections::VecDeque;
@@ -24,14 +25,12 @@ use bevy::prelude::*;
 use bevy::text::{FontSize, FontSource};
 use bevy::window::PrimaryWindow;
 use rs13_classic::locales;
-use rs13_i18n::{Case, Lexicon, Localizer, langid};
+use rs13_i18n::{Lexicon, Localizer, langid};
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
-use rs13_world::{
-    Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Intent, MapLayer, MobStat, NetId, TilePos,
-};
+use rs13_world::{Appearance, AtmosView, Dir, EnvAlert, GridPos, Intent, MapLayer, MobStat, NetId, TilePos};
 use sprites::{Look, SpriteAtlas};
 
 /// On-screen size of one tile, in pixels.
@@ -40,7 +39,7 @@ const TILE_PX: f32 = 32.0;
 /// never lags a full tile behind the server.
 const GLIDE_TILES_PER_SEC: f32 = 5.0;
 /// Lines kept in the message log.
-const LOG_LINES: usize = 8;
+const LOG_LINES: usize = 60;
 /// Colour of the player's own character.
 const OWN_PLAYER_COLOR: Color = Color::srgb(0.35, 0.85, 0.40);
 /// A Windows 2000-era UI font with Cyrillic, with fallbacks for other systems.
@@ -97,11 +96,13 @@ struct OwnPlayer;
 #[derive(Component)]
 struct LogText;
 
+/// The camera that draws the map, in the square on the left.
 #[derive(Component)]
-struct HandSlot(Hand);
+struct WorldCamera;
 
+/// The HUD hover tip in the stat panel.
 #[derive(Component)]
-struct HandLabel(Hand);
+struct TipLine;
 
 fn main() {
     let args = parse_args();
@@ -137,12 +138,14 @@ fn main() {
         .insert_resource(ScreenshotPlan(args.screenshot))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
+        .init_resource::<hud::WalkMode>()
+        .init_resource::<hud::HudTip>()
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
         .add_systems(
             Startup,
-            (sprites::load_atlas, setup, spawn_hud, inventory::spawn_panel),
+            ((sprites::load_atlas, hud::spawn_hud).chain(), setup, spawn_panel),
         )
         .add_systems(
             Update,
@@ -160,10 +163,10 @@ fn main() {
                 receive_status,
                 glide,
                 (sprites::wear_layers, sprites::dress, sprites::animate).chain(),
-                follow_own_player,
+                (fit_camera, follow_own_player),
                 (
-                    update_hands_bar,
-                    inventory::update_panel,
+                    hud::update_hud,
+                    update_tip_line,
                     update_log,
                     update_chat_line,
                     update_status_line,
@@ -206,73 +209,112 @@ fn ui_text_font(size: f32) -> TextFont {
 }
 
 fn setup(mut commands: Commands, server: Res<ServerAddr>) -> Result {
-    commands.spawn(Camera2d);
+    let screen = hud::SCREEN_CELLS * TILE_PX;
+    commands.spawn((
+        Camera2d,
+        Projection::Orthographic(OrthographicProjection {
+            scaling_mode: bevy::camera::ScalingMode::Fixed {
+                width: screen,
+                height: screen,
+            },
+            ..OrthographicProjection::default_2d()
+        }),
+        WorldCamera,
+    ));
+    // UI is drawn inside its camera's viewport, so the HUD and the text panel get their
+    // own camera over the whole window. It draws no world: nothing is on its layer.
+    commands.spawn((
+        Camera2d,
+        Camera {
+            order: 1,
+            clear_color: ClearColorConfig::None,
+            ..default()
+        },
+        IsDefaultUiCamera,
+        bevy::camera::visibility::RenderLayers::layer(31),
+    ));
     connect(&mut commands, server.0, unique_client_id())?;
     info!(server = %server.0, "connecting");
     Ok(())
 }
 
-/// Classic grey panels: message log above, two hand slots below.
-fn spawn_hud(mut commands: Commands) {
-    let panel_grey = Color::srgb(0.75, 0.75, 0.72);
-    let hand_slot = |hand: Hand| {
-        (
-            HandSlot(hand),
-            Node {
-                width: Val::Px(160.0),
-                height: Val::Px(28.0),
-                border: UiRect::all(Val::Px(2.0)),
-                padding: UiRect::horizontal(Val::Px(6.0)),
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BackgroundColor(panel_grey),
-            BorderColor::all(Color::srgb(0.4, 0.4, 0.4)),
-            children![(
-                HandLabel(hand),
-                Text::new(""),
-                ui_text_font(14.0),
-                TextColor(Color::BLACK)
-            )],
-        )
-    };
+/// The text panel right of the map, as in the classic BYOND client: stats on top, the
+/// message output below, the say line at the bottom.
+fn spawn_panel(mut commands: Commands) {
+    let grey = Color::srgb(0.83, 0.82, 0.78);
+    let edge = Color::srgb(0.5, 0.5, 0.5);
     commands.spawn((
         Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
+            position_type: PositionType::Absolute,
+            left: Val::VMin(100.0),
+            right: Val::Px(0.0),
+            top: Val::Px(0.0),
+            bottom: Val::Px(0.0),
             flex_direction: FlexDirection::Column,
-            justify_content: JustifyContent::FlexEnd,
-            padding: UiRect::all(Val::Px(8.0)),
-            row_gap: Val::Px(6.0),
+            padding: UiRect::all(Val::Px(4.0)),
+            row_gap: Val::Px(4.0),
             ..default()
         },
+        BackgroundColor(grey),
         children![
             (
-                LogText,
-                Text::new(""),
-                ui_text_font(15.0),
-                TextColor(Color::srgb(0.85, 0.85, 0.85))
-            ),
-            (
-                ChatLine,
-                Text::new(""),
-                ui_text_font(15.0),
-                TextColor(Color::srgb(1.0, 1.0, 0.75))
-            ),
-            (
-                StatusLine,
-                Text::new(""),
-                ui_text_font(15.0),
-                TextColor(Color::srgb(0.95, 0.95, 0.95))
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    border: UiRect::all(Val::Px(1.0)),
+                    padding: UiRect::all(Val::Px(4.0)),
+                    ..default()
+                },
+                BorderColor::all(edge),
+                children![
+                    (
+                        StatusLine,
+                        Text::new(""),
+                        ui_text_font(14.0),
+                        TextColor(Color::BLACK)
+                    ),
+                    (
+                        TipLine,
+                        Text::new(" "),
+                        ui_text_font(14.0),
+                        TextColor(Color::srgb(0.1, 0.1, 0.45))
+                    ),
+                ],
             ),
             (
                 Node {
-                    width: Val::Percent(100.0),
-                    justify_content: JustifyContent::Center,
-                    column_gap: Val::Px(6.0),
+                    flex_grow: 1.0,
+                    flex_direction: FlexDirection::Column,
+                    justify_content: JustifyContent::FlexEnd,
+                    overflow: Overflow::clip(),
+                    border: UiRect::all(Val::Px(1.0)),
+                    padding: UiRect::all(Val::Px(4.0)),
                     ..default()
                 },
-                children![hand_slot(Hand::Left), hand_slot(Hand::Right)],
+                BackgroundColor(Color::WHITE),
+                BorderColor::all(edge),
+                children![(
+                    LogText,
+                    Text::new(""),
+                    ui_text_font(14.0),
+                    TextColor(Color::BLACK)
+                )],
+            ),
+            (
+                Node {
+                    min_height: Val::Px(22.0),
+                    border: UiRect::all(Val::Px(1.0)),
+                    padding: UiRect::horizontal(Val::Px(4.0)),
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                BackgroundColor(Color::WHITE),
+                BorderColor::all(edge),
+                children![(
+                    ChatLine,
+                    Text::new(""),
+                    ui_text_font(14.0),
+                    TextColor(Color::BLACK)
+                )],
             ),
         ],
     ));
@@ -521,6 +563,7 @@ fn chat_typing(
 fn send_move_input(
     chat: Res<ChatInput>,
     keys: Res<ButtonInput<KeyCode>>,
+    walk: Res<hud::WalkMode>,
     mut sender: Query<&mut MessageSender<MoveInput>, (With<Client>, With<Connected>)>,
     mut last_sent: Local<Option<MoveInput>>,
 ) {
@@ -533,7 +576,8 @@ fn send_move_input(
     let dy = held(KeyCode::KeyW, KeyCode::ArrowUp) as i32 - held(KeyCode::KeyS, KeyCode::ArrowDown) as i32;
     let input = MoveInput {
         dir: Dir::from_offset(dx, dy),
-        run: !keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]),
+        // Shift does the opposite of the move-intent button while held.
+        run: walk.0 == keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]),
     };
     if *last_sent != Some(input) {
         sender.send::<IntentChannel>(input);
@@ -577,13 +621,13 @@ fn send_clicks(
     mouse: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
     window: Single<&Window, With<PrimaryWindow>>,
-    camera: Single<(&Camera, &GlobalTransform)>,
+    camera: Single<(&Camera, &GlobalTransform), With<WorldCamera>>,
     objects: Query<(&NetId, &GridPos, &Appearance)>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
-    panel: Query<&bevy::picking::hover::Hovered>,
+    hud: Query<&bevy::picking::hover::Hovered>,
 ) {
-    // A click on the equipment panel is not a click on the world under it.
-    if !mouse.just_pressed(MouseButton::Left) || panel.iter().any(|h| h.0) {
+    // A click on the HUD is not a click on the world under it.
+    if !mouse.just_pressed(MouseButton::Left) || hud.iter().any(|h| h.0) {
         return;
     }
     let Ok(mut sender) = sender.single_mut() else {
@@ -592,6 +636,10 @@ fn send_clicks(
     let Some(cursor) = window.cursor_position() else {
         return;
     };
+    // Right of the map square is the text panel.
+    if cursor.x > window.width().min(window.height()) {
+        return;
+    }
     let (camera, camera_transform) = *camera;
     let Ok(world) = camera.viewport_to_world_2d(camera_transform, cursor) else {
         return;
@@ -781,46 +829,42 @@ fn glide(time: Res<Time>, mut movers: Query<(&GridPos, &mut Transform, Has<Playe
 }
 
 fn follow_own_player(
-    own: Query<&Transform, (With<OwnPlayer>, Without<Camera2d>)>,
-    mut camera: Single<&mut Transform, With<Camera2d>>,
+    own: Query<&Transform, (With<OwnPlayer>, Without<WorldCamera>)>,
+    mut camera: Single<&mut Transform, With<WorldCamera>>,
 ) {
+    // The player stands in the middle of the 15 x 15 view: half a cell left of the
+    // screen's centre (the HUD column is on the right) and half a cell above it (the
+    // HUD row is below).
     if let Ok(player) = own.single() {
-        camera.translation.x = player.translation.x;
-        camera.translation.y = player.translation.y;
+        camera.translation.x = player.translation.x + TILE_PX / 2.0;
+        camera.translation.y = player.translation.y - TILE_PX / 2.0;
     }
 }
 
-fn update_hands_bar(
-    loc: Res<Loc>,
-    own: Query<&HandsView, With<OwnPlayer>>,
-    items: Query<(&NetId, &Appearance)>,
-    mut slots: Query<(&HandSlot, &mut BorderColor)>,
-    mut labels: Query<(&HandLabel, &mut Text)>,
-) {
-    let Ok(view) = own.single() else { return };
-    let name = |id: Option<NetId>| {
-        id.and_then(|id| items.iter().find(|(n, _)| **n == id))
-            .map(|(_, a)| loc.0.noun(&a.sprite, Case::Nom))
-            .unwrap_or_else(|| "—".to_owned())
-    };
-    for (HandLabel(hand), mut text) in &mut labels {
-        let (label_id, held) = match hand {
-            Hand::Left => ("hud-hand-left", view.left),
-            Hand::Right => ("hud-hand-right", view.right),
-        };
-        let label = loc.0.format(label_id, None).unwrap_or_default();
-        let new = format!("{label}: {}", name(held));
-        if text.0 != new {
-            text.0 = new;
-        }
-    }
-    for (HandSlot(hand), mut border) in &mut slots {
-        let color = if *hand == view.active {
-            Color::srgb(0.95, 0.95, 0.95)
+fn update_tip_line(tip: Res<hud::HudTip>, mut text: Single<&mut Text, With<TipLine>>) {
+    if tip.is_changed() {
+        // A space keeps the line's height when there is no tip.
+        text.0 = if tip.0.is_empty() {
+            " ".to_owned()
         } else {
-            Color::srgb(0.4, 0.4, 0.4)
+            tip.0.clone()
         };
-        border.set_if_neq(BorderColor::all(color));
+    }
+}
+
+/// The map is drawn in a square on the left, as large as the window's shorter side,
+/// 16 cells across: the 15 x 15 view plus the HUD row and column.
+fn fit_camera(
+    window: Single<&Window, With<PrimaryWindow>>,
+    mut camera: Single<&mut Camera, With<WorldCamera>>,
+) {
+    let size = window.physical_width().min(window.physical_height()).max(1);
+    if camera.viewport.as_ref().map(|v| v.physical_size) != Some(UVec2::splat(size)) {
+        camera.viewport = Some(bevy::camera::Viewport {
+            physical_position: UVec2::ZERO,
+            physical_size: UVec2::splat(size),
+            ..default()
+        });
     }
 }
 
