@@ -33,6 +33,11 @@
         'O': (tile: (id: "floor"), objects: ["oxygen-tank", "cable"]),
         '=': (tile: (id: "wall", solid: true), objects: ["cable"]),
         'Q': (tile: (id: "wall", solid: true), objects: ["apc"]),
+        // EVA gear in the closet: space suit, helmet, breath mask, emergency oxygen.
+        'U': (tile: (id: "floor"), objects: ["space-suit"]),
+        'H': (tile: (id: "floor"), objects: ["space-helmet"]),
+        'M': (tile: (id: "floor"), objects: ["breath-mask"]),
+        'e': (tile: (id: "floor"), objects: ["emergency-oxygen"]),
         // External airlock from the closet straight to space.
         'E': (tile: (id: "floor"), objects: [(id: "airlock", access: ["external_airlocks"])]),
         'c': (tile: (id: "floor"), objects: ["crowbar"]),
@@ -64,8 +69,8 @@
         " #################### ",
         " #TPvpKpppvppVpp|pv.# ",
         " QBZ----------Z-=-O-Q ",
-        " #..............#...# ",
-        " #.....####.....#...# ",
+        " #..............#U.H# ",
+        " #.....####.....#M.e# ",
         " #..w..#..#.....A.m.E ",
         " #.....#..#..d..#...# ",
         " #.......a...i..#...# ",

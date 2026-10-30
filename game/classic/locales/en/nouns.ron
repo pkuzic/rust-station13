@@ -34,4 +34,12 @@
     "canister": (gender: neuter, sg: (nom: "canister", indef: "a canister"), pl: Some((nom: "canisters"))),
     "smes": (gender: neuter, sg: (nom: "SMES", indef: "a SMES unit"), pl: Some((nom: "SMES units"))),
     "cable": (gender: neuter, sg: (nom: "power cable", indef: "a power cable"), pl: Some((nom: "power cables"))),
+    // Clothing and gas tanks.
+    "emergency-oxygen": (gender: neuter, sg: (nom: "emergency oxygen tank", indef: "an emergency oxygen tank"), pl: Some((nom: "emergency oxygen tanks"))),
+    "grey-jumpsuit": (gender: neuter, sg: (nom: "grey jumpsuit", indef: "a grey jumpsuit"), pl: Some((nom: "grey jumpsuits"))),
+    "black-shoes": (gender: neuter, sg: (nom: "pair of black shoes", indef: "a pair of black shoes"), pl: Some((nom: "pairs of black shoes"))),
+    "insulated-gloves": (gender: neuter, sg: (nom: "pair of insulated gloves", indef: "a pair of insulated gloves"), pl: Some((nom: "pairs of insulated gloves"))),
+    "breath-mask": (gender: neuter, sg: (nom: "breath mask", indef: "a breath mask"), pl: Some((nom: "breath masks"))),
+    "space-suit": (gender: neuter, sg: (nom: "space suit", indef: "a space suit"), pl: Some((nom: "space suits"))),
+    "space-helmet": (gender: neuter, sg: (nom: "space helmet", indef: "a space helmet"), pl: Some((nom: "space helmets"))),
 }

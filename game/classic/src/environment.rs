@@ -5,10 +5,12 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_simulation::atmos::gas::{ONE_ATMOSPHERE, T_SPACE, TILE_VOLUME};
 use rs13_simulation::atmos::{Gas, GasMix};
-use rs13_world::{GridPos, MobStat};
+use rs13_world::{GridPos, MobStat, Slot};
 
 use crate::actions::Outbox;
 use crate::atmos::StationAtmos;
+use crate::equipment::{Equipment, TankGas, Wearable, WornBy, sealed};
+use crate::hands::HeldBy;
 use crate::health::{Body, Vitals};
 use crate::time::WorldTime;
 
@@ -49,6 +51,8 @@ pub const VACUUM_COOLING: f32 = 5.0;
 pub const THIN_AIR: f64 = 1.0;
 /// Fraction of the body/air temperature difference closed per life cycle at 1 atm.
 pub const AIR_HEAT_EXCHANGE: f32 = 0.05;
+/// How much heat a sealed space suit and helmet still let through, as a fraction.
+pub const SUIT_INSULATION: f32 = 0.05;
 
 /// Breathing state: the bits of a body that only matter to lungs.
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
@@ -58,6 +62,8 @@ pub struct Lungs {
     /// Seconds spent breathing too much CO2.
     pub co2_exposure: f32,
     pub body_temperature: f32,
+    /// The tank feeding the mask, if internals are on.
+    pub internal: Option<Entity>,
 }
 
 impl Default for Lungs {
@@ -66,6 +72,7 @@ impl Default for Lungs {
             losebreath: 0,
             co2_exposure: 0.0,
             body_temperature: BODY_TEMPERATURE,
+            internal: None,
         }
     }
 }
@@ -99,7 +106,17 @@ pub fn sense_surroundings(atmos: Option<Res<StationAtmos>>, mut mobs: Query<(&Gr
 pub fn life(
     time: Res<WorldTime>,
     atmos: Option<ResMut<StationAtmos>>,
-    mut mobs: Query<(&GridPos, &mut Body, &mut Lungs, &Vitals, Option<&mut Outbox>)>,
+    mut mobs: Query<(
+        Entity,
+        &GridPos,
+        &mut Body,
+        &mut Lungs,
+        &Vitals,
+        Option<&mut Outbox>,
+        Option<&Equipment>,
+    )>,
+    mut tanks: Query<(&mut TankGas, Option<&HeldBy>, Option<&WornBy>)>,
+    wearables: Query<&Wearable>,
 ) {
     let Some(mut atmos) = atmos else { return };
     let tick = time.tick.0;
@@ -108,18 +125,46 @@ pub fn life(
     }
     let breathe_now = (tick / LIFE_TICKS).is_multiple_of(LIFE_CYCLES_PER_BREATH);
 
-    for (pos, mut body, mut lungs, vitals, outbox) in &mut mobs {
+    for (mob, pos, mut body, mut lungs, vitals, outbox, equipment) in &mut mobs {
         if vitals.stat == MobStat::Dead {
             continue;
         }
         let air = atmos.0.air_at(pos.0);
         let pressure = air.pressure(TILE_VOLUME);
+        let sealed = equipment.is_some_and(|e| sealed(e, &wearables));
 
         if breathe_now {
-            breathe(&mut atmos, pos, &mut body, &mut lungs, vitals, &air);
+            // Internals: the tank must still be on this person, behind an internals mask.
+            let mask_ok = equipment
+                .and_then(|e| e.get(Slot::Mask))
+                .and_then(|m| wearables.get(m).ok())
+                .is_some_and(|w| w.internals);
+            let tank = lungs
+                .internal
+                .filter(|_| mask_ok)
+                .and_then(|t| tanks.get_mut(t).ok())
+                .filter(|(_, held, worn)| {
+                    held.is_some_and(|h| h.0 == mob) || worn.is_some_and(|w| w.0 == mob)
+                });
+            match tank {
+                Some((mut tank, ..)) => {
+                    let mut breath = tank.take_breath();
+                    breathe_from(&mut body, &mut lungs, vitals, &mut breath);
+                    // Exhaled into the room, as in Luna.
+                    atmos.0.add_at(pos.0, &breath);
+                }
+                None => {
+                    lungs.internal = None;
+                    breathe(&mut atmos, pos, &mut body, &mut lungs, vitals, &air);
+                }
+            }
         }
-        pressure_damage(&mut body, pressure);
-        temperature(&mut body, &mut lungs, &air, pressure);
+        // A sealed space suit and helmet hold pressure and heat in (/tg/ style).
+        if !sealed {
+            pressure_damage(&mut body, pressure);
+        }
+        let insulation = if sealed { SUIT_INSULATION } else { 1.0 };
+        temperature(&mut body, &mut lungs, &air, pressure, insulation);
 
         if let Some(mut outbox) = outbox
             && vitals.stat == MobStat::Conscious
@@ -153,6 +198,20 @@ fn breathe(
     let mut breath = atmos.0.remove_at(pos.0, moles);
     handle_breath(body, lungs, &mut breath);
     atmos.0.add_at(pos.0, &breath);
+}
+
+/// A breath from a tank: the same crit rules, then `handle_breath`.
+fn breathe_from(body: &mut Body, lungs: &mut Lungs, vitals: &Vitals, breath: &mut GasMix) {
+    let in_crit = vitals.health < 0.0;
+    if in_crit {
+        lungs.losebreath += 1;
+    }
+    if in_crit && lungs.losebreath > 10 {
+        lungs.losebreath -= 1;
+        body.oxy += 4.0;
+        return;
+    }
+    handle_breath(body, lungs, breath);
 }
 
 /// Luna's `handle_breath`, on a breath of `BREATH_VOLUME` litres. Turns some oxygen into CO2.
@@ -212,13 +271,13 @@ pub fn pressure_damage(body: &mut Body, pressure: f64) {
 
 /// Body heat: air pulls it toward its own temperature (more strongly the denser it is);
 /// vacuum drains it; thermoregulation pulls it back. Then cold or heat damage.
-pub fn temperature(body: &mut Body, lungs: &mut Lungs, air: &GasMix, pressure: f64) {
+pub fn temperature(body: &mut Body, lungs: &mut Lungs, air: &GasMix, pressure: f64, insulation: f32) {
     let t = &mut lungs.body_temperature;
     if pressure < THIN_AIR {
-        *t -= VACUUM_COOLING;
+        *t -= VACUUM_COOLING * insulation;
     } else {
         let density = (pressure / ONE_ATMOSPHERE).min(2.0) as f32;
-        *t += (air.temperature as f32 - *t) * AIR_HEAT_EXCHANGE * density;
+        *t += (air.temperature as f32 - *t) * AIR_HEAT_EXCHANGE * density * insulation;
     }
     // Thermoregulation (shivering, sweating) pulls back toward normal, up to a limit.
     let correction = (BODY_TEMPERATURE - *t).clamp(-METABOLIC_WARMING, METABOLIC_WARMING);

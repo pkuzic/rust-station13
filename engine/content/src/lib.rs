@@ -20,8 +20,12 @@ pub enum ContentError {
 
 /// Parse one RON content file. `path` is only used for error messages.
 pub fn parse_ron<T: DeserializeOwned>(path: &str, text: &str) -> Result<T, ContentError> {
-    ron::from_str(text).map_err(|source| ContentError::Parse {
-        path: path.to_owned(),
-        source: Box::new(source),
-    })
+    // Implicit `Some` lets optional fields be written as plain values.
+    ron::Options::default()
+        .with_default_extension(ron::extensions::Extensions::IMPLICIT_SOME)
+        .from_str(text)
+        .map_err(|source| ContentError::Parse {
+            path: path.to_owned(),
+            source: Box::new(source),
+        })
 }

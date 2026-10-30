@@ -108,3 +108,60 @@ pub struct HandsView {
     pub right: Option<NetId>,
     pub active: Hand,
 }
+
+/// Where something can be worn on a person (BYOND equipment slots).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum Slot {
+    Uniform,
+    Suit,
+    Head,
+    Mask,
+    Gloves,
+    Shoes,
+    Back,
+    Belt,
+    Id,
+}
+
+impl Slot {
+    pub const ALL: [Slot; 9] = [
+        Slot::Uniform,
+        Slot::Suit,
+        Slot::Head,
+        Slot::Mask,
+        Slot::Gloves,
+        Slot::Shoes,
+        Slot::Back,
+        Slot::Belt,
+        Slot::Id,
+    ];
+
+    /// Name used in content files and message ids, e.g. `uniform`.
+    pub fn id(self) -> &'static str {
+        match self {
+            Slot::Uniform => "uniform",
+            Slot::Suit => "suit",
+            Slot::Head => "head",
+            Slot::Mask => "mask",
+            Slot::Gloves => "gloves",
+            Slot::Shoes => "shoes",
+            Slot::Back => "back",
+            Slot::Belt => "belt",
+            Slot::Id => "id",
+        }
+    }
+
+    pub fn parse(s: &str) -> Option<Slot> {
+        Slot::ALL.into_iter().find(|slot| slot.id() == s)
+    }
+}
+
+/// What a person wears, as seen by clients: slot → item.
+#[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct WornView(pub Vec<(Slot, NetId)>);
+
+impl WornView {
+    pub fn get(&self, slot: Slot) -> Option<NetId> {
+        self.0.iter().find(|(s, _)| *s == slot).map(|(_, id)| *id)
+    }
+}

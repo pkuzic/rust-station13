@@ -91,3 +91,26 @@ apc-breaker-on = You switch the APC's main breaker on.
 apc-breaker-off = You switch the APC's main breaker off.
 apc-locked = Access denied.
 door-forced = You force the { NOUN($item) } with the crowbar.
+
+# Equipment. Args: $item (noun id).
+equip-wrong-slot = You can't wear that there.
+equip-occupied = You are already wearing something there.
+equip-needs-uniform = You need a jumpsuit for that.
+internals-on = You are now running on internals from the { NOUN($item) }.
+internals-off = You are no longer running on internals.
+internals-no-mask = You are not wearing a breath mask.
+internals-no-tank = You have no gas tank to connect to.
+
+# Inventory bar.
+hud-internals = Internals
+hud-slot = { $slot ->
+        [uniform] Uniform
+        [suit] Suit
+        [head] Head
+        [mask] Mask
+        [gloves] Gloves
+        [shoes] Shoes
+        [back] Back
+        [belt] Belt
+       *[id] ID
+    }

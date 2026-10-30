@@ -102,3 +102,26 @@ apc-breaker-on = Вы включаете главный рубильник эн�
 apc-breaker-off = Вы выключаете главный рубильник энергощитка.
 apc-locked = Доступ запрещён.
 door-forced = Вы вскрываете { NOUN($item, case: "acc") } ломом.
+
+# Снаряжение. Аргументы: $item (id предмета).
+equip-wrong-slot = Это сюда не надеть.
+equip-occupied = Здесь уже что-то надето.
+equip-needs-uniform = Для этого нужен комбинезон.
+internals-on = Вы дышите из { NOUN($item, case: "gen") }.
+internals-off = Вы больше не дышите из баллона.
+internals-no-mask = На вас нет дыхательной маски.
+internals-no-tank = Вам не к чему подключиться: нет баллона.
+
+# Панель снаряжения.
+hud-internals = Баллон
+hud-slot = { $slot ->
+        [uniform] Форма
+        [suit] Костюм
+        [head] Голова
+        [mask] Маска
+        [gloves] Перчатки
+        [shoes] Обувь
+        [back] Спина
+        [belt] Пояс
+       *[id] ID
+    }

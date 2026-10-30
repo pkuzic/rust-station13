@@ -94,8 +94,8 @@
                 ],
             ),
         },
-        "cable": {
-            "0-1": (
+        "black-shoes": {
+            "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -103,7 +103,9 @@
                     19,
                 ],
             ),
-            "0-2": (
+        },
+        "breath-mask": {
+            "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -111,7 +113,9 @@
                     20,
                 ],
             ),
-            "0-4": (
+        },
+        "cable": {
+            "0-1": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -119,7 +123,7 @@
                     21,
                 ],
             ),
-            "0-8": (
+            "0-2": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -127,7 +131,7 @@
                     22,
                 ],
             ),
-            "1-2": (
+            "0-4": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -135,7 +139,7 @@
                     23,
                 ],
             ),
-            "1-4": (
+            "0-8": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -143,7 +147,7 @@
                     24,
                 ],
             ),
-            "1-8": (
+            "1-2": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -151,7 +155,7 @@
                     25,
                 ],
             ),
-            "2-4": (
+            "1-4": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -159,7 +163,7 @@
                     26,
                 ],
             ),
-            "2-8": (
+            "1-8": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -167,12 +171,28 @@
                     27,
                 ],
             ),
-            "4-8": (
+            "2-4": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
                     28,
+                ],
+            ),
+            "2-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    29,
+                ],
+            ),
+            "4-8": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    30,
                 ],
             ),
         },
@@ -182,7 +202,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    29,
+                    31,
                 ],
             ),
         },
@@ -192,7 +212,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    30,
+                    32,
                 ],
             ),
         },
@@ -202,7 +222,27 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    31,
+                    33,
+                ],
+            ),
+        },
+        "emergency-oxygen": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    34,
+                ],
+            ),
+        },
+        "grey-jumpsuit": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    35,
                 ],
             ),
         },
@@ -212,44 +252,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    32,
-                    33,
-                    34,
-                    35,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
                     36,
-                ],
-            ),
-        },
-        "human:shoes": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
                     37,
                     38,
                     39,
-                    40,
-                ],
-            ),
-        },
-        "human:uniform": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    41,
-                    42,
-                    43,
-                    44,
                 ],
             ),
             "lying": (
@@ -257,7 +263,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    45,
+                    40,
                 ],
             ),
         },
@@ -267,7 +273,17 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    46,
+                    41,
+                ],
+            ),
+        },
+        "insulated-gloves": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    42,
                 ],
             ),
         },
@@ -277,7 +293,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    47,
+                    43,
                 ],
             ),
         },
@@ -287,7 +303,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    48,
+                    44,
                 ],
             ),
         },
@@ -297,7 +313,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    49,
+                    45,
                 ],
             ),
             "1-4": (
@@ -305,7 +321,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    50,
+                    46,
                 ],
             ),
             "1-8": (
@@ -313,7 +329,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    51,
+                    47,
                 ],
             ),
             "2-4": (
@@ -321,7 +337,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    52,
+                    48,
                 ],
             ),
             "2-8": (
@@ -329,7 +345,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    53,
+                    49,
                 ],
             ),
             "4-8": (
@@ -337,7 +353,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    54,
+                    50,
                 ],
             ),
         },
@@ -347,7 +363,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    55,
+                    51,
                 ],
             ),
             "on": (
@@ -361,11 +377,11 @@
                     1.0,
                 ],
                 cells: [
+                    52,
+                    53,
+                    54,
+                    55,
                     56,
-                    57,
-                    58,
-                    59,
-                    60,
                 ],
             ),
         },
@@ -375,7 +391,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    61,
+                    57,
                 ],
             ),
         },
@@ -385,7 +401,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    62,
+                    58,
                 ],
             ),
             "on": (
@@ -393,7 +409,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    63,
+                    59,
                 ],
             ),
         },
@@ -403,7 +419,27 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    64,
+                    60,
+                ],
+            ),
+        },
+        "space-helmet": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    61,
+                ],
+            ),
+        },
+        "space-suit": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    62,
                 ],
             ),
         },
@@ -413,7 +449,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    65,
+                    63,
                 ],
             ),
         },
@@ -423,7 +459,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    66,
+                    64,
                 ],
             ),
         },
@@ -433,7 +469,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    67,
+                    65,
                 ],
             ),
             "1": (
@@ -441,7 +477,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    68,
+                    66,
                 ],
             ),
             "2": (
@@ -449,7 +485,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    69,
+                    67,
                 ],
             ),
             "3": (
@@ -457,7 +493,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    70,
+                    68,
                 ],
             ),
             "4": (
@@ -465,7 +501,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    71,
+                    69,
                 ],
             ),
         },
@@ -475,7 +511,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    72,
+                    70,
                 ],
             ),
             "1": (
@@ -483,7 +519,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    73,
+                    71,
                 ],
             ),
             "10": (
@@ -491,7 +527,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    74,
+                    72,
                 ],
             ),
             "11": (
@@ -499,7 +535,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    75,
+                    73,
                 ],
             ),
             "12": (
@@ -507,7 +543,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    76,
+                    74,
                 ],
             ),
             "13": (
@@ -515,7 +551,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    77,
+                    75,
                 ],
             ),
             "14": (
@@ -523,7 +559,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    78,
+                    76,
                 ],
             ),
             "15": (
@@ -531,7 +567,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    79,
+                    77,
                 ],
             ),
             "2": (
@@ -539,7 +575,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    80,
+                    78,
                 ],
             ),
             "3": (
@@ -547,7 +583,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    81,
+                    79,
                 ],
             ),
             "4": (
@@ -555,7 +591,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    82,
+                    80,
                 ],
             ),
             "5": (
@@ -563,7 +599,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    83,
+                    81,
                 ],
             ),
             "6": (
@@ -571,7 +607,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    84,
+                    82,
                 ],
             ),
             "7": (
@@ -579,7 +615,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    85,
+                    83,
                 ],
             ),
             "8": (
@@ -587,7 +623,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    86,
+                    84,
                 ],
             ),
             "9": (
@@ -595,7 +631,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    87,
+                    85,
                 ],
             ),
         },
@@ -605,7 +641,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    88,
+                    86,
                 ],
             ),
             "open": (
@@ -613,7 +649,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    89,
+                    87,
                 ],
             ),
         },
@@ -623,7 +659,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    90,
+                    88,
                 ],
             ),
             "on": (
@@ -640,14 +676,14 @@
                     1.0,
                 ],
                 cells: [
+                    89,
+                    90,
                     91,
                     92,
                     93,
                     94,
                     95,
                     96,
-                    97,
-                    98,
                 ],
             ),
         },
@@ -657,7 +693,217 @@
                 frames: 1,
                 delays: [],
                 cells: [
+                    97,
+                ],
+            ),
+        },
+        "worn:black-shoes": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    98,
                     99,
+                    100,
+                    101,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    102,
+                ],
+            ),
+        },
+        "worn:breath-mask": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    103,
+                    104,
+                    105,
+                    106,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    107,
+                ],
+            ),
+        },
+        "worn:emergency-oxygen": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    108,
+                    109,
+                    110,
+                    111,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    112,
+                ],
+            ),
+        },
+        "worn:grey-jumpsuit": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    113,
+                    114,
+                    115,
+                    116,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    117,
+                ],
+            ),
+        },
+        "worn:id-card": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    118,
+                    119,
+                    120,
+                    121,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    122,
+                ],
+            ),
+        },
+        "worn:insulated-gloves": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    123,
+                    124,
+                    125,
+                    126,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    127,
+                ],
+            ),
+        },
+        "worn:insulated-gloves:l": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    128,
+                    129,
+                    130,
+                    131,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    132,
+                ],
+            ),
+        },
+        "worn:oxygen-tank": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    133,
+                    134,
+                    135,
+                    136,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    137,
+                ],
+            ),
+        },
+        "worn:space-helmet": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    138,
+                    139,
+                    140,
+                    141,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    142,
+                ],
+            ),
+        },
+        "worn:space-suit": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    143,
+                    144,
+                    145,
+                    146,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    147,
                 ],
             ),
         },
@@ -667,7 +913,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    100,
+                    148,
                 ],
             ),
         },

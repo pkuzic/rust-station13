@@ -8,9 +8,11 @@
 //! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
 //! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay.
 //!
-//! Placeholder graphics: tiles and objects are flat coloured squares until the
-//! Luna sprite import lands.
+//! Equipment panel (bottom right): click a slot to put on what the active hand holds, or with
+//! an empty hand to take off what is there; the Internals button (or E) connects the
+//! breath mask to a gas tank.
 
+mod inventory;
 mod sprites;
 
 use std::collections::VecDeque;
@@ -138,7 +140,10 @@ fn main() {
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
-        .add_systems(Startup, (sprites::load_atlas, setup, spawn_hud))
+        .add_systems(
+            Startup,
+            (sprites::load_atlas, setup, spawn_hud, inventory::spawn_panel),
+        )
         .add_systems(
             Update,
             (
@@ -154,10 +159,11 @@ fn main() {
                 receive_notices,
                 receive_status,
                 glide,
-                (sprites::dress, sprites::animate).chain(),
+                (sprites::wear_layers, sprites::dress, sprites::animate).chain(),
                 follow_own_player,
                 (
                     update_hands_bar,
+                    inventory::update_panel,
                     update_log,
                     update_chat_line,
                     update_status_line,
@@ -375,8 +381,8 @@ fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLay
     }
 }
 
-/// Give new objects their look: an animated Luna sprite (people also get clothes), or a
-/// flat square if the atlas has nothing for them.
+/// Give new objects their look: an animated Luna sprite, or a flat square if the atlas has
+/// nothing for them. People's clothes are layered on by `sprites::wear_layers`.
 fn add_sprites(
     mut commands: Commands,
     time: Res<Time>,
@@ -400,26 +406,7 @@ fn add_sprites(
             facing: 0,
             since: time.elapsed_secs(),
         };
-        let mut e = commands.entity(entity);
-        e.insert((image, transform, look));
-        if appearance.sprite == "human" {
-            for (i, layer) in ["human:uniform", "human:shoes"].into_iter().enumerate() {
-                if let Some(image) = atlas.sprite(layer, &state, 0) {
-                    e.with_child((
-                        image,
-                        // Slightly in front of the body, in the parent's space.
-                        Transform::from_xyz(0.0, 0.0, 0.01 * (i + 1) as f32),
-                        Look {
-                            sprite: layer.to_owned(),
-                            state: state.clone(),
-                            facing: 0,
-                            since: 0.0,
-                        },
-                        sprites::Layer,
-                    ));
-                }
-            }
-        }
+        commands.entity(entity).insert((image, transform, look));
     }
 }
 
@@ -572,6 +559,9 @@ fn send_hotkeys(
     if keys.just_pressed(KeyCode::KeyX) {
         sender.send::<IntentChannel>(ActionInput::SwapHands);
     }
+    if keys.just_pressed(KeyCode::KeyE) {
+        sender.send::<IntentChannel>(ActionInput::ToggleInternals);
+    }
     // Classic hotkeys: 1 help, 4 harm (2 disarm and 3 grab come later).
     if keys.just_pressed(KeyCode::Digit1) {
         sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Help));
@@ -590,8 +580,10 @@ fn send_clicks(
     camera: Single<(&Camera, &GlobalTransform)>,
     objects: Query<(&NetId, &GridPos, &Appearance)>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+    panel: Query<&bevy::picking::hover::Hovered>,
 ) {
-    if !mouse.just_pressed(MouseButton::Left) {
+    // A click on the equipment panel is not a click on the world under it.
+    if !mouse.just_pressed(MouseButton::Left) || panel.iter().any(|h| h.0) {
         return;
     }
     let Ok(mut sender) = sender.single_mut() else {
