@@ -80,6 +80,8 @@ pub struct Airlock {
     /// The bolts were dropped by the seal (Luna `air_locked`), so lifting the seal
     /// raises them again.
     pub air_locked: bool,
+    /// Welded shut (Luna `welded`): it opens for nothing until welded open again.
+    pub welded: bool,
 }
 
 impl Default for Airlock {
@@ -97,6 +99,7 @@ impl Default for Airlock {
             in_seal: false,
             seal_pending: false,
             air_locked: false,
+            welded: false,
         }
     }
 }
@@ -124,7 +127,7 @@ impl Airlock {
 
     /// Open a closed door or close an open one. Returns whether anything started.
     pub fn toggle(&mut self, now: f32) -> bool {
-        if self.bolted || !self.has_power() {
+        if self.bolted || self.welded || !self.has_power() {
             return false;
         }
         match self.state {
@@ -144,7 +147,7 @@ impl Airlock {
     /// Luna's crowbar: an unpowered closed door can be prised open, and an open door can be
     /// pulled shut at any time, unless it is bolted. Uses no power.
     pub fn force(&mut self, now: f32) -> bool {
-        if self.bolted {
+        if self.bolted || self.welded {
             return false;
         }
         match self.state {
@@ -257,7 +260,8 @@ pub fn update_doors(
 
 /// Luna's airlock `update_icon`: bolted doors show the bolted sprite while the bolt light
 /// works, and an open panel shows on a closed door (`+panel` overlay) and in the
-/// animations (`o_` states). An open door shows no panel.
+/// animations (`o_` states). An open door shows no panel. A welded door shows its weld
+/// (`+welded`).
 pub fn door_look(door: &Airlock, bolt_light: bool) -> String {
     let base = match door.state {
         DoorState::Closed if door.deny_until.is_some() => "deny",
@@ -266,11 +270,16 @@ pub fn door_look(door: &Airlock, bolt_light: bool) -> String {
         DoorState::Closing { .. } if door.panel_open => "o_closing",
         state => state.name(),
     };
-    if door.panel_open && door.state == DoorState::Closed {
-        format!("{base}+panel")
-    } else {
-        base.to_owned()
+    let mut look = base.to_owned();
+    if door.state == DoorState::Closed {
+        if door.panel_open {
+            look.push_str("+panel");
+        }
+        if door.welded {
+            look.push_str("+welded");
+        }
     }
+    look
 }
 
 /// Move every mob and item on `door` to the first free tile in the order N, S, E, W.

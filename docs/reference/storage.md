@@ -13,7 +13,7 @@ Every item has a size, Luna's `w_class`, from 1 (tiny) to 5 (huge). Luna's defau
 | Size | Items |
 |---|---|
 | 1 | screwdriver, ID card |
-| 2 | crowbar, wrench, wirecutters, multitool, cable coil (Luna 1.5), emergency oxygen tank, gloves, breath mask |
+| 2 | crowbar, wrench, wirecutters, multitool, welding tool, cable coil (Luna 1.5), emergency oxygen tank, gloves, breath mask |
 | 3 | most other things, e.g. oxygen tank, metal sheet, jumpsuit, utility belt |
 | 4 | toolboxes, space suit |
 
@@ -21,11 +21,11 @@ Every item has a size, Luna's `w_class`, from 1 (tiny) to 5 (huge). Luna's defau
 
 | Container | Holds | Starts with |
 |---|---|---|
-| Mechanical toolbox (size 4, force 10) | anything smaller than itself | screwdriver, wrench, crowbar, wirecutters |
+| Mechanical toolbox (size 4, force 10) | anything smaller than itself | screwdriver, wrench, welding tool, crowbar, wirecutters |
 | Electrical toolbox (size 4, force 10) | anything smaller than itself | screwdriver, wirecutters, crowbar, three cable coils |
-| Utility belt (belt slot) | crowbar, screwdriver, wirecutters, wrench, multitool, cable coil, at any size, never another container | nothing; the loaded belt has the four tools and a cable coil, and the full one adds a multitool |
+| Utility belt (belt slot) | crowbar, screwdriver, wirecutters, wrench, multitool, cable coil, welding tool, at any size, never another container | nothing; the loaded belt has the four tools, a welding tool and a cable coil, and the full one adds a multitool |
 
-Luna's welders, analyzers and scanners have no prototype yet, so they are left out of the
+Luna's analyzers and scanners have no prototype yet, so they are left out of the
 starting contents. Luna's electrical toolbox swaps its third coil for insulated gloves one
 time in ten; ours always has the coil.
 

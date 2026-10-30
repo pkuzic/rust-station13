@@ -9,7 +9,7 @@ use rs13_world::{Appearance, DisplayName, GridPos, Hidden, Intent, MobStat, Tile
 
 use crate::access::{IdCard, allowed};
 use crate::combat::{CombatIntent, PendingAttacks};
-use crate::doors::Airlock;
+use crate::doors::{Airlock, DoorState};
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::{Body, Vitals};
 use crate::machines::{Canister, Connector, GasStore, PipeMember, PipeNets, Switch, Valve};
@@ -104,17 +104,21 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable, hidden): (
+    (mut alarms, mut storage, mut cable, hidden, mut welding, places): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
         Query<(), With<Hidden>>,
+        crate::welding::WeldWork,
+        Query<&GridPos>,
     ),
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
     // Items picked up earlier this tick (component changes apply after the system).
     let mut taken: HashSet<Entity> = HashSet::new();
+    // Lit welding tools used on something in reach this tick, and by whom.
+    let mut welded_with: Vec<(Entity, Entity)> = Vec::new();
 
     for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mob_state) in &mut mobs {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
@@ -127,6 +131,24 @@ pub fn process_actions(
                 && hidden.contains(target)
             {
                 continue;
+            }
+            // A lit welding tool burns fuel on whatever it is used on (`welding.md`).
+            let reaches = match action {
+                Action::UseOn(target) => {
+                    hands.active_item() != Some(target)
+                        && places.get(target).map_or_else(
+                            |_| hands.left == Some(target) || hands.right == Some(target),
+                            |p| in_reach(mob_pos.0, p.0),
+                        )
+                }
+                Action::UseOnTile(tile) => in_reach(mob_pos.0, tile),
+                _ => false,
+            };
+            if reaches
+                && let Some(active) = hands.active_item()
+                && welding.lit(Some(active)).is_some()
+            {
+                welded_with.push((mob, active));
             }
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
@@ -179,6 +201,9 @@ pub fn process_actions(
                         if let Some(more) = cable.floors.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = welding.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -209,6 +234,13 @@ pub fn process_actions(
                 Action::UseOn(target) if people.contains(target) => {
                     // Reach and the outcome are worked out by `resolve_attacks`.
                     attacks.0.push((mob, target));
+                }
+                Action::UseOn(target) if hands.active_item() == Some(target) && welding.is_welder(target) => {
+                    // A welding tool in the active hand: light it or put it out (Luna
+                    // `attack_self`).
+                    if let Some(outcome) = welding.use_self(target) {
+                        outbox.0.extend(outcome.to_mob);
+                    }
                 }
                 Action::UseOn(target) => {
                     // Containers, their contents and things the mob carries
@@ -241,6 +273,14 @@ pub fn process_actions(
                                 .unwrap_or_default();
                             visible.0.push((mob_pos.0, seen.arg("name", name), None));
                         }
+                        continue;
+                    }
+                    // Welding tools on fuel tanks (`welding.md`).
+                    if reachable
+                        && let Some(active) = hands.active_item()
+                        && let Some(outcome) = welding.use_on(active, target)
+                    {
+                        outbox.0.extend(outcome.to_mob);
                         continue;
                     }
                     // Floor tiles onto a pile of floor tiles (`floors.md`).
@@ -328,6 +368,18 @@ pub fn process_actions(
                             shocks.0.push((mob, chance));
                             continue;
                         }
+                        // A lit welding tool welds a closed door shut, or open again.
+                        if let Some(active) = hands.active_item()
+                            && welding.lit(Some(active)).is_some()
+                            && airlock.state == DoorState::Closed
+                        {
+                            if welding.weld(active, crate::welding::DOOR_FUEL) {
+                                airlock.welded = !airlock.welded;
+                            } else {
+                                outbox.0.push(LocMsg::new("welder-short"));
+                            }
+                            continue;
+                        }
                         if holding(&hands, &appearances, "screwdriver") {
                             airlock.panel_open = !airlock.panel_open;
                             let id = if airlock.panel_open {
@@ -354,6 +406,13 @@ pub fn process_actions(
                     }
                 }
             }
+        }
+    }
+    for (mob, welder) in welded_with {
+        if let Some(msg) = welding.after_use(welder)
+            && let Ok((.., mut outbox, _, _, _)) = mobs.get_mut(mob)
+        {
+            outbox.0.push(msg);
         }
     }
 }

@@ -220,6 +220,19 @@ coil-full = The coil is too long, you cannot add any more cable to it.
 examine-coil-short = A short piece of power cable.
 examine-coil-piece = A piece of power cable.
 examine-coil = A coil of power cable. There are { $count } lengths of cable in the coil.
+welder-on = You will now weld when you attack.
+welder-off = Not welding anymore.
+welder-no-fuel = Need more fuel!
+welder-short = Need more welding fuel!
+welder-refueled = Welder refueled.
+examine-welder = It contains { $count } { $count ->
+        [one] unit
+       *[other] units
+    } of fuel left!
+examine-fuel-tank = It contains { $count } { $count ->
+        [one] unit
+       *[other] units
+    } of welding fuel.
 examine-floor-tiles = There { $count ->
         [one] is { $count } floor tile
        *[other] are { $count } floor tiles

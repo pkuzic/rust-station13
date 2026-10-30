@@ -349,14 +349,16 @@ fn click_cell(
             Some(item) => Some(ActionInput::UseOn(item)),
             None => None,
         },
+        // The active hand: use its item (Luna `attack_self`, e.g. light a welding tool).
+        Cell::Hand(hand) if hands.is_some_and(|h| h.active == hand) => {
+            hands.and_then(|h| hand_item(h, hand)).map(ActionInput::UseOn)
+        }
         // The other hand: with the active one empty, its item (a container opens, anything
         // else moves over); otherwise just swap.
-        Cell::Hand(hand) => hands
-            .filter(|h| h.active != hand)
-            .map(|h| match hand_item(h, hand) {
-                Some(item) if !holding => ActionInput::UseOn(item),
-                _ => ActionInput::SwapHands,
-            }),
+        Cell::Hand(hand) => hands.map(|h| match hand_item(h, hand) {
+            Some(item) if !holding => ActionInput::UseOn(item),
+            _ => ActionInput::SwapHands,
+        }),
         Cell::SwapHands => Some(ActionInput::SwapHands),
         Cell::Drop => Some(ActionInput::Drop),
         Cell::Intent => Some(ActionInput::SetIntent(

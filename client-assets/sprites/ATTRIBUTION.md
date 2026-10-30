@@ -20,6 +20,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `airlock:open` | `icons/obj/doors/Doorint.dmi : "door_open"` | CC-BY-SA 3.0 |
 | `airlock:opening` | `icons/obj/doors/Doorint.dmi : "door_opening"` | CC-BY-SA 3.0 |
 | `airlock:panel` | `icons/obj/doors/Doorint.dmi : "panel_open"` | CC-BY-SA 3.0 |
+| `airlock:welded` | `icons/obj/doors/Doorint.dmi : "welded"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |
@@ -67,6 +68,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `crowbar:` | `icons/obj/items.dmi : "crowbar"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
+| `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
 | `hud:bar-e` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-nw` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
@@ -189,6 +191,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `valve:open` | `icons/obj/atmospherics/valve.dmi : "valve1"` | CC-BY-SA 3.0 |
 | `vent:off` | `icons/obj/atmospherics/vent_pump.dmi : "off"` | CC-BY-SA 3.0 |
 | `vent:on` | `icons/obj/atmospherics/vent_pump.dmi : "out"` | CC-BY-SA 3.0 |
+| `welder:` | `icons/obj/items.dmi : "welder"` | CC-BY-SA 3.0 |
+| `welder:lit` | `icons/obj/items.dmi : "welder1"` | CC-BY-SA 3.0 |
 | `wirecutters:` | `icons/obj/items.dmi : "cutters"` | CC-BY-SA 3.0 |
 | `worn:black-shoes:` | `icons/mob/feet.dmi : "black"` | CC-BY-SA 3.0 |
 | `worn:black-shoes:lying` | `icons/mob/feet.dmi : "black2"` | CC-BY-SA 3.0 |

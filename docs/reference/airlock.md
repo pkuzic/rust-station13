@@ -46,8 +46,9 @@ welded. There is a single check, 150 ds after opening.
 | Player-controlled mobs open a closed airlock by walking into it, 5 ds bump cooldown | keep |
 | Pushed-out destination: **first free tile in the order N, S, E, W** instead of random | **fix**: deterministic for tests and replays |
 | "The airlock forces you out of the way!" notice to the pushed mob | keep |
+| A lit welding tool welds a closed door shut, or open again; welded, it opens for nothing, not even a crowbar (`welding.md`) | keep |
 
 ## Not implemented yet
 
 Wires, the maintenance panel, electrification and bolts are covered in `wires.md`. Still
-missing: welding, emag, crushing, `closeOther` pairs and sounds.
+missing: emag, crushing, `closeOther` pairs and sounds.

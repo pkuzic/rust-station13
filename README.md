@@ -41,6 +41,7 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 | Shift + click | Examine |
 | Q | Drop the active-hand item |
 | X | Swap hands |
+| Z, or click the active hand | Use the item in it (light or put out a welding tool) |
 | E | Internals on/off (breath mask plus a gas tank) |
 | HUD inventory slot | Put on the active-hand item, or with an empty hand take it off |
 | HUD buttons | Swap hands, drop, intent, run/walk, internals (see `docs/reference/hud.md`) |
@@ -59,6 +60,10 @@ the power wires may shock you (`docs/reference/wires.md`). A crowbar forces an u
 Toolboxes and utility belts hold tools: click one you carry with an empty hand to open
 it, click a tool in it to take it out, and click it with a tool to put that in
 (`docs/reference/storage.md`).
+
+A welding tool lights with Z (or a click on the active hand). Lit, it welds a closed
+airlock shut, and open again, for a little fuel; a fuel tank fills it while it is out
+(`docs/reference/welding.md`).
 
 On bare plating a cable coil lays power cable:
 click the plating, or click a cable end to carry it on to your tile. Wirecutters cut a
