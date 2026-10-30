@@ -88,6 +88,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
+| `manifold:1-2-4` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
+| `manifold:1-2-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
+| `manifold:1-4-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
+| `manifold:2-4-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
 | `metal-sheet:` | `icons/obj/items.dmi : "sheet-metal"` | CC-BY-SA 3.0 |
 | `multitool:` | `icons/obj/device.dmi : "multitool"` | CC-BY-SA 3.0 |
 | `oxygen-tank:` | `icons/obj/tank.dmi : "oxygen"` | CC-BY-SA 3.0 |

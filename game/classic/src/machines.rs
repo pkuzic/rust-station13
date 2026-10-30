@@ -16,6 +16,8 @@ use crate::time::WorldTime;
 pub const MACHINE_TICKS: u64 = 40;
 /// Litres of one pipe segment (SS13 value).
 pub const PIPE_VOLUME: f64 = 70.0;
+/// Litres of a three-way manifold (Luna `pipe/manifold`).
+pub const MANIFOLD_VOLUME: f64 = 105.0;
 /// Litres of a large air storage tank.
 pub const TANK_VOLUME: f64 = 10_000.0;
 /// Starting pressure of an air storage tank, kPa (about 90 atm).
@@ -31,12 +33,63 @@ pub const SCRUBBER_VOLUME_RATE: f64 = 120.0;
 /// Gases scrubbers remove.
 pub const SCRUBBED: [Gas; 3] = [Gas::CarbonDioxide, Gas::Plasma, Gas::NitrousOxide];
 
-/// Part of a pipe network: it holds `volume` litres of the network's gas and connects to
-/// members on its own and neighbouring tiles, while `open`.
+/// Part of a pipe network: it holds `volume` litres of the network's gas while `open`.
+/// It connects on the sides in `connects` (N 1, S 2, E 4, W 8, as Luna's
+/// `initialize_directions`): to a member on the neighbouring tile that connects back, and
+/// to a member on its own tile that shares a side.
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct PipeMember {
     pub volume: f64,
     pub open: bool,
+    pub connects: u8,
+}
+
+/// Every side: hand-drawn maps place pipes that join whatever is next to them.
+pub const ALL_SIDES: u8 = 0b1111;
+
+/// The side bit of a direction; diagonals give both of their sides.
+pub fn side_bits(dir: Dir) -> u8 {
+    let (dx, dy) = dir.offset();
+    let vertical = match dy {
+        1 => 1,
+        -1 => 2,
+        _ => 0,
+    };
+    let horizontal = match dx {
+        1 => 4,
+        -1 => 8,
+        _ => 0,
+    };
+    vertical | horizontal
+}
+
+/// Which sides a placed piece connects on (Luna's pipe, manifold and device
+/// `initialize_directions`). Without a direction it connects everywhere.
+pub fn connections(proto: &str, dir: Option<Dir>) -> u8 {
+    let Some(dir) = dir else { return ALL_SIDES };
+    let bits = side_bits(dir);
+    match proto {
+        // A straight piece runs along its direction; a diagonal one is a bend.
+        "pipe" | "valve" => match bits {
+            1 | 2 => 1 | 2,
+            4 | 8 => 4 | 8,
+            bend => bend,
+        },
+        // A manifold joins every side but the one it faces.
+        "manifold" => ALL_SIDES & !bits,
+        // Vents, scrubbers, ports and tanks connect on the side they face.
+        _ => bits,
+    }
+}
+
+/// The sides a piece connects on, as its sprite state: "1-4" (north and east).
+pub fn side_names(connects: u8) -> String {
+    [1u8, 2, 4, 8]
+        .into_iter()
+        .filter(|b| connects & b != 0)
+        .map(|b| b.to_string())
+        .collect::<Vec<_>>()
+        .join("-")
 }
 
 /// Gas a member holds while the networks are being rebuilt, or while it is cut off (a
@@ -90,16 +143,26 @@ pub struct PipeNet {
 }
 
 impl PipeNet {
+    /// A network of devices alone (no pipe) has no volume and no pressure.
     pub fn pressure(&self) -> f64 {
-        self.mix.pressure(self.volume)
+        if self.volume > 0.0 {
+            self.mix.pressure(self.volume)
+        } else {
+            0.0
+        }
     }
 }
 
-/// All pipe networks, and which tile belongs to which.
+/// All pipe networks, and which member belongs to which.
 #[derive(Resource, Debug, Default)]
 pub struct PipeNets {
     pub nets: Vec<PipeNet>,
+    /// The network of each open member.
+    pub net_of: HashMap<Entity, usize>,
+    /// The network of the first member on each tile (pipes can cross on one tile).
     pub net_at: HashMap<TilePos, usize>,
+    /// Open members on each tile, with the sides they connect on.
+    pub on_tile: HashMap<TilePos, Vec<(Entity, u8)>>,
     /// Set when the shape of the networks changes (valves, canisters, new pipes).
     pub dirty: bool,
 }
@@ -107,6 +170,16 @@ pub struct PipeNets {
 impl PipeNets {
     pub fn at(&self, pos: TilePos) -> Option<&PipeNet> {
         self.net_at.get(&pos).map(|i| &self.nets[*i])
+    }
+
+    /// The network of the member on `pos` that connects on `side` (a side bit): what a
+    /// pump next to it reaches.
+    pub fn net_toward(&self, pos: TilePos, side: u8) -> Option<usize> {
+        self.on_tile
+            .get(&pos)?
+            .iter()
+            .find(|(_, connects)| connects & side != 0)
+            .and_then(|(e, _)| self.net_of.get(e).copied())
     }
 
     /// Pressure a gauge on `entity` shows, kPa: its network, or its own store if cut off.
@@ -154,20 +227,30 @@ pub fn rebuild_networks(
     }
     nets.net_at.clear();
 
-    // Flood-fill connected tiles of open members.
-    let mut by_tile: BTreeMap<(i32, i32, i32), Vec<Entity>> = BTreeMap::new();
+    nets.net_of.clear();
+
+    // Open members by tile, in a stable order.
+    let mut by_tile: BTreeMap<(i32, i32, i32), Vec<(Entity, u8)>> = BTreeMap::new();
     for (entity, pos, member, _) in &members {
         if member.open {
             by_tile
                 .entry((pos.0.x, pos.0.y, pos.0.z))
                 .or_default()
-                .push(entity);
+                .push((entity, member.connects));
         }
     }
-    let mut visited: HashMap<(i32, i32, i32), usize> = HashMap::new();
-    let tiles: Vec<(i32, i32, i32)> = by_tile.keys().copied().collect();
-    for start in tiles {
-        if visited.contains_key(&start) {
+    for list in by_tile.values_mut() {
+        list.sort();
+    }
+    let tile_of = |key: (i32, i32, i32)| TilePos::new(key.0, key.1, key.2);
+
+    // Flood-fill along connections.
+    let starts: Vec<((i32, i32, i32), Entity, u8)> = by_tile
+        .iter()
+        .flat_map(|(k, list)| list.iter().map(move |(e, c)| (*k, *e, *c)))
+        .collect();
+    for start in starts {
+        if nets.net_of.contains_key(&start.1) {
             continue;
         }
         let id = nets.nets.len();
@@ -177,30 +260,48 @@ pub fn rebuild_networks(
             mix: GasMix::default(),
         };
         let mut queue = VecDeque::from([start]);
-        visited.insert(start, id);
-        while let Some(tile) = queue.pop_front() {
-            let pos = TilePos::new(tile.0, tile.1, tile.2);
-            nets.net_at.insert(pos, id);
-            for entity in &by_tile[&tile] {
-                let Ok((_, _, member, mut store)) = members.get_mut(*entity) else {
-                    continue;
-                };
-                net.members.push(*entity);
+        nets.net_of.insert(start.1, id);
+        while let Some((key, entity, connects)) = queue.pop_front() {
+            let pos = tile_of(key);
+            nets.net_at.entry(pos).or_insert(id);
+            if let Ok((_, _, member, mut store)) = members.get_mut(entity) {
+                net.members.push(entity);
                 net.volume += member.volume;
                 net.mix.merge(&store.0);
                 store.0 = GasMix::default();
             }
-            for d in [Dir::North, Dir::East, Dir::South, Dir::West] {
-                let next = pos.step(d);
-                let key = (next.x, next.y, next.z);
-                if by_tile.contains_key(&key) && !visited.contains_key(&key) {
-                    visited.insert(key, id);
-                    queue.push_back(key);
+            // Members on the same tile that share a side.
+            let mut next: Vec<((i32, i32, i32), Entity, u8)> = by_tile[&key]
+                .iter()
+                .filter(|(e, c)| *e != entity && c & connects != 0)
+                .map(|(e, c)| (key, *e, *c))
+                .collect();
+            // Members on a neighbouring tile that connect back.
+            for d in [Dir::North, Dir::South, Dir::East, Dir::West] {
+                if connects & side_bits(d) == 0 {
+                    continue;
+                }
+                let there = pos.step(d);
+                let there_key = (there.x, there.y, there.z);
+                let back = side_bits(opposite(d));
+                if let Some(list) = by_tile.get(&there_key) {
+                    next.extend(
+                        list.iter()
+                            .filter(|(_, c)| c & back != 0)
+                            .map(|(e, c)| (there_key, *e, *c)),
+                    );
+                }
+            }
+            for item in next {
+                if let std::collections::hash_map::Entry::Vacant(slot) = nets.net_of.entry(item.1) {
+                    slot.insert(id);
+                    queue.push_back(item);
                 }
             }
         }
         nets.nets.push(net);
     }
+    nets.on_tile = by_tile.into_iter().map(|(k, list)| (tile_of(k), list)).collect();
     nets.dirty = false;
 }
 
@@ -210,8 +311,8 @@ pub fn run_machines(
     atmos: Option<ResMut<StationAtmos>>,
     mut nets: ResMut<PipeNets>,
     pumps: Query<(&GridPos, &Pump, &Switch, &PowerUser)>,
-    mut vents: Query<(&GridPos, &mut Vent, &Switch, &PowerUser)>,
-    scrubbers: Query<(&GridPos, &Switch, &PowerUser), With<Scrubber>>,
+    mut vents: Query<(Entity, &GridPos, &mut Vent, &Switch, &PowerUser)>,
+    scrubbers: Query<(Entity, &GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
 ) {
     let Some(mut atmos) = atmos else { return };
@@ -226,7 +327,11 @@ pub fn run_machines(
         }
         let behind = pos.0.step(opposite(pump.dir));
         let ahead = pos.0.step(pump.dir);
-        let (Some(&from), Some(&to)) = (nets.net_at.get(&behind), nets.net_at.get(&ahead)) else {
+        // The pipe behind must connect toward the pump, and the one ahead back to it.
+        let (Some(from), Some(to)) = (
+            nets.net_toward(behind, side_bits(pump.dir)),
+            nets.net_toward(ahead, side_bits(opposite(pump.dir))),
+        ) else {
             continue;
         };
         if from == to {
@@ -242,7 +347,7 @@ pub fn run_machines(
         nets.nets[to].mix.merge(&moved);
     }
 
-    for (pos, mut vent, on, power) in &mut vents {
+    for (entity, pos, mut vent, on, power) in &mut vents {
         if !on.0 || !power.powered {
             continue;
         }
@@ -250,7 +355,7 @@ pub fn run_machines(
         // to bring the whole zone to one atmosphere, breach or not.
         if vent.panic {
             let zone = atmos.0.zone_at(pos.0).map(|z| &atmos.0.zones()[z]);
-            if let (Some(zone), Some(&id)) = (zone, nets.net_at.get(&pos.0))
+            if let (Some(zone), Some(&id)) = (zone, nets.net_of.get(&entity))
                 && zone.pressure() < crate::alarms::PANIC_FILL_UNTIL * ONE_ATMOSPHERE
             {
                 let net = &mut nets.nets[id];
@@ -265,7 +370,7 @@ pub fn run_machines(
         if atmos.0.venting_to_space(pos.0) {
             continue;
         }
-        let Some(&id) = nets.net_at.get(&pos.0) else {
+        let Some(&id) = nets.net_of.get(&entity) else {
             continue;
         };
         let room = atmos.0.pressure_at(pos.0);
@@ -276,11 +381,11 @@ pub fn run_machines(
         atmos.0.add_at(pos.0, &moved);
     }
 
-    for (pos, on, power) in &scrubbers {
+    for (entity, pos, on, power) in &scrubbers {
         if !on.0 || !power.powered {
             continue;
         }
-        let Some(&id) = nets.net_at.get(&pos.0) else {
+        let Some(&id) = nets.net_of.get(&entity) else {
             continue;
         };
         let filtered = atmos
@@ -323,9 +428,28 @@ fn opposite(dir: Dir) -> Dir {
 
 /// The components a machine prototype spawns with, or `None` if `proto` is not a machine.
 pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
-    let member = |volume| PipeMember { volume, open: true };
+    let connects = connections(proto, dir);
+    let member = |volume| PipeMember {
+        volume,
+        open: true,
+        connects,
+    };
+    // Devices hold no gas of their own here; they only join the pipe they sit on.
+    let device = member(0.0);
     Some(match proto {
-        "pipe" => MachineSpawn::new("pipe", "").member(member(PIPE_VOLUME)),
+        "pipe" => {
+            let mut pipe = MachineSpawn::new("pipe", "").member(member(PIPE_VOLUME));
+            // Placed with a direction, a piece shows its own shape.
+            if dir.is_some() {
+                pipe.state = side_names(connects);
+            }
+            pipe
+        }
+        "manifold" => {
+            let mut manifold = MachineSpawn::new("manifold", "").member(member(MANIFOLD_VOLUME));
+            manifold.state = side_names(connects);
+            manifold
+        }
         "air-tank" => MachineSpawn::new("air-tank", "")
             .member(member(TANK_VOLUME))
             .gas(air_at_pressure(TANK_VOLUME, TANK_PRESSURE))
@@ -338,10 +462,14 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .switch(true)
             .member(member(PIPE_VOLUME))
             .valve(),
-        "vent" => MachineSpawn::new("vent", "on").switch(true).powered().vent(Vent {
-            target: ONE_ATMOSPHERE,
-            panic: false,
-        }),
+        "vent" => MachineSpawn::new("vent", "on")
+            .switch(true)
+            .powered()
+            .member(device)
+            .vent(Vent {
+                target: ONE_ATMOSPHERE,
+                panic: false,
+            }),
         "air-alarm" => {
             let mut alarm = MachineSpawn::new("air-alarm", "alarm0");
             alarm.power = Some(crate::power::PowerUser::new(
@@ -354,14 +482,16 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
         "scrubber" => MachineSpawn::new("scrubber", "on")
             .switch(true)
             .powered()
+            .member(device)
             .scrubber(),
-        "connector" => MachineSpawn::new("connector", "").connector(),
+        "connector" => MachineSpawn::new("connector", "").member(device).connector(),
         "canister" => MachineSpawn::new("canister", "off")
             .switch(false)
             // Starts connected if spawned on a port (`spawn_object` checks).
             .member(PipeMember {
                 volume: CANISTER_VOLUME,
                 open: false,
+                connects: ALL_SIDES,
             })
             .gas(air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE))
             .canister(Canister {
@@ -376,7 +506,7 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
 #[derive(Debug, Clone)]
 pub struct MachineSpawn {
     pub sprite: &'static str,
-    pub state: &'static str,
+    pub state: String,
     pub member: Option<PipeMember>,
     pub gas: GasMix,
     pub switch: Option<bool>,
@@ -395,7 +525,7 @@ impl MachineSpawn {
     fn new(sprite: &'static str, state: &'static str) -> Self {
         Self {
             sprite,
-            state,
+            state: state.to_owned(),
             member: None,
             gas: air_at_pressure(1.0, 0.0),
             switch: None,

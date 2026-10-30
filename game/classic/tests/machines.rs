@@ -206,3 +206,63 @@ fn examining_a_canister_reads_its_gauge() {
     let ids: Vec<&str> = outbox.iter().map(|m| m.id.as_str()).collect();
     assert_eq!(ids, ["examine", "examine-gauge"]);
 }
+
+#[test]
+fn placed_pipes_connect_only_on_their_sides() {
+    // Luna lays supply and scrubber lines side by side and crosses them on one tile; with
+    // directions they stay separate networks.
+    let map = r#"(
+        legend: {
+            '.': (tile: (id: "floor")),
+            '|': (tile: (id: "floor"), objects: [(id: "pipe", dir: North)]),
+            '+': (tile: (id: "floor"), objects: [(id: "pipe", dir: North), (id: "pipe", dir: East)]),
+            'm': (tile: (id: "floor"), objects: [(id: "manifold", dir: North)]),
+            '-': (tile: (id: "floor"), objects: [(id: "pipe", dir: East)]),
+            'v': (tile: (id: "floor"), objects: [(id: "vent", dir: West)]),
+        },
+        rows: [
+            ".....",
+            ".m-v.",
+            ".||..",
+            ".+|..",
+            ".||..",
+            ".....",
+        ],
+    )"#;
+    let mut app = App::new();
+    app.add_plugins(ClassicPlugin);
+    assert!(spawn_map(app.world_mut(), TileMap::from_ron(map, 0).unwrap()).is_empty());
+    app.world_mut().run_schedule(FixedUpdate);
+
+    let net = |app: &mut App, sprite: &str, pos: TilePos, connects: u8| {
+        let mut q = app
+            .world_mut()
+            .query::<(Entity, &Appearance, &GridPos, &PipeMember)>();
+        let entity = q
+            .iter(app.world())
+            .find(|(_, a, p, m)| a.sprite == sprite && p.0 == pos && m.connects == connects)
+            .unwrap_or_else(|| panic!("no {sprite} at {pos:?}"))
+            .0;
+        app.world().resource::<PipeNets>().net_of[&entity]
+    };
+    let (ns, ew) = (1 | 2, 4 | 8);
+    let left = net(&mut app, "pipe", TilePos::new(1, 1, 0), ns);
+    let right = net(&mut app, "pipe", TilePos::new(2, 1, 0), ns);
+    assert_ne!(left, right, "parallel lines stay apart");
+    assert_eq!(
+        net(&mut app, "pipe", TilePos::new(1, 2, 0), ns),
+        left,
+        "through the crossing"
+    );
+    let crossing = net(&mut app, "pipe", TilePos::new(1, 2, 0), ew);
+    assert_ne!(crossing, left, "a crossing pipe does not join");
+    assert_ne!(crossing, right, "nor the line beside it");
+    // The manifold joins the left line and runs east to the vent, which faces west.
+    assert_eq!(net(&mut app, "manifold", TilePos::new(1, 4, 0), 2 | 4 | 8), left);
+    assert_eq!(net(&mut app, "vent", TilePos::new(3, 4, 0), 8), left);
+    assert_ne!(
+        net(&mut app, "pipe", TilePos::new(2, 3, 0), ns),
+        left,
+        "the right line ends below the east pipe"
+    );
+}
