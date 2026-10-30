@@ -13,6 +13,7 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod floors;
+pub mod furniture;
 pub mod hands;
 pub mod health;
 pub mod machines;
@@ -84,6 +85,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     actions::process_actions,
+                    furniture::finish_table_work,
                     equipment::process_equipment,
                     wires::process_wire_ops,
                     alarms::process_alarm_ops,

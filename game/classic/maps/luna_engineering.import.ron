@@ -55,6 +55,12 @@
         (path: "/obj/item/device/multitool", id: "multitool"),
         (path: "/obj/item/weapon/weldingtool", id: "welder"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
+
+        // Tables keep the look the mapper chose: an icon state and a direction.
+        (path: "/obj/structure/table", id: "table", dir: true, state: Some("table")),
+        (path: "/obj/structure/table/reinforced", id: "table-reinforced", dir: true, state: Some("reinf_table")),
+        (path: "/obj/structure/table/woodentable", id: "table-wood", dir: true, state: Some("wood_table")),
+        (path: "/obj/structure/rack", id: "rack"),
         (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
         (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
         (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),

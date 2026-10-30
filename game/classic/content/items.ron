@@ -23,6 +23,11 @@
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
     (id: "metal-sheet", force: 5.0),
+    // Luna `table_rack_parts.dm`.
+    (id: "table-parts", force: 0.0),
+    (id: "table-parts-reinforced", force: 0.0),
+    (id: "table-parts-wood", force: 0.0),
+    (id: "rack-parts", force: 0.0),
     // Luna `stack/tile/metal`: up to 60, w_class 3.
     (id: "floor-tile", force: 6.0, size: 3, stack: 60),
     (id: "id-card", force: 0.0, size: 1, slot: "id"),

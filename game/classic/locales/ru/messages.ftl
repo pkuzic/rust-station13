@@ -236,6 +236,12 @@ examine-coil = Моток силового кабеля. В нём { $count } { 
         [few] отрезка
        *[many] отрезков
     } кабеля.
+table-disassembling = Вы разбираете стол.
+table-disassembling-reinforced = Вы разбираете укреплённый стол.
+table-weakening = Вы ослабляете укреплённый стол.
+table-weakened = Стол ослаблен.
+table-strengthening = Вы укрепляете укреплённый стол.
+table-strengthened = Стол укреплён.
 welder-on = Теперь вы будете варить при ударе.
 welder-off = Вы больше не варите.
 welder-no-fuel = Нужно больше топлива!

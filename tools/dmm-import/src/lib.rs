@@ -201,6 +201,10 @@ pub struct ObjectRule {
     /// is the type's own icon state, used when the map doesn't set one.
     #[serde(default)]
     pub ends_from_state: Option<String>,
+    /// Keep the atom's `icon_state`, for things whose look the mapper chose (table edges).
+    /// The value is the type's own icon state, used when the map doesn't set one.
+    #[serde(default)]
+    pub state: Option<String>,
 }
 
 /// BYOND direction numbers → our direction names.
@@ -504,6 +508,13 @@ fn object_ron(
             }
         }
         fields.push(format!("ends: [{}]", ends.join(", ")));
+    }
+    if let Some(default) = &rule.state {
+        let state = atom
+            .vars
+            .get("icon_state")
+            .map_or(default.as_str(), String::as_str);
+        fields.push(format!("state: Some({state:?})"));
     }
     // Luna maps lay some pipes over the floor tiles instead of under them.
     if atom.vars.get("level").is_some_and(|l| l.trim() == "2") {
