@@ -21,6 +21,8 @@
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
     (id: "metal-sheet", force: 5.0),
+    // Luna `stack/tile/metal`: up to 60, w_class 3.
+    (id: "floor-tile", force: 6.0, size: 3, stack: 60),
     (id: "id-card", force: 0.0, size: 1, slot: "id"),
     // Luna: 70 L of pure oxygen at 6 atm, worn on the back.
     (id: "oxygen-tank", force: 5.0, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),

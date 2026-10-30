@@ -12,6 +12,7 @@ pub mod combat;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
+pub mod floors;
 pub mod hands;
 pub mod health;
 pub mod machines;
@@ -134,6 +135,7 @@ impl Plugin for ClassicPlugin {
                     machines::update_machine_looks,
                     power::update_power_looks,
                     cables::update_cable_looks,
+                    floors::hide_under_floors,
                 )
                     .in_set(TickSet::Publish),
             );

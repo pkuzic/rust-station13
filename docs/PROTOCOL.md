@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **5**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **11**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -22,12 +22,14 @@ connect.
 | `Player { client_id }` | player mobs | Netcode id of the controlling client |
 | `NetId(u64)` | everything clients see | Stable id; clients name entities by it |
 | `Appearance { sprite, state }` | objects and mobs | Sprite / prototype / noun id and state, like BYOND `icon_state` |
+| `Hidden` | pipes and cables under floor tiles | Not drawn and not clickable (BYOND `invisibility`) |
 | `HandsView { left, right, active }` | mobs | Held items as `NetId`s and the active hand |
 | `DisplayName(String)` | people | Character name (English only) |
 | `AtmosView { pressure_dkpa }` | the map entity | Pressure of every tile, 0.1 kPa, twice a second, for the F3 debug overlay |
 
 An item in a hand has no `GridPos`; removing the component replicates, and clients
-stop drawing it on the map.
+stop drawing it on the map. The map changes when floor tiles are pried up or put back, and
+clients redraw the tiles that changed.
 
 The controlling client also receives Lightyear's `Controlled` marker on its own mob.
 Player mobs are despawned on the server when their client disconnects.

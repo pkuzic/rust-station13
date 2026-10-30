@@ -3,19 +3,15 @@
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dir, GridPos, MapLayer, ObjectSpec, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, ObjectSpec, TilePos};
 
 use crate::actions::{ClickOutcome, in_reach};
+use crate::floors::FloorWork;
 use crate::hands::{Hands, HeldBy, Stack};
 use crate::power::{Cable, PowerNode};
 
 /// The cable coil prototype.
 pub const COIL: &str = "cable-coil";
-
-/// Cable can only be laid or cut on bare plating: under floor tiles it is out of reach.
-fn bare(map: &MapLayer, pos: TilePos) -> bool {
-    map.0.tile(pos).is_some_and(|t| t.id == "plating")
-}
 
 /// The direction from `from` to the neighbouring tile `to`, or `None` on the same tile.
 fn toward(from: TilePos, to: TilePos) -> Option<Dir> {
@@ -25,26 +21,25 @@ fn toward(from: TilePos, to: TilePos) -> Option<Dir> {
 /// Everything clicking with a cable coil or wirecutters needs.
 #[derive(SystemParam)]
 pub struct CableWork<'w, 's> {
-    map: Query<'w, 's, &'static MapLayer>,
+    /// Cable is only laid or cut on bare plating: under floor tiles it is out of reach.
+    pub floors: FloorWork<'w, 's>,
     cables: Query<'w, 's, (Entity, &'static GridPos, &'static mut Cable)>,
     machines: Query<'w, 's, &'static GridPos, (With<PowerNode>, Without<Cable>)>,
-    stacks: Query<'w, 's, &'static mut Stack>,
-    looks: Query<'w, 's, &'static Appearance>,
     held: Query<'w, 's, &'static HeldBy>,
     places: Query<'w, 's, &'static GridPos, Without<Cable>>,
 }
 
 impl CableWork<'_, '_> {
     fn sprite(&self, entity: Entity) -> Option<&str> {
-        self.looks.get(entity).ok().map(|a| a.sprite.as_str())
+        self.floors.sprite(entity)
     }
 
     fn is_coil(&self, entity: Entity) -> bool {
-        self.sprite(entity) == Some(COIL) && self.stacks.contains(entity)
+        self.sprite(entity) == Some(COIL) && self.floors.stacks.contains(entity)
     }
 
     fn bare(&self, pos: TilePos) -> bool {
-        self.map.iter().next().is_some_and(|m| bare(m, pos))
+        self.floors.bare(pos)
     }
 
     /// Whether a cable on `pos` already has this end.
@@ -116,13 +111,7 @@ impl CableWork<'_, '_> {
             return Some(ClickOutcome::told("cable-too-far"));
         }
         if !self.bare(tile) {
-            let floor = self
-                .map
-                .iter()
-                .next()
-                .and_then(|m| m.0.tile(tile))
-                .is_some_and(|t| t.id == "floor");
-            return Some(if floor {
+            return Some(if self.floors.intact(tile) {
                 ClickOutcome::told("cable-floor-intact")
             } else {
                 ClickOutcome::default()
@@ -148,7 +137,7 @@ impl CableWork<'_, '_> {
             return ClickOutcome::told("cable-exists");
         }
         spawn_cable(commands, at, vec![end]);
-        self.use_lengths(coil, 1, hands, commands);
+        self.floors.use_up(coil, 1, hands, commands);
         ClickOutcome::default()
     }
 
@@ -199,7 +188,7 @@ impl CableWork<'_, '_> {
         if let Ok((_, _, mut cable)) = self.cables.get_mut(target) {
             *cable = turned;
         }
-        self.use_lengths(coil, 1, hands, commands);
+        self.floors.use_up(coil, 1, hands, commands);
         ClickOutcome::default()
     }
 
@@ -223,7 +212,7 @@ impl CableWork<'_, '_> {
     /// Wirecutters on a coil of more than two lengths cut a piece of one off, onto the
     /// mob's tile.
     fn cut_piece(&mut self, mob_pos: TilePos, coil: Entity, commands: &mut Commands) -> ClickOutcome {
-        let Ok(mut stack) = self.stacks.get_mut(coil) else {
+        let Ok(mut stack) = self.floors.stacks.get_mut(coil) else {
             return ClickOutcome::default();
         };
         if stack.amount <= 2 {
@@ -243,7 +232,7 @@ impl CableWork<'_, '_> {
         hands: &mut Hands,
         commands: &mut Commands,
     ) -> ClickOutcome {
-        let (Ok(mine), Ok(theirs)) = (self.stacks.get(held), self.stacks.get(other)) else {
+        let (Ok(mine), Ok(theirs)) = (self.floors.stacks.get(held), self.floors.stacks.get(other)) else {
             return ClickOutcome::default();
         };
         let (mine, theirs) = (*mine, *theirs);
@@ -252,35 +241,19 @@ impl CableWork<'_, '_> {
         }
         let room = mine.max - mine.amount;
         let outcome = if theirs.amount <= room {
-            self.use_lengths(other, theirs.amount, hands, commands);
+            self.floors.use_up(other, theirs.amount, hands, commands);
             ClickOutcome::told("coil-joined")
         } else {
-            self.use_lengths(other, room, hands, commands);
+            self.floors.use_up(other, room, hands, commands);
             ClickOutcome {
                 to_mob: Some(LocMsg::new("coil-transferred").num("count", i64::from(room))),
                 seen: None,
             }
         };
-        if let Ok(mut stack) = self.stacks.get_mut(held) {
+        if let Ok(mut stack) = self.floors.stacks.get_mut(held) {
             stack.amount += theirs.amount.min(room);
         }
         outcome
-    }
-
-    /// Take lengths off a coil; an empty coil is gone, out of the hand holding it.
-    fn use_lengths(&mut self, coil: Entity, lengths: u32, hands: &mut Hands, commands: &mut Commands) {
-        let Ok(mut stack) = self.stacks.get_mut(coil) else {
-            return;
-        };
-        stack.amount = stack.amount.saturating_sub(lengths);
-        if stack.amount == 0 {
-            for hand in [hands.active, hands.active.other()] {
-                if hands.get(hand) == Some(coil) {
-                    *hands.slot_mut(hand) = None;
-                }
-            }
-            commands.entity(coil).despawn();
-        }
     }
 
     /// What examining a coil adds (Luna `cable_coil/examine`).
@@ -288,7 +261,7 @@ impl CableWork<'_, '_> {
         if !self.is_coil(target) {
             return None;
         }
-        let amount = self.stacks.get(target).ok()?.amount;
+        let amount = self.floors.stacks.get(target).ok()?.amount;
         Some(match amount {
             1 => LocMsg::new("examine-coil-short"),
             2 => LocMsg::new("examine-coil-piece"),
@@ -310,11 +283,7 @@ fn spawn_cable(commands: &mut Commands, at: TilePos, ends: Vec<Dir>) {
 
 /// A coil of `lengths` on the floor at `at`.
 fn spawn_coil(world: &mut World, at: TilePos, lengths: u32) {
-    if let Ok(coil) = crate::objects::spawn_object(world, &ObjectSpec::new(COIL), at)
-        && let Some(mut stack) = world.get_mut::<Stack>(coil)
-    {
-        stack.amount = lengths.min(stack.max);
-    }
+    let _ = crate::objects::spawn_stack(world, COIL, at, lengths);
 }
 
 /// Cable sprites follow their ends; coils show one, two or three loops by length.

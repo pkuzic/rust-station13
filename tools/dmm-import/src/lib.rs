@@ -505,6 +505,10 @@ fn object_ron(
         }
         fields.push(format!("ends: [{}]", ends.join(", ")));
     }
+    // Luna maps lay some pipes over the floor tiles instead of under them.
+    if atom.vars.get("level").is_some_and(|l| l.trim() == "2") {
+        fields.push("above_floor: true".to_owned());
+    }
     if fields.is_empty() {
         format!("{id:?}")
     } else {
@@ -521,7 +525,7 @@ mod tests {
 "ac" = (/obj/machinery/door/airlock/glass{name = "Core; Access"; req_access_txt = "10"},/turf/simulated/floor,/area/engine)
 "ad" = (/obj/effect/landmark/start{name = "Engineer"},/obj/item/weapon/wrench,/obj/effect/decal/sign,/turf/simulated/floor/plating,/area/engine)
 "ae" = (/obj/structure/grille,/obj/structure/window/reinforced{dir = 4},/turf/simulated/floor/plating,/area/engine)
-"af" = (/obj/machinery/atmospherics/pipe/simple{dir = 6},/obj/machinery/atmospherics/pipe/simple,/turf/simulated/floor,/area/engine)
+"af" = (/obj/machinery/atmospherics/pipe/simple{dir = 6},/obj/machinery/atmospherics/pipe/simple{level = 2},/turf/simulated/floor,/area/engine)
 
 (1,1,1) = {"
 aaabafaa
@@ -596,15 +600,19 @@ aaabaaaa
         );
         assert_eq!(map.area(rs13_world::TilePos::new(0, 1, 0)), Some("engine"));
         // Directions come across; an unset one is BYOND's south.
-        let pipes: Vec<Option<rs13_world::Dir>> = map
+        // Luna's `level = 2` lays a pipe over the floor tiles.
+        let pipes: Vec<(Option<rs13_world::Dir>, bool)> = map
             .objects
             .iter()
             .filter(|(_, o)| o.id == "pipe")
-            .map(|(_, o)| o.dir)
+            .map(|(_, o)| (o.dir, o.above_floor))
             .collect();
         assert_eq!(
             pipes,
-            [Some(rs13_world::Dir::SouthEast), Some(rs13_world::Dir::South)]
+            [
+                (Some(rs13_world::Dir::SouthEast), false),
+                (Some(rs13_world::Dir::South), true)
+            ]
         );
     }
 

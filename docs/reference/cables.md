@@ -41,7 +41,7 @@ Tests: `game/classic/tests/cables.rs`.
 
 **Floor tiles:** cable is laid, extended and cut only on bare plating. On a floor tile you
 see "You can't lay cable there unless the floor tiles are removed." Cables under floor tiles
-can't be reached at all.
+are hidden and can't be reached at all; a crowbar pries the tiles up (`floors.md`).
 
 ## Clicking
 
@@ -78,7 +78,6 @@ on a tile that has a cable or machine reaches that instead, as in Luna.
 - **Electrical toolbox:** Luna swaps its third coil for insulated gloves one time in ten; ours
   always has three coils.
 - **Not implemented:**
-  - lifting floor tiles with a crowbar, and hiding cables under them;
   - cable restraints;
   - mending robotic limbs;
   - other cable colours;

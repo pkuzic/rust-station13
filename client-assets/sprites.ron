@@ -126,6 +126,7 @@
         "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
+        "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
         "emergency-oxygen": { "": (dmi: "icons/obj/tank.dmi", state: "emergency") },

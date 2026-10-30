@@ -19,7 +19,7 @@ mod sprites;
 mod storage_panel;
 mod wire_panel;
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::net::SocketAddr;
 
 use bevy::input::ButtonState;
@@ -33,7 +33,9 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
-use rs13_world::{Appearance, AtmosView, Dir, EnvAlert, GridPos, Intent, MapLayer, MobStat, NetId, TilePos};
+use rs13_world::{
+    Appearance, AtmosView, Dir, EnvAlert, GridPos, Hidden, Intent, MapLayer, MobStat, NetId, TilePos,
+};
 use sprites::{Look, SpriteAtlas};
 
 /// On-screen size of one tile, in pixels.
@@ -147,6 +149,7 @@ fn main() {
         .init_resource::<alarm_panel::OpenAlarm>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
+        .init_resource::<TileSprites>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
         .add_systems(
@@ -405,14 +408,35 @@ fn click_rank(appearance: &Appearance) -> u8 {
     }
 }
 
-/// Draw the map's tiles when it arrives: Luna sprites, or flat squares as a fallback.
-fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLayer, Added<MapLayer>>) {
+/// The sprites drawn for each tile, and the tile they show.
+#[derive(Resource, Default)]
+struct TileSprites(HashMap<TilePos, (String, Vec<Entity>)>);
+
+/// Draw the map's tiles when it arrives, and redraw those that change (floor tiles pried
+/// up or put back): Luna sprites, or flat squares as a fallback.
+fn draw_map(
+    mut commands: Commands,
+    atlas: Res<SpriteAtlas>,
+    maps: Query<&MapLayer, Changed<MapLayer>>,
+    mut drawn: ResMut<TileSprites>,
+) {
     for MapLayer(map) in &maps {
-        info!(width = map.width, height = map.height, "map received");
+        if drawn.0.is_empty() {
+            info!(width = map.width, height = map.height, "map received");
+        }
         for y in 0..map.height as i32 {
             for x in 0..map.width as i32 {
                 let pos = TilePos::new(x, y, map.z);
                 let Some(tile) = map.tile(pos) else { continue };
+                if drawn.0.get(&pos).is_some_and(|(id, _)| *id == tile.id) {
+                    continue;
+                }
+                if let Some((_, old)) = drawn.0.remove(&pos) {
+                    for sprite in old {
+                        commands.entity(sprite).despawn();
+                    }
+                }
+                let mut sprites = Vec::new();
                 let (sprite, state) = match tile.id.as_str() {
                     "wall" => ("tile:wall", sprites::wall_state(map, pos)),
                     "r-wall" => ("tile:r-wall", sprites::wall_state(map, pos)),
@@ -432,17 +456,24 @@ fn draw_map(mut commands: Commands, atlas: Res<SpriteAtlas>, maps: Query<&MapLay
                     for (layer, part) in ["tile:grille", "tile:window"].into_iter().enumerate() {
                         if let Some(image) = atlas.sprite(part, "", 0) {
                             let z = 0.001 * (layer + 1) as f32;
-                            commands.spawn((image, Transform::from_translation(world_pos(pos, z))));
+                            sprites.push(
+                                commands
+                                    .spawn((image, Transform::from_translation(world_pos(pos, z))))
+                                    .id(),
+                            );
                         }
                     }
                 }
-                match atlas.sprite(sprite, &state, 0) {
-                    Some(image) => commands.spawn((image, transform)),
-                    None => commands.spawn((
-                        Sprite::from_color(tile_color(&tile.id), Vec2::splat(TILE_PX - 1.0)),
-                        transform,
-                    )),
-                };
+                sprites.push(match atlas.sprite(sprite, &state, 0) {
+                    Some(image) => commands.spawn((image, transform)).id(),
+                    None => commands
+                        .spawn((
+                            Sprite::from_color(tile_color(&tile.id), Vec2::splat(TILE_PX - 1.0)),
+                            transform,
+                        ))
+                        .id(),
+                });
+                drawn.0.insert(pos, (tile.id.clone(), sprites));
             }
         }
     }
@@ -502,10 +533,11 @@ fn update_appearance(
     }
 }
 
-/// Things inside something else (a held item) have no `GridPos` and are not drawn.
-fn show_only_placed(mut objects: Query<(&mut Visibility, Has<GridPos>), With<Appearance>>) {
-    for (mut visibility, placed) in &mut objects {
-        visibility.set_if_neq(if placed {
+/// Things inside something else (a held item) have no `GridPos` and are not drawn, nor
+/// are things under floor tiles.
+fn show_only_placed(mut objects: Query<(&mut Visibility, Has<GridPos>, Has<Hidden>), With<Appearance>>) {
+    for (mut visibility, placed, hidden) in &mut objects {
+        visibility.set_if_neq(if placed && !hidden {
             Visibility::Inherited
         } else {
             Visibility::Hidden
@@ -647,7 +679,7 @@ fn send_clicks(
     keys: Res<ButtonInput<KeyCode>>,
     window: Single<&Window, With<PrimaryWindow>>,
     camera: Single<(&Camera, &GlobalTransform), With<WorldCamera>>,
-    objects: Query<(&NetId, &GridPos, &Appearance)>,
+    objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     maps: Query<&MapLayer>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     hud: Query<&bevy::picking::hover::Hovered>,
@@ -682,7 +714,7 @@ fn send_clicks(
         .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
-    // Nothing there: click the tile itself (to lay cable on it).
+    // Nothing there: click the tile itself (to lay cable, pry up floor tiles).
     let Some(target) = target else {
         if !examine && let Some(map) = maps.iter().next() {
             sender.send::<IntentChannel>(ActionInput::UseOnTile(TilePos::new(tile.0, tile.1, map.0.z)));

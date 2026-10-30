@@ -220,3 +220,7 @@ coil-full = The coil is too long, you cannot add any more cable to it.
 examine-coil-short = A short piece of power cable.
 examine-coil-piece = A piece of power cable.
 examine-coil = A coil of power cable. There are { $count } lengths of cable in the coil.
+examine-floor-tiles = There { $count ->
+        [one] is { $count } floor tile
+       *[other] are { $count } floor tiles
+    } in the stack.
