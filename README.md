@@ -35,14 +35,20 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 
 | Input | Action |
 |---|---|
-| WASD / arrows | Move (hold Shift to walk) |
+| WASD / arrows | Move (Shift held: the opposite of the run/walk button) |
 | Left click | Use the active hand on something in reach: pick up, open/close a door |
 | Shift + click | Examine |
 | Q | Drop the active-hand item |
 | X | Swap hands |
+| E | Internals on/off (breath mask plus a gas tank) |
+| HUD inventory slot | Put on the active-hand item, or with an empty hand take it off |
+| HUD buttons | Swap hands, drop, intent, run/walk, internals (see `docs/reference/hud.md`) |
 | T | Say something (Enter sends, Esc cancels) |
 | 1 / 4 | Help / harm intent (a held item hits people on any intent; fists need harm) |
 | F3 | Atmos debug overlay (pressure per tile) |
+
+The EVA closet by the outer airlock has a space suit, a helmet, a breath mask and an
+emergency oxygen tank. Suit up, then turn internals on before you open the door.
 
 A crowbar forces an unpowered airlock. An APC's main breaker needs an ID card with
 `engine_equip` access in the active hand.

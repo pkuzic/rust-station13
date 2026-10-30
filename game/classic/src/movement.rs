@@ -81,9 +81,11 @@ pub fn move_mobs(
         Has<PlayerControlled>,
         Option<&Hands>,
         Option<&Vitals>,
+        Option<&crate::equipment::Equipment>,
     )>,
     mut objects: Query<(&GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
+    wearables: Query<&crate::equipment::Wearable>,
 ) {
     let now = time.deciseconds();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
@@ -97,7 +99,8 @@ pub fn move_mobs(
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals)) = mobs.get_mut(entity) else {
+        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals, equipment)) = mobs.get_mut(entity)
+        else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
@@ -115,7 +118,8 @@ pub fn move_mobs(
             occupied.remove(&pos.0);
             occupied.insert(target);
             pos.0 = target;
-            mob.next_move_ds = now + step_delay_ds(intent.run);
+            let worn = equipment.map_or(0.0, |e| crate::equipment::slowdown(e, &wearables));
+            mob.next_move_ds = now + step_delay_ds(intent.run) + worn;
             continue;
         }
 

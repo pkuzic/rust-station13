@@ -91,6 +91,8 @@ fn every_message_formats_in_both_locales() {
     args.set("equipment", "on");
     args.set("lighting", "off");
     args.set("environment", "on");
+    args.set("slot", "mask");
+    args.set("what", "drop");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

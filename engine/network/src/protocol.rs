@@ -7,6 +7,7 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer, MobStat, NetId,
+    Slot, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -39,6 +40,12 @@ pub enum ActionInput {
     /// Choose a character name. Accepted once per session, if valid.
     SetName(String),
     SetIntent(Intent),
+    /// Put the active-hand item on in this slot.
+    Equip(Slot),
+    /// Take off what is in this slot, into the empty active hand.
+    Unequip(Slot),
+    /// Connect the mask to a gas tank, or disconnect it.
+    ToggleInternals,
 }
 
 /// Server → the controlling client: its own health, state and intent. Sent when any of
@@ -51,6 +58,10 @@ pub struct StatusUpdate {
     /// Pressure where the player stands, tenths of a kPa.
     pub pressure_dkpa: u32,
     pub alerts: Vec<EnvAlert>,
+    /// Breathing from a tank.
+    pub internals: bool,
+    /// Body temperature, kelvin.
+    pub body_temperature: u16,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its
@@ -95,6 +106,7 @@ impl Plugin for ProtocolPlugin {
         app.component::<NetId>().replicate();
         app.component::<Appearance>().replicate();
         app.component::<HandsView>().replicate();
+        app.component::<WornView>().replicate();
         app.component::<DisplayName>().replicate();
         app.component::<AtmosView>().replicate();
     }

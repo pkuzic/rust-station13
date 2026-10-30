@@ -9,6 +9,7 @@ pub mod atmos;
 pub mod combat;
 pub mod doors;
 pub mod environment;
+pub mod equipment;
 pub mod hands;
 pub mod health;
 pub mod machines;
@@ -71,6 +72,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     actions::process_actions,
+                    equipment::process_equipment,
                     combat::resolve_attacks,
                     speech::speak,
                     combat::deliver_visible,
@@ -106,6 +108,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     hands::sync_hands_view,
+                    equipment::sync_worn_view,
                     machines::update_machine_looks,
                     power::update_power_looks,
                 )

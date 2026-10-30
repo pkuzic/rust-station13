@@ -8,6 +8,7 @@ use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
+use rs13_classic::equipment::{EquipAction, PendingEquipment};
 use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
@@ -147,6 +148,7 @@ fn queue_actions(
         &mut PendingSpeech,
         &mut DisplayName,
         &mut Outbox,
+        &mut PendingEquipment,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -154,7 +156,8 @@ fn queue_actions(
 ) {
     let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
     for (controls, mut receiver) in &mut links {
-        let Ok((mut pending, mut speech, mut name, mut outbox, name_chosen)) = mobs.get_mut(controls.0)
+        let Ok((mut pending, mut speech, mut name, mut outbox, mut equipment, name_chosen)) =
+            mobs.get_mut(controls.0)
         else {
             receiver.receive().for_each(drop);
             continue;
@@ -166,6 +169,18 @@ fn queue_actions(
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
+                ActionInput::Equip(slot) => {
+                    equipment.0.push(EquipAction::Equip(slot));
+                    None
+                }
+                ActionInput::Unequip(slot) => {
+                    equipment.0.push(EquipAction::Unequip(slot));
+                    None
+                }
+                ActionInput::ToggleInternals => {
+                    equipment.0.push(EquipAction::ToggleInternals);
+                    None
+                }
                 ActionInput::Say(text) => {
                     speech.0.push(text);
                     None
@@ -219,6 +234,8 @@ fn send_status(
             intent: intent.0,
             pressure_dkpa: (around.pressure * 10.0).round().max(0.0) as u32,
             alerts: alerts(around, lungs),
+            internals: lungs.internal.is_some(),
+            body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
         };
         if sent.0.as_ref() != Some(&status) {
             sender.send::<NoticeChannel>(status.clone());

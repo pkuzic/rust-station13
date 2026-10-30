@@ -5,7 +5,7 @@ use bevy::asset::RenderAssetUsages;
 use bevy::image::{CompressedImageFormats, ImageSampler, ImageType};
 use bevy::prelude::*;
 use rs13_dmi_import::atlas::Atlas;
-use rs13_world::{Appearance, GridPos, TileMap, TilePos};
+use rs13_world::{Appearance, GridPos, NetId, Slot, TileMap, TilePos, WornView};
 
 /// Built by `rs13-dmi-import` from `client-assets/sprites.ron`. Embedded until assets are
 /// delivered by the server's asset manifest.
@@ -59,6 +59,22 @@ pub fn load_atlas(
 }
 
 impl SpriteAtlas {
+    /// Atlas cell of the first frame of `sprite:state` facing `facing`.
+    pub fn index(&self, sprite: &str, state: &str, facing: u32) -> Option<usize> {
+        Some(self.atlas.get(sprite, state)?.cell(0, facing) as usize)
+    }
+
+    /// A UI image of the first frame of `sprite:state`, if the atlas has it.
+    pub fn ui_image(&self, sprite: &str, state: &str, facing: u32) -> Option<ImageNode> {
+        Some(ImageNode::from_atlas_image(
+            self.image.clone(),
+            TextureAtlas {
+                layout: self.layout.clone(),
+                index: self.index(sprite, state, facing)?,
+            },
+        ))
+    }
+
     /// A sprite showing the first frame of `sprite:state`, if the atlas has it.
     pub fn sprite(&self, sprite: &str, state: &str, facing: u32) -> Option<Sprite> {
         let anim = self.atlas.get(sprite, state)?;
@@ -242,5 +258,74 @@ mod tests {
                 assert_eq!(space_state(TilePos::new(x, y, 0)), s.to_string());
             }
         }
+    }
+}
+
+/// The atlas keys a person's clothing layers were last built from, bottom to top.
+#[derive(Component, Debug, Default, PartialEq)]
+pub struct Dressed(Vec<String>);
+
+/// Order clothing is drawn over the body, bottom to top (Luna's overlays).
+const DRAW_ORDER: [Slot; 9] = [
+    Slot::Uniform,
+    Slot::Id,
+    Slot::Shoes,
+    Slot::Gloves,
+    Slot::Belt,
+    Slot::Suit,
+    Slot::Back,
+    Slot::Mask,
+    Slot::Head,
+];
+
+/// Rebuild a person's clothing layers whenever what they wear changes. A worn item may
+/// replicate a frame after the person's `WornView`; it is picked up once it arrives.
+pub fn wear_layers(
+    mut commands: Commands,
+    atlas: Option<Res<SpriteAtlas>>,
+    people: Query<(Entity, &WornView, &Look, Option<&Dressed>, Option<&Children>), Without<Layer>>,
+    items: Query<(&NetId, &Appearance)>,
+    layers: Query<(), With<Layer>>,
+) {
+    let Some(atlas) = atlas else { return };
+    for (person, worn, look, dressed, children) in &people {
+        let keys: Vec<String> = DRAW_ORDER
+            .into_iter()
+            .filter_map(|slot| worn.get(slot))
+            .filter_map(|id| {
+                items
+                    .iter()
+                    .find(|(n, _)| **n == id)
+                    .map(|(_, a)| a.sprite.as_str())
+            })
+            .flat_map(|sprite| [format!("worn:{sprite}"), format!("worn:{sprite}:l")])
+            .filter(|key| atlas.atlas.get(key, "").is_some())
+            .collect();
+        if dressed.is_some_and(|d| d.0 == keys) {
+            continue;
+        }
+        for child in children.into_iter().flatten() {
+            if layers.contains(*child) {
+                commands.entity(*child).despawn();
+            }
+        }
+        let mut e = commands.entity(person);
+        for (i, key) in keys.iter().enumerate() {
+            if let Some(image) = atlas.sprite(key, &look.state, look.facing) {
+                e.with_child((
+                    image,
+                    // Slightly in front of the body, in the parent's space.
+                    Transform::from_xyz(0.0, 0.0, 0.01 * (i + 1) as f32),
+                    Look {
+                        sprite: key.clone(),
+                        state: look.state.clone(),
+                        facing: look.facing,
+                        since: 0.0,
+                    },
+                    Layer,
+                ));
+            }
+        }
+        e.insert(Dressed(keys));
     }
 }

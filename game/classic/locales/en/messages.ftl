@@ -22,8 +22,6 @@ examine = That's { NOUN($item, case: "indef") }.
 airlock-pushed = The airlock forces you out of the way!
 
 # Hands bar labels.
-hud-hand-left = L
-hud-hand-right = R
 
 # Args: $name (English, never declined).
 examine-person = That's { $name }.
@@ -91,3 +89,41 @@ apc-breaker-on = You switch the APC's main breaker on.
 apc-breaker-off = You switch the APC's main breaker off.
 apc-locked = Access denied.
 door-forced = You force the { NOUN($item) } with the crowbar.
+
+# Equipment. Args: $item (noun id).
+equip-wrong-slot = You can't wear that there.
+equip-occupied = You are already wearing something there.
+equip-needs-uniform = You need a jumpsuit for that.
+internals-on = You are now running on internals from the { NOUN($item) }.
+internals-off = You are no longer running on internals.
+internals-no-mask = You are not wearing a breath mask.
+internals-no-tank = You have no gas tank to connect to.
+
+# Inventory bar.
+hud-slot = { $slot ->
+        [uniform] Uniform
+        [suit] Suit
+        [head] Head
+        [mask] Mask
+        [gloves] Gloves
+        [shoes] Shoes
+        [back] Back
+        [belt] Belt
+       *[id] ID
+    }
+
+# HUD hover tips (Luna's screen object names). Args: $what.
+hud-tip = { $what ->
+        [hand-left] Left hand
+        [hand-right] Right hand
+        [swap] Swap hands
+        [drop] Drop
+        [intent] Intent
+        [move] Run / walk
+        [internals] Internals
+        [oxygen] Oxygen
+        [toxin] Toxins
+        [fire] Fire
+        [temperature] Body temperature
+       *[health] Health
+    }

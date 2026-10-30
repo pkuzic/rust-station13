@@ -35,16 +35,54 @@
             "15": (dmi: "icons/turf/walls.dmi", state: "metal15"),
         },
 
-        // People: body, then jumpsuit and shoes drawn on top. "lying" for out cold or dead.
+        // People: the body, with what they wear drawn on top. "lying" for out cold or dead.
         "human": {
             "": (dmi: "icons/mob/human.dmi", state: "body_m_s"),
             "lying": (dmi: "icons/mob/human.dmi", state: "body_m_l"),
         },
-        "human:uniform": {
+
+        // Worn: "worn:<item id>", drawn over the body in slot order (docs/reference/equipment.md).
+        // Gloves are two layers, one per hand ("worn:<id>:l").
+        "worn:grey-jumpsuit": {
             "": (dmi: "icons/mob/uniform.dmi", state: "grey_s"),
             "lying": (dmi: "icons/mob/uniform.dmi", state: "grey_l"),
         },
-        "human:shoes": { "": (dmi: "icons/mob/feet.dmi", state: "black") },
+        "worn:id-card": {
+            "": (dmi: "icons/mob/mob.dmi", state: "id"),
+            "lying": (dmi: "icons/mob/mob.dmi", state: "id2"),
+        },
+        "worn:black-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "black"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "black2"),
+        },
+        "worn:insulated-gloves": {
+            "": (dmi: "icons/mob/hands.dmi", state: "ygloves_rhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "ygloves2_rhand"),
+        },
+        "worn:insulated-gloves:l": {
+            "": (dmi: "icons/mob/hands.dmi", state: "ygloves_lhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "ygloves2_lhand"),
+        },
+        "worn:emergency-oxygen": {
+            "": (dmi: "icons/mob/belt.dmi", state: "em_oxtank"),
+            "lying": (dmi: "icons/mob/belt.dmi", state: "em_oxtank2"),
+        },
+        "worn:space-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "space"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "space2"),
+        },
+        "worn:oxygen-tank": {
+            "": (dmi: "icons/mob/back.dmi", state: "oxygen"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "oxygen2"),
+        },
+        "worn:breath-mask": {
+            "": (dmi: "icons/mob/mask.dmi", state: "breath"),
+            "lying": (dmi: "icons/mob/mask.dmi", state: "breath2"),
+        },
+        "worn:space-helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "space"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "space2"),
+        },
 
         // Items.
         "crowbar": { "": (dmi: "icons/obj/items.dmi", state: "crowbar") },
@@ -54,6 +92,64 @@
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
+        "emergency-oxygen": { "": (dmi: "icons/obj/tank.dmi", state: "emergency") },
+        "grey-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "grey") },
+        "black-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "black") },
+        "insulated-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "yellow") },
+        "breath-mask": { "": (dmi: "icons/obj/clothing/masks.dmi", state: "breath") },
+        "space-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "space") },
+        "space-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "space") },
+
+        // The classic HUD (Luna `human_hud`): bar backgrounds, slot frames, buttons and
+        // indicators. `dir` picks the frame variant Luna sets with `dir =`.
+        "hud": {
+            "bar-e": (dmi: "icons/mob/screen1.dmi", state: "", dir: Some(2)),
+            "bar-s": (dmi: "icons/mob/screen1.dmi", state: "", dir: Some(0)),
+            "bar-nw": (dmi: "icons/mob/screen1.dmi", state: "", dir: Some(7)),
+            "equip-s": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(0)),
+            "equip-n": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(1)),
+            "equip-e": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(2)),
+            "equip-w": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(3)),
+            "equip-sw": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(5)),
+            "equip-ne": (dmi: "icons/mob/screen1.dmi", state: "equip", dir: Some(6)),
+            "hand-l": (dmi: "icons/mob/screen1.dmi", state: "hand", dir: Some(0)),
+            "hand-r": (dmi: "icons/mob/screen1.dmi", state: "hand", dir: Some(1)),
+            "center": (dmi: "icons/mob/screen1.dmi", state: "center"),
+            "hair": (dmi: "icons/mob/screen1.dmi", state: "hair"),
+            "belt": (dmi: "icons/mob/screen1.dmi", state: "belt"),
+            "shoes": (dmi: "icons/mob/screen1.dmi", state: "shoes"),
+            "gloves": (dmi: "icons/mob/screen1.dmi", state: "gloves"),
+            "drop": (dmi: "icons/mob/screen1.dmi", state: "act_drop"),
+            "help": (dmi: "icons/mob/screen1.dmi", state: "help"),
+            "harm": (dmi: "icons/mob/screen1.dmi", state: "harm"),
+            "running": (dmi: "icons/mob/screen1.dmi", state: "running"),
+            "walking": (dmi: "icons/mob/screen1.dmi", state: "walking"),
+            "internal0": (dmi: "icons/mob/screen1.dmi", state: "internal0"),
+            "internal1": (dmi: "icons/mob/screen1.dmi", state: "internal1"),
+            "oxy0": (dmi: "icons/mob/screen1.dmi", state: "oxy0"),
+            "oxy1": (dmi: "icons/mob/screen1.dmi", state: "oxy1"),
+            "tox0": (dmi: "icons/mob/screen1.dmi", state: "tox0"),
+            "tox1": (dmi: "icons/mob/screen1.dmi", state: "tox1"),
+            "fire0": (dmi: "icons/mob/screen1.dmi", state: "fire0"),
+            "fire1": (dmi: "icons/mob/screen1.dmi", state: "fire1"),
+            "temp-4": (dmi: "icons/mob/screen1.dmi", state: "temp-4"),
+            "temp-3": (dmi: "icons/mob/screen1.dmi", state: "temp-3"),
+            "temp-2": (dmi: "icons/mob/screen1.dmi", state: "temp-2"),
+            "temp-1": (dmi: "icons/mob/screen1.dmi", state: "temp-1"),
+            "temp0": (dmi: "icons/mob/screen1.dmi", state: "temp0"),
+            "temp1": (dmi: "icons/mob/screen1.dmi", state: "temp1"),
+            "temp2": (dmi: "icons/mob/screen1.dmi", state: "temp2"),
+            "temp3": (dmi: "icons/mob/screen1.dmi", state: "temp3"),
+            "temp4": (dmi: "icons/mob/screen1.dmi", state: "temp4"),
+            "health0": (dmi: "icons/mob/screen1.dmi", state: "health0"),
+            "health1": (dmi: "icons/mob/screen1.dmi", state: "health1"),
+            "health2": (dmi: "icons/mob/screen1.dmi", state: "health2"),
+            "health3": (dmi: "icons/mob/screen1.dmi", state: "health3"),
+            "health4": (dmi: "icons/mob/screen1.dmi", state: "health4"),
+            "health5": (dmi: "icons/mob/screen1.dmi", state: "health5"),
+            "health6": (dmi: "icons/mob/screen1.dmi", state: "health6"),
+            "health7": (dmi: "icons/mob/screen1.dmi", state: "health7"),
+        },
 
         // Doors.
         "airlock": {
