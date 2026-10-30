@@ -42,7 +42,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:bar-nw` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-s` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:belt` | `icons/mob/screen1.dmi : "belt"` | CC-BY-SA 3.0 |
+| `hud:block` | `icons/mob/screen1.dmi : "block"` | CC-BY-SA 3.0 |
 | `hud:center` | `icons/mob/screen1.dmi : "center"` | CC-BY-SA 3.0 |
+| `hud:close` | `icons/mob/screen1.dmi : "x"` | CC-BY-SA 3.0 |
 | `hud:drop` | `icons/mob/screen1.dmi : "act_drop"` | CC-BY-SA 3.0 |
 | `hud:equip-e` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
 | `hud:equip-n` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
@@ -150,6 +152,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `tile:wall:8` | `icons/turf/walls.dmi : "metal8"` | CC-BY-SA 3.0 |
 | `tile:wall:9` | `icons/turf/walls.dmi : "metal9"` | CC-BY-SA 3.0 |
 | `tile:window:` | `icons/obj/structures.dmi : "fwindow"` | CC-BY-SA 3.0 |
+| `toolbox-electrical:` | `icons/obj/storage.dmi : "yellow"` | CC-BY-SA 3.0 |
+| `toolbox-mechanical:` | `icons/obj/storage.dmi : "blue"` | CC-BY-SA 3.0 |
+| `utility-belt:` | `icons/obj/clothing/belts.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
 | `valve:closed` | `icons/obj/atmospherics/valve.dmi : "valve0"` | CC-BY-SA 3.0 |
 | `valve:open` | `icons/obj/atmospherics/valve.dmi : "valve1"` | CC-BY-SA 3.0 |
 | `vent:off` | `icons/obj/atmospherics/vent_pump.dmi : "off"` | CC-BY-SA 3.0 |
@@ -175,4 +180,6 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:space-helmet:lying` | `icons/mob/head.dmi : "space2"` | CC-BY-SA 3.0 |
 | `worn:space-suit:` | `icons/mob/suit.dmi : "space"` | CC-BY-SA 3.0 |
 | `worn:space-suit:lying` | `icons/mob/suit.dmi : "space2"` | CC-BY-SA 3.0 |
+| `worn:utility-belt:` | `icons/mob/belt.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
+| `worn:utility-belt:lying` | `icons/mob/belt.dmi : "utilitybelt2"` | CC-BY-SA 3.0 |
 | `wrench:` | `icons/obj/items.dmi : "wrench"` | CC-BY-SA 3.0 |

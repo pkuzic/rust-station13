@@ -210,3 +210,8 @@ area-maint-port = Левое техобслуживание инженерной
 area-maint-port-central = Центральное левое техобслуживание инженерной палубы
 area-shield-generation = Генератор щитов
 area-escape-hangar = Ангар эвакуации экипажа
+
+# Контейнеры. Аргументы: $name, $item и $target (id существительных).
+storage-added = { $name } кладёт { NOUN($item, case: "acc") } в { NOUN($target, case: "acc") }!
+storage-cannot-hold = В { NOUN($target, case: "acc") } нельзя положить { NOUN($item, case: "acc") }.
+hud-storage-close = Закрыть

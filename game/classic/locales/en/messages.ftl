@@ -199,3 +199,8 @@ area-maint-port = Engineering Deck Port Maintenance
 area-maint-port-central = Engineering Port Central Maintenance
 area-shield-generation = Shield Generation
 area-escape-hangar = Crew Escape Hangar
+
+# Containers. Args: $name, $item and $target (noun ids).
+storage-added = { $name } has added { NOUN($item) } to { NOUN($target) }!
+storage-cannot-hold = The { NOUN($target) } can't hold { NOUN($item) }.
+hud-storage-close = Close

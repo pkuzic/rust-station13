@@ -15,16 +15,20 @@ use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::speech::PendingSpeech;
+use rs13_classic::storage::StorageOut;
 use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, Player, StatusUpdate, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, Player, StatusUpdate,
+    StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
-use rs13_world::{AlarmPanelView, DisplayName, GridPos, MapLayer, NetId, TileMap, WirePanelView};
+use rs13_world::{
+    AlarmPanelView, DisplayName, GridPos, MapLayer, NetId, StorageView, TileMap, WirePanelView,
+};
 
 #[derive(Resource)]
 struct Port(u16);
@@ -41,9 +45,9 @@ struct Controls(Entity);
 #[derive(Component, Default)]
 struct SentStatus(Option<StatusUpdate>);
 
-/// The wire panel and air alarm window last sent to this client.
+/// The wire panel, air alarm window and open container last sent to this client.
 #[derive(Component, Default)]
-struct SentPanel(Option<WirePanelView>, Option<AlarmPanelView>);
+struct SentPanel(Option<WirePanelView>, Option<AlarmPanelView>, Option<StorageView>);
 
 /// On a mob whose player has already chosen a name this session.
 #[derive(Component)]
@@ -203,6 +207,7 @@ fn queue_actions(
                 ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
                 ActionInput::Examine(id) => resolve(id).map(Action::Examine),
                 ActionInput::Drop => Some(Action::Drop),
+                ActionInput::CloseStorage => Some(Action::CloseStorage),
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
                 ActionInput::Equip(slot) => {
@@ -316,13 +321,18 @@ fn send_panels(
         &mut SentPanel,
         &mut MessageSender<WirePanel>,
         &mut MessageSender<AlarmPanel>,
+        &mut MessageSender<StoragePanel>,
     )>,
-    panels: Query<(&WirePanelOut, &AlarmPanelOut)>,
+    panels: Query<(&WirePanelOut, &AlarmPanelOut, &StorageOut)>,
 ) {
-    for (controls, mut sent, mut wires, mut alarms) in &mut links {
-        let Ok((wire_panel, alarm_panel)) = panels.get(controls.0) else {
+    for (controls, mut sent, mut wires, mut alarms, mut storages) in &mut links {
+        let Ok((wire_panel, alarm_panel, storage)) = panels.get(controls.0) else {
             continue;
         };
+        if sent.2 != storage.0 {
+            storages.send::<NoticeChannel>(StoragePanel(storage.0.clone()));
+            sent.2 = storage.0.clone();
+        }
         if sent.0 != wire_panel.0 {
             wires.send::<NoticeChannel>(WirePanel(wire_panel.0.clone()));
             sent.0 = wire_panel.0.clone();

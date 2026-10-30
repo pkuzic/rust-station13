@@ -59,22 +59,12 @@
         (path: "/obj/item/clothing/head/helmet/space/rig", id: "space-helmet"),
         (path: "/obj/item/weapon/tank/oxygen", id: "oxygen-tank"),
 
-        // Containers we can't model yet: their tools lie on the tile instead
-        // (luna:code/game/objects/storage/toolbox.dm and belts.dm, without the items we
-        // have no prototype for).
-        (path: "/obj/item/weapon/storage/toolbox/mechanical", contents: [
-            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
-        ]),
-        (path: "/obj/item/weapon/storage/toolbox/electrical", contents: [
-            (id: "screwdriver"), (id: "wirecutters"), (id: "crowbar"),
-        ]),
-        (path: "/obj/item/weapon/storage/belt/utility/loaded", contents: [
-            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
-        ]),
-        (path: "/obj/item/weapon/storage/belt/utility/loaded/full", contents: [
-            (id: "screwdriver"), (id: "wrench"), (id: "crowbar"), (id: "wirecutters"),
-            (id: "multitool"),
-        ]),
+        // Containers come with their tools inside (luna:code/game/objects/storage).
+        (path: "/obj/item/weapon/storage/toolbox/mechanical", id: "toolbox-mechanical"),
+        (path: "/obj/item/weapon/storage/toolbox/electrical", id: "toolbox-electrical"),
+        (path: "/obj/item/weapon/storage/belt/utility", id: "utility-belt"),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded", id: "utility-belt-loaded"),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded/full", id: "utility-belt-full"),
     ],
 
     // Luna's Engineer start points. Until jobs exist, an engineer's ID card lies on each

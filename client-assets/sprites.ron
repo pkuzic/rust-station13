@@ -85,6 +85,10 @@
             "": (dmi: "icons/mob/hands.dmi", state: "ygloves_lhand"),
             "lying": (dmi: "icons/mob/hands.dmi", state: "ygloves2_lhand"),
         },
+        "worn:utility-belt": {
+            "": (dmi: "icons/mob/belt.dmi", state: "utilitybelt"),
+            "lying": (dmi: "icons/mob/belt.dmi", state: "utilitybelt2"),
+        },
         "worn:emergency-oxygen": {
             "": (dmi: "icons/mob/belt.dmi", state: "em_oxtank"),
             "lying": (dmi: "icons/mob/belt.dmi", state: "em_oxtank2"),
@@ -112,6 +116,9 @@
         "screwdriver": { "": (dmi: "icons/obj/items.dmi", state: "screwdriver") },
         "wirecutters": { "": (dmi: "icons/obj/items.dmi", state: "cutters") },
         "multitool": { "": (dmi: "icons/obj/device.dmi", state: "multitool") },
+        "toolbox-mechanical": { "": (dmi: "icons/obj/storage.dmi", state: "blue") },
+        "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
+        "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
@@ -140,6 +147,9 @@
             "center": (dmi: "icons/mob/screen1.dmi", state: "center"),
             "hair": (dmi: "icons/mob/screen1.dmi", state: "hair"),
             "belt": (dmi: "icons/mob/screen1.dmi", state: "belt"),
+            // An open container: a cell behind each item, and the close button.
+            "block": (dmi: "icons/mob/screen1.dmi", state: "block"),
+            "close": (dmi: "icons/mob/screen1.dmi", state: "x"),
             "shoes": (dmi: "icons/mob/screen1.dmi", state: "shoes"),
             "gloves": (dmi: "icons/mob/screen1.dmi", state: "gloves"),
             "drop": (dmi: "icons/mob/screen1.dmi", state: "act_drop"),

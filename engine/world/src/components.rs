@@ -195,6 +195,16 @@ pub struct AlarmReading {
     pub alert: bool,
 }
 
+/// An open container, as shown to the player carrying it: the items in it, in order.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StorageView {
+    /// The container.
+    pub target: NetId,
+    pub items: Vec<NetId>,
+    /// How many it can hold.
+    pub slots: u8,
+}
+
 /// What a person wears, as seen by clients: slot → item.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct WornView(pub Vec<(Slot, NetId)>);

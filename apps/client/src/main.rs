@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod hud;
 mod sprites;
+mod storage_panel;
 mod wire_panel;
 
 use std::collections::VecDeque;
@@ -144,6 +145,7 @@ fn main() {
         .init_resource::<hud::HudTip>()
         .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<alarm_panel::OpenAlarm>()
+        .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
@@ -167,6 +169,7 @@ fn main() {
                 receive_status,
                 (wire_panel::receive_panel, wire_panel::show_panel).chain(),
                 (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
+                (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 glide,
                 (
                     sprites::wear_layers,
