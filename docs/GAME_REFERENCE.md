@@ -7,8 +7,11 @@
 - A Russian (ss13.ru) Baystation12 fork. Environment file `bs12.dme`, station map
   `maps/NSV_Luna.dmm`.
 - Contributors keep a local clone **outside** this repository (for example
-  `../luna`). Never add Luna files to this repository except assets imported under
-  `client-assets/` with attribution.
+  `../luna`). Never add Luna files to this repository. Two kinds of generated content
+  are the exception, each with its source named in the file:
+  - sprites imported under `client-assets/` by `rs13-dmi-import`, with attribution;
+  - maps converted from `NSV_Luna.dmm` by `rs13-dmm-import` into `game/classic/maps/`.
+    These carry Luna's layout only, never DM code (`docs/reference/map-import.md`).
 
 OpenDream and RobustToolbox may be consulted for how others have solved engine problems.
 
