@@ -111,6 +111,20 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::furniture::spawn_furniture(world, spec, pos, id));
     }
+    if proto == "meter" {
+        let id = world.resource_mut::<NetIds>().alloc();
+        let power =
+            crate::power::PowerUser::new(crate::power::Channel::Equipment, crate::meters::METER_POWER);
+        return Ok(world
+            .spawn((
+                GridPos(pos),
+                id,
+                Appearance::new(proto, "meterX"),
+                crate::meters::Meter::default(),
+                power,
+            ))
+            .id());
+    }
     if proto == "fuel-tank" {
         let id = world.resource_mut::<NetIds>().alloc();
         let tank = crate::welding::FuelTank {

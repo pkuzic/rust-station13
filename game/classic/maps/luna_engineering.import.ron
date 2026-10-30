@@ -47,6 +47,7 @@
         (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
         (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
         (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
+        (path: "/obj/machinery/meter", id: "meter"),
 
         (path: "/obj/item/weapon/screwdriver", id: "screwdriver"),
         (path: "/obj/item/weapon/wrench", id: "wrench"),
