@@ -17,6 +17,9 @@ One small room, two players, playable end to end:
 **Exit criterion:** two players in the chamber can open the airlock, cut its power, cause a
 breach and watch the pressure drop, in either language.
 
+**Acceptance:** `game/classic/tests/milestone.rs` plays this story with two players, using
+the engineer's ID, EVA gear, wirecutters, a crowbar and the air alarm.
+
 ## Later milestones
 
 Sequence from the master plan. Estimates are speculative and phases overlap.
@@ -26,7 +29,7 @@ Sequence from the master plan. Estimates are speculative and phases overlap.
 | Research | Reference spec (`GAME_REFERENCE.md`) and this executable skeleton |
 | Engine foundation | Two clients moving in one room (**done**: `apps/headless/tests/two_clients_one_room.rs`) |
 | Gameplay prototype | Recognisable classic interaction loop (**in progress**: hands, items, airlock, examine, names, speech, ID access and basic health/combat done) |
-| Engineering | Functional engineering test chamber (the first milestone above). **In progress:** atmos zones, decompression, space wind, breathing, vacuum damage, pipes and machinery done (atmos phase 1); powernet with SMES, cables, per-area APCs and powered doors and atmos machines done; airlock maintenance panel and wires done (cut a door's power, bolt it, electrify it); air alarms with emergency seals and panic fill done |
+| Engineering | Functional engineering test chamber (the first milestone above). **Exit criterion met** (`game/classic/tests/milestone.rs` plays the whole story; the network path is covered by `apps/headless/tests/two_clients_one_room.rs`). Still open: importing the map from Luna `.dmm`. Done: atmos zones, decompression, space wind, breathing, vacuum damage, pipes and machinery done (atmos phase 1); powernet with SMES, cables, per-area APCs and powered doors and atmos machines done; airlock maintenance panel and wires done (cut a door's power, bolt it, electrify it); air alarms with emergency seals and panic fill done |
 | Modding and ecosystem | Custom server join with new assets and gameplay |
 | Station alpha | Full 1–15 player round on NSV Luna |
 
