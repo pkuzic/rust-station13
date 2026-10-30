@@ -107,6 +107,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if matches!(proto, "cable" | "smes" | "apc") {
         return spawn_power_object(world, spec, pos);
     }
+    if crate::furniture::is_furniture(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::furniture::spawn_furniture(world, spec, pos, id));
+    }
     if proto == "fuel-tank" {
         let id = world.resource_mut::<NetIds>().alloc();
         let tank = crate::welding::FuelTank {

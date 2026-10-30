@@ -1214,7 +1214,7 @@
                 ],
             ),
         },
-        "screwdriver": {
+        "rack": {
             "": (
                 dirs: 1,
                 frames: 1,
@@ -1224,8 +1224,8 @@
                 ],
             ),
         },
-        "scrubber": {
-            "off": (
+        "rack-parts": {
+            "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
@@ -1233,12 +1233,32 @@
                     196,
                 ],
             ),
-            "on": (
+        },
+        "screwdriver": {
+            "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
                     197,
+                ],
+            ),
+        },
+        "scrubber": {
+            "off": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    198,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    199,
                 ],
             ),
         },
@@ -1248,7 +1268,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    198,
+                    200,
                 ],
             ),
         },
@@ -1258,7 +1278,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    199,
+                    201,
                 ],
             ),
         },
@@ -1268,7 +1288,1219 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    200,
+                    202,
+                ],
+            ),
+        },
+        "table": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    203,
+                ],
+            ),
+            "table-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    204,
+                ],
+            ),
+            "table-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    205,
+                ],
+            ),
+            "table-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    206,
+                ],
+            ),
+            "table-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    207,
+                ],
+            ),
+            "table-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    208,
+                ],
+            ),
+            "table-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    209,
+                ],
+            ),
+            "table-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    210,
+                ],
+            ),
+            "table-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    211,
+                ],
+            ),
+            "table_1tileendtable-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    212,
+                ],
+            ),
+            "table_1tileendtable-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    213,
+                ],
+            ),
+            "table_1tileendtable-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    214,
+                ],
+            ),
+            "table_1tileendtable-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    215,
+                ],
+            ),
+            "table_1tilethick-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    216,
+                ],
+            ),
+            "table_1tilethick-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    217,
+                ],
+            ),
+            "table_1tilethick-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    218,
+                ],
+            ),
+            "table_1tilethick-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    219,
+                ],
+            ),
+            "table_1tilethick-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    220,
+                ],
+            ),
+            "table_1tilethick-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    221,
+                ],
+            ),
+            "table_1tilethick-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    222,
+                ],
+            ),
+            "table_1tilethick-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    223,
+                ],
+            ),
+            "table_middle-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    224,
+                ],
+            ),
+            "table_middle-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    225,
+                ],
+            ),
+            "table_middle-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    226,
+                ],
+            ),
+            "table_middle-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    227,
+                ],
+            ),
+            "table_middle-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    228,
+                ],
+            ),
+            "table_middle-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    229,
+                ],
+            ),
+            "table_middle-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    230,
+                ],
+            ),
+            "table_middle-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    231,
+                ],
+            ),
+            "tabledir-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    232,
+                ],
+            ),
+            "tabledir-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    233,
+                ],
+            ),
+            "tabledir-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    234,
+                ],
+            ),
+            "tabledir-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    235,
+                ],
+            ),
+            "tabledir-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    236,
+                ],
+            ),
+            "tabledir-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    237,
+                ],
+            ),
+            "tabledir-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    238,
+                ],
+            ),
+            "tabledir-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    239,
+                ],
+            ),
+            "tabledir2-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    240,
+                ],
+            ),
+            "tabledir2-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    241,
+                ],
+            ),
+            "tabledir2-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    242,
+                ],
+            ),
+            "tabledir2-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    243,
+                ],
+            ),
+            "tabledir3-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    244,
+                ],
+            ),
+            "tabledir3-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    245,
+                ],
+            ),
+            "tabledir3-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    246,
+                ],
+            ),
+            "tabledir3-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    247,
+                ],
+            ),
+            "tabledir3-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    248,
+                ],
+            ),
+            "tabledir3-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    249,
+                ],
+            ),
+            "tabledir3-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    250,
+                ],
+            ),
+            "tabledir3-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    251,
+                ],
+            ),
+        },
+        "table-parts": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    252,
+                ],
+            ),
+        },
+        "table-parts-reinforced": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    253,
+                ],
+            ),
+        },
+        "table-parts-wood": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    254,
+                ],
+            ),
+        },
+        "table-reinforced": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    255,
+                ],
+            ),
+            "reinf_1tileendtable-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    256,
+                ],
+            ),
+            "reinf_1tileendtable-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    257,
+                ],
+            ),
+            "reinf_1tileendtable-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    258,
+                ],
+            ),
+            "reinf_1tileendtable-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    259,
+                ],
+            ),
+            "reinf_1tilethick-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    260,
+                ],
+            ),
+            "reinf_1tilethick-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    261,
+                ],
+            ),
+            "reinf_1tilethick-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    262,
+                ],
+            ),
+            "reinf_1tilethick-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    263,
+                ],
+            ),
+            "reinf_1tilethick-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    264,
+                ],
+            ),
+            "reinf_1tilethick-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    265,
+                ],
+            ),
+            "reinf_1tilethick-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    266,
+                ],
+            ),
+            "reinf_1tilethick-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    267,
+                ],
+            ),
+            "reinf_middle-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    268,
+                ],
+            ),
+            "reinf_middle-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    269,
+                ],
+            ),
+            "reinf_middle-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    270,
+                ],
+            ),
+            "reinf_middle-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    271,
+                ],
+            ),
+            "reinf_middle-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    272,
+                ],
+            ),
+            "reinf_middle-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    273,
+                ],
+            ),
+            "reinf_middle-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    274,
+                ],
+            ),
+            "reinf_middle-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    275,
+                ],
+            ),
+            "reinf_table-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    276,
+                ],
+            ),
+            "reinf_table-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    277,
+                ],
+            ),
+            "reinf_table-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    278,
+                ],
+            ),
+            "reinf_table-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    279,
+                ],
+            ),
+            "reinf_table-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    280,
+                ],
+            ),
+            "reinf_table-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    281,
+                ],
+            ),
+            "reinf_table-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    282,
+                ],
+            ),
+            "reinf_table-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    283,
+                ],
+            ),
+            "reinf_tabledir-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    284,
+                ],
+            ),
+            "reinf_tabledir-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    285,
+                ],
+            ),
+            "reinf_tabledir-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    286,
+                ],
+            ),
+            "reinf_tabledir-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    287,
+                ],
+            ),
+            "reinf_tabledir-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    288,
+                ],
+            ),
+            "reinf_tabledir-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    289,
+                ],
+            ),
+            "reinf_tabledir-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    290,
+                ],
+            ),
+            "reinf_tabledir-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    291,
+                ],
+            ),
+            "reinf_tabledir2-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    292,
+                ],
+            ),
+            "reinf_tabledir2-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    293,
+                ],
+            ),
+            "reinf_tabledir2-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    294,
+                ],
+            ),
+            "reinf_tabledir2-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    295,
+                ],
+            ),
+            "reinf_tabledir3-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    296,
+                ],
+            ),
+            "reinf_tabledir3-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    297,
+                ],
+            ),
+            "reinf_tabledir3-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    298,
+                ],
+            ),
+            "reinf_tabledir3-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    299,
+                ],
+            ),
+            "reinf_tabledir3-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    300,
+                ],
+            ),
+            "reinf_tabledir3-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    301,
+                ],
+            ),
+            "reinf_tabledir3-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    302,
+                ],
+            ),
+            "reinf_tabledir3-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    303,
+                ],
+            ),
+        },
+        "table-wood": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    304,
+                ],
+            ),
+            "wood_1tileendtable-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    305,
+                ],
+            ),
+            "wood_1tileendtable-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    306,
+                ],
+            ),
+            "wood_1tileendtable-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    307,
+                ],
+            ),
+            "wood_1tileendtable-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    308,
+                ],
+            ),
+            "wood_1tilethick-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    309,
+                ],
+            ),
+            "wood_1tilethick-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    310,
+                ],
+            ),
+            "wood_1tilethick-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    311,
+                ],
+            ),
+            "wood_1tilethick-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    312,
+                ],
+            ),
+            "wood_1tilethick-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    313,
+                ],
+            ),
+            "wood_1tilethick-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    314,
+                ],
+            ),
+            "wood_1tilethick-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    315,
+                ],
+            ),
+            "wood_1tilethick-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    316,
+                ],
+            ),
+            "wood_middle-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    317,
+                ],
+            ),
+            "wood_middle-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    318,
+                ],
+            ),
+            "wood_middle-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    319,
+                ],
+            ),
+            "wood_middle-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    320,
+                ],
+            ),
+            "wood_middle-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    321,
+                ],
+            ),
+            "wood_middle-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    322,
+                ],
+            ),
+            "wood_middle-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    323,
+                ],
+            ),
+            "wood_middle-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    324,
+                ],
+            ),
+            "wood_table-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    325,
+                ],
+            ),
+            "wood_table-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    326,
+                ],
+            ),
+            "wood_table-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    327,
+                ],
+            ),
+            "wood_table-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    328,
+                ],
+            ),
+            "wood_table-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    329,
+                ],
+            ),
+            "wood_table-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    330,
+                ],
+            ),
+            "wood_table-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    331,
+                ],
+            ),
+            "wood_table-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    332,
+                ],
+            ),
+            "wood_tabledir-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    333,
+                ],
+            ),
+            "wood_tabledir-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    334,
+                ],
+            ),
+            "wood_tabledir-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    335,
+                ],
+            ),
+            "wood_tabledir-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    336,
+                ],
+            ),
+            "wood_tabledir-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    337,
+                ],
+            ),
+            "wood_tabledir-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    338,
+                ],
+            ),
+            "wood_tabledir-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    339,
+                ],
+            ),
+            "wood_tabledir-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    340,
+                ],
+            ),
+            "wood_tabledir2-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    341,
+                ],
+            ),
+            "wood_tabledir2-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    342,
+                ],
+            ),
+            "wood_tabledir2-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    343,
+                ],
+            ),
+            "wood_tabledir2-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    344,
+                ],
+            ),
+            "wood_tabledir3-east": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    345,
+                ],
+            ),
+            "wood_tabledir3-north": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    346,
+                ],
+            ),
+            "wood_tabledir3-northeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    347,
+                ],
+            ),
+            "wood_tabledir3-northwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    348,
+                ],
+            ),
+            "wood_tabledir3-south": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    349,
+                ],
+            ),
+            "wood_tabledir3-southeast": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    350,
+                ],
+            ),
+            "wood_tabledir3-southwest": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    351,
+                ],
+            ),
+            "wood_tabledir3-west": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    352,
                 ],
             ),
         },
@@ -1278,7 +2510,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    201,
+                    353,
                 ],
             ),
         },
@@ -1288,7 +2520,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    202,
+                    354,
                 ],
             ),
         },
@@ -1298,7 +2530,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    203,
+                    355,
                 ],
             ),
         },
@@ -1308,7 +2540,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    204,
+                    356,
                 ],
             ),
             "1": (
@@ -1316,7 +2548,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    205,
+                    357,
                 ],
             ),
             "10": (
@@ -1324,7 +2556,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    206,
+                    358,
                 ],
             ),
             "11": (
@@ -1332,7 +2564,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    207,
+                    359,
                 ],
             ),
             "12": (
@@ -1340,7 +2572,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    208,
+                    360,
                 ],
             ),
             "13": (
@@ -1348,7 +2580,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    209,
+                    361,
                 ],
             ),
             "14": (
@@ -1356,7 +2588,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    210,
+                    362,
                 ],
             ),
             "15": (
@@ -1364,7 +2596,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    211,
+                    363,
                 ],
             ),
             "2": (
@@ -1372,7 +2604,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    212,
+                    364,
                 ],
             ),
             "3": (
@@ -1380,7 +2612,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    213,
+                    365,
                 ],
             ),
             "4": (
@@ -1388,7 +2620,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    214,
+                    366,
                 ],
             ),
             "5": (
@@ -1396,7 +2628,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    215,
+                    367,
                 ],
             ),
             "6": (
@@ -1404,7 +2636,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    216,
+                    368,
                 ],
             ),
             "7": (
@@ -1412,7 +2644,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    217,
+                    369,
                 ],
             ),
             "8": (
@@ -1420,7 +2652,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    218,
+                    370,
                 ],
             ),
             "9": (
@@ -1428,7 +2660,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    219,
+                    371,
                 ],
             ),
         },
@@ -1438,7 +2670,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    220,
+                    372,
                 ],
             ),
             "1": (
@@ -1446,7 +2678,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    221,
+                    373,
                 ],
             ),
             "2": (
@@ -1454,7 +2686,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    222,
+                    374,
                 ],
             ),
             "3": (
@@ -1462,7 +2694,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    223,
+                    375,
                 ],
             ),
             "4": (
@@ -1470,7 +2702,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    224,
+                    376,
                 ],
             ),
         },
@@ -1480,7 +2712,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    225,
+                    377,
                 ],
             ),
             "1": (
@@ -1488,7 +2720,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    226,
+                    378,
                 ],
             ),
             "10": (
@@ -1496,7 +2728,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    227,
+                    379,
                 ],
             ),
             "11": (
@@ -1504,7 +2736,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    228,
+                    380,
                 ],
             ),
             "12": (
@@ -1512,7 +2744,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    229,
+                    381,
                 ],
             ),
             "13": (
@@ -1520,7 +2752,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    230,
+                    382,
                 ],
             ),
             "14": (
@@ -1528,7 +2760,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    231,
+                    383,
                 ],
             ),
             "15": (
@@ -1536,7 +2768,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    232,
+                    384,
                 ],
             ),
             "2": (
@@ -1544,7 +2776,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    233,
+                    385,
                 ],
             ),
             "3": (
@@ -1552,7 +2784,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    234,
+                    386,
                 ],
             ),
             "4": (
@@ -1560,7 +2792,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    235,
+                    387,
                 ],
             ),
             "5": (
@@ -1568,7 +2800,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    236,
+                    388,
                 ],
             ),
             "6": (
@@ -1576,7 +2808,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    237,
+                    389,
                 ],
             ),
             "7": (
@@ -1584,7 +2816,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    238,
+                    390,
                 ],
             ),
             "8": (
@@ -1592,7 +2824,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    239,
+                    391,
                 ],
             ),
             "9": (
@@ -1600,7 +2832,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    240,
+                    392,
                 ],
             ),
         },
@@ -1610,14 +2842,14 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    241,
-                    242,
-                    243,
-                    244,
-                    245,
-                    246,
-                    247,
-                    248,
+                    393,
+                    394,
+                    395,
+                    396,
+                    397,
+                    398,
+                    399,
+                    400,
                 ],
             ),
         },
@@ -1627,7 +2859,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    249,
+                    401,
                 ],
             ),
         },
@@ -1637,7 +2869,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    250,
+                    402,
                 ],
             ),
         },
@@ -1647,7 +2879,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    251,
+                    403,
                 ],
             ),
         },
@@ -1657,7 +2889,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    252,
+                    404,
                 ],
             ),
             "open": (
@@ -1665,7 +2897,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    253,
+                    405,
                 ],
             ),
         },
@@ -1675,7 +2907,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    254,
+                    406,
                 ],
             ),
             "on": (
@@ -1692,14 +2924,14 @@
                     1.0,
                 ],
                 cells: [
-                    255,
-                    256,
-                    257,
-                    258,
-                    259,
-                    260,
-                    261,
-                    262,
+                    407,
+                    408,
+                    409,
+                    410,
+                    411,
+                    412,
+                    413,
+                    414,
                 ],
             ),
         },
@@ -1709,7 +2941,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    263,
+                    415,
                 ],
             ),
             "lit": (
@@ -1720,8 +2952,8 @@
                     1.0,
                 ],
                 cells: [
-                    264,
-                    265,
+                    416,
+                    417,
                 ],
             ),
         },
@@ -1731,7 +2963,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    266,
+                    418,
                 ],
             ),
         },
@@ -1741,10 +2973,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    267,
-                    268,
-                    269,
-                    270,
+                    419,
+                    420,
+                    421,
+                    422,
                 ],
             ),
             "lying": (
@@ -1752,7 +2984,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    271,
+                    423,
                 ],
             ),
         },
@@ -1762,10 +2994,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    272,
-                    273,
-                    274,
-                    275,
+                    424,
+                    425,
+                    426,
+                    427,
                 ],
             ),
             "lying": (
@@ -1773,7 +3005,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    276,
+                    428,
                 ],
             ),
         },
@@ -1783,10 +3015,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    277,
-                    278,
-                    279,
-                    280,
+                    429,
+                    430,
+                    431,
+                    432,
                 ],
             ),
             "lying": (
@@ -1794,7 +3026,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    281,
+                    433,
                 ],
             ),
         },
@@ -1804,10 +3036,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    282,
-                    283,
-                    284,
-                    285,
+                    434,
+                    435,
+                    436,
+                    437,
                 ],
             ),
             "lying": (
@@ -1815,7 +3047,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    286,
+                    438,
                 ],
             ),
         },
@@ -1825,10 +3057,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    287,
-                    288,
-                    289,
-                    290,
+                    439,
+                    440,
+                    441,
+                    442,
                 ],
             ),
             "lying": (
@@ -1836,7 +3068,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    291,
+                    443,
                 ],
             ),
         },
@@ -1846,10 +3078,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    292,
-                    293,
-                    294,
-                    295,
+                    444,
+                    445,
+                    446,
+                    447,
                 ],
             ),
             "lying": (
@@ -1857,7 +3089,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    296,
+                    448,
                 ],
             ),
         },
@@ -1867,10 +3099,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    297,
-                    298,
-                    299,
-                    300,
+                    449,
+                    450,
+                    451,
+                    452,
                 ],
             ),
             "lying": (
@@ -1878,7 +3110,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    301,
+                    453,
                 ],
             ),
         },
@@ -1888,10 +3120,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    302,
-                    303,
-                    304,
-                    305,
+                    454,
+                    455,
+                    456,
+                    457,
                 ],
             ),
             "lying": (
@@ -1899,7 +3131,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    306,
+                    458,
                 ],
             ),
         },
@@ -1909,10 +3141,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    307,
-                    308,
-                    309,
-                    310,
+                    459,
+                    460,
+                    461,
+                    462,
                 ],
             ),
             "lying": (
@@ -1920,7 +3152,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    311,
+                    463,
                 ],
             ),
         },
@@ -1930,10 +3162,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    312,
-                    313,
-                    314,
-                    315,
+                    464,
+                    465,
+                    466,
+                    467,
                 ],
             ),
             "lying": (
@@ -1941,7 +3173,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    316,
+                    468,
                 ],
             ),
         },
@@ -1951,10 +3183,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    317,
-                    318,
-                    319,
-                    320,
+                    469,
+                    470,
+                    471,
+                    472,
                 ],
             ),
             "lying": (
@@ -1962,7 +3194,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    321,
+                    473,
                 ],
             ),
         },
@@ -1972,7 +3204,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    322,
+                    474,
                 ],
             ),
         },

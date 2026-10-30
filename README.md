@@ -65,6 +65,9 @@ A welding tool lights with Z (or a click on the active hand). Lit, it welds a cl
 airlock shut, and open again, for a little fuel; a fuel tank fills it while it is out
 (`docs/reference/welding.md`).
 
+Click a table or rack with an item to put it down there. A wrench takes them apart; a
+reinforced table must be weakened with a welding tool first (`docs/reference/tables.md`).
+
 On bare plating a cable coil lays power cable:
 click the plating, or click a cable end to carry it on to your tile. Wirecutters cut a
 cable, and the power behind the cut goes out (`docs/reference/cables.md`). Elsewhere, pry

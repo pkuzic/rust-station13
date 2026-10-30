@@ -90,6 +90,9 @@ pub struct ObjectSpec {
     /// For pipes and cables: laid over the floor tiles rather than under them (Luna
     /// `level = 2`), so floor tiles don't hide it.
     pub above_floor: bool,
+    /// The look the map gives it (BYOND `icon_state`), for things whose look the mapper
+    /// chose, such as the edge pieces of a table.
+    pub state: Option<String>,
 }
 
 impl ObjectSpec {
@@ -100,6 +103,7 @@ impl ObjectSpec {
             dir: None,
             ends: Vec::new(),
             above_floor: false,
+            state: None,
         }
     }
 }
@@ -118,6 +122,8 @@ enum ObjectEntry {
         ends: Vec<Dir>,
         #[serde(default)]
         above_floor: bool,
+        #[serde(default)]
+        state: Option<String>,
     },
 }
 
@@ -131,12 +137,14 @@ impl From<ObjectEntry> for ObjectSpec {
                 dir,
                 ends,
                 above_floor,
+                state,
             } => ObjectSpec {
                 id,
                 access,
                 dir,
                 ends,
                 above_floor,
+                state,
             },
         }
     }
@@ -424,6 +432,7 @@ mod tests {
                         dir: None,
                         ends: Vec::new(),
                         above_floor: false,
+                        state: None,
                     }
                 ),
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),

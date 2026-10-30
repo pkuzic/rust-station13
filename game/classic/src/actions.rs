@@ -104,13 +104,14 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable, hidden, mut welding, places): (
+    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
         Query<(), With<Hidden>>,
         crate::welding::WeldWork,
         Query<&GridPos>,
+        crate::furniture::FurnitureWork,
     ),
     mut commands: Commands,
 ) {
@@ -235,12 +236,16 @@ pub fn process_actions(
                     // Reach and the outcome are worked out by `resolve_attacks`.
                     attacks.0.push((mob, target));
                 }
-                Action::UseOn(target) if hands.active_item() == Some(target) && welding.is_welder(target) => {
-                    // A welding tool in the active hand: light it or put it out (Luna
-                    // `attack_self`).
+                Action::UseOn(target)
+                    if hands.active_item() == Some(target)
+                        && (welding.is_welder(target) || furniture.uses_self(target)) =>
+                {
+                    // The item in the active hand used on itself (Luna `attack_self`): a
+                    // welding tool lights or goes out, rack parts become a rack.
                     if let Some(outcome) = welding.use_self(target) {
                         outbox.0.extend(outcome.to_mob);
                     }
+                    furniture.use_self(mob_pos.0, &mut hands, target, &mut commands);
                 }
                 Action::UseOn(target) => {
                     // Containers, their contents and things the mob carries
@@ -282,6 +287,16 @@ pub fn process_actions(
                     {
                         outbox.0.extend(outcome.to_mob);
                         continue;
+                    }
+                    // Tables, racks and their parts (`tables.md`).
+                    if reachable {
+                        let at = places.get(target).map_or(mob_pos.0, |p| p.0);
+                        if let Some(outcome) =
+                            furniture.use_on(mob, mob_pos.0, &mut hands, target, at, &mut commands)
+                        {
+                            outbox.0.extend(outcome.to_mob);
+                            continue;
+                        }
                     }
                     // Floor tiles onto a pile of floor tiles (`floors.md`).
                     if reachable && cable.floors.use_on(&mut hands, target, &mut commands).is_some() {

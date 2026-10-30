@@ -394,6 +394,10 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("valve", "open") => (Color::srgb(0.40, 0.80, 0.40), 12.0, 0.7),
         ("valve", _) => (Color::srgb(0.80, 0.30, 0.30), 12.0, 0.7),
         ("connector", _) => (Color::srgb(0.50, 0.50, 0.50), 14.0, 0.65),
+        // Under what is put on them.
+        ("table" | "table-reinforced" | "table-wood" | "rack", _) => {
+            (Color::srgb(0.55, 0.55, 0.60), TILE_PX - 2.0, 0.9)
+        }
         _ => (Color::srgb(1.0, 0.0, 1.0), 14.0, 1.0),
     }
 }
@@ -402,7 +406,7 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
 fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
         "human" => 3,
-        "airlock" => 2,
+        "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
         "pipe" | "cable" => 4,
         "pump" | "vent" | "scrubber" | "valve" | "connector" | "canister" | "air-tank" | "smes" | "apc" => 1,
         _ => 0,
@@ -719,7 +723,7 @@ fn send_clicks(
         (world.y / TILE_PX).round() as i32,
     );
 
-    // Items first, then machines, doors, people, and bare pipes last.
+    // Items first, then machines, doors and tables, people, and bare pipes last.
     let target = objects
         .iter()
         .filter(|(_, pos, _)| (pos.0.x, pos.0.y) == tile)

@@ -38,7 +38,8 @@ Picking up shows no chat message. A destroyed hand refuses the pickup with a jok
 
 ## Not implemented yet
 
-Item-on-item `attackby` beyond containers, cables, floors and welding tools (`storage.md`,
-`cables.md`, `floors.md`, `welding.md`), `attack_self` for anything but welding tools, throwing,
+Item-on-item `attackby` beyond containers, cables, floors, welding tools and tables
+(`storage.md`, `cables.md`, `floors.md`, `welding.md`, `tables.md`), `attack_self` for
+anything but welding tools and rack parts, throwing,
 storage, equipment slots, organ checks on hands, examine descriptions, intents
 (help/disarm/grab/harm).
