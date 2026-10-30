@@ -236,6 +236,21 @@ examine-coil = Моток силового кабеля. В нём { $count } { 
         [few] отрезка
        *[many] отрезков
     } кабеля.
+welder-on = Теперь вы будете варить при ударе.
+welder-off = Вы больше не варите.
+welder-no-fuel = Нужно больше топлива!
+welder-short = Нужно больше сварочного топлива!
+welder-refueled = Сварочный аппарат заправлен.
+examine-welder = В нём осталось { $count } { $count ->
+        [one] единица
+        [few] единицы
+       *[many] единиц
+    } топлива!
+examine-fuel-tank = В нём { $count } { $count ->
+        [one] единица
+        [few] единицы
+       *[many] единиц
+    } сварочного топлива.
 examine-floor-tiles = В стопке { $count } { $count ->
         [one] плитка
         [few] плитки

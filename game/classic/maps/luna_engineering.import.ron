@@ -53,6 +53,8 @@
         (path: "/obj/item/weapon/crowbar", id: "crowbar"),
         (path: "/obj/item/weapon/wirecutters", id: "wirecutters"),
         (path: "/obj/item/device/multitool", id: "multitool"),
+        (path: "/obj/item/weapon/weldingtool", id: "welder"),
+        (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
         (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
         (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),

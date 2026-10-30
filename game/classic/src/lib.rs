@@ -24,6 +24,7 @@ pub mod rng;
 pub mod speech;
 pub mod storage;
 pub mod time;
+pub mod welding;
 pub mod wires;
 
 use bevy_app::{App, FixedUpdate, Plugin};
@@ -136,6 +137,7 @@ impl Plugin for ClassicPlugin {
                     power::update_power_looks,
                     cables::update_cable_looks,
                     floors::hide_under_floors,
+                    welding::update_welder_looks,
                 )
                     .in_set(TickSet::Publish),
             );

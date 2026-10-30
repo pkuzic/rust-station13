@@ -104,7 +104,6 @@
 //      3 /obj/structure/disposalpipe/trunk
 //      1 /obj/structure/noticeboard
 //      8 /obj/structure/rack
-//      1 /obj/structure/reagent_dispensers/fueltank/hv
 //      1 /obj/structure/reagent_dispensers/peppertank
 //      1 /obj/structure/reagent_dispensers/watertank
 //      2 /obj/structure/stool/bed/chair
@@ -290,19 +289,20 @@
         'з': (tile: (id: "space"), objects: [(id: "manifold", dir: North, above_floor: true)]),
         'и': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: NorthWest)]),
         'й': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: SouthEast)]),
-        'к': (tile: (id: "floor"), objects: [(id: "connector", dir: South)]),
-        'л': (tile: (id: "floor"), objects: [(id: "pipe", dir: NorthEast)]),
-        'м': (tile: (id: "space"), objects: [(id: "pipe", dir: East)]),
-        'н': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: East)]),
-        'о': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "airlock", access: ["engine_equip"]), (id: "pipe", dir: North), (id: "pipe", dir: East)]),
-        'п': (tile: (id: "floor"), objects: [(id: "pipe", dir: East, above_floor: true)]),
-        'р': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: North)]),
-        'с': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthWest, above_floor: true)]),
-        'т': (tile: (id: "space"), objects: [(id: "pipe", dir: SouthEast)]),
-        'у': (tile: (id: "floor"), objects: ["metal-sheet", "metal-sheet", (id: "pipe", dir: East)]),
-        'ф': (tile: (id: "space"), objects: [(id: "pipe", dir: South)]),
-        'х': (tile: (id: "plating"), objects: [(id: "cable", ends: [North, South]), (id: "airlock", access: ["engine"])]),
-        'ц': (tile: (id: "space"), objects: [(id: "pipe", dir: NorthEast, above_floor: true)]),
+        'к': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), "fuel-tank"]),
+        'л': (tile: (id: "floor"), objects: [(id: "connector", dir: South)]),
+        'м': (tile: (id: "floor"), objects: [(id: "pipe", dir: NorthEast)]),
+        'н': (tile: (id: "space"), objects: [(id: "pipe", dir: East)]),
+        'о': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: East)]),
+        'п': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "airlock", access: ["engine_equip"]), (id: "pipe", dir: North), (id: "pipe", dir: East)]),
+        'р': (tile: (id: "floor"), objects: [(id: "pipe", dir: East, above_floor: true)]),
+        'с': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: North)]),
+        'т': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthWest, above_floor: true)]),
+        'у': (tile: (id: "space"), objects: [(id: "pipe", dir: SouthEast)]),
+        'ф': (tile: (id: "floor"), objects: ["metal-sheet", "metal-sheet", (id: "pipe", dir: East)]),
+        'х': (tile: (id: "space"), objects: [(id: "pipe", dir: South)]),
+        'ц': (tile: (id: "plating"), objects: [(id: "cable", ends: [North, South]), (id: "airlock", access: ["engine"])]),
+        'ч': (tile: (id: "space"), objects: [(id: "pipe", dir: NorthEast, above_floor: true)]),
     },
     area_legend: {
         'a': "electrical-storage",
@@ -367,10 +367,10 @@
         "=.......1rбrв6г.=οο=,,,,,=ο..6..X ",
         "X.......д.#Ы66Я==οο=,еCж,Ч...6..Ψз",
         "XX======XXX#ФХи=ηυ.Ч,x,,,Чυι.3.ιχπ",
-        "          X.6ЮйθΧοк==&=Р==οлτ..οXπ",
-        "    ммммммdθнноιθΧΥпτΧМΦτθН.....Xπ",
-        "          X.66р0.=Υιιιιс..Н=XXXXXπ",
-        "     тммммdунни.5=......=.Φ.X   #π",
-        "     ф=XXXXXRхRXXXXXXXXXXXXXX   #ц",
+        "          X.6ЮйкΧοл==&=Р==οмτ..οXπ",
+        "    ннннннdθоопιθΧΥрτΧМΦτθН.....Xπ",
+        "          X.66с0.=Υιιιιт..Н=XXXXXπ",
+        "     уннннdфоои.5=......=.Φ.X   #π",
+        "     х=XXXXXRцRXXXXXXXXXXXXXX   #ч",
     ],
 )

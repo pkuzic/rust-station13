@@ -34,7 +34,8 @@ use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
 use rs13_world::{
-    Appearance, AtmosView, Dir, EnvAlert, GridPos, Hidden, Intent, MapLayer, MobStat, NetId, TilePos,
+    Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
+    TilePos,
 };
 use sprites::{Look, SpriteAtlas};
 
@@ -645,6 +646,7 @@ fn send_move_input(
 fn send_hotkeys(
     chat: Res<ChatInput>,
     keys: Res<ButtonInput<KeyCode>>,
+    own: Query<&HandsView, With<OwnPlayer>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     let Ok(mut sender) = sender.single_mut() else {
@@ -662,6 +664,16 @@ fn send_hotkeys(
     }
     if keys.just_pressed(KeyCode::KeyE) {
         sender.send::<IntentChannel>(ActionInput::ToggleInternals);
+    }
+    // Use the item in the active hand (Luna `attack_self`).
+    if keys.just_pressed(KeyCode::KeyZ)
+        && let Ok(hands) = own.single()
+        && let Some(item) = match hands.active {
+            Hand::Left => hands.left,
+            Hand::Right => hands.right,
+        }
+    {
+        sender.send::<IntentChannel>(ActionInput::UseOn(item));
     }
     // Classic hotkeys: 1 help, 4 harm (2 disarm and 3 grab come later).
     if keys.just_pressed(KeyCode::Digit1) {

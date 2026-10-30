@@ -34,7 +34,7 @@ pub fn resolve_attacks(
     mut visible: ResMut<VisibleEvents>,
     attackers: Query<(&GridPos, &Hands, &CombatIntent, &DisplayName)>,
     mut targets: Query<(&GridPos, &mut Body, &DisplayName)>,
-    items: Query<(&Item, &Appearance)>,
+    items: Query<(&Item, &Appearance, Option<&crate::welding::Welder>)>,
 ) {
     for (attacker, target) in pending.0.drain(..) {
         let Ok((from, hands, intent, attacker_name)) = attackers.get(attacker) else {
@@ -53,10 +53,14 @@ pub fn resolve_attacks(
         let at = to.0;
         let victim = victim_name.0.clone();
 
-        if let Some((item, appearance)) = weapon {
-            // In this era a held item hits on any intent.
+        if let Some((item, appearance, welder)) = weapon {
+            // In this era a held item hits on any intent. A lit welding tool burns.
             let zone = ran_zone(AIMED_ZONE, &mut rng);
-            body.take_damage(zone, item.force, 0.0);
+            if welder.is_some_and(|w| w.lit) {
+                body.take_damage(zone, 0.0, crate::welding::LIT_FORCE);
+            } else {
+                body.take_damage(zone, item.force, 0.0);
+            }
             let msg = LocMsg::new("attacked-with")
                 .arg("attacker", attacker_name)
                 .arg("victim", victim)

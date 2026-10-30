@@ -66,9 +66,9 @@ fn a_toolbox_comes_with_its_tools_and_opens_from_the_hand() {
     let toolbox = spawn(&mut app, "toolbox-mechanical");
     assert_eq!(
         contents(&app, toolbox),
-        ["screwdriver", "wrench", "crowbar", "wirecutters"]
+        ["screwdriver", "wrench", "welder", "crowbar", "wirecutters"]
     );
-    let crowbar = app.world().get::<Storage>(toolbox).unwrap().items[2];
+    let crowbar = app.world().get::<Storage>(toolbox).unwrap().items[3];
     assert!(
         app.world().get::<GridPos>(crowbar).is_none(),
         "inside, not on the floor"
@@ -83,13 +83,13 @@ fn a_toolbox_comes_with_its_tools_and_opens_from_the_hand() {
     // Clicked with the other, empty hand, it opens.
     act(&mut app, mob, Action::SwapHands);
     act(&mut app, mob, Action::UseOn(toolbox));
-    assert_eq!(shown(&app, mob), Some(4));
+    assert_eq!(shown(&app, mob), Some(5));
 
     // Clicking a tool in it takes it out.
     act(&mut app, mob, Action::UseOn(crowbar));
     assert_eq!(active(&app, mob), Some(crowbar));
     assert_eq!(app.world().get::<HeldBy>(crowbar), Some(&HeldBy(mob)));
-    assert_eq!(shown(&app, mob), Some(3));
+    assert_eq!(shown(&app, mob), Some(4));
 
     // And clicking the toolbox with it puts it back, in plain view.
     act(&mut app, mob, Action::UseOn(toolbox));
@@ -166,7 +166,7 @@ fn a_worn_belt_holds_only_tools() {
 
     // Clicking the worn belt with an empty hand opens it.
     act(&mut app, mob, Action::UseOn(belt));
-    assert_eq!(shown(&app, mob), Some(5));
+    assert_eq!(shown(&app, mob), Some(6));
 
     let card = spawn(&mut app, "id-card");
     act(&mut app, mob, Action::UseOn(card));
@@ -179,7 +179,7 @@ fn a_worn_belt_holds_only_tools() {
     let multitool = spawn(&mut app, "multitool");
     act(&mut app, mob, Action::UseOn(multitool));
     act(&mut app, mob, Action::UseOn(belt));
-    assert_eq!(shown(&app, mob), Some(6));
+    assert_eq!(shown(&app, mob), Some(7));
 }
 
 #[test]

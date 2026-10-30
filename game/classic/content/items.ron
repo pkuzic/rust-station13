@@ -18,6 +18,8 @@
     (id: "screwdriver", force: 5.0, size: 1),
     (id: "wirecutters", force: 6.0, size: 2),
     (id: "multitool", force: 5.0, size: 2),
+    // Luna: 30 units of fuel; lit, it burns for 15 (`welding.md`).
+    (id: "welder", force: 3.0, size: 2),
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
     (id: "metal-sheet", force: 5.0),
@@ -35,20 +37,20 @@
     (id: "space-suit", force: 0.0, size: 4, slot: "suit", slowdown: 3.0, space: true),
     (id: "space-helmet", force: 0.0, slot: "head", space: true),
 
-    // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's welders,
-    // analyzers and scanners have no prototype yet and are left out. Luna's electrical
+    // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's analyzers
+    // and scanners have no prototype yet and are left out. Luna's electrical
     // toolbox swaps its third coil for insulated gloves one time in ten; ours always has
     // the coil.
     (id: "toolbox-mechanical", force: 10.0, size: 4, storage: (),
-        contents: ["screwdriver", "wrench", "crowbar", "wirecutters"]),
+        contents: ["screwdriver", "wrench", "welder", "crowbar", "wirecutters"]),
     (id: "toolbox-electrical", force: 10.0, size: 4, storage: (),
         contents: ["screwdriver", "wirecutters", "crowbar", "cable-coil", "cable-coil", "cable-coil"]),
     (id: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil"])),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"])),
     (id: "utility-belt-loaded", base: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil"]),
-        contents: ["screwdriver", "wrench", "crowbar", "wirecutters", "cable-coil"]),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"]),
+        contents: ["screwdriver", "wrench", "welder", "crowbar", "wirecutters", "cable-coil"]),
     (id: "utility-belt-full", base: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil"]),
-        contents: ["screwdriver", "wrench", "crowbar", "wirecutters", "cable-coil", "multitool"]),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"]),
+        contents: ["screwdriver", "wrench", "welder", "crowbar", "wirecutters", "cable-coil", "multitool"]),
 ]

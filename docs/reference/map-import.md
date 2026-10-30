@@ -56,10 +56,11 @@ counted from 0 with the top row first.
   - Air alarms.
 - **Atmos piping:** pipes, bends and manifolds (insulated ones too), vents, scrubbers, connectors, valves and air tanks, all with Luna's directions. The supply and scrubber lines stay separate networks. The supply line is empty: Luna feeds it from deck 4 through a pipe between decks, outside the region, so the vents have nothing to give.
 - **Items:** screwdrivers, wrenches, insulated gloves, breath masks, the engineering hardsuits (as our space suit and helmet) and oxygen tanks.
-- **Toolboxes and utility belts:** real containers with Luna's tools and cable coils inside, minus welders and scanners, which have no prototype yet (`storage.md`). A loose cable coil too.
+- **Toolboxes and utility belts:** real containers with Luna's tools, welding tools and cable coils inside, minus analyzers and scanners, which have no prototype yet (`storage.md`). A loose cable coil too.
+- **Fuel tank:** the high-volume fuel tank, as an ordinary one (`welding.md`).
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Skipped for now** (108 types, listed in the generated file):
+**Skipped for now** (107 types, listed in the generated file):
 - **Atmos machines without a prototype:** tanks of other gases, canisters, filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** tables, racks, closets, chairs.
 - **Machines:** computers, vending machines, the engine itself, lights, cameras, firedoors, disposals.

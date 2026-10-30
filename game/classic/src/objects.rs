@@ -107,6 +107,15 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if matches!(proto, "cable" | "smes" | "apc") {
         return spawn_power_object(world, spec, pos);
     }
+    if proto == "fuel-tank" {
+        let id = world.resource_mut::<NetIds>().alloc();
+        let tank = crate::welding::FuelTank {
+            fuel: crate::welding::TANK_FUEL,
+        };
+        return Ok(world
+            .spawn((GridPos(pos), id, Appearance::new(proto, ""), tank, Dense))
+            .id());
+    }
     if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
         let id = world.resource_mut::<NetIds>().alloc();
         let appearance = Appearance::new(machine.sprite, machine.state.clone());
@@ -162,6 +171,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if let Some(max) = def.stack {
         item.insert(crate::hands::Stack { amount: max, max });
+    }
+    if proto == crate::welding::WELDER {
+        item.insert(crate::welding::Welder::default());
     }
     if proto == "id-card" {
         item.insert(IdCard {
