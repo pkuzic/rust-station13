@@ -266,3 +266,13 @@ examine-light-off = It is turned off.
 examine-light-empty = The { NOUN($item) } has been removed.
 examine-light-burned = The { NOUN($item) } is burnt out.
 examine-light-broken = The { NOUN($item) } has been smashed.
+
+# Closets, lockers and crates (docs/reference/closets.md).
+closet-wont-budge = It won't budge!
+closet-welded = The { NOUN($item) } has been welded shut by { $name }.
+closet-unwelded = The { NOUN($item) } has been unwelded by { $name }.
+closet-cut-apart = The { NOUN($item) } has been cut apart by { $name } with the welding tool.
+locker-locked = The locker has been locked by { $name }.
+locker-unlocked = The locker has been unlocked by { $name }.
+locker-access-denied = Access Denied
+locker-locked-inside = The locker is locked!

@@ -1,0 +1,59 @@
+// Closets, lockers and crates (luna:code/game/objects/structures/crates_lockers,
+// code/defines/obj/closet.dm). Each id is also its sprite id and its noun id.
+//
+// crate:     a crate: stays dense when open, takes only items, can't be welded
+// closed:    its sprite state when closed; open: when open
+// locked:    a secure locker: its sprite state when locked; it starts locked
+// access:    a secure locker: the access ids that work its lock (any one is enough)
+// contents:  what it starts with (Luna's `New()`). `chance` is in percent (default 100);
+//            `or` is what it gets instead when the roll fails.
+//
+// Luna's contents without a prototype here yet are left out: backpacks, jumpsuits, shoes,
+// hard hats, welding helmets, industrial welding tools, meson glasses, gas masks, PDAs,
+// headsets, flashes, flashlights, T-ray scanners, emergency toolboxes, first-aid kits,
+// air tanks, radiation suits and the RCD.
+[
+    (id: "closet", closed: "closed", open: "open"),
+    // Luna `emcloset`: an engineering oxygen tank one time in ten; ours is always the
+    // plain emergency one.
+    (id: "closet-emergency", closed: "emergency", open: "emergencyopen", contents: [
+        (id: "emergency-oxygen"), (id: "breath-mask"),
+        (id: "emergency-oxygen"), (id: "breath-mask"),
+        (id: "emergency-oxygen"), (id: "breath-mask"),
+    ]),
+    (id: "closet-tools", closed: "toolcloset", open: "toolclosetopen", contents: [
+        (id: "insulated-gloves", chance: 10.0),
+        (id: "utility-belt", chance: 20.0),
+        (id: "multitool", chance: 30.0),
+        (id: "toolbox-mechanical", chance: 80.0, or: Some("toolbox-electrical")),
+        (id: "cable-coil", chance: 50.0),
+        (id: "wrench"), (id: "wirecutters"), (id: "screwdriver"), (id: "crowbar"),
+    ]),
+
+    // Secure lockers (secure/engineering.dm).
+    (id: "locker-chief-engineer", closed: "securece", open: "secureceopen", locked: Some("securece1"),
+        access: ["heads"], contents: [
+        (id: "insulated-gloves"), (id: "toolbox-mechanical"), (id: "utility-belt"), (id: "multitool"),
+    ]),
+    (id: "locker-electrical", closed: "secureengelec", open: "toolclosetopen", locked: Some("secureengelec1"),
+        access: ["engine_equip"], contents: [
+        (id: "insulated-gloves"), (id: "insulated-gloves"),
+        (id: "toolbox-electrical"), (id: "toolbox-electrical"), (id: "toolbox-electrical"),
+        (id: "multitool"), (id: "multitool"), (id: "multitool"),
+    ]),
+    (id: "locker-welding", closed: "secureengweld", open: "toolclosetopen", locked: Some("secureengweld1"),
+        access: ["engine_equip"]),
+    (id: "locker-engineer", closed: "secureeng", open: "secureengopen", locked: Some("secureeng1"),
+        access: ["engine_equip"], contents: [
+        (id: "utility-belt"), (id: "toolbox-mechanical"), (id: "insulated-gloves"),
+    ]),
+
+    // Crates (crates.dm).
+    (id: "crate", crate: true, closed: "crate", open: "crateopen"),
+    // Luna: three gas masks, and an oxygen or air tank and two air tanks.
+    (id: "crate-internals", crate: true, closed: "o2crate", open: "o2crateopen", contents: [
+        (id: "oxygen-tank", chance: 50.0),
+    ]),
+    (id: "crate-radiation", crate: true, closed: "radiation", open: "radiationopen"),
+    (id: "crate-rcd", crate: true, closed: "crate", open: "crateopen"),
+]

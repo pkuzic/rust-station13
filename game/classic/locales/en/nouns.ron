@@ -61,6 +61,18 @@
     "nitrous-oxide-canister": (gender: neuter, sg: (nom: "nitrous oxide canister", indef: "a nitrous oxide canister"), pl: Some((nom: "nitrous oxide canisters"))),
     "smes": (gender: neuter, sg: (nom: "SMES", indef: "a SMES unit"), pl: Some((nom: "SMES units"))),
     "cable": (gender: neuter, sg: (nom: "power cable", indef: "a power cable"), pl: Some((nom: "power cables"))),
+    // Closets, lockers and crates.
+    "closet": (gender: neuter, sg: (nom: "closet", indef: "a closet"), pl: Some((nom: "closets"))),
+    "closet-emergency": (gender: neuter, sg: (nom: "emergency closet", indef: "an emergency closet"), pl: Some((nom: "emergency closets"))),
+    "closet-tools": (gender: neuter, sg: (nom: "tool closet", indef: "a tool closet"), pl: Some((nom: "tool closets"))),
+    "locker-chief-engineer": (gender: neuter, sg: (nom: "Chief Engineer's locker", indef: "the Chief Engineer's locker"), pl: Some((nom: "Chief Engineer's lockers"))),
+    "locker-electrical": (gender: neuter, sg: (nom: "electrical supplies locker", indef: "an electrical supplies locker"), pl: Some((nom: "electrical supplies lockers"))),
+    "locker-welding": (gender: neuter, sg: (nom: "welding supplies locker", indef: "a welding supplies locker"), pl: Some((nom: "welding supplies lockers"))),
+    "locker-engineer": (gender: neuter, sg: (nom: "engineer's locker", indef: "an engineer's locker"), pl: Some((nom: "engineer's lockers"))),
+    "crate": (gender: neuter, sg: (nom: "crate", indef: "a crate"), pl: Some((nom: "crates"))),
+    "crate-internals": (gender: neuter, sg: (nom: "internals crate", indef: "an internals crate"), pl: Some((nom: "internals crates"))),
+    "crate-radiation": (gender: neuter, sg: (nom: "radioactive gear crate", indef: "a radioactive gear crate"), pl: Some((nom: "radioactive gear crates"))),
+    "crate-rcd": (gender: neuter, sg: (nom: "RCD crate", indef: "an RCD crate"), pl: Some((nom: "RCD crates"))),
     // Lights.
     "light": (gender: neuter, sg: (nom: "light fixture", indef: "a light fixture"), pl: Some((nom: "light fixtures"))),
     "light-small": (gender: neuter, sg: (nom: "small light fixture", indef: "a small light fixture"), pl: Some((nom: "small light fixtures"))),

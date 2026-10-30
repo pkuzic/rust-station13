@@ -600,5 +600,61 @@
         },
         "light-tubes-box": { "": (dmi: "icons/obj/storage.dmi", state: "light_tube") },
         "light-bulbs-box": { "": (dmi: "icons/obj/storage.dmi", state: "light_bulb") },
+        // Closets, lockers and crates: Luna's states; "welded" is an overlay.
+        "closet": {
+            "closed": (dmi: "icons/obj/closet.dmi", state: "closed"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "closet-emergency": {
+            "emergency": (dmi: "icons/obj/closet.dmi", state: "emergency"),
+            "emergencyopen": (dmi: "icons/obj/closet.dmi", state: "emergencyopen"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "closet-tools": {
+            "toolcloset": (dmi: "icons/obj/closet.dmi", state: "toolcloset"),
+            "toolclosetopen": (dmi: "icons/obj/closet.dmi", state: "toolclosetopen"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-chief-engineer": {
+            "securece": (dmi: "icons/obj/closet.dmi", state: "securece"),
+            "secureceopen": (dmi: "icons/obj/closet.dmi", state: "secureceopen"),
+            "securece1": (dmi: "icons/obj/closet.dmi", state: "securece1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-electrical": {
+            "secureengelec": (dmi: "icons/obj/closet.dmi", state: "secureengelec"),
+            "toolclosetopen": (dmi: "icons/obj/closet.dmi", state: "toolclosetopen"),
+            "secureengelec1": (dmi: "icons/obj/closet.dmi", state: "secureengelec1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-welding": {
+            "secureengweld": (dmi: "icons/obj/closet.dmi", state: "secureengweld"),
+            "toolclosetopen": (dmi: "icons/obj/closet.dmi", state: "toolclosetopen"),
+            "secureengweld1": (dmi: "icons/obj/closet.dmi", state: "secureengweld1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-engineer": {
+            "secureeng": (dmi: "icons/obj/closet.dmi", state: "secureeng"),
+            "secureengopen": (dmi: "icons/obj/closet.dmi", state: "secureengopen"),
+            "secureeng1": (dmi: "icons/obj/closet.dmi", state: "secureeng1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "crate": {
+            "crate": (dmi: "icons/obj/storage.dmi", state: "crate"),
+            "crateopen": (dmi: "icons/obj/storage.dmi", state: "crateopen"),
+        },
+        "crate-internals": {
+            "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
+            "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
+        },
+        "crate-radiation": {
+            "radiation": (dmi: "icons/obj/storage.dmi", state: "radiation"),
+            "radiationopen": (dmi: "icons/obj/storage.dmi", state: "radiationopen"),
+        },
+        "crate-rcd": {
+            "crate": (dmi: "icons/obj/storage.dmi", state: "crate"),
+            "crateopen": (dmi: "icons/obj/storage.dmi", state: "crateopen"),
+        },
     },
 )

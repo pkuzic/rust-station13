@@ -8,6 +8,7 @@ pub mod actions;
 pub mod alarms;
 pub mod atmos;
 pub mod cables;
+pub mod closets;
 pub mod combat;
 pub mod doors;
 pub mod environment;
@@ -73,6 +74,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<lights::AreaLights>()
+            .init_resource::<closets::ClosetProtos>()
+            .init_resource::<closets::PendingClosetExits>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -107,6 +110,7 @@ impl Plugin for ClassicPlugin {
                     alarms::apply_seals,
                     doors::update_doors,
                     movement::move_mobs,
+                    closets::leave_closets,
                 )
                     .chain()
                     .in_set(TickSet::Gameplay),
@@ -147,6 +151,7 @@ impl Plugin for ClassicPlugin {
                     floors::hide_under_floors,
                     welding::update_welder_looks,
                     lights::update_light_looks,
+                    closets::update_closet_looks,
                 )
                     .in_set(TickSet::Publish),
             );
