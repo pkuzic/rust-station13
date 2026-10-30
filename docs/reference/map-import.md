@@ -60,12 +60,13 @@ counted from 0 with the top row first.
 - **Toolboxes and utility belts:** real containers with Luna's tools, welding tools and cable coils inside, minus analyzers and scanners, which have no prototype yet (`storage.md`). A loose cable coil too.
 - **Tables and racks:** plain and reinforced tables with their mapped edges, and racks (`tables.md`).
 - **Fuel tank:** the high-volume fuel tank, as an ordinary one (`welding.md`).
+- **Lights:** tube and small light fixtures facing their walls, light switches, and boxes of spare tubes and bulbs (`lights.md`).
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Skipped for now** (103 types, listed in the generated file):
-- **Atmos machines without a prototype:** tanks of other gases, canisters, filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
+**Skipped for now** (93 types, listed in the generated file):
+- **Atmos machines without a prototype:** filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** closets and chairs.
-- **Machines:** computers, vending machines, the engine itself, lights, cameras, firedoors, disposals.
+- **Machines:** computers, vending machines, the engine itself, cameras, firedoors, disposals.
 - **Stairs and ladders:** multi-z.
 - **Most items.**
 

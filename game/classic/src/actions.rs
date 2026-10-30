@@ -104,7 +104,7 @@ pub fn process_actions(
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
     ),
-    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture, meters): (
+    (mut alarms, mut storage, mut cable, hidden, mut welding, places, mut furniture, meters, mut lights): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
         crate::cables::CableWork,
@@ -113,6 +113,7 @@ pub fn process_actions(
         Query<&GridPos>,
         crate::furniture::FurnitureWork,
         Query<(&GridPos, &crate::meters::Meter, &crate::power::PowerUser)>,
+        crate::lights::LightWork,
     ),
     mut commands: Commands,
 ) {
@@ -209,6 +210,9 @@ pub fn process_actions(
                         if let Some(more) = crate::meters::examine(target, &meters) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = lights.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -256,6 +260,26 @@ pub fn process_actions(
                     // (`meters.md`).
                     if let Some(said) = crate::meters::click(mob_pos.0, target, &meters) {
                         outbox.0.extend(said);
+                    }
+                }
+                Action::UseOn(target) if lights.contains(target) => {
+                    // Lights and light switches (`lights.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    let harm = intent.as_ref().is_some_and(|i| i.0 == rs13_world::Intent::Harm);
+                    if let Some(outcome) =
+                        lights.use_on(mob, &mut hands, harm, target, &mut shocks, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
+                        }
                     }
                 }
                 Action::UseOn(target) => {

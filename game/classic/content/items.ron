@@ -12,14 +12,15 @@
 // contents:  what a container starts with (Luna's container `New()`)
 // base:      looks like and is called this other prototype (a loaded belt is a belt)
 // stack:     piles up to this many in one item; new ones are full
+// conducts:  electricity goes through it (Luna `CONDUCT`): metal tools
 [
-    (id: "crowbar", force: 5.0, size: 2),
-    (id: "wrench", force: 5.0, size: 2),
-    (id: "screwdriver", force: 5.0, size: 1),
-    (id: "wirecutters", force: 6.0, size: 2),
-    (id: "multitool", force: 5.0, size: 2),
+    (id: "crowbar", force: 5.0, size: 2, conducts: true),
+    (id: "wrench", force: 5.0, size: 2, conducts: true),
+    (id: "screwdriver", force: 5.0, size: 1, conducts: true),
+    (id: "wirecutters", force: 6.0, size: 2, conducts: true),
+    (id: "multitool", force: 5.0, size: 2, conducts: true),
     // Luna: 30 units of fuel; lit, it burns for 15 (`welding.md`).
-    (id: "welder", force: 3.0, size: 2),
+    (id: "welder", force: 3.0, size: 2, conducts: true),
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
     (id: "metal-sheet", force: 5.0),
@@ -41,6 +42,15 @@
     (id: "breath-mask", force: 0.0, size: 2, slot: "mask", internals: true),
     (id: "space-suit", force: 0.0, size: 4, slot: "suit", slowdown: 3.0, space: true),
     (id: "space-helmet", force: 0.0, slot: "head", space: true),
+
+    // Lights (luna:code/modules/power/lighting.dm). A tube or bulb shows its state:
+    // "" works, "burned", "broken" (`docs/reference/lights.md`).
+    (id: "light-tube", force: 2.0, size: 2),
+    (id: "light-bulb", force: 2.0, size: 2),
+    (id: "light-tubes-box", force: 0.0, storage: (),
+        contents: ["light-tube", "light-tube", "light-tube", "light-tube", "light-tube", "light-tube", "light-tube"]),
+    (id: "light-bulbs-box", force: 0.0, storage: (),
+        contents: ["light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb"]),
 
     // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's analyzers
     // and scanners have no prototype yet and are left out. Luna's electrical

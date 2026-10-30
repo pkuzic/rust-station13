@@ -267,3 +267,21 @@ examine-floor-tiles = В стопке { $count } { $count ->
         [few] плитки
        *[many] плиток
     } пола.
+
+# Освещение (docs/reference/lights.md).
+light-no-fitting = В светильнике нет { NOUN($item, case: "gen") }.
+light-removed = Вы вынимаете { NOUN($item, case: "acc") }.
+light-burn-hand = Вы пытаетесь вынуть { NOUN($item, case: "acc") }, но обжигаете руку!
+light-smash-burn = Вы разбиваете { NOUN($item, case: "acc") }, но обжигаете руку!
+light-inserted = Вы вставляете { NOUN($item, case: "acc") }.
+light-replaced = Вы заменяете { NOUN($item, case: "acc") }.
+light-wrong-type = Сюда подходит только { NOUN($item) }.
+light-stick = Вы суёте { NOUN($item, case: "acc") } в патрон светильника!
+light-hit = Вы бьёте по светильнику!
+light-smashed = Вы бьёте по светильнику, и лампа разбивается!
+light-smashed-seen = { $name } разбивает светильник!
+examine-light-on = Он включён.
+examine-light-off = Он выключен.
+examine-light-empty = Лампы в нём нет.
+examine-light-burned = Лампа в нём перегорела.
+examine-light-broken = Лампа в нём разбита.

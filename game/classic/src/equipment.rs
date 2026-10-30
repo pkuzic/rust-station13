@@ -52,6 +52,9 @@ pub struct ItemDef {
     /// full.
     #[serde(default)]
     pub stack: Option<u32>,
+    /// Electricity goes through it (Luna `CONDUCT`).
+    #[serde(default)]
+    pub conducts: bool,
 }
 
 fn normal_size() -> u8 {

@@ -87,6 +87,13 @@
         (path: "/obj/item/weapon/storage/belt/utility", id: "utility-belt"),
         (path: "/obj/item/weapon/storage/belt/utility/loaded", id: "utility-belt-loaded"),
         (path: "/obj/item/weapon/storage/belt/utility/loaded/full", id: "utility-belt-full"),
+        (path: "/obj/item/weapon/storage/box/light/tubes", id: "light-tubes-box"),
+        (path: "/obj/item/weapon/storage/box/light/bulb", id: "light-bulbs-box"),
+
+        // Lights face the wall they hang on; the coloured ones are plain here.
+        (path: "/obj/machinery/light", id: "light", dir: true),
+        (path: "/obj/machinery/light/small", id: "light-small", dir: true),
+        (path: "/obj/machinery/light_switch", id: "light-switch"),
     ],
 
     // Luna's Engineer start points. Until jobs exist, an engineer's ID card lies on each

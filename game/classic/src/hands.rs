@@ -12,6 +12,11 @@ pub struct Item {
     pub size: u8,
 }
 
+/// Electricity goes through it: it can shock whoever holds it into something live (Luna
+/// `CONDUCT`).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Conducts;
+
 /// Several of the same item piled into one, such as lengths of cable in a coil.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Stack {

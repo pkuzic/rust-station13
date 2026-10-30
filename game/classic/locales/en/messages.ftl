@@ -248,3 +248,21 @@ examine-floor-tiles = There { $count ->
         [one] is { $count } floor tile
        *[other] are { $count } floor tiles
     } in the stack.
+
+# Lights (docs/reference/lights.md).
+light-no-fitting = There is no { NOUN($item) } in this light.
+light-removed = You remove the { NOUN($item) }.
+light-burn-hand = You try to remove the { NOUN($item) }, but burn your hand on it!
+light-smash-burn = You smash the { NOUN($item) }, but burn your hand on it!
+light-inserted = You insert the { NOUN($item) }.
+light-replaced = You replace the { NOUN($item) }.
+light-wrong-type = This type of light requires { NOUN($item, case: "indef") }.
+light-stick = You stick the { NOUN($item) } into the light socket!
+light-hit = You hit the light!
+light-smashed = You hit the light, and it smashes!
+light-smashed-seen = { $name } smashed the light!
+examine-light-on = It is turned on.
+examine-light-off = It is turned off.
+examine-light-empty = The { NOUN($item) } has been removed.
+examine-light-burned = The { NOUN($item) } is burnt out.
+examine-light-broken = The { NOUN($item) } has been smashed.
