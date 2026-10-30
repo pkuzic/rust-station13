@@ -18,6 +18,7 @@ CI runs the same commands on Linux and Windows (`.github/workflows/ci.yml`).
 | Crate integration | `<crate>/tests/` | Public API contracts of one crate |
 | Property | `proptest` in unit or integration tests | Invariants: conservation of gas moles and energy, containment never cyclic |
 | Scenario | `<crate>/tests/` | Load a small map, run N ticks with scripted commands, assert world state (e.g. `game/classic/tests/two_mobs_in_a_room.rs`) |
+| Milestone acceptance | `game/classic/tests/milestone.rs` | A milestone's exit criterion played through as one scenario |
 | Network | `apps/headless/tests/` | Real server and bot clients over localhost UDP, in one process |
 | Benchmark | `benches/` (criterion) | Tick time for atmos, power and replication |
 
