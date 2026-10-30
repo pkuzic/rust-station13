@@ -170,6 +170,12 @@
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
         "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
         "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        // Air alarm: alarm0 normal, alarm1 danger, alarmp unpowered or disconnected.
+        "air-alarm": {
+            "alarm0": (dmi: "icons/obj/monitors.dmi", state: "alarm0"),
+            "alarm1": (dmi: "icons/obj/monitors.dmi", state: "alarm1"),
+            "alarmp": (dmi: "icons/obj/monitors.dmi", state: "alarmp"),
+        },
         "cable": {
             "0-1": (dmi: "icons/obj/power_cond.dmi", state: "0-1"),
             "0-2": (dmi: "icons/obj/power_cond.dmi", state: "0-2"),

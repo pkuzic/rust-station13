@@ -76,7 +76,11 @@ pub fn process_actions(
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     electrified: Query<&crate::wires::Wiring>,
-    mut shocks: ResMut<crate::wires::PendingShocks>,
+    (mut shocks, mut visible): (
+        ResMut<crate::wires::PendingShocks>,
+        ResMut<crate::combat::VisibleEvents>,
+    ),
+    mut alarms: Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
     mut commands: Commands,
 ) {
     let now = time.deciseconds();
@@ -188,6 +192,20 @@ pub fn process_actions(
                             outbox.0.push(LocMsg::new(id));
                         } else {
                             outbox.0.push(LocMsg::new("apc-locked"));
+                        }
+                    } else if let Ok((mut alarm, power)) = alarms.get_mut(target) {
+                        // Luna `attackby`: wirecutters disconnect or reconnect it; anything
+                        // else opens the window, if it works.
+                        if holding(&hands, &appearances, "wirecutters") {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            let msg = crate::alarms::cut_alarm(&mut alarm, &name);
+                            visible.0.push((target_pos.0, msg, None));
+                        } else if !alarm.broken && power.powered {
+                            commands.entity(mob).insert(crate::wires::PanelViewer(target));
                         }
                     } else if let Some(mut switch) = switch {
                         switch.0 = !switch.0;

@@ -175,3 +175,24 @@ panel-safety-flashing = Лампа безопасности мигает!
 panel-safety-on = Лампа безопасности горит.
 panel-hydraulics-green = Лампа гидравлики горит ровным зелёным.
 panel-hydraulics-red = Лампа гидравлики мигает красным.
+
+# Воздушная сигнализация. Аргументы: $item (id существительного), $name, $area, $value.
+alarm-deactivated = { $name } отключает { NOUN($item, case: "acc") }!
+alarm-reactivated = { $name } снова включает { NOUN($item, case: "acc") }!
+alarm-title = Атмосфера: { $area }
+alarm-pressure = Давление: { $value } кПа
+alarm-nitrogen = Азот: { $value }%
+alarm-oxygen = Кислород: { $value }%
+alarm-co2 = CO₂: { $value }%
+alarm-plasma = Плазма: { $value }%
+alarm-unknown = Неизвестный газ: { $value }%
+alarm-temperature = Температура: { $value } °C
+alarm-seal-on = Включить аварийную герметизацию
+alarm-seal-off = Отключить аварийную герметизацию
+alarm-panic-on = Включить аварийную подачу воздуха
+alarm-panic-off = Отключить аварийную подачу воздуха
+alarm-no-vents = Вентиляция не подключена!
+
+# Названия зон.
+area-engineering = Инженерный отсек
+area-eng-storage = Инженерный склад

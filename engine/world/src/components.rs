@@ -167,6 +167,34 @@ pub struct WirePanelView {
     pub lights: Vec<String>,
 }
 
+/// An open air alarm, as shown to the player using it (Luna's alarm window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AlarmPanelView {
+    /// The alarm.
+    pub target: NetId,
+    /// Area id: the client shows the `area-<id>` message.
+    pub area: String,
+    /// Room pressure, tenths of a kPa, and whether it is out of the normal range.
+    pub pressure_dkpa: u32,
+    pub pressure_alert: bool,
+    /// Other readouts in panel order.
+    pub readings: Vec<AlarmReading>,
+    /// The area's emergency seal is on.
+    pub sealed: bool,
+    /// Panic fill on the area's vents; `None` when the area has no vent.
+    pub panic_fill: Option<bool>,
+    /// The viewer is close enough to press the buttons.
+    pub controls: bool,
+}
+
+/// One air alarm readout: a message id taking `$value`, and whether it is out of range.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AlarmReading {
+    pub id: String,
+    pub value: i32,
+    pub alert: bool,
+}
+
 /// What a person wears, as seen by clients: slot → item.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct WornView(pub Vec<(Slot, NetId)>);

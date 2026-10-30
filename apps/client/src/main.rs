@@ -13,6 +13,7 @@
 //! active hand holds, or with an empty hand to take off what is there. E or the
 //! internals indicator connects the breath mask to a gas tank.
 
+mod alarm_panel;
 mod hud;
 mod sprites;
 mod wire_panel;
@@ -142,6 +143,7 @@ fn main() {
         .init_resource::<hud::WalkMode>()
         .init_resource::<hud::HudTip>()
         .init_resource::<wire_panel::OpenPanel>()
+        .init_resource::<alarm_panel::OpenAlarm>()
         .init_resource::<OverlayOn>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
@@ -164,6 +166,7 @@ fn main() {
                 receive_notices,
                 receive_status,
                 (wire_panel::receive_panel, wire_panel::show_panel).chain(),
+                (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
                 glide,
                 (
                     sprites::wear_layers,

@@ -3,6 +3,7 @@
 
 use bevy_app::{App, FixedUpdate};
 use bevy_ecs::prelude::*;
+use rs13_classic::alarms::AirAlarm;
 use rs13_classic::atmos::StationAtmos;
 use rs13_classic::doors::{Airlock, DoorState};
 use rs13_classic::environment::Lungs;
@@ -27,6 +28,13 @@ fn setup() -> App {
         TileMap::from_ron(maps::ENGINEERING_CHAMBER, 0).unwrap(),
     );
     assert!(problems.is_empty(), "{problems:?}");
+    // These scenarios measure the air itself, so the air alarms' seals must not close the
+    // jammed doors. The seals have their own scenarios in `air_alarm.rs`.
+    let mut alarms = app.world_mut().query_filtered::<Entity, With<AirAlarm>>();
+    let alarms: Vec<Entity> = alarms.iter(app.world()).collect();
+    for alarm in alarms {
+        app.world_mut().despawn(alarm);
+    }
     app
 }
 

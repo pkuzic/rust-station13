@@ -363,7 +363,8 @@ pub fn resolve_shocks(
     }
 }
 
-/// The wire panel a mob has open (Luna `usr.machine`).
+/// The machine window a mob has open: a door's wire panel or an air alarm (Luna
+/// `usr.machine`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct PanelViewer(pub Entity);
 
@@ -492,7 +493,8 @@ pub fn update_panel_views(
                 lights: wiring.lights(&layout, airlock),
             })
         });
-        if view.is_none() && viewer.is_some() {
+        // Close the window when it can no longer be used; leave other panels alone.
+        if view.is_none() && viewer.is_some_and(|v| doors.contains(v.0)) {
             commands.entity(mob).remove::<PanelViewer>();
         }
         if out.0 != view {

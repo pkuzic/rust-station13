@@ -6,8 +6,8 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer, MobStat, NetId,
-    Slot, WirePanelView, WornView,
+    AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Intent, MapLayer,
+    MobStat, NetId, Slot, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -53,8 +53,22 @@ pub enum ActionInput {
         colour: u8,
         pulse: bool,
     },
-    /// Close the wire panel.
+    /// Close the open machine window (wire panel or air alarm).
     ClosePanel,
+    /// A button on an open air alarm window.
+    Alarm {
+        target: NetId,
+        command: AlarmCommand,
+    },
+}
+
+/// Air alarm window buttons.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AlarmCommand {
+    /// Turn the area's emergency seal on or off.
+    Seal(bool),
+    /// Turn panic fill on the area's vents on or off.
+    PanicFill(bool),
 }
 
 /// Server → the controlling client: its own health, state and intent. Sent when any of
@@ -82,6 +96,11 @@ pub struct Notice(pub LocMsg);
 /// changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct WirePanel(pub Option<WirePanelView>);
+
+/// Server → one client: the air alarm window it has open, or `None` to close it. Sent when
+/// it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct AlarmPanel(pub Option<AlarmPanelView>);
 
 /// Reliable, ordered channel for player intentions.
 pub struct IntentChannel;
@@ -114,6 +133,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<StatusUpdate>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<WirePanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<AlarmPanel>()
             .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();

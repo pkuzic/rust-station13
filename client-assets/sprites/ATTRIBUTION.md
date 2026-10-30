@@ -7,6 +7,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 
 | Sprite:state | Source file : state | Licence |
 |---|---|---|
+| `air-alarm:alarm0` | `icons/obj/monitors.dmi : "alarm0"` | CC-BY-SA 3.0 |
+| `air-alarm:alarm1` | `icons/obj/monitors.dmi : "alarm1"` | CC-BY-SA 3.0 |
+| `air-alarm:alarmp` | `icons/obj/monitors.dmi : "alarmp"` | CC-BY-SA 3.0 |
 | `air-tank:` | `icons/obj/atmospherics/pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `airlock:closed` | `icons/obj/doors/Doorint.dmi : "door_closed"` | CC-BY-SA 3.0 |
 | `airlock:closing` | `icons/obj/doors/Doorint.dmi : "door_closing"` | CC-BY-SA 3.0 |

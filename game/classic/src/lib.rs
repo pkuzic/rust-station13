@@ -5,6 +5,7 @@
 
 pub mod access;
 pub mod actions;
+pub mod alarms;
 pub mod atmos;
 pub mod combat;
 pub mod doors;
@@ -60,6 +61,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<power::AreaPower>()
             .init_resource::<wires::WireLayout>()
             .init_resource::<wires::PendingShocks>()
+            .init_resource::<alarms::AreaSeals>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -77,6 +79,7 @@ impl Plugin for ClassicPlugin {
                     actions::process_actions,
                     equipment::process_equipment,
                     wires::process_wire_ops,
+                    alarms::process_alarm_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
                     speech::speak,
@@ -87,7 +90,12 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (wires::update_wiring, doors::update_doors, movement::move_mobs)
+                (
+                    wires::update_wiring,
+                    alarms::apply_seals,
+                    doors::update_doors,
+                    movement::move_mobs,
+                )
                     .chain()
                     .in_set(TickSet::Gameplay),
             )
@@ -98,6 +106,7 @@ impl Plugin for ClassicPlugin {
                     power::rebuild_powernets,
                     power::power_cycle,
                     machines::run_machines,
+                    alarms::process_alarms,
                     atmos::step_atmos,
                     atmos::space_wind,
                     atmos::drift,
@@ -115,6 +124,7 @@ impl Plugin for ClassicPlugin {
                     hands::sync_hands_view,
                     equipment::sync_worn_view,
                     wires::update_panel_views,
+                    alarms::update_alarm_views,
                     machines::update_machine_looks,
                     power::update_power_looks,
                 )
