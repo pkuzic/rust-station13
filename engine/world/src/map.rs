@@ -33,6 +33,19 @@ impl Dir {
         }
     }
 
+    pub fn opposite(self) -> Self {
+        match self {
+            Dir::North => Dir::South,
+            Dir::NorthEast => Dir::SouthWest,
+            Dir::East => Dir::West,
+            Dir::SouthEast => Dir::NorthWest,
+            Dir::South => Dir::North,
+            Dir::SouthWest => Dir::NorthEast,
+            Dir::West => Dir::East,
+            Dir::NorthWest => Dir::SouthEast,
+        }
+    }
+
     /// Direction from a held-keys vector, or `None` when it is zero.
     pub fn from_offset(dx: i32, dy: i32) -> Option<Self> {
         Some(match (dx.signum(), dy.signum()) {
@@ -62,7 +75,7 @@ impl Dir {
 
 /// An object placed by a map: a prototype id plus optional per-instance settings.
 /// In map files it is written either as a bare id, `"crowbar"`, or in full,
-/// `(id: "airlock", access: ["engine_equip"])`.
+/// `(id: "airlock", access: ["engine_equip"])` or `(id: "cable", ends: [North, South])`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(from = "ObjectEntry")]
 pub struct ObjectSpec {
@@ -71,6 +84,9 @@ pub struct ObjectSpec {
     pub access: Vec<String>,
     /// Facing, for directional machines such as pumps.
     pub dir: Option<Dir>,
+    /// Where a cable runs: two directions, or one for a cable that ends in a knot on its
+    /// own tile.
+    pub ends: Vec<Dir>,
 }
 
 impl ObjectSpec {
@@ -79,6 +95,7 @@ impl ObjectSpec {
             id: id.into(),
             access: Vec::new(),
             dir: None,
+            ends: Vec::new(),
         }
     }
 }
@@ -93,6 +110,8 @@ enum ObjectEntry {
         access: Vec<String>,
         #[serde(default)]
         dir: Option<Dir>,
+        #[serde(default)]
+        ends: Vec<Dir>,
     },
 }
 
@@ -100,7 +119,17 @@ impl From<ObjectEntry> for ObjectSpec {
     fn from(entry: ObjectEntry) -> Self {
         match entry {
             ObjectEntry::Id(id) => ObjectSpec::new(id),
-            ObjectEntry::Full { id, access, dir } => ObjectSpec { id, access, dir },
+            ObjectEntry::Full {
+                id,
+                access,
+                dir,
+                ends,
+            } => ObjectSpec {
+                id,
+                access,
+                dir,
+                ends,
+            },
         }
     }
 }
@@ -368,6 +397,7 @@ mod tests {
                         id: "airlock".into(),
                         access: vec!["engine".into()],
                         dir: None,
+                        ends: Vec::new(),
                     }
                 ),
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),

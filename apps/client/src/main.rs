@@ -648,6 +648,7 @@ fn send_clicks(
     window: Single<&Window, With<PrimaryWindow>>,
     camera: Single<(&Camera, &GlobalTransform), With<WorldCamera>>,
     objects: Query<(&NetId, &GridPos, &Appearance)>,
+    maps: Query<&MapLayer>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     hud: Query<&bevy::picking::hover::Hovered>,
 ) {
@@ -680,8 +681,14 @@ fn send_clicks(
         .filter(|(_, pos, _)| (pos.0.x, pos.0.y) == tile)
         .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
-    let Some(target) = target else { return };
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
+    // Nothing there: click the tile itself (to lay cable on it).
+    let Some(target) = target else {
+        if !examine && let Some(map) = maps.iter().next() {
+            sender.send::<IntentChannel>(ActionInput::UseOnTile(TilePos::new(tile.0, tile.1, map.0.z)));
+        }
+        return;
+    };
     sender.send::<IntentChannel>(if examine {
         ActionInput::Examine(target)
     } else {

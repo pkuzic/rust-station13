@@ -95,7 +95,7 @@ pub fn state_for(appearance: &Appearance) -> String {
     match (appearance.sprite.as_str(), base) {
         ("human", "unconscious" | "dead") => "lying".to_owned(),
         // Until `join_lines` sees the neighbours, draw a straight east–west run.
-        ("cable" | "pipe", _) => "4-8".to_owned(),
+        ("cable" | "pipe", "") => "4-8".to_owned(),
         (_, state) => state.to_owned(),
     }
 }
@@ -173,8 +173,8 @@ pub fn join_lines(
         if kind != "cable" && kind != "pipe" {
             continue;
         }
-        // A pipe placed with a direction already says which sides it joins.
-        if kind == "pipe" && !appearance.state.is_empty() {
+        // A cable, or a pipe placed with a direction, already says which sides it joins.
+        if !appearance.state.is_empty() {
             continue;
         }
         let mut dirs: Vec<u8> = Vec::new();

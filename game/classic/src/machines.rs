@@ -283,7 +283,7 @@ pub fn rebuild_networks(
                 }
                 let there = pos.step(d);
                 let there_key = (there.x, there.y, there.z);
-                let back = side_bits(opposite(d));
+                let back = side_bits(d.opposite());
                 if let Some(list) = by_tile.get(&there_key) {
                     next.extend(
                         list.iter()
@@ -325,12 +325,12 @@ pub fn run_machines(
         if !on.0 || !power.powered {
             continue;
         }
-        let behind = pos.0.step(opposite(pump.dir));
+        let behind = pos.0.step(pump.dir.opposite());
         let ahead = pos.0.step(pump.dir);
         // The pipe behind must connect toward the pump, and the one ahead back to it.
         let (Some(from), Some(to)) = (
             nets.net_toward(behind, side_bits(pump.dir)),
-            nets.net_toward(ahead, side_bits(opposite(pump.dir))),
+            nets.net_toward(ahead, side_bits(pump.dir.opposite())),
         ) else {
             continue;
         };
@@ -419,11 +419,6 @@ pub fn update_machine_looks(mut machines: Query<(&Switch, &mut Appearance, Has<V
             appearance.state = state.to_owned();
         }
     }
-}
-
-fn opposite(dir: Dir) -> Dir {
-    let (dx, dy) = dir.offset();
-    Dir::from_offset(-dx, -dy).expect("non-zero")
 }
 
 /// The components a machine prototype spawns with, or `None` if `proto` is not a machine.

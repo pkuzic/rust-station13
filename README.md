@@ -60,6 +60,10 @@ Toolboxes and utility belts hold tools: click one you carry with an empty hand t
 it, click a tool in it to take it out, and click it with a tool to put that in
 (`docs/reference/storage.md`).
 
+On bare plating (the Luna map, `--map luna-engineering`) a cable coil lays power cable:
+click the plating, or click a cable end to carry it on to your tile. Wirecutters cut a
+cable, and the power behind the cut goes out (`docs/reference/cables.md`).
+
 Each area has an air alarm on its wall. Click it to read the room's air. When the pressure
 turns dangerous it seals the area: every powered door around it closes and bolts until the
 air recovers. Standing next to it you can seal or unseal by hand and turn on panic fill

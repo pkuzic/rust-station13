@@ -215,3 +215,24 @@ area-escape-hangar = Ангар эвакуации экипажа
 storage-added = { $name } кладёт { NOUN($item, case: "acc") } в { NOUN($target, case: "acc") }!
 storage-cannot-hold = В { NOUN($target, case: "acc") } нельзя положить { NOUN($item, case: "acc") }.
 hud-storage-close = Закрыть
+
+# Кабели и мотки кабеля. Аргументы: $name (кто), $item (id существительного), $count (отрезков кабеля).
+cable-too-far = Так далеко кабель не проложить.
+cable-floor-intact = Здесь не проложить кабель, пока не снята плитка пола.
+cable-exists = Здесь уже есть кабель.
+cable-cut = { $name } перерезает { NOUN($item, case: "acc") }.
+coil-cut-piece = Вы отрезаете кусок от мотка кабеля.
+coil-joined = Вы сматываете кабель в один моток.
+coil-transferred = Вы перематываете { $count } { $count ->
+        [one] отрезок
+        [few] отрезка
+       *[many] отрезков
+    } кабеля с одного мотка на другой.
+coil-full = Моток слишком большой, больше кабеля в него не поместится.
+examine-coil-short = Короткий кусок силового кабеля.
+examine-coil-piece = Кусок силового кабеля.
+examine-coil = Моток силового кабеля. В нём { $count } { $count ->
+        [one] отрезок
+        [few] отрезка
+       *[many] отрезков
+    } кабеля.

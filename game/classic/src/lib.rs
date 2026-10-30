@@ -7,6 +7,7 @@ pub mod access;
 pub mod actions;
 pub mod alarms;
 pub mod atmos;
+pub mod cables;
 pub mod combat;
 pub mod doors;
 pub mod environment;
@@ -132,6 +133,7 @@ impl Plugin for ClassicPlugin {
                     storage::update_storage_views,
                     machines::update_machine_looks,
                     power::update_power_looks,
+                    cables::update_cable_looks,
                 )
                     .in_set(TickSet::Publish),
             );

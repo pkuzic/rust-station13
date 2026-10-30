@@ -2,12 +2,13 @@
 //! Spec: docs/reference/map-import.md.
 
 use bevy_app::{App, FixedUpdate};
+use bevy_ecs::prelude::{Entity, With, Without};
 use rs13_classic::access::IdCard;
 use rs13_classic::atmos::StationAtmos;
 use rs13_classic::doors::Airlock;
 use rs13_classic::machines::{PipeNets, Scrubber, Vent};
 use rs13_classic::objects::spawn_map;
-use rs13_classic::power::{Apc, AreaPower, Channel};
+use rs13_classic::power::{Apc, AreaPower, Channel, Powernets, Smes};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_simulation::atmos::gas::ONE_ATMOSPHERE;
 use rs13_world::{GridPos, MapLayer, TileMap};
@@ -65,6 +66,22 @@ fn the_imported_map_loads_and_runs() {
         assert!(
             power.powered(Some(area), Channel::Equipment),
             "{area} is unpowered"
+        );
+    }
+
+    // ...on the grid, not just their cells: each APC shares a network with a SMES. The
+    // starboard maintenance APC's cable runs north out of the imported region, to a grid
+    // we don't import, so it lives on its cell.
+    let mut apcs = app.world_mut().query_filtered::<(Entity, &Apc), Without<Smes>>();
+    let apcs: Vec<(Entity, String)> = apcs.iter(app.world()).map(|(e, a)| (e, a.area.clone())).collect();
+    let mut batteries = app.world_mut().query_filtered::<Entity, With<Smes>>();
+    let batteries: Vec<Entity> = batteries.iter(app.world()).collect();
+    let nets = app.world().resource::<Powernets>();
+    for (apc, area) in apcs.iter().filter(|(_, area)| area != "maint-starboard") {
+        let net = nets.net_of.get(apc);
+        assert!(
+            net.is_some() && batteries.iter().any(|b| nets.net_of.get(b) == net),
+            "{area}'s APC is off the grid"
         );
     }
 

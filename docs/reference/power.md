@@ -74,7 +74,7 @@ one cycle is 2 J.
 
 | Item | Ours | From Luna |
 |---|---|---|
-| Cables | Join cables and power machines on the same and neighbouring tiles, like pipes | **simplified**: no cable ends yet, nothing to lay or cut |
+| Cables | Join by their ends: an end joins cables pointing back and machines on the tile it points to; a knot joins its own tile (`cables.md`) | keep; laid and cut with coils and wirecutters |
 | Network accounting | Supply this cycle is shared out this cycle; a SMES only loses what was used | Luna's one-cycle lag and `restore()` give the same totals |
 | SMES | 200 MJ (Luna's 10⁸ W-cycles), output 30 kW, starts full | values kept; charging input deferred |
 | APC cell | 2.5 MJ (2 500 units at 1 kJ each), starts at 95% | kept |
@@ -93,4 +93,4 @@ one cycle is 2 J.
 ## Not yet
 
 PACMAN generators and fuel, solar panels, SMES charging input, lights and the lighting
-channel's load, laying and cutting cables, APC wires and hacking, shocks, power monitors.
+channel's load, APC wires and hacking, shocks, power monitors.

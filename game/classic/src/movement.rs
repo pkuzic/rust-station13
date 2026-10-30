@@ -30,6 +30,9 @@ pub struct Mob {
     pub next_move_ds: f32,
     /// When this mob last bumped into something, for the bump cooldown.
     pub last_bump_ds: Option<f32>,
+    /// The way it last tried to move (BYOND `dir`); `None` until then, which counts as
+    /// south.
+    pub facing: Option<Dir>,
 }
 
 /// What the controller of a mob is asking for this tick. Set from player input or AI.
@@ -116,6 +119,7 @@ pub fn move_mobs(
         if now < mob.next_move_ds {
             continue;
         }
+        mob.facing = Some(dir);
         if let Some(target) = resolve_step(&map.0, &occupied, pos.0, dir) {
             occupied.remove(&pos.0);
             occupied.insert(target);

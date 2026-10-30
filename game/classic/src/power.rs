@@ -72,8 +72,72 @@ impl ChannelMode {
 #[derive(Component, Debug, Clone, Copy)]
 pub struct PowerNode;
 
-#[derive(Component, Debug, Clone, Copy)]
-pub struct Cable;
+/// A length of power cable. Its two ends point at neighbouring tiles; `None` is a knot in
+/// the middle of its own tile (Luna's `D1-D2` with 0). A knot comes first, otherwise the
+/// end with the lower Luna direction number.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Cable {
+    pub a: Option<Dir>,
+    pub b: Dir,
+}
+
+impl Cable {
+    /// A cable between two ends, in either order. Two knots, or the same end twice, make
+    /// no cable.
+    pub fn new(x: Option<Dir>, y: Option<Dir>) -> Option<Self> {
+        let (a, b) = match (x, y) {
+            (None, None) => return None,
+            (Some(x), Some(y)) if x == y => return None,
+            (None, Some(d)) | (Some(d), None) => (None, d),
+            (Some(x), Some(y)) if luna_dir(x) <= luna_dir(y) => (Some(x), y),
+            (Some(x), Some(y)) => (Some(y), x),
+        };
+        Some(Self { a, b })
+    }
+
+    /// From map ends: one direction is a knot plus that direction. A cable placed without
+    /// any is Luna's default, a knot pointing north.
+    pub fn from_ends(ends: &[Dir]) -> Option<Self> {
+        match ends {
+            [] => Self::new(None, Some(Dir::North)),
+            [d] => Self::new(None, Some(*d)),
+            [x, y] => Self::new(Some(*x), Some(*y)),
+            _ => None,
+        }
+    }
+
+    pub fn ends(self) -> [Option<Dir>; 2] {
+        [self.a, Some(self.b)]
+    }
+
+    pub fn has_end(self, end: Option<Dir>) -> bool {
+        self.a == end || Some(self.b) == end
+    }
+
+    /// Sprite state, Luna's icon state: "0-4" (a knot to the east), "1-2" (north-south).
+    pub fn state(self) -> String {
+        format!("{}-{}", self.a.map_or(0, luna_dir), luna_dir(self.b))
+    }
+
+    /// How many lengths of cable it gives back when cut (Luna: 2, or 1 for a knot).
+    pub fn lengths(self) -> u32 {
+        if self.a.is_some() { 2 } else { 1 }
+    }
+}
+
+/// BYOND's direction numbers: N 1, S 2, E 4, W 8, and their sums for diagonals.
+pub fn luna_dir(d: Dir) -> u8 {
+    match d {
+        Dir::North => 1,
+        Dir::South => 2,
+        Dir::East => 4,
+        Dir::West => 8,
+        Dir::NorthEast => 5,
+        Dir::SouthEast => 6,
+        Dir::NorthWest => 9,
+        Dir::SouthWest => 10,
+    }
+}
 
 /// A big battery feeding its network.
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
@@ -137,10 +201,11 @@ impl PowerUser {
     }
 }
 
-/// Power networks: which tiles connect to which.
+/// Power networks: which cables and machines connect to which.
 #[derive(Resource, Debug, Default)]
 pub struct Powernets {
-    pub net_at: HashMap<TilePos, usize>,
+    /// The network of each cable and connected machine.
+    pub net_of: HashMap<Entity, usize>,
     pub count: usize,
     pub dirty: bool,
 }
@@ -166,34 +231,69 @@ impl AreaPower {
     }
 }
 
-/// Rebuild networks when nodes appear or the shape changes: flood fill over tiles with
-/// power nodes (cables, SMES, APCs), like pipes.
+/// Rebuild networks when cables or machines appear, go or change. Networks follow the
+/// cables' ends (Luna's unified cable network): a cable end joins the cables on the tile it
+/// points to whose end points back, and the machines on that tile. A knot joins knots and
+/// machines on its own tile. Machines never pass power between cables, and each belongs to
+/// at most one network.
 pub fn rebuild_powernets(
     mut nets: ResMut<Powernets>,
     added: Query<(), Added<PowerNode>>,
-    nodes: Query<&GridPos, With<PowerNode>>,
+    changed: Query<(), Changed<Cable>>,
+    mut removed: RemovedComponents<PowerNode>,
+    cables: Query<(Entity, &GridPos, &Cable)>,
+    machines: Query<(Entity, &GridPos), (With<PowerNode>, Without<Cable>)>,
 ) {
-    if !nets.dirty && added.is_empty() {
+    let removed = removed.read().count() > 0;
+    if !nets.dirty && added.is_empty() && changed.is_empty() && !removed {
         return;
     }
-    let tiles: BTreeMap<(i32, i32, i32), ()> = nodes.iter().map(|p| ((p.0.x, p.0.y, p.0.z), ())).collect();
-    nets.net_at.clear();
+    let mut cables_at: BTreeMap<TilePos, Vec<(Entity, Cable)>> = BTreeMap::new();
+    for (entity, pos, cable) in &cables {
+        cables_at.entry(pos.0).or_default().push((entity, *cable));
+    }
+    for list in cables_at.values_mut() {
+        list.sort_by_key(|(e, _)| *e);
+    }
+    let mut machines_at: HashMap<TilePos, Vec<Entity>> = HashMap::new();
+    for (entity, pos) in &machines {
+        machines_at.entry(pos.0).or_default().push(entity);
+    }
+    for list in machines_at.values_mut() {
+        list.sort();
+    }
+
+    nets.net_of.clear();
     let mut count = 0;
-    for start in tiles.keys().copied() {
-        let start_pos = TilePos::new(start.0, start.1, start.2);
-        if nets.net_at.contains_key(&start_pos) {
-            continue;
-        }
-        let id = count;
-        count += 1;
-        let mut queue = VecDeque::from([start_pos]);
-        nets.net_at.insert(start_pos, id);
-        while let Some(pos) = queue.pop_front() {
-            for d in [Dir::North, Dir::East, Dir::South, Dir::West] {
-                let next = pos.step(d);
-                if tiles.contains_key(&(next.x, next.y, next.z)) && !nets.net_at.contains_key(&next) {
-                    nets.net_at.insert(next, id);
-                    queue.push_back(next);
+    for (start_pos, list) in &cables_at {
+        for (start, _) in list {
+            if nets.net_of.contains_key(start) {
+                continue;
+            }
+            let id = count;
+            count += 1;
+            nets.net_of.insert(*start, id);
+            let mut queue = VecDeque::from([(*start_pos, *start)]);
+            while let Some((pos, entity)) = queue.pop_front() {
+                let Some(cable) = cables_at[&pos]
+                    .iter()
+                    .find(|(e, _)| *e == entity)
+                    .map(|(_, c)| *c)
+                else {
+                    continue;
+                };
+                for end in cable.ends() {
+                    let there = end.map_or(pos, |d| pos.step(d));
+                    let back = end.map(Dir::opposite);
+                    for (other, other_cable) in cables_at.get(&there).into_iter().flatten() {
+                        if other_cable.has_end(back) && !nets.net_of.contains_key(other) {
+                            nets.net_of.insert(*other, id);
+                            queue.push_back((there, *other));
+                        }
+                    }
+                    for machine in machines_at.get(&there).into_iter().flatten() {
+                        nets.net_of.entry(*machine).or_insert(id);
+                    }
                 }
             }
         }
@@ -210,8 +310,8 @@ pub fn power_cycle(
     nets: Res<Powernets>,
     mut areas: ResMut<AreaPower>,
     mut users: Query<(&GridPos, &mut PowerUser, Option<&Switch>, Option<&mut Airlock>)>,
-    mut apcs: Query<(Entity, &GridPos, &mut Apc)>,
-    mut batteries: Query<(&GridPos, &mut Smes)>,
+    mut apcs: Query<(Entity, &mut Apc)>,
+    mut batteries: Query<(Entity, &mut Smes)>,
 ) {
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
         return;
@@ -236,8 +336,8 @@ pub fn power_cycle(
 
     // What each network's SMES units can give this cycle.
     let mut offered = vec![0.0; nets.count];
-    for (pos, smes) in &batteries {
-        if let (true, Some(&net)) = (smes.online, nets.net_at.get(&pos.0)) {
+    for (entity, smes) in &batteries {
+        if let (true, Some(&net)) = (smes.online, nets.net_of.get(&entity)) {
             offered[net] += smes.charge.min(smes.output * POWER_DT);
         }
     }
@@ -246,13 +346,13 @@ pub fn power_cycle(
     let mut order: Vec<Entity> = apcs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, pos, mut apc)) = apcs.get_mut(entity) else {
+        let Ok((_, mut apc)) = apcs.get_mut(entity) else {
             continue;
         };
         let state = areas.0.entry(apc.area.clone()).or_default();
         let usage: f64 = state.used.iter().sum();
         state.used = [0.0; 3];
-        let grid = nets.net_at.get(&pos.0).map(|n| &mut remaining[*n]);
+        let grid = nets.net_of.get(&entity).map(|n| &mut remaining[*n]);
         let mut spare = grid.as_deref().copied().unwrap_or(0.0);
 
         match apc.cell {
@@ -291,8 +391,8 @@ pub fn power_cycle(
     }
 
     // SMES units lose only what was drawn, in proportion to what they offered.
-    for (pos, mut smes) in &mut batteries {
-        let Some(&net) = nets.net_at.get(&pos.0) else {
+    for (entity, mut smes) in &mut batteries {
+        let Some(&net) = nets.net_of.get(&entity) else {
             continue;
         };
         if !smes.online || offered[net] <= 0.0 {

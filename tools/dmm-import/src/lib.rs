@@ -197,6 +197,10 @@ pub struct ObjectRule {
     /// Keep the atom's direction (BYOND `dir`, south when the map doesn't set it).
     #[serde(default)]
     pub dir: bool,
+    /// Read a cable's ends from its `icon_state` (`"1-2"`, with 0 for a knot). The value
+    /// is the type's own icon state, used when the map doesn't set one.
+    #[serde(default)]
+    pub ends_from_state: Option<String>,
 }
 
 /// BYOND direction numbers → our direction names.
@@ -479,6 +483,27 @@ fn object_ron(
             Some(name) => fields.push(format!("dir: {name}")),
             None => problems.push(format!("column {c}, row {r}: odd dir {byond:?} on {}", atom.path)),
         }
+    }
+    if let Some(default) = &rule.ends_from_state {
+        let state = atom
+            .vars
+            .get("icon_state")
+            .map_or(default.as_str(), String::as_str);
+        let mut ends = Vec::new();
+        for end in state.split('-') {
+            match end.trim() {
+                "0" => {}
+                // Up and down (BYOND 16 and 32) lead to other decks: not imported.
+                "16" | "32" => problems.push(format!(
+                    "column {c}, row {r}: cable {state:?} leads off the deck; that end is left out"
+                )),
+                n => match dir_name(n) {
+                    Some(name) => ends.push(name),
+                    None => problems.push(format!("column {c}, row {r}: odd cable {state:?}")),
+                },
+            }
+        }
+        fields.push(format!("ends: [{}]", ends.join(", ")));
     }
     if fields.is_empty() {
         format!("{id:?}")

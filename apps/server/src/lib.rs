@@ -208,6 +208,7 @@ fn queue_actions(
                 ActionInput::Examine(id) => resolve(id).map(Action::Examine),
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::CloseStorage => Some(Action::CloseStorage),
+                ActionInput::UseOnTile(tile) => Some(Action::UseOnTile(tile)),
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
                 ActionInput::Equip(slot) => {

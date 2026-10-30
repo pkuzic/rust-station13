@@ -48,6 +48,10 @@ pub struct ItemDef {
     /// Looks like, and is called, this other prototype (a loaded belt is a belt).
     #[serde(default)]
     pub base: Option<String>,
+    /// Piles up to this many in one item (a coil of 30 lengths of cable). New ones are
+    /// full.
+    #[serde(default)]
+    pub stack: Option<u32>,
 }
 
 fn normal_size() -> u8 {

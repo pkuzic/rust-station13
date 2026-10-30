@@ -101,10 +101,15 @@ fn one_cable_network_feeds_both_apcs_from_the_smes() {
     seconds(&mut app, 3);
     assert_eq!(apc(&mut app, ENGINEERING_APC).area, "engineering");
     assert_eq!(apc(&mut app, STORAGE_APC).area, "eng-storage");
+    let (smes, engineering, storage) = (
+        entity_at::<Smes>(&mut app, SMES),
+        entity_at::<Apc>(&mut app, ENGINEERING_APC),
+        entity_at::<Apc>(&mut app, STORAGE_APC),
+    );
     let nets = app.world().resource::<Powernets>();
-    let net = nets.net_at[&SMES];
-    assert_eq!(nets.net_at[&ENGINEERING_APC], net);
-    assert_eq!(nets.net_at[&STORAGE_APC], net, "through the wall into the closet");
+    let net = nets.net_of[&smes];
+    assert_eq!(nets.net_of[&engineering], net);
+    assert_eq!(nets.net_of[&storage], net, "through the wall into the closet");
 }
 
 #[test]

@@ -38,6 +38,6 @@ Picking up shows no chat message. A destroyed hand refuses the pickup with a jok
 
 ## Not implemented yet
 
-Item-on-item `attackby` (e.g. using wirecutters on cables), `attack_self`, throwing,
+Item-on-item `attackby` beyond containers and cables (`storage.md`, `cables.md`), `attack_self`, throwing,
 storage, equipment slots, organ checks on hands, examine descriptions, intents
 (help/disarm/grab/harm).

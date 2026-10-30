@@ -27,6 +27,7 @@ counted from 0 with the top row first.
 - **Window:** a grille or any window on the tile makes it a window tile instead (solid, see-through).
 - **Objects:** from the object rules, again by longest matching prefix.
   - An airlock's `req_access_txt` (Luna access numbers separated by `;`) becomes our access ids.
+  - A cable's `icon_state` (`"1-2"`, with 0 for a knot) becomes its ends. Ends that lead up or down to another deck are dropped and reported.
   - A rule can also place a container's contents loose on its tile (for containers we can't model yet).
 - **Spawns:** a landmark rule makes the tile a spawn and can place things there.
 - **Area:** from the area table.
@@ -50,14 +51,14 @@ counted from 0 with the top row first.
 - **Tiles:** floors, plating, walls, reinforced and heat-shield walls (both drawn as reinforced), windows and space.
 - **Airlocks:** with Luna's access, for example the Chief Engineer's office needs `construction`. External airlocks have no access in Luna either.
 - **Power:**
-  - APCs, SMES units and all of Luna's cabling. Every APC's area is powered from the engine's SMES.
+  - APCs, SMES units and all of Luna's cabling, with its ends. Every APC but one shares a network with the engine's SMES units. The starboard maintenance APC's cable runs north out of the region, so it lives on its cell.
   - Air alarms.
 - **Atmos piping:** pipes, bends and manifolds (insulated ones too), vents, scrubbers, connectors, valves and air tanks, all with Luna's directions. The supply and scrubber lines stay separate networks. The supply line is empty: Luna feeds it from deck 4 through a pipe between decks, outside the region, so the vents have nothing to give.
 - **Items:** screwdrivers, wrenches, insulated gloves, breath masks, the engineering hardsuits (as our space suit and helmet) and oxygen tanks.
-- **Toolboxes and utility belts:** real containers with Luna's tools inside, minus welders, cable coils and scanners, which have no prototype yet (`storage.md`).
+- **Toolboxes and utility belts:** real containers with Luna's tools and cable coils inside, minus welders and scanners, which have no prototype yet (`storage.md`). A loose cable coil too.
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Skipped for now** (109 types, listed in the generated file):
+**Skipped for now** (108 types, listed in the generated file):
 - **Atmos machines without a prototype:** tanks of other gases, canisters, filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** tables, racks, closets, chairs.
 - **Machines:** computers, vending machines, the engine itself, lights, cameras, firedoors, disposals.
@@ -70,4 +71,3 @@ counted from 0 with the top row first.
 - Luna's `req_access_txt` lists every access a door needs, but our doors open for any one. In this region every door needs a single access, so the result is the same.
 - The map stops at the region's edge. Tiles beyond it count as solid, so corridors that leave the section end in an invisible wall.
 - Open pipe ends don't leak, unlike in Luna.
-- Cables connect to every neighbouring cable, ignoring Luna's directions. Power lines that run side by side are joined.
