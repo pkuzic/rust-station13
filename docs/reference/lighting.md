@@ -100,6 +100,28 @@ made-up two-deck world.
   floors yet).
 - **F4** turns lighting off and on.
 
+## Glow
+
+What gives off light of its own stays bright in the dark and glows
+(`apps/client/src/glow.rs`):
+
+| What | Which pixels glow |
+|---|---|
+| Fire, laser beams, the supermatter | all of it |
+| Screens and status lights: APCs, SMES units, air and fire alarms, power monitors, the laser computer, cell chargers, the TEG, freezers, engine lasers, meters, P.A.C.M.A.N. generators, light switches, intercoms | the bright, strongly coloured ones (indicator greens, reds, blues; not grey metal) |
+| Lamps: tubes, bulbs, desk lamps, flashlights, lanterns | the bright ones, while lit |
+| Overlays on those (a SMES's charge lights) | the bright ones |
+
+- **Drawn over the darkness:** the glowing pixels are drawn a second time above it, a
+  little brighter than white, and the world camera's bloom spreads a soft halo round them.
+  The sight shadows and the view cone still cover them.
+- **A faint light of their own:** a glowing screen also lights the floor round it, two
+  tiles of reach, in the average colour of its glowing pixels (so an air alarm casts a
+  green pool). A speck of a status light casts none. This is drawn only by the client;
+  the server's darkness for game rules counts only the lights Luna gives light to.
+- Colours are kept exactly as drawn (no tone mapping); only what is brighter than white
+  blooms.
+
 ## Differences from Luna
 
 - **Soft:** Luna lights whole tiles in seven steps; here light fades smoothly within and
