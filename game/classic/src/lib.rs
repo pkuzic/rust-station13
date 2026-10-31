@@ -14,6 +14,7 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod firedoors;
+pub mod flashlights;
 pub mod floors;
 pub mod furniture;
 pub mod hands;
@@ -157,6 +158,8 @@ impl Plugin for ClassicPlugin {
                     welding::update_welder_looks,
                     lights::update_light_looks,
                     lights::update_light_sources,
+                    flashlights::update_flashlight_looks,
+                    flashlights::update_flashlight_sources,
                     closets::update_closet_looks,
                     firedoors::update_firedoor_looks,
                 )

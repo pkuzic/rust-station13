@@ -95,6 +95,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `crate-rcd:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
 | `crate-rcd:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |
 | `crowbar:` | `icons/obj/items.dmi : "crowbar"` | CC-BY-SA 3.0 |
+| `desk-lamp:` | `icons/obj/lighting.dmi : "lamp"` | CC-BY-SA 3.0 |
+| `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
+| `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
+| `desk-lamp-green:on` | `icons/obj/lighting.dmi : "lampgreen-on"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `firedoor:door0-east` | `icons/obj/doors/door_fire2.dmi : "door0"` | CC-BY-SA 3.0 |
 | `firedoor:door0-north` | `icons/obj/doors/door_fire2.dmi : "door0"` | CC-BY-SA 3.0 |
@@ -112,6 +116,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `firedoor:doorc1-north` | `icons/obj/doors/door_fire2.dmi : "doorc1"` | CC-BY-SA 3.0 |
 | `firedoor:doorc1-south` | `icons/obj/doors/door_fire2.dmi : "doorc1"` | CC-BY-SA 3.0 |
 | `firedoor:doorc1-west` | `icons/obj/doors/door_fire2.dmi : "doorc1"` | CC-BY-SA 3.0 |
+| `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
+| `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
 | `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
@@ -167,6 +173,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
+| `lantern:` | `icons/obj/lighting.dmi : "lantern"` | CC-BY-SA 3.0 |
+| `lantern:on` | `icons/obj/lighting.dmi : "lantern-on"` | CC-BY-SA 3.0 |
 | `light:tube-broken-east` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
 | `light:tube-broken-north` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
 | `light:tube-broken-south` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
@@ -282,6 +290,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `oxygen-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `oxygen-pressure-tank:` | `icons/obj/atmospherics/blue_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `oxygen-tank:` | `icons/obj/tank.dmi : "oxygen"` | CC-BY-SA 3.0 |
+| `penlight:` | `icons/obj/lighting.dmi : "penlight"` | CC-BY-SA 3.0 |
+| `penlight:on` | `icons/obj/lighting.dmi : "penlight-on"` | CC-BY-SA 3.0 |
 | `pipe:1-2` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:1-4` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:1-8` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |

@@ -120,6 +120,27 @@
             "": (dmi: "icons/obj/items.dmi", state: "welder"),
             "lit": (dmi: "icons/obj/items.dmi", state: "welder1"),
         },
+        // Hand-held lights (`docs/reference/flashlights.md`).
+        "flashlight": {
+            "": (dmi: "icons/obj/lighting.dmi", state: "flashlight"),
+            "on": (dmi: "icons/obj/lighting.dmi", state: "flashlight-on"),
+        },
+        "penlight": {
+            "": (dmi: "icons/obj/lighting.dmi", state: "penlight"),
+            "on": (dmi: "icons/obj/lighting.dmi", state: "penlight-on"),
+        },
+        "lantern": {
+            "": (dmi: "icons/obj/lighting.dmi", state: "lantern"),
+            "on": (dmi: "icons/obj/lighting.dmi", state: "lantern-on"),
+        },
+        "desk-lamp": {
+            "": (dmi: "icons/obj/lighting.dmi", state: "lamp"),
+            "on": (dmi: "icons/obj/lighting.dmi", state: "lamp-on"),
+        },
+        "desk-lamp-green": {
+            "": (dmi: "icons/obj/lighting.dmi", state: "lampgreen"),
+            "on": (dmi: "icons/obj/lighting.dmi", state: "lampgreen-on"),
+        },
         // Tables: the mapper's icon state and direction (`tabledir-west`).
         "table": {
             "": (dmi: "icons/obj/structures.dmi", state: "table"),

@@ -220,6 +220,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::welding::WELDER {
         item.insert(crate::welding::Welder::default());
     }
+    if let Some(light) = crate::flashlights::kind(proto) {
+        item.insert(light);
+    }
     if proto == "id-card" {
         item.insert(IdCard {
             access: spec.access.clone(),
