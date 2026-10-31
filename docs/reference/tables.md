@@ -41,4 +41,4 @@ Code: `game/classic/src/furniture.rs`. Tests: `game/classic/tests/tables.rs`.
   - dropping items onto them by dragging;
   - explosions and blobs breaking them;
   - hulks smashing them, and small creatures hiding under them;
-  - sounds.
+  - sounds other than the wrench (`sound.md`).

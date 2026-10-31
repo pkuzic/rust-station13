@@ -299,6 +299,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 Lungs::default(),
                 Surroundings::default(),
                 Outbox::default(),
+                crate::sound::Earshot::default(),
                 PlayerControlled,
             ),
             // Machine windows and requests.

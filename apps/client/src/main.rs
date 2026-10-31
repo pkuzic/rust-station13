@@ -14,6 +14,7 @@
 //! internals indicator connects the breath mask to a gas tank.
 
 mod alarm_panel;
+mod audio;
 mod hud;
 mod sprites;
 mod storage_panel;
@@ -138,7 +139,7 @@ fn main() {
                 // Crisp pixel art.
                 .set(ImagePlugin::default_nearest()),
         )
-        .add_plugins(ClientNetworkPlugin)
+        .add_plugins((ClientNetworkPlugin, audio::SoundPlugin))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))

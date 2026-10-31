@@ -100,9 +100,10 @@ pub fn process_actions(
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     electrified: Query<&crate::wires::Wiring>,
-    (mut shocks, mut visible): (
+    (mut shocks, mut visible, mut sounds): (
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
+        ResMut<crate::sound::SoundEvents>,
     ),
     (
         mut alarms,
@@ -134,8 +135,8 @@ pub fn process_actions(
     let now = time.deciseconds();
     // Items picked up earlier this tick (component changes apply after the system).
     let mut taken: HashSet<Entity> = HashSet::new();
-    // Lit welding tools used on something in reach this tick, and by whom.
-    let mut welded_with: Vec<(Entity, Entity)> = Vec::new();
+    // Lit welding tools used on something in reach this tick, by whom and where.
+    let mut welded_with: Vec<(Entity, Entity, TilePos)> = Vec::new();
 
     for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mob_state) in &mut mobs {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
@@ -155,6 +156,12 @@ pub fn process_actions(
             {
                 continue;
             }
+            // The tool in the active hand, for its sound (`sound.md`).
+            let tool: Option<String> = hands
+                .active_item()
+                .and_then(|e| appearances.get(e).ok())
+                .map(|(a, _)| a.sprite.clone());
+            let tool = tool.as_deref();
             // A lit welding tool burns fuel on whatever it is used on (`welding.md`).
             let reaches = match action {
                 Action::UseOn(target) => {
@@ -171,7 +178,12 @@ pub fn process_actions(
                 && let Some(active) = hands.active_item()
                 && welding.lit(Some(active)).is_some()
             {
-                welded_with.push((mob, active));
+                let at = match action {
+                    Action::UseOnTile(tile) => tile,
+                    Action::UseOn(target) => places.get(target).map_or(mob_pos.0, |p| p.0),
+                    _ => mob_pos.0,
+                };
+                welded_with.push((mob, active, at));
             }
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
@@ -257,6 +269,7 @@ pub fn process_actions(
                                 .use_on_tile(mob_pos.0, &mut hands, tile, &mut commands)
                         });
                     if let Some(outcome) = outcome {
+                        sounds.tool_used(tool, tile);
                         outbox.0.extend(outcome.to_mob);
                     }
                 }
@@ -342,6 +355,7 @@ pub fn process_actions(
                     // Cable coils and wirecutters on cables, coils and power machines
                     // (`docs/reference/cables.md`).
                     if let Some(outcome) = cable.use_on(mob, mob_pos.0, &mut hands, target, &mut commands) {
+                        sounds.tool_used(tool, places.get(target).map_or(mob_pos.0, |p| p.0));
                         outbox.0.extend(outcome.to_mob);
                         if let Some(seen) = outcome.seen {
                             let name = appearances
@@ -367,6 +381,7 @@ pub fn process_actions(
                         if let Some(outcome) =
                             furniture.use_on(mob, mob_pos.0, &mut hands, target, at, &mut commands)
                         {
+                            sounds.tool_used(tool, at);
                             outbox.0.extend(outcome.to_mob);
                             continue;
                         }
@@ -394,6 +409,7 @@ pub fn process_actions(
                         if member.open || ports.iter().any(|p| p.0 == target_pos.0) {
                             member.open = !member.open;
                             nets.dirty = true;
+                            sounds.tool_used(tool, target_pos.0);
                             let id = if member.open {
                                 "canister-connected"
                             } else {
@@ -427,6 +443,7 @@ pub fn process_actions(
                                 .and_then(|(_, n)| n.map(|n| n.0.clone()))
                                 .unwrap_or_default();
                             let msg = crate::alarms::cut_alarm(&mut alarm, &name);
+                            sounds.tool_used(tool, target_pos.0);
                             visible.0.push((target_pos.0, msg, None));
                         } else if !alarm.broken && power.powered {
                             commands.entity(mob).insert(crate::wires::PanelViewer(target));
@@ -473,6 +490,7 @@ pub fn process_actions(
                         }
                         if holding(&hands, &appearances, "screwdriver") {
                             airlock.panel_open = !airlock.panel_open;
+                            sounds.tool_used(tool, target_pos.0);
                             let id = if airlock.panel_open {
                                 "door-panel-opened"
                             } else {
@@ -482,6 +500,7 @@ pub fn process_actions(
                             continue;
                         }
                         if holding(&hands, &appearances, "crowbar") && airlock.force(now) {
+                            sounds.tool_used(tool, target_pos.0);
                             outbox.0.push(LocMsg::new("door-forced").arg("item", "airlock"));
                             continue;
                         }
@@ -499,7 +518,9 @@ pub fn process_actions(
             }
         }
     }
-    for (mob, welder) in welded_with {
+    for (mob, welder, at) in welded_with {
+        // Luna plays `Welder.ogg` or `Welder2.ogg` at 50 when welding.
+        sounds.play(crate::sound::WELDER, at, 50.0);
         if let Some(msg) = welding.after_use(welder)
             && let Ok((.., mut outbox, _, _, _)) = mobs.get_mut(mob)
         {

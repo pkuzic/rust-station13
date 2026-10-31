@@ -397,6 +397,7 @@ pub fn process_wire_ops(
     time: Res<WorldTime>,
     layout: Res<WireLayout>,
     mut shocks: ResMut<PendingShocks>,
+    mut sounds: ResMut<crate::sound::SoundEvents>,
     mut mobs: Query<(
         Entity,
         &GridPos,
@@ -450,6 +451,7 @@ pub fn process_wire_ops(
                     outbox.0.push(LocMsg::new("wire-need-cutters"));
                     continue;
                 }
+                sounds.tool_used(tool, door_pos.0);
                 if wiring.cut[colour] {
                     wiring.mend(&layout, colour)
                 } else {

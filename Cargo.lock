@@ -7286,6 +7286,7 @@ name = "rs13-client"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "rodio",
  "ron",
  "rs13-classic",
  "rs13-dmi-import",
