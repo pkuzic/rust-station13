@@ -18,6 +18,7 @@ pub mod firedoors;
 pub mod flashlights;
 pub mod floors;
 pub mod furniture;
+pub mod generators;
 pub mod hands;
 pub mod health;
 pub mod lighting;
@@ -133,6 +134,7 @@ impl Plugin for ClassicPlugin {
                 (
                     machines::rebuild_networks,
                     power::rebuild_powernets,
+                    generators::run_generators,
                     power::power_cycle,
                     lights::run_lights,
                     machines::run_machines,

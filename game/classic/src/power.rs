@@ -148,6 +148,13 @@ pub struct Smes {
     pub online: bool,
 }
 
+/// A generator feeding its network, W this cycle. Unlike a SMES it stores nothing: what
+/// isn't used is lost (Luna `AddPower`).
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
+pub struct PowerSupply {
+    pub watts: f64,
+}
+
 /// An area power controller.
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct Apc {
@@ -312,6 +319,7 @@ pub fn power_cycle(
     mut users: Query<(&GridPos, &mut PowerUser, Option<&Switch>, Option<&mut Airlock>)>,
     mut apcs: Query<(Entity, &mut Apc)>,
     mut batteries: Query<(Entity, &mut Smes)>,
+    generators: Query<(Entity, &PowerSupply)>,
 ) {
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
         return;
@@ -334,13 +342,21 @@ pub fn power_cycle(
         }
     }
 
-    // What each network's SMES units can give this cycle.
-    let mut offered = vec![0.0; nets.count];
-    for (entity, smes) in &batteries {
-        if let (true, Some(&net)) = (smes.online, nets.net_of.get(&entity)) {
-            offered[net] += smes.charge.min(smes.output * POWER_DT);
+    // What each network's generators and SMES units can give this cycle. Generators are
+    // drawn on first, since what they make is lost if unused.
+    let mut generated = vec![0.0; nets.count];
+    for (entity, supply) in &generators {
+        if let Some(&net) = nets.net_of.get(&entity) {
+            generated[net] += supply.watts * POWER_DT;
         }
     }
+    let mut stored = vec![0.0; nets.count];
+    for (entity, smes) in &batteries {
+        if let (true, Some(&net)) = (smes.online, nets.net_of.get(&entity)) {
+            stored[net] += smes.charge.min(smes.output * POWER_DT);
+        }
+    }
+    let offered: Vec<f64> = generated.iter().zip(&stored).map(|(g, s)| g + s).collect();
     let mut remaining = offered.clone();
 
     let mut order: Vec<Entity> = apcs.iter().map(|(e, ..)| e).collect();
@@ -395,11 +411,12 @@ pub fn power_cycle(
         let Some(&net) = nets.net_of.get(&entity) else {
             continue;
         };
-        if !smes.online || offered[net] <= 0.0 {
+        if !smes.online || stored[net] <= 0.0 {
             continue;
         }
-        let share = smes.charge.min(smes.output * POWER_DT) / offered[net];
-        let drawn = (offered[net] - remaining[net]) * share;
+        let share = smes.charge.min(smes.output * POWER_DT) / stored[net];
+        let from_storage = (offered[net] - remaining[net] - generated[net]).max(0.0);
+        let drawn = from_storage * share;
         smes.charge = (smes.charge - drawn).max(0.0);
     }
 

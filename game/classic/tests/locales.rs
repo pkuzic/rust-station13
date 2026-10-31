@@ -103,6 +103,8 @@ fn every_message_formats_in_both_locales() {
     args.set("dead", "no");
     args.set("celsius", 37);
     args.set("fahrenheit", 99);
+    args.set("on", "yes");
+    args.set("watts", 5000);
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

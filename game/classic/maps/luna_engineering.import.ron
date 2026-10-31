@@ -82,6 +82,8 @@
         (path: "/obj/structure/table/woodentable", id: "table-wood", dir: true, state: Some("wood_table")),
         (path: "/obj/structure/rack", id: "rack"),
         (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
+        (path: "/obj/item/stack/sheet/mineral/plasma", id: "plasma-sheet"),
+        (path: "/obj/machinery/power/port_gen/pacman", id: "pacman"),
         (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
         (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),
         (path: "/obj/item/weapon/storage/firstaid/regular", id: "first-aid-kit"),

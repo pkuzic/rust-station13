@@ -406,6 +406,7 @@
         "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
+        "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
@@ -500,6 +501,11 @@
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
         "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
         "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        // P.A.C.M.A.N. generator: portgen0 idle, portgen1 running.
+        "pacman": {
+            "portgen0": (dmi: "icons/obj/power.dmi", state: "portgen0"),
+            "portgen1": (dmi: "icons/obj/power.dmi", state: "portgen1"),
+        },
         // Fire alarm: fire0 normal, fire1 its area is on alert, firep unpowered.
         "fire-alarm": {
             "fire0": (dmi: "icons/obj/monitors.dmi", state: "fire0"),

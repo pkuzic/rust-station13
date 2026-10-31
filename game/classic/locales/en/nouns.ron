@@ -110,4 +110,6 @@
     "hardhat-red": (gender: neuter, sg: (nom: "firefighter helmet", indef: "a firefighter helmet"), pl: Some((nom: "firefighter helmets"))),
     "hardhat-white": (gender: neuter, sg: (nom: "white hard hat", indef: "a white hard hat"), pl: Some((nom: "white hard hats"))),
     "hardhat-blue": (gender: neuter, sg: (nom: "blue hard hat", indef: "a blue hard hat"), pl: Some((nom: "blue hard hats"))),
+    "pacman": (gender: neuter, sg: (nom: "P.A.C.M.A.N. generator", indef: "a P.A.C.M.A.N. generator"), pl: Some((nom: "P.A.C.M.A.N. generators"))),
+    "plasma-sheet": (gender: neuter, sg: (nom: "solid plasma", indef: "a sheet of solid plasma"), pl: Some((nom: "sheets of solid plasma"))),
 }

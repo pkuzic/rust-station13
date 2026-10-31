@@ -329,3 +329,24 @@ fire-alarm-raised = Вы включаете пожарную тревогу.
 fire-alarm-reset = Вы сбрасываете пожарную тревогу.
 fire-alarm-disconnected = { $name } отключает датчик { NOUN($item, case: "gen") }!
 fire-alarm-reconnected = { $name } снова подключает датчик { NOUN($item, case: "gen") }!
+
+# Переносной генератор (generators.md). Аргументы: $count, $watts, $on (yes/no).
+pacman-fuel-added = Вы загружаете в генератор { $count } { $count ->
+    [one] лист
+    [few] листа
+   *[many] листов
+} плазмы.
+pacman-full = Генератор полон!
+pacman-secured = Вы прикручиваете генератор к полу.
+pacman-unsecured = Вы откручиваете генератор от пола.
+pacman-on = Вы включаете генератор.
+pacman-off = Вы выключаете генератор.
+pacman-no-fuel = В генераторе нет топлива.
+examine-pacman = Генератор { $on ->
+    [yes] включён
+   *[no] выключен
+}. В нём { $count } { $count ->
+    [one] лист
+    [few] листа
+   *[many] листов
+} плазмы, мощность { $watts } Вт.
