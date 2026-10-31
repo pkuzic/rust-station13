@@ -79,18 +79,25 @@ made-up two-deck world.
 ## Drawing it
 
 - **Who works it out:** the client, from the light sources and closed doors the server
-  replicates. The server works out the same light for game rules (see Darkness).
+  replicates. The server works the light out per tile for game rules (see Darkness).
+- **Cast geometrically** (`apps/client/src/light_map.rs`): the client doesn't decide
+  tile by tile whether a light reaches a tile. Each light lights the area it can see past
+  the faces of walls and closed doors, worked out as a polygon from its tile centre, so
+  its shadows have true edges at any angle, as the line-of-sight shadows do. Inside that
+  area the rules above apply at every point (strength less distance, adding up, capped by
+  the strongest light reaching it), worked out sixteen times across a tile. Shadow edges
+  are softened over an eighth of a tile.
 - **When:** the client works it out again only when the map, a light or a closed door
   changes.
-- **How it is drawn:** a texture with one texel per tile of the deck you stand on. Between
-  tile centres the light is blended with smoothstep weights, so it fades smoothly with no
-  creases. It is multiplied over everything on the map, coloured light included. The HUD
+- **How it is drawn:** a texture of that light over the deck you stand on, sampled
+  smoothly and multiplied over everything on the map, coloured light included. The HUD
   and the text panel are not darkened.
-- **Only what you see gives light to the picture:** the blending uses only tiles in sight,
-  so light from a room behind a wall never shows on this side of it.
-- **Walls and closed doors** show the light on the side facing you: the brightest of the
-  open tiles around them that you see, diagonals included, so a room's corners follow the
-  room.
+- **Walls and closed doors** show the light just outside their faces on the side facing
+  you: the brightest of the open tiles around them that you see, diagonals included, so a
+  room's corners follow the room, and light from a room behind a wall never shows on this
+  side of it.
+- **Not yet:** light between decks (only the server works that out; no map has open
+  floors yet).
 - **F4** turns lighting off and on.
 
 ## Differences from Luna
@@ -144,8 +151,8 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 Not in Luna; it follows later SS13 servers' view cones (`apps/client/src/fov.rs`).
 
 - **Behind your back:** a 120° arc behind the player, centred on the way they face, is
-  grayed over, and other people standing in it are not drawn (nor can they be clicked).
-  Items, machines and the floor still show, grayed.
+  darkened (never lightened), and other people standing in it are not drawn (nor can they be clicked).
+  Items, machines and the floor still show, darker.
 - **Neighbours:** the player's own tile and the eight around it are never hidden: you
   notice someone right next to you.
 - **Facing** is decided by the server (BYOND `dir`): the way the player last walked or

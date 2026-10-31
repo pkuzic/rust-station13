@@ -1,7 +1,7 @@
 //! Field of view (`docs/reference/lighting.md`, Field of view).
 //!
 //! A person sees what is in front of them and to the sides, not behind. The arc behind our
-//! player, turned the way they face, is grayed over, and other people standing in it are
+//! player, turned the way they face, is darkened, and other people standing in it are
 //! not drawn. Whoever is right next to us is still noticed. Luna has no such thing; this
 //! follows later SS13 servers' view cones.
 
@@ -22,7 +22,8 @@ const INNER: f32 = 0.75 * TILE_PX;
 const OUTER: f32 = 40.0 * TILE_PX;
 /// How many slices the cone's curved edges are made of.
 const SEGMENTS: usize = 16;
-const GRAY: Color = Color::srgba(0.12, 0.12, 0.14, 0.55);
+/// Only ever darkens what is under it.
+const SHADE: Color = Color::srgba(0.0, 0.0, 0.0, 0.4);
 
 /// Where our player's eye is and which way they face, for this frame.
 #[derive(Resource, Default)]
@@ -59,7 +60,7 @@ fn spawn_cone(
     commands.spawn((
         Cone,
         Mesh2d(meshes.add(cone_mesh())),
-        MeshMaterial2d(materials.add(ColorMaterial::from(GRAY))),
+        MeshMaterial2d(materials.add(ColorMaterial::from(SHADE))),
         Transform::from_xyz(0.0, 0.0, FOV_Z),
         Visibility::Hidden,
     ));

@@ -1,9 +1,9 @@
 //! Soft coloured lighting over the map (`docs/reference/lighting.md`).
 //!
-//! The light on each tile comes from the light sources the server replicates, worked out
-//! by `rs13_simulation::lighting`. It is drawn as a texture with one texel per tile,
-//! blended smoothly between tiles and multiplied over everything on the map. F4 turns it
-//! off.
+//! The light comes from the light sources the server replicates, cast geometrically past
+//! walls and closed doors (`light_map.rs`) with the falloff `rs13_simulation::lighting`
+//! uses per tile. It is drawn as a texture, sixteen texels to a tile, sampled smoothly and
+//! multiplied over everything on the map. F4 turns it off.
 
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
@@ -19,11 +19,12 @@ use bevy::render::render_resource::{
 };
 use bevy::shader::ShaderRef;
 use bevy::sprite_render::{AlphaMode2d, Material2d, Material2dKey, Material2dPipeline, Material2dPlugin};
-use rs13_simulation::lighting::{Emitter, MapDecks};
+use rs13_simulation::lighting::SPACE;
 use rs13_world::{
     Appearance, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, Slot, TileMap, TilePos, WornView,
 };
 
+use crate::light_map::{LightRaster, TEXELS_PER_TILE};
 use crate::{ChatInput, OwnPlayer, TILE_PX};
 
 /// Above every sprite on the map.
@@ -60,6 +61,7 @@ struct LightOverlay {
 #[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
 struct LightMaterial {
     #[texture(0)]
+    #[sampler(1)]
     light: Handle<Image>,
 }
 
@@ -120,38 +122,32 @@ const VIEW_RANGE: i32 = 7;
 struct LightCache {
     digest: Option<u64>,
     sight: Option<u64>,
-    width: u32,
-    height: u32,
     z: i32,
-    levels: Vec<[f32; 3]>,
+    raster: LightRaster,
+    /// The raster's light per texel, its shadow edges softened.
+    soft: Vec<[f32; 3]>,
 }
 
-/// The light to draw on a tile, and whether the player sees it lit: only tiles in sight
-/// give light to the picture (the shader blends between them alone), so light from a room
-/// behind a wall never shows on this side of it.
-///
-/// An open tile has its own light, in sight if the player sees it. A wall or closed door
-/// shows the light on the side facing the player: the brightest of the open tiles around
-/// it, diagonals included (a room's corner), that the player sees. One with none in sight
-/// keeps its own light, but isn't in sight.
-pub fn drawn_light(
+/// The light to draw on a wall or closed door: the light just outside its faces on the
+/// side the player sees, the brightest of the open tiles around it in sight, diagonals
+/// included (a room's corner). So light from a room behind a wall never shows on this side
+/// of it. `None` if no open tile around it is in sight.
+pub fn wall_light(
     at: TilePos,
-    level: impl Fn(i32, i32) -> [f32; 3],
+    light_at: impl Fn([f32; 2]) -> [f32; 3],
     blocks: impl Fn(TilePos) -> bool,
     seen: impl Fn(TilePos) -> bool,
-) -> ([f32; 3], bool) {
-    let own = level(at.x, at.y);
-    if !blocks(at) {
-        return (own, seen(at));
-    }
+) -> Option<[f32; 3]> {
     (-1..=1)
         .flat_map(|dy| (-1..=1).map(move |dx| (dx, dy)))
         .filter(|d| *d != (0, 0))
-        .map(|(dx, dy)| TilePos::new(at.x + dx, at.y + dy, at.z))
-        .filter(|p| !blocks(*p) && seen(*p))
-        .map(|p| level(p.x, p.y))
+        .filter(|(dx, dy)| {
+            let p = TilePos::new(at.x + dx, at.y + dy, at.z);
+            !blocks(p) && seen(p)
+        })
+        // Just past the wall's face, or its corner, into that tile.
+        .map(|(dx, dy)| light_at([at.x as f32 + 0.6 * dx as f32, at.y as f32 + 0.6 * dy as f32]))
         .reduce(|a, b| std::array::from_fn(|c| a[c].max(b[c])))
-        .map_or((own, false), |light| (light, true))
 }
 
 /// Work out the light again when the map, a light or a door changed, and what the player
@@ -198,25 +194,24 @@ fn update_lighting(
         return;
     };
 
-    let mut emitters: Vec<Emitter> = sources
+    let mut emitters: Vec<(TilePos, [f32; 3])> = sources
         .iter()
-        .map(|(pos, LightSource(rgb))| Emitter {
-            pos: pos.0,
-            rgb: rgb.map(f32::from),
-        })
+        .filter(|(pos, _)| pos.0.z == map.z)
+        .map(|(pos, LightSource(rgb))| (pos.0, rgb.map(f32::from)))
         .collect();
-    emitters.sort_by_key(|e| e.pos);
+    emitters.sort_by_key(|(pos, _)| *pos);
     let mut opaque: Vec<TilePos> = doors.iter().map(|p| p.0).collect();
     opaque.sort();
+    let blocks = |p: TilePos| map.is_opaque(p) || opaque.binary_search(&p).is_ok();
 
     let mut digest = std::collections::hash_map::DefaultHasher::new();
     map.z.hash(&mut digest);
     for m in &maps {
         m.last_changed().hash(&mut digest);
     }
-    for e in &emitters {
-        e.pos.hash(&mut digest);
-        e.rgb.map(f32::to_bits).hash(&mut digest);
+    for (pos, rgb) in &emitters {
+        pos.hash(&mut digest);
+        rgb.map(f32::to_bits).hash(&mut digest);
     }
     opaque.hash(&mut digest);
     let digest = digest.finish();
@@ -236,15 +231,27 @@ fn update_lighting(
     }
 
     let (width, height) = (map.width, map.height);
-    if cache.digest != Some(digest) || cache.z != map.z || cache.width != width || cache.height != height {
-        let field = MapDecks::new(decks.iter().copied(), opaque.iter().copied()).light(&emitters);
-        cache.levels = (0..height as i32)
-            .flat_map(|y| (0..width as i32).map(move |x| (x, y)))
-            .map(|(x, y)| field.level(TilePos::new(x, y, map.z)))
-            .collect();
+    if cache.digest != Some(digest)
+        || cache.z != map.z
+        || cache.raster.width != width as usize
+        || cache.raster.height != height as usize
+    {
+        let mut raster = LightRaster::new(width as usize, height as usize);
+        let opaque_at = |x: i32, y: i32| blocks(TilePos::new(x, y, map.z));
+        for (pos, rgb) in &emitters {
+            raster.add_light(pos.x, pos.y, *rgb, &opaque_at);
+        }
+        // Space is always fully lit (Luna's space area has no lighting).
+        for y in 0..height as i32 {
+            for x in 0..width as i32 {
+                if map.tile(TilePos::new(x, y, map.z)).is_some_and(|t| t.id == SPACE) {
+                    raster.light_fully(x, y);
+                }
+            }
+        }
+        cache.soft = raster.softened();
+        cache.raster = raster;
         cache.digest = Some(digest);
-        cache.width = width;
-        cache.height = height;
         cache.z = map.z;
     }
     cache.sight = Some(view);
@@ -266,30 +273,32 @@ fn update_lighting(
         }
     }
 
-    let raw = |x: i32, y: i32| {
-        let inside = (0..width as i32).contains(&x) && (0..height as i32).contains(&y);
-        if inside {
-            cache.levels[(y as u32 * width + x as u32) as usize]
-        } else {
-            [0.0; 3]
-        }
-    };
-    let blocks = |p: TilePos| map.is_opaque(p) || opaque.binary_search(&p).is_ok();
-    let mut data = Vec::with_capacity((width * height * 4) as usize);
+    // Walls and closed doors show the light on the side the player sees.
+    let raster = &cache.raster;
+    let inside = |p: TilePos| (0..width as i32).contains(&p.x) && (0..height as i32).contains(&p.y);
+    let seen = |p: TilePos| inside(p) && (me.is_none() || !unseen.contains(&p));
+    let walls: std::collections::HashMap<(i32, i32), [f32; 3]> = (0..height as i32)
+        .flat_map(|y| (0..width as i32).map(move |x| (x, y)))
+        .filter(|(x, y)| blocks(TilePos::new(*x, *y, map.z)))
+        .map(|(x, y)| {
+            let light = wall_light(TilePos::new(x, y, map.z), |p| raster.at(p), blocks, seen);
+            ((x, y), light.unwrap_or([0.0; 3]))
+        })
+        .collect();
+
+    let k = TEXELS_PER_TILE;
+    let (tw, th) = (width as usize * k, height as usize * k);
+    let mut data = Vec::with_capacity(tw * th * 4);
     // Texture rows run from the top of the map down.
-    for row in 0..height as i32 {
-        let y = height as i32 - 1 - row;
-        for x in 0..width as i32 {
-            // Without our player yet, everything counts as seen.
-            let inside = |p: TilePos| (0..width as i32).contains(&p.x) && (0..height as i32).contains(&p.y);
-            let (level, in_sight) = drawn_light(TilePos::new(x, y, map.z), raw, blocks, |p| {
-                inside(p) && (me.is_none() || !unseen.contains(&p))
-            });
+    for row in 0..th {
+        let j = th - 1 - row;
+        for i in 0..tw {
+            let tile = ((i / k) as i32, (j / k) as i32);
+            let level = walls.get(&tile).copied().unwrap_or(cache.soft[j * tw + i]);
             for c in level.map(|c| c.max(MIN_LIGHT)) {
                 data.push((c * 255.0).round() as u8);
             }
-            // Alpha: whether this tile gives light to the picture (`lighting.wgsl`).
-            data.push(if in_sight { 255 } else { 0 });
+            data.push(255);
         }
     }
     sight.unseen = unseen;
@@ -310,8 +319,8 @@ fn update_lighting(
     }
     let mut image = Image::new(
         Extent3d {
-            width,
-            height,
+            width: tw as u32,
+            height: th as u32,
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
@@ -319,10 +328,12 @@ fn update_lighting(
         TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::RENDER_WORLD | RenderAssetUsages::MAIN_WORLD,
     );
-    image.sampler = ImageSampler::nearest();
+    // Blended smoothly between texels, a sixteenth of a tile apart.
+    image.sampler = ImageSampler::linear();
     let image = images.add(image);
     let size = Vec2::new(width as f32, height as f32) * TILE_PX;
-    // Tile (x, y) is centred on (x, y) tiles; the texture's texels on the tile centres.
+    // Tile (x, y) is centred on (x, y) tiles: the texture spans from half a tile before the
+    // first to half a tile past the last.
     let centre = (Vec2::new(width as f32, height as f32) - 1.0) * TILE_PX / 2.0;
     commands.spawn((
         LightOverlay {
@@ -340,40 +351,22 @@ fn update_lighting(
 mod tests {
     use super::*;
 
-    /// A wall along x = 0: the room behind it (x < 0) is lit, ours (x > 0) is dark, and
-    /// only ours is in sight.
-    fn level(x: i32, _y: i32) -> [f32; 3] {
-        if x < 0 {
-            [1.0; 3]
-        } else if x == 0 {
-            [0.8; 3]
-        } else {
-            [0.1; 3]
-        }
-    }
-
     #[test]
-    fn walls_show_the_light_on_the_side_you_see_and_nothing_behind_gives_light() {
+    fn walls_show_the_light_on_the_side_you_see() {
+        // A wall along x = 0: the room behind it (x < 0) is lit, ours (x > 0) is dark, and
+        // only ours is in sight.
+        let light_at = |p: [f32; 2]| if p[0] < 0.0 { [1.0; 3] } else { [0.1; 3] };
         let blocks = |p: TilePos| p.x == 0;
         let ours = |p: TilePos| p.x > 0;
         let wall = TilePos::new(0, 0, 0);
         assert_eq!(
-            drawn_light(wall, level, blocks, ours),
-            ([0.1; 3], true),
+            wall_light(wall, light_at, blocks, ours),
+            Some([0.1; 3]),
             "not the light behind it"
         );
         assert_eq!(
-            drawn_light(TilePos::new(2, 0, 0), level, blocks, ours),
-            ([0.1; 3], true)
-        );
-        assert_eq!(
-            drawn_light(TilePos::new(-1, 0, 0), level, blocks, ours),
-            ([1.0; 3], false),
-            "the room behind keeps its light but gives none to the picture"
-        );
-        assert_eq!(
-            drawn_light(wall, level, blocks, |_| false),
-            ([0.8; 3], false),
+            wall_light(wall, light_at, blocks, |_| false),
+            None,
             "a wall out of sight"
         );
     }
@@ -383,10 +376,16 @@ mod tests {
         // Walls along x = 0 and y = 0; our room is x > 0, y > 0; the rest is lit.
         let blocks = |p: TilePos| (p.x == 0 && p.y >= 0) || (p.y == 0 && p.x >= 0);
         let ours = |p: TilePos| p.x > 0 && p.y > 0;
-        let lit = |x: i32, y: i32| if x > 0 && y > 0 { [0.1; 3] } else { [1.0; 3] };
+        let light_at = |p: [f32; 2]| {
+            if p[0] > 0.0 && p[1] > 0.0 {
+                [0.1; 3]
+            } else {
+                [1.0; 3]
+            }
+        };
         assert_eq!(
-            drawn_light(TilePos::new(0, 0, 0), lit, blocks, ours),
-            ([0.1; 3], true)
+            wall_light(TilePos::new(0, 0, 0), light_at, blocks, ours),
+            Some([0.1; 3])
         );
     }
 }
