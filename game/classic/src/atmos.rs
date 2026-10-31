@@ -78,9 +78,20 @@ pub fn space_wind(
     >,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<Item>)>,
     firedoors: Query<(&GridPos, &Firedoor), (Without<Mob>, Without<Item>)>,
+    equipment: Query<&crate::equipment::Equipment>,
+    wearables: Query<&crate::equipment::Wearable>,
     mut commands: Commands,
 ) {
     let Some(atmos) = atmos else { return };
+    // Magnetic boots hold to the floor (Luna `shoes/magnetic`, `docs/reference/equipment.md`).
+    let gripping = |mob: Entity| {
+        equipment
+            .get(mob)
+            .ok()
+            .and_then(|e| e.get(rs13_world::Slot::Shoes))
+            .and_then(|shoes| wearables.get(shoes).ok())
+            .is_some_and(|w| w.magnetic)
+    };
     let now = time.tick.0;
     cooldowns.0.retain(|_, until| *until > now);
     let sealed = closed_edges(firedoors.iter());
@@ -105,6 +116,9 @@ pub fn space_wind(
         let Some(wind) = atmos.0.wind_at(pos.0) else {
             continue;
         };
+        if is_mob && gripping(entity) {
+            continue;
+        }
         let threshold = if is_mob { MOB_WIND } else { ITEM_WIND };
         if wind.speed < threshold {
             continue;

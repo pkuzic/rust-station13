@@ -210,6 +210,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             space: def.space,
             internals: def.internals,
             siemens: def.siemens,
+            magnetic: def.magnetic,
         });
     }
     if let Some(tank) = &def.tank {

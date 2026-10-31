@@ -1,4 +1,5 @@
-//! Flashlights, penlights, lanterns and desk lamps. Spec: `docs/reference/flashlights.md`.
+//! Flashlights, penlights, lanterns, desk lamps and hard hat lamps. Spec:
+//! `docs/reference/flashlights.md`.
 
 use std::collections::HashMap;
 
@@ -27,6 +28,8 @@ pub fn kind(proto: &str) -> Option<Flashlight> {
         "penlight" => ([2, 2, 2], false),
         "lantern" => ([6, 6, 5], false),
         "desk-lamp" | "desk-lamp-green" => ([6, 6, 6], true),
+        // Hard hats have a lamp built in (Luna adds 5 to the wearer's light).
+        "hardhat" | "hardhat-orange" | "hardhat-red" | "hardhat-white" | "hardhat-blue" => ([5, 5, 5], false),
         _ => return None,
     };
     Some(Flashlight { rgb, on })

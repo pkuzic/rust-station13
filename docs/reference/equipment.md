@@ -7,7 +7,8 @@ Code:
 
 Client: the HUD slots in `apps/client/src/hud.rs` (`docs/reference/hud.md`) and `apps/client/src/sprites.rs` (`wear_layers`).
 
-Tests: `game/classic/tests/equipment.rs`.
+Tests: `game/classic/tests/equipment.rs`, `engineering_gear.rs`, and `decompression.rs` (magnetic
+boots).
 
 ## Slots
 
@@ -32,6 +33,8 @@ Worn suit and shoes add to the step delay (Luna `movement_delay`):
 |---|---|
 | Space suit | +3 ds |
 | Black shoes | −1 ds |
+| Magnetic boots | −1 ds (Luna shoes' default) |
+| Firesuit | +1 ds |
 
 So a running human steps every 1.3 ds in shoes (the 2.3 ds base minus 1) and every 4.3 ds in a space suit.
 
@@ -73,6 +76,31 @@ Measured in the engineering chamber with the outer door open:
 - **Internals only:** the person keeps breathing, but takes pressure and cold damage.
 - **Full EVA gear** (suit, helmet, mask, emergency oxygen on internals): unhurt and
   conscious after 120 s, with body temperature above 300 K.
+
+## Engineering gear
+
+From Luna's engineering section and tool closets:
+
+| Prototype | Luna type | Slot | What it does here |
+|---|---|---|---|
+| `magboots` | `clothing/shoes/magnetic` | shoes | Space wind doesn't move the wearer (Luna `Airflow.dm` skips them) |
+| `black-gloves` | `clothing/gloves/black` | gloves | Half a shock gets through (Luna gloves' `siemens_coefficient` 0.5) |
+| `gas-mask` | `clothing/mask/gas` | mask | Takes air from a tank, like a breath mask |
+| `firesuit` | `clothing/suit/fire` | suit | Slows by 1 ds |
+| `hardhat` and `-orange`, `-red` (firefighter helmet), `-white`, `-blue` | `clothing/head/helmet/hardhat` | head | A lamp of 5, switched in hand (`flashlights.md`) |
+
+Tool closets hold a hard hat three times in ten (Luna `toolcloset`).
+
+**Not implemented:** what makes some of these matter in Luna has no counterpart yet:
+- armour (hard hats' melee 30);
+- heat and fire protection (firesuits, black gloves, the red and white hard hats, magnetic
+  boots' `protective_temperature`);
+- slipping (magnetic boots are `NOSLIP`);
+- gas masks filtering smoke and gases;
+- meson scanners: there is no glasses slot yet, and adding one changes `rs13_world::Slot`.
+
+A lit hard hat is drawn as `worn:<id>-on`: an item with a state is drawn as
+`worn:<id>-<state>` when that sprite exists.
 
 ## Drawing
 

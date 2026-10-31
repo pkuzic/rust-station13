@@ -1,0 +1,272 @@
+//! Decompression and vacuum exposure in the engineering chamber.
+//! Design: docs/ATMOSPHERICS.md; tuning: docs/reference/environment.md.
+
+use bevy_app::{App, FixedUpdate};
+use bevy_ecs::prelude::*;
+use rs13_classic::alarms::AirAlarm;
+use rs13_classic::atmos::StationAtmos;
+use rs13_classic::doors::{Airlock, DoorState};
+use rs13_classic::environment::Lungs;
+use rs13_classic::health::{Body, Vitals};
+use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
+use rs13_classic::{ClassicPlugin, maps};
+use rs13_simulation::atmos::Gas;
+use rs13_simulation::atmos::gas::ONE_ATMOSPHERE;
+use rs13_world::{Dir, GridPos, MobStat, ObjectSpec, TileMap, TilePos};
+
+const INNER_DOOR: TilePos = TilePos::new(16, 6, 0);
+const OUTER_DOOR: TilePos = TilePos::new(20, 6, 0);
+const CLOSET: TilePos = TilePos::new(18, 8, 0);
+const ROOM: TilePos = TilePos::new(8, 8, 0);
+const TICKS_PER_SECOND: usize = 20;
+
+fn setup() -> App {
+    let mut app = App::new();
+    app.add_plugins(ClassicPlugin);
+    let problems = spawn_map(
+        app.world_mut(),
+        TileMap::from_ron(maps::ENGINEERING_CHAMBER, 0).unwrap(),
+    );
+    assert!(problems.is_empty(), "{problems:?}");
+    // These scenarios measure the air itself, so the air alarms' seals must not close the
+    // jammed doors. The seals have their own scenarios in `air_alarm.rs`.
+    let mut alarms = app.world_mut().query_filtered::<Entity, With<AirAlarm>>();
+    let alarms: Vec<Entity> = alarms.iter(app.world()).collect();
+    for alarm in alarms {
+        app.world_mut().despawn(alarm);
+    }
+    app
+}
+
+fn seconds(app: &mut App, s: usize) {
+    for _ in 0..s * TICKS_PER_SECOND {
+        app.world_mut().run_schedule(FixedUpdate);
+    }
+}
+
+fn door_at(app: &mut App, pos: TilePos) -> Entity {
+    let mut q = app.world_mut().query::<(Entity, &GridPos, &Airlock)>();
+    q.iter(app.world()).find(|(_, p, _)| p.0 == pos).unwrap().0
+}
+
+/// Jam a door open (no autoclose), as if forced.
+fn hold_open(app: &mut App, pos: TilePos) {
+    let door = door_at(app, pos);
+    app.world_mut().get_mut::<Airlock>(door).unwrap().state = DoorState::Open { autoclose_at: None };
+}
+
+fn pressure(app: &App, pos: TilePos) -> f64 {
+    app.world().resource::<StationAtmos>().0.pressure_at(pos)
+}
+
+fn stat(app: &App, mob: Entity) -> MobStat {
+    app.world().get::<Vitals>(mob).unwrap().stat
+}
+
+#[test]
+fn the_station_starts_at_one_atmosphere() {
+    let mut app = setup();
+    seconds(&mut app, 2);
+    for pos in [ROOM, CLOSET, INNER_DOOR] {
+        assert!((pressure(&app, pos) - ONE_ATMOSPHERE).abs() < 1e-6);
+    }
+}
+
+#[test]
+fn opening_the_external_airlock_vents_the_closet_but_not_the_room() {
+    let mut app = setup();
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 5);
+    let after_5 = pressure(&app, CLOSET);
+    assert!(after_5 < 60.0, "closet after 5 s: {after_5:.1} kPa");
+    seconds(&mut app, 25);
+    assert!(
+        pressure(&app, CLOSET) < 1.0,
+        "closet after 30 s: {:.2} kPa",
+        pressure(&app, CLOSET)
+    );
+    assert!(
+        (pressure(&app, ROOM) - ONE_ATMOSPHERE).abs() < 1e-6,
+        "the inner door held"
+    );
+}
+
+#[test]
+fn both_doors_open_vent_the_whole_chamber() {
+    let mut app = setup();
+    hold_open(&mut app, OUTER_DOOR);
+    hold_open(&mut app, INNER_DOOR);
+    seconds(&mut app, 30);
+    let room = pressure(&app, ROOM);
+    assert!(room < ONE_ATMOSPHERE * 0.5, "room after 30 s: {room:.1} kPa");
+    seconds(&mut app, 150);
+    assert!(
+        pressure(&app, ROOM) < 5.0,
+        "room after 3 min: {:.1} kPa",
+        pressure(&app, ROOM)
+    );
+}
+
+#[test]
+fn closing_the_door_again_stops_the_loss() {
+    let mut app = setup();
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 2);
+    let door = door_at(&mut app, OUTER_DOOR);
+    app.world_mut().get_mut::<Airlock>(door).unwrap().state = DoorState::Closed;
+    seconds(&mut app, 1);
+    let held = pressure(&app, CLOSET);
+    assert!(held > 10.0);
+    // Sealed again: it never loses more, and the vent starts topping it up.
+    let mut last = held;
+    for _ in 0..10 {
+        seconds(&mut app, 1);
+        let now = pressure(&app, CLOSET);
+        assert!(now >= last - 1e-9, "{now} < {last}");
+        last = now;
+    }
+    assert!(last > held);
+}
+
+#[test]
+fn after_a_blowout_the_vents_restore_the_closet() {
+    // Phase 1 acceptance (docs/ATMOSPHERICS.md): opening an airlock depressurises a room
+    // and machinery restores pressure.
+    let mut app = setup();
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 30);
+    assert!(pressure(&app, CLOSET) < 1.0, "vented");
+    let door = door_at(&mut app, OUTER_DOOR);
+    app.world_mut().get_mut::<Airlock>(door).unwrap().state = DoorState::Closed;
+
+    let mut restored_at = None;
+    for s in 1..=180 {
+        seconds(&mut app, 1);
+        if pressure(&app, CLOSET) > 95.0 {
+            restored_at = Some(s);
+            break;
+        }
+    }
+    let at = restored_at.unwrap_or_else(|| panic!("still {:.1} kPa after 3 min", pressure(&app, CLOSET)));
+    assert!(at >= 10, "refilling is not instant: {at} s");
+    // The vent closes in on one atmosphere (each cycle closes part of the gap) and never
+    // overshoots it.
+    seconds(&mut app, 60);
+    let p = pressure(&app, CLOSET);
+    assert!((98.0..=ONE_ATMOSPHERE + 1e-6).contains(&p), "{p}");
+}
+
+#[test]
+fn normal_air_does_no_harm() {
+    let mut app = setup();
+    let mob = spawn_player_mob(app.world_mut(), ROOM);
+    seconds(&mut app, 120);
+    let body = app.world().get::<Body>(mob).unwrap();
+    assert_eq!(body.health(), 100.0, "oxy {} tox {}", body.oxy, body.tox);
+    let lungs = app.world().get::<Lungs>(mob).unwrap();
+    assert!((lungs.body_temperature - 310.15).abs() < 0.5);
+}
+
+#[test]
+fn breathing_turns_oxygen_into_carbon_dioxide() {
+    let mut app = setup();
+    // Seal someone in the closet for ten minutes.
+    let mob = spawn_player_mob(app.world_mut(), CLOSET);
+    seconds(&mut app, 600);
+    let air = app.world().resource::<StationAtmos>().0.air_at(CLOSET);
+    assert!(air.get(Gas::CarbonDioxide) > 0.0);
+    assert!(
+        app.world().get::<Body>(mob).unwrap().health() > 99.0,
+        "still fine"
+    );
+}
+
+#[test]
+fn unprotected_in_vacuum_is_quickly_fatal() {
+    let mut app = setup();
+    // Standing in the closet as it vents, holding on (out of the wind's path).
+    let mob = spawn_player_mob(app.world_mut(), TilePos::new(17, 10, 0));
+    hold_open(&mut app, OUTER_DOOR);
+
+    let mut unconscious_at = None;
+    let mut dead_at = None;
+    for s in 1..=180 {
+        seconds(&mut app, 1);
+        match stat(&app, mob) {
+            MobStat::Unconscious if unconscious_at.is_none() => unconscious_at = Some(s),
+            MobStat::Dead => {
+                dead_at = Some(s);
+                break;
+            }
+            _ => {}
+        }
+    }
+    let (out, dead) = (unconscious_at.expect("passes out"), dead_at.expect("dies"));
+    // Deadly, but with a few seconds to act.
+    assert!((10..=45).contains(&out), "unconscious after {out} s");
+    assert!(dead <= 120, "dead after {dead} s");
+    let lungs = app.world().get::<Lungs>(mob).unwrap();
+    assert!(
+        lungs.body_temperature < 300.0,
+        "cooling in vacuum: {}",
+        lungs.body_temperature
+    );
+}
+
+#[test]
+fn space_wind_blows_a_person_out_of_the_airlock() {
+    let mut app = setup();
+    let mob = spawn_player_mob(app.world_mut(), OUTER_DOOR.step(Dir::West));
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 3);
+    let pos = app.world().get::<GridPos>(mob).unwrap().0;
+    assert!(pos.x > OUTER_DOOR.x, "blown out into space, now at {pos:?}");
+}
+
+#[test]
+fn loose_items_are_sucked_out_too() {
+    let mut app = setup();
+    let item = spawn_object(
+        app.world_mut(),
+        &ObjectSpec::new("wrench"),
+        OUTER_DOOR.step(Dir::West).step(Dir::South),
+    )
+    .unwrap();
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 3);
+    let pos = app.world().get::<GridPos>(item).unwrap().0;
+    assert!(pos.x > OUTER_DOOR.x, "item now at {pos:?}");
+}
+
+#[test]
+fn blown_into_space_you_keep_drifting_until_something_stops_you() {
+    let mut app = setup();
+    let mob = spawn_player_mob(app.world_mut(), OUTER_DOOR.step(Dir::West));
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 5);
+    // The map's last column: drifted all the way to the edge of the map.
+    assert_eq!(app.world().get::<GridPos>(mob).unwrap().0, TilePos::new(21, 6, 0));
+}
+
+#[test]
+fn magnetic_boots_hold_against_the_wind() {
+    let mut app = setup();
+    let mob = spawn_player_mob(app.world_mut(), OUTER_DOOR.step(Dir::West));
+    let boots = spawn_object(app.world_mut(), &ObjectSpec::new("magboots"), ROOM).unwrap();
+    app.world_mut()
+        .entity_mut(boots)
+        .remove::<GridPos>()
+        .insert(WornBy(mob));
+    app.world_mut()
+        .get_mut::<Equipment>(mob)
+        .unwrap()
+        .0
+        .insert(Slot::Shoes, boots);
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 5);
+    assert_eq!(
+        app.world().get::<GridPos>(mob).unwrap().0,
+        OUTER_DOOR.step(Dir::West),
+        "Luna's `shoes/magnetic` keep the wearer in place"
+    );
+}
