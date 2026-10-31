@@ -74,14 +74,37 @@ struct Args {
     screenshot: Option<String>,
     /// Window size in logical pixels, as `WIDTHxHEIGHT`.
     size: Option<(f32, f32)>,
-    /// For checking windows in screenshots: once joined, use whatever is this many tiles
-    /// east and north of our player, as `DX,DY`.
-    use_at: Option<(i32, i32)>,
+    /// For checking windows in screenshots: what to do once joined (`--use`, repeatable).
+    use_at: Vec<UseStep>,
 }
 
-/// `--use`: what to use once joined, and whether it has been.
+/// One `--use` step, half a second apart.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum UseStep {
+    /// `DX,DY`: use whatever is this many tiles east and north of our player.
+    Tile(i32, i32),
+    /// `swap`: swap hands.
+    Swap,
+    /// `held`: click the item in the other hand (an empty hand on a held container opens it).
+    Held,
+}
+
+impl UseStep {
+    fn parse(s: &str) -> Option<Self> {
+        match s {
+            "swap" => Some(Self::Swap),
+            "held" => Some(Self::Held),
+            _ => {
+                let (x, y) = s.split_once(',')?;
+                Some(Self::Tile(x.trim().parse().ok()?, y.trim().parse().ok()?))
+            }
+        }
+    }
+}
+
+/// `--use`: the steps still to do.
 #[derive(Resource)]
-struct ScriptedUse(Option<(i32, i32)>);
+struct ScriptedUse(VecDeque<UseStep>);
 
 #[derive(Resource)]
 struct ScreenshotPlan(Option<String>);
@@ -173,7 +196,7 @@ fn main() {
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
         .insert_resource(ScreenshotPlan(args.screenshot))
-        .insert_resource(ScriptedUse(args.use_at))
+        .insert_resource(ScriptedUse(args.use_at.into()))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<hud::WalkMode>()
@@ -258,7 +281,7 @@ fn parse_args() -> Args {
         name: None,
         screenshot: None,
         size: None,
-        use_at: None,
+        use_at: Vec::new(),
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
@@ -266,12 +289,7 @@ fn parse_args() -> Args {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
-            "--use" => {
-                args.use_at = it.next().and_then(|s| {
-                    let (x, y) = s.split_once(',')?;
-                    Some((x.trim().parse().ok()?, y.trim().parse().ok()?))
-                })
-            }
+            "--use" => args.use_at.extend(it.next().as_deref().and_then(UseStep::parse)),
             "--size" => {
                 args.size = it.next().and_then(|s| {
                     let (w, h) = s.split_once('x')?;
@@ -800,9 +818,8 @@ fn send_move_input(
     let dx = held(KeyCode::KeyD, KeyCode::ArrowRight) as i32 - held(KeyCode::KeyA, KeyCode::ArrowLeft) as i32;
     let dy = held(KeyCode::KeyW, KeyCode::ArrowUp) as i32 - held(KeyCode::KeyS, KeyCode::ArrowDown) as i32;
     // With Ctrl held, directions turn on the spot instead (`send_hotkeys`).
-    let turning = keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let input = MoveInput {
-        dir: Dir::from_offset(dx, dy).filter(|_| !turning),
+        dir: Dir::from_offset(dx, dy).filter(|_| turns(&keys).is_none()),
         // Shift does the opposite of the move-intent button while held.
         run: walk.0 == keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]),
     };
@@ -810,6 +827,27 @@ fn send_move_input(
         sender.send::<IntentChannel>(input);
         *last_sent = Some(input);
     }
+}
+
+/// With Ctrl held, directions turn on the spot instead of stepping: the ways pressed this
+/// frame, to turn to. `None` without Ctrl.
+fn turns(keys: &ButtonInput<KeyCode>) -> Option<Vec<Dir>> {
+    if !keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
+        return None;
+    }
+    let directions = [
+        (KeyCode::KeyW, KeyCode::ArrowUp, Dir::North),
+        (KeyCode::KeyS, KeyCode::ArrowDown, Dir::South),
+        (KeyCode::KeyD, KeyCode::ArrowRight, Dir::East),
+        (KeyCode::KeyA, KeyCode::ArrowLeft, Dir::West),
+    ];
+    Some(
+        directions
+            .into_iter()
+            .filter(|(a, b, _)| keys.any_just_pressed([*a, *b]))
+            .map(|(.., dir)| dir)
+            .collect(),
+    )
 }
 
 fn send_hotkeys(
@@ -825,20 +863,9 @@ fn send_hotkeys(
     if chat.open || chat.is_changed() {
         return;
     }
-    // Ctrl + a direction: turn to face it without stepping.
-    let directions = [
-        (KeyCode::KeyW, KeyCode::ArrowUp, 0, 1),
-        (KeyCode::KeyS, KeyCode::ArrowDown, 0, -1),
-        (KeyCode::KeyD, KeyCode::ArrowRight, 1, 0),
-        (KeyCode::KeyA, KeyCode::ArrowLeft, -1, 0),
-    ];
-    if keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
-        for (a, b, dx, dy) in directions {
-            if keys.any_just_pressed([a, b])
-                && let Some(dir) = Dir::from_offset(dx, dy)
-            {
-                sender.send::<IntentChannel>(ActionInput::Face(dir));
-            }
+    if let Some(turns) = turns(&keys) {
+        for dir in turns {
+            sender.send::<IntentChannel>(ActionInput::Face(dir));
         }
         return;
     }
@@ -1162,38 +1189,49 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
     };
 }
 
-/// With `--use DX,DY`: two seconds after our player appears, use the thing on that tile, as a
-/// click there would.
+/// With `--use`: from two seconds after our player appears, do each step half a second
+/// apart, as the clicks or keys would.
 fn scripted_use(
     time: Res<Time>,
     mut plan: ResMut<ScriptedUse>,
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, &HandsView), With<OwnPlayer>>,
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
-    mut joined_at: Local<Option<f32>>,
+    mut next_at: Local<Option<f32>>,
 ) {
-    let (Some((dx, dy)), Ok(me)) = (plan.0, own.single()) else {
+    let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
         return;
     };
     let now = time.elapsed_secs();
-    if now < *joined_at.get_or_insert(now) + 2.0 {
+    if now < *next_at.get_or_insert(now + 2.0) {
         return;
     }
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
-    let tile = (me.0.x + dx, me.0.y + dy);
-    let target = objects
-        .iter()
-        .filter(|(_, pos, a)| {
-            (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
-        })
-        .min_by_key(|(_, _, a)| click_rank(a))
-        .map(|(id, ..)| *id);
-    if let Some(target) = target {
-        sender.send::<IntentChannel>(ActionInput::UseOn(target));
+    let action = match step {
+        UseStep::Tile(dx, dy) => {
+            let tile = (me.0.x + dx, me.0.y + dy);
+            objects
+                .iter()
+                .filter(|(_, pos, a)| {
+                    (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+                })
+                .min_by_key(|(_, _, a)| click_rank(a))
+                .map(|(id, ..)| ActionInput::UseOn(*id))
+        }
+        UseStep::Swap => Some(ActionInput::SwapHands),
+        UseStep::Held => match hands.active {
+            Hand::Right => hands.left,
+            Hand::Left => hands.right,
+        }
+        .map(ActionInput::UseOn),
+    };
+    if let Some(action) = action {
+        sender.send::<IntentChannel>(action);
     }
-    plan.0 = None;
+    plan.0.pop_front();
+    *next_at = Some(now + 0.5);
 }
 
 /// With `--screenshot PATH`: four seconds after our player appears, save the window to PATH;
@@ -1225,5 +1263,34 @@ fn take_screenshot(
             .spawn(bevy::render::view::screenshot::Screenshot::primary_window())
             .observe(bevy::render::view::screenshot::save_to_disk(path));
         *taken_at = Some(now);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ctrl_and_a_direction_turns_instead_of_stepping() {
+        let mut keys = ButtonInput::<KeyCode>::default();
+        keys.press(KeyCode::ArrowUp);
+        assert_eq!(turns(&keys), None, "without Ctrl, arrows step");
+        keys.clear();
+        keys.press(KeyCode::ControlLeft);
+        keys.press(KeyCode::KeyA);
+        assert_eq!(turns(&keys), Some(vec![Dir::West]));
+        // Held on, it doesn't turn again, but still doesn't step.
+        keys.clear();
+        assert_eq!(turns(&keys), Some(vec![]));
+        keys.release(KeyCode::ControlLeft);
+        assert_eq!(turns(&keys), None);
+    }
+
+    #[test]
+    fn use_steps_parse() {
+        assert_eq!(UseStep::parse("1,-2"), Some(UseStep::Tile(1, -2)));
+        assert_eq!(UseStep::parse("swap"), Some(UseStep::Swap));
+        assert_eq!(UseStep::parse("held"), Some(UseStep::Held));
+        assert_eq!(UseStep::parse("nope"), None);
     }
 }

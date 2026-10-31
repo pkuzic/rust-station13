@@ -30,6 +30,7 @@ fn run_bot(server: SocketAddr, dir: Dir, extra: Extra) -> thread::JoinHandle<Bot
             examine: extra.examine.map(str::to_owned),
             name: extra.name.map(str::to_owned),
             say: extra.say.map(str::to_owned),
+            script: Vec::new(),
         };
         let exit = bot_app(config, report.clone()).run();
         assert!(exit.is_success(), "bot moving {dir:?} exited with {exit:?}");

@@ -30,6 +30,15 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
   cargo clippy --workspace --all-targets -- -D warnings
   cargo test --workspace
   ```
+- Test what you build end to end, not only with unit tests: drive the real behaviour
+  before handing back. Tools for that:
+  - `apps/headless`: bots over UDP against a real server, with a `script` of steps (walk,
+    click a sprite, any action, wait, snapshot what was received); see
+    `apps/headless/tests/sight_and_storage.rs`.
+  - `rs13-server --map-file PATH`: a small map of your own for the case at hand.
+  - `rs13-client --size 1400x900 --use DX,DY|swap|held … --screenshot PATH`: clicks and
+    keys a player would do, then a screenshot to look at.
+  If a path can't be driven yet, build the means to drive it first.
 - Deliver: code, tests, a short summary, known limits, and any interface changes.
 
 ## Conventions

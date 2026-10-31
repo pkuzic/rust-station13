@@ -1,5 +1,9 @@
 //! Headless bot client as a library, so tests can run bots in-process.
 
+mod script;
+
+pub use script::{Snapshot, Step};
+
 use std::net::SocketAddr;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -11,8 +15,10 @@ use rs13_i18n::LocMsg;
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
-use rs13_world::{Appearance, Dir, GridPos, Hidden, NetId, TilePos};
+use rs13_network::protocol::{
+    ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate, StoragePanel,
+};
+use rs13_world::{Appearance, Dir, GridPos, Hidden, NetId, StorageView, TilePos};
 
 /// Give up if no own player has been received after this long.
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -31,6 +37,8 @@ pub struct BotConfig {
     pub name: Option<String>,
     /// Something to say one second before finishing.
     pub say: Option<String>,
+    /// Steps to run in order once the bot's player has arrived (`Step`).
+    pub script: Vec<Step>,
 }
 
 /// A player as the bot last saw it.
@@ -52,6 +60,10 @@ pub struct BotResult {
     /// How many things under the floor (`Hidden`) ever reached the bot: the server should
     /// send none.
     pub under_floor_received: usize,
+    /// What the bot could see at each `Step::Snapshot`, in order.
+    pub snapshots: Vec<Snapshot>,
+    /// The open container window the server last sent, if any.
+    pub storage: Option<StorageView>,
 }
 
 /// Things under the floor received so far.
@@ -67,14 +79,14 @@ pub type BotReport = Arc<Mutex<Option<BotResult>>>;
 
 /// Notices received so far, and the latest status.
 #[derive(Resource, Default)]
-struct Received(Vec<LocMsg>, Option<StatusUpdate>);
+struct Received(Vec<LocMsg>, Option<StatusUpdate>, Option<StorageView>);
 
 #[derive(Resource)]
 struct ReportSink(BotReport);
 
 /// When the bot first saw its own player, if it has.
 #[derive(Resource, Default)]
-struct JoinedAt(Option<Duration>);
+pub(crate) struct JoinedAt(pub(crate) Option<Duration>);
 
 /// A bot ready to `run()`. When it exits, `report` holds what it saw.
 /// Logging is left to the caller.
@@ -90,11 +102,20 @@ pub fn bot_app(config: BotConfig, report: BotReport) -> App {
     .init_resource::<JoinedAt>()
     .init_resource::<Received>()
     .init_resource::<UnderFloor>()
+    .init_resource::<script::Snapshots>()
     .add_observer(count_under_floor)
     .add_systems(Startup, start)
     .add_systems(
         Update,
-        (send_input, examine, talk, receive_notices, finish).chain(),
+        (
+            send_input,
+            script::run_script,
+            examine,
+            talk,
+            receive_notices,
+            finish,
+        )
+            .chain(),
     );
     app
 }
@@ -189,8 +210,14 @@ fn examine(
 fn receive_notices(
     mut notices: Query<&mut MessageReceiver<Notice>, With<Client>>,
     mut statuses: Query<&mut MessageReceiver<StatusUpdate>, With<Client>>,
+    mut panels: Query<&mut MessageReceiver<StoragePanel>, With<Client>>,
     mut received: ResMut<Received>,
 ) {
+    for mut receiver in &mut panels {
+        if let Some(panel) = receiver.receive().last() {
+            received.2 = panel.0;
+        }
+    }
     for mut receiver in &mut notices {
         received.0.extend(receiver.receive().map(|n| n.0));
     }
@@ -207,6 +234,7 @@ fn finish(
     sink: Res<ReportSink>,
     received: Res<Received>,
     under_floor: Res<UnderFloor>,
+    snapshots: Res<script::Snapshots>,
     mut joined: ResMut<JoinedAt>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
     mut exit: MessageWriter<AppExit>,
@@ -236,6 +264,8 @@ fn finish(
                 notices: received.0.clone(),
                 status: received.1.clone(),
                 under_floor_received: under_floor.0,
+                snapshots: snapshots.0.clone(),
+                storage: received.2.clone(),
             });
             exit.write(AppExit::Success);
         }

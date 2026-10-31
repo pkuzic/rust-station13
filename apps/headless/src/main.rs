@@ -54,6 +54,7 @@ fn parse_args() -> Result<BotConfig, String> {
         examine: None,
         name: None,
         say: None,
+        script: Vec::new(),
     };
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
