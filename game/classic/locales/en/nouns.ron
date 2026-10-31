@@ -95,6 +95,7 @@
     "lantern": (gender: neuter, sg: (nom: "lantern", indef: "a lantern"), pl: Some((nom: "lanterns"))),
     "desk-lamp": (gender: neuter, sg: (nom: "desk lamp", indef: "a desk lamp"), pl: Some((nom: "desk lamps"))),
     "desk-lamp-green": (gender: neuter, sg: (nom: "green desk lamp", indef: "a green desk lamp"), pl: Some((nom: "green desk lamps"))),
+    "fire-alarm": (gender: neuter, sg: (nom: "fire alarm", indef: "a fire alarm"), pl: Some((nom: "fire alarms"))),
     "magboots": (gender: plural, sg: (nom: "magboots", indef: "a pair of magboots")),
     "black-gloves": (gender: plural, sg: (nom: "black gloves", indef: "a pair of black gloves")),
     "gas-mask": (gender: neuter, sg: (nom: "gas mask", indef: "a gas mask"), pl: Some((nom: "gas masks"))),

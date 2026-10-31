@@ -56,6 +56,12 @@ Code: `game/classic/src/firedoors.rs`; edge barriers in the air solver are
   - a welded firedoor ignores the alarm;
   - a firedoor that is moving finishes first, then does what the alarm asked.
 
+## Fire alarms
+
+A fire alarm that goes off closes every firedoor in or next to its area, as an air alarm
+seal does, and they open again when it is reset, unless a seal or another alarm still
+covers them (`fire-alarm.md`).
+
 ## Differences from Luna
 
 - **Both ways:** Luna's border firedoor only stops people entering its tile from the side
@@ -63,7 +69,6 @@ Code: `game/classic/src/firedoors.rs`; edge barriers in the air solver are
   blocks the edge both ways, as the air does.
 - **Welding fuel:** welding one burns one unit of fuel, as any use of a lit welding tool
   does (`welding.md`). Luna takes two more.
-- **Fire alarms:** we have none, so only air alarm seals close firedoors.
 - **Not implemented:**
   - Luna's full-tile firedoors (`/obj/machinery/door/firedoor`);
   - crushing people as a firedoor closes;
