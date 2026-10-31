@@ -84,6 +84,12 @@
         (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
         (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
         (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),
+        (path: "/obj/item/weapon/storage/firstaid/regular", id: "first-aid-kit"),
+        (path: "/obj/item/weapon/storage/firstaid/fire", id: "first-aid-kit-fire"),
+        (path: "/obj/item/stack/medical/bruise_pack", id: "bruise-pack"),
+        (path: "/obj/item/stack/medical/ointment", id: "ointment"),
+        (path: "/obj/item/device/healthanalyzer", id: "health-analyzer"),
+
         (path: "/obj/item/clothing/mask/gas", id: "gas-mask"),
         (path: "/obj/item/clothing/shoes/magnetic", id: "magboots"),
         (path: "/obj/item/clothing/gloves/black", id: "black-gloves"),

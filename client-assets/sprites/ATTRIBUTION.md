@@ -25,6 +25,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |
+| `bruise-pack:` | `icons/obj/items.dmi : "brutepack"` | CC-BY-SA 3.0 |
 | `cable:0-1` | `icons/obj/power_cond.dmi : "0-1"` | CC-BY-SA 3.0 |
 | `cable:0-10` | `icons/obj/power_cond.dmi : "0-10"` | CC-BY-SA 3.0 |
 | `cable:0-2` | `icons/obj/power_cond.dmi : "0-2"` | CC-BY-SA 3.0 |
@@ -121,6 +122,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `firedoor:doorc1-south` | `icons/obj/doors/door_fire2.dmi : "doorc1"` | CC-BY-SA 3.0 |
 | `firedoor:doorc1-west` | `icons/obj/doors/door_fire2.dmi : "doorc1"` | CC-BY-SA 3.0 |
 | `firesuit:` | `icons/obj/clothing/suits.dmi : "fire"` | CC-BY-SA 3.0 |
+| `first-aid-kit:` | `icons/obj/storage.dmi : "firstaid"` | CC-BY-SA 3.0 |
+| `first-aid-kit-fire:` | `icons/obj/storage.dmi : "ointment"` | CC-BY-SA 3.0 |
 | `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
@@ -137,6 +140,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hardhat-red:on` | `icons/obj/clothing/hats.dmi : "hardhat1_red"` | CC-BY-SA 3.0 |
 | `hardhat-white:` | `icons/obj/clothing/hats.dmi : "hardhat0_white"` | CC-BY-SA 3.0 |
 | `hardhat-white:on` | `icons/obj/clothing/hats.dmi : "hardhat1_white"` | CC-BY-SA 3.0 |
+| `health-analyzer:` | `icons/obj/device.dmi : "health"` | CC-BY-SA 3.0 |
 | `hud:bar-e` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-nw` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-s` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
@@ -299,6 +303,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `nitrous-oxide-canister:can-o1` | `icons/obj/atmos.dmi : "can-o1"` | CC-BY-SA 3.0 |
 | `nitrous-oxide-canister:can-o2` | `icons/obj/atmos.dmi : "can-o2"` | CC-BY-SA 3.0 |
 | `nitrous-oxide-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
+| `ointment:` | `icons/obj/items.dmi : "ointment"` | CC-BY-SA 3.0 |
 | `oxygen-canister:` | `icons/obj/atmos.dmi : "blue"` | CC-BY-SA 3.0 |
 | `oxygen-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
 | `oxygen-canister:can-o0` | `icons/obj/atmos.dmi : "can-o0"` | CC-BY-SA 3.0 |

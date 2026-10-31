@@ -23,6 +23,7 @@ pub mod health;
 pub mod lighting;
 pub mod lights;
 pub mod machines;
+pub mod medical;
 pub mod meters;
 pub mod movement;
 pub mod names;
@@ -70,6 +71,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<access::AccessIds>()
             .init_resource::<rng::GameRng>()
             .init_resource::<combat::PendingAttacks>()
+            .init_resource::<medical::PendingTreatments>()
             .init_resource::<combat::VisibleEvents>()
             .init_resource::<atmos::WindCooldowns>()
             .init_resource::<machines::PipeNets>()
@@ -106,6 +108,7 @@ impl Plugin for ClassicPlugin {
                     alarms::process_alarm_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
+                    medical::resolve_treatments,
                     speech::speak,
                     combat::deliver_visible,
                 )

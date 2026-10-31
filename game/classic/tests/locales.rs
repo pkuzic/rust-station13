@@ -95,6 +95,14 @@ fn every_message_formats_in_both_locales() {
     args.set("what", "drop");
     args.set("colour", "dark-red");
     args.set("area", "Engineering");
+    args.set("oxy", 0);
+    args.set("tox", 0);
+    args.set("burn", 3);
+    args.set("brute", 12);
+    args.set("health", 85);
+    args.set("dead", "no");
+    args.set("celsius", 37);
+    args.set("fahrenheit", 99);
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

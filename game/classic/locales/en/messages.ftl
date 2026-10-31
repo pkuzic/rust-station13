@@ -277,6 +277,34 @@ locker-unlocked = The locker has been unlocked by { $name }.
 locker-access-denied = Access Denied
 locker-locked-inside = The locker is locked!
 
+# Medical (medical.md). Args: $name (who treats), $target, $item (noun id), numbers.
+medical-applied = { $target } has been applied with { NOUN($item) } by { $name }
+medical-applied-self = { $name } applied { NOUN($item) } on themselves
+analyzer-used = { $name } has analyzed { $target }'s vitals.
+analyzer-used-self = You have analyzed { $target }'s vitals.
+analyzer-status = Analyzing Results for { $target }: Overall Status: { $dead ->
+        [yes] dead
+       *[no] { $health }% healthy
+    }
+analyzer-damage = Key: Suffocation/Toxin/Burns/Brute. Damage Specifics: { $oxy } - { $tox } - { $burn } - { $brute }
+analyzer-temperature = Body Temperature: { $celsius }°C ({ $fahrenheit }°F)
+analyzer-localized = Localized Damage, Brute/Burn:
+analyzer-organ = { NOUN($zone) }: { $brute } - { $burn }
+analyzer-limbs-ok = Limbs are OK.
+analyzer-summary = { $oxy ->
+        [severe] Severe oxygen deprivation detected
+       *[ok] Subject bloodstream oxygen level normal
+    } | { $tox ->
+        [severe] Dangerous amount of toxins detected
+       *[ok] Subject bloodstream toxin level minimal
+    } | { $burn ->
+        [severe] Severe burn damage detected
+       *[ok] Subject burn injury status O.K
+    } | { $brute ->
+        [severe] Severe anatomical damage detected
+       *[ok] Subject brute-force injury status O.K
+    }
+
 # Fire alarm (fire-alarm.md). Args: $name, $item (noun id).
 fire-alarm-raised = You pull the fire alarm.
 fire-alarm-reset = You reset the fire alarm.
