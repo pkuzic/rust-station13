@@ -355,3 +355,7 @@ examine-cell-charger = { $charge ->
     [-1] There's no cell in the charger.
    *[other] There's a cell in the charger. Current charge: { $charge }.
 }
+
+# Jetpacks (jetpacks.md).
+jetpack-on = You toggle the jetpack on.
+jetpack-off = You toggle the jetpack off.

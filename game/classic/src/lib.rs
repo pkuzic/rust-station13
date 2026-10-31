@@ -23,6 +23,7 @@ pub mod furniture;
 pub mod generators;
 pub mod hands;
 pub mod health;
+pub mod jetpacks;
 pub mod lighting;
 pub mod lights;
 pub mod machines;
@@ -180,7 +181,12 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (dispensers::update_dispenser_looks, cells::update_cell_looks).in_set(TickSet::Publish),
+                (
+                    dispensers::update_dispenser_looks,
+                    cells::update_cell_looks,
+                    jetpacks::update_jetpack_looks,
+                )
+                    .in_set(TickSet::Publish),
             )
             // After the fixtures say whether they are lit: rules next tick see this light.
             .add_systems(FixedUpdate, lighting::update_tile_light.after(TickSet::Publish))

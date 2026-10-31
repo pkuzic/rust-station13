@@ -121,7 +121,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut generators, mut dispensers, mut chargers),
+        (mut generators, mut dispensers, mut chargers, mut jetpacks),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -141,6 +141,7 @@ pub fn process_actions(
             crate::generators::GeneratorWork,
             crate::dispensers::DispenserWork,
             crate::cells::ChargerWork,
+            crate::jetpacks::JetpackWork,
         ),
     ),
     mut commands: Commands,
@@ -310,12 +311,17 @@ pub fn process_actions(
                     if hands.active_item() == Some(target)
                         && (welding.is_welder(target)
                             || furniture.uses_self(target)
-                            || flashlights.contains(target)) =>
+                            || flashlights.contains(target)
+                            || jetpacks.contains(target)) =>
                 {
                     // The item in the active hand used on itself (Luna `attack_self`): a
                     // welding tool lights or goes out, rack parts become a rack, a
                     // flashlight switches.
-                    if let Some(outcome) = welding.use_self(target).or_else(|| flashlights.use_self(target)) {
+                    if let Some(outcome) = welding
+                        .use_self(target)
+                        .or_else(|| flashlights.use_self(target))
+                        .or_else(|| jetpacks.use_self(target))
+                    {
                         outbox.0.extend(outcome.to_mob);
                     }
                     furniture.use_self(mob_pos.0, &mut hands, target, &mut commands);

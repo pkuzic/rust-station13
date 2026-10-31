@@ -203,6 +203,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
+| `jetpack:` | `icons/obj/tank.dmi : "jetpack0"` | CC-BY-SA 3.0 |
+| `jetpack:on` | `icons/obj/tank.dmi : "jetpack1"` | CC-BY-SA 3.0 |
+| `jetpack-ce:` | `icons/obj/tank.dmi : "jetpack0_ce"` | CC-BY-SA 3.0 |
+| `jetpack-ce:on` | `icons/obj/tank.dmi : "jetpack1_ce"` | CC-BY-SA 3.0 |
 | `lantern:` | `icons/obj/lighting.dmi : "lantern"` | CC-BY-SA 3.0 |
 | `lantern:on` | `icons/obj/lighting.dmi : "lantern-on"` | CC-BY-SA 3.0 |
 | `light:tube-broken-east` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
@@ -602,6 +606,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:insulated-gloves:lying` | `icons/mob/hands.dmi : "ygloves2_rhand"` | CC-BY-SA 3.0 |
 | `worn:insulated-gloves:l:` | `icons/mob/hands.dmi : "ygloves_lhand"` | CC-BY-SA 3.0 |
 | `worn:insulated-gloves:l:lying` | `icons/mob/hands.dmi : "ygloves2_lhand"` | CC-BY-SA 3.0 |
+| `worn:jetpack:` | `icons/mob/back.dmi : "jetpack0"` | CC-BY-SA 3.0 |
+| `worn:jetpack:lying` | `icons/mob/back.dmi : "jetpack02"` | CC-BY-SA 3.0 |
+| `worn:jetpack-ce:` | `icons/mob/back.dmi : "jetpack0_ce"` | CC-BY-SA 3.0 |
+| `worn:jetpack-ce:lying` | `icons/mob/back.dmi : "jetpack0_ce2"` | CC-BY-SA 3.0 |
+| `worn:jetpack-ce-on:` | `icons/mob/back.dmi : "jetpack1_ce"` | CC-BY-SA 3.0 |
+| `worn:jetpack-ce-on:lying` | `icons/mob/back.dmi : "jetpack1_ce2"` | CC-BY-SA 3.0 |
+| `worn:jetpack-on:` | `icons/mob/back.dmi : "jetpack1"` | CC-BY-SA 3.0 |
+| `worn:jetpack-on:lying` | `icons/mob/back.dmi : "jetpack12"` | CC-BY-SA 3.0 |
 | `worn:magboots:` | `icons/mob/feet.dmi : "magboots"` | CC-BY-SA 3.0 |
 | `worn:magboots:lying` | `icons/mob/feet.dmi : "magboots2"` | CC-BY-SA 3.0 |
 | `worn:oxygen-tank:` | `icons/mob/back.dmi : "oxygen"` | CC-BY-SA 3.0 |

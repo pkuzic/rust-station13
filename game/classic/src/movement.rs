@@ -105,6 +105,11 @@ pub fn move_mobs(
     mut shocks: ResMut<crate::wires::PendingShocks>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
+    (jetpacks, mut tanks, mut commands): (
+        Query<&crate::jetpacks::Jetpack>,
+        Query<&mut crate::equipment::TankGas>,
+        Commands,
+    ),
 ) {
     let now = time.deciseconds();
     let sealed = crate::firedoors::closed_edges(firedoors.iter());
@@ -136,12 +141,18 @@ pub fn move_mobs(
             }
             continue;
         }
-        // In open space there is nothing to walk on: only push off from something nearby.
-        if is_space(&map.0, pos.0) && !has_handhold(&map.0, pos.0) {
-            continue;
-        }
         if now < mob.next_move_ds {
             continue;
+        }
+        // In open space there is nothing to walk on: only push off from something nearby,
+        // or fly with a jetpack, which also stops any drift (`jetpacks.md`).
+        if is_space(&map.0, pos.0) && !has_handhold(&map.0, pos.0) {
+            let pushed = crate::jetpacks::worn_jetpack(equipment, &jetpacks)
+                .is_some_and(|pack| crate::jetpacks::thrust(pack, &mut tanks));
+            if !pushed {
+                continue;
+            }
+            commands.entity(entity).remove::<crate::atmos::Drift>();
         }
         mob.facing = Some(dir);
         if let Some(target) = resolve_step(&map.0, &occupied, &sealed, pos.0, dir) {

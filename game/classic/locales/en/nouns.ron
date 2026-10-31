@@ -116,4 +116,6 @@
     "power-cell": (gender: neuter, sg: (nom: "power cell", indef: "a power cell"), pl: Some((nom: "power cells"))),
     "high-power-cell": (gender: neuter, sg: (nom: "high-capacity power cell", indef: "a high-capacity power cell"), pl: Some((nom: "high-capacity power cells"))),
     "cell-charger": (gender: neuter, sg: (nom: "cell charger", indef: "a cell charger"), pl: Some((nom: "cell chargers"))),
+    "jetpack": (gender: neuter, sg: (nom: "jetpack", indef: "a jetpack"), pl: Some((nom: "jetpacks"))),
+    "jetpack-ce": (gender: neuter, sg: (nom: "chief engineer's jetpack", indef: "a chief engineer's jetpack"), pl: Some((nom: "chief engineer's jetpacks"))),
 }

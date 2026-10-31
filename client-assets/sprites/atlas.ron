@@ -1900,7 +1900,7 @@
                 ],
             ),
         },
-        "lantern": {
+        "jetpack": {
             "": (
                 dirs: 1,
                 frames: 1,
@@ -1911,10 +1911,54 @@
             ),
             "on": (
                 dirs: 1,
+                frames: 2,
+                delays: [
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    314,
+                    315,
+                ],
+            ),
+        },
+        "jetpack-ce": {
+            "": (
+                dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
-                    314,
+                    316,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 2,
+                delays: [
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    317,
+                    318,
+                ],
+            ),
+        },
+        "lantern": {
+            "": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    319,
+                ],
+            ),
+            "on": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    320,
                 ],
             ),
         },
@@ -1924,7 +1968,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    315,
+                    321,
                 ],
             ),
             "tube-broken-north": (
@@ -1932,7 +1976,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    316,
+                    322,
                 ],
             ),
             "tube-broken-south": (
@@ -1940,7 +1984,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    317,
+                    323,
                 ],
             ),
             "tube-broken-west": (
@@ -1948,7 +1992,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    318,
+                    324,
                 ],
             ),
             "tube-burned-east": (
@@ -1956,7 +2000,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    319,
+                    325,
                 ],
             ),
             "tube-burned-north": (
@@ -1964,7 +2008,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    320,
+                    326,
                 ],
             ),
             "tube-burned-south": (
@@ -1972,7 +2016,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    321,
+                    327,
                 ],
             ),
             "tube-burned-west": (
@@ -1980,7 +2024,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    322,
+                    328,
                 ],
             ),
             "tube-empty-east": (
@@ -1988,7 +2032,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    323,
+                    329,
                 ],
             ),
             "tube-empty-north": (
@@ -1996,7 +2040,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    324,
+                    330,
                 ],
             ),
             "tube-empty-south": (
@@ -2004,7 +2048,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    325,
+                    331,
                 ],
             ),
             "tube-empty-west": (
@@ -2012,7 +2056,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    326,
+                    332,
                 ],
             ),
             "tube0-east": (
@@ -2020,7 +2064,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    327,
+                    333,
                 ],
             ),
             "tube0-north": (
@@ -2028,7 +2072,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    328,
+                    334,
                 ],
             ),
             "tube0-south": (
@@ -2036,7 +2080,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    329,
+                    335,
                 ],
             ),
             "tube0-west": (
@@ -2044,7 +2088,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    330,
+                    336,
                 ],
             ),
             "tube1-east": (
@@ -2052,7 +2096,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    331,
+                    337,
                 ],
             ),
             "tube1-north": (
@@ -2060,7 +2104,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    332,
+                    338,
                 ],
             ),
             "tube1-south": (
@@ -2068,7 +2112,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    333,
+                    339,
                 ],
             ),
             "tube1-west": (
@@ -2076,7 +2120,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    334,
+                    340,
                 ],
             ),
         },
@@ -2086,7 +2130,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    335,
+                    341,
                 ],
             ),
             "broken": (
@@ -2094,7 +2138,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    336,
+                    342,
                 ],
             ),
             "burned": (
@@ -2102,7 +2146,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    337,
+                    343,
                 ],
             ),
         },
@@ -2112,7 +2156,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    338,
+                    344,
                 ],
             ),
         },
@@ -2122,7 +2166,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    339,
+                    345,
                 ],
             ),
             "bulb-broken-north": (
@@ -2130,7 +2174,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    340,
+                    346,
                 ],
             ),
             "bulb-broken-south": (
@@ -2138,7 +2182,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    341,
+                    347,
                 ],
             ),
             "bulb-broken-west": (
@@ -2146,7 +2190,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    342,
+                    348,
                 ],
             ),
             "bulb-burned-east": (
@@ -2154,7 +2198,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    343,
+                    349,
                 ],
             ),
             "bulb-burned-north": (
@@ -2162,7 +2206,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    344,
+                    350,
                 ],
             ),
             "bulb-burned-south": (
@@ -2170,7 +2214,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    345,
+                    351,
                 ],
             ),
             "bulb-burned-west": (
@@ -2178,7 +2222,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    346,
+                    352,
                 ],
             ),
             "bulb-empty-east": (
@@ -2186,7 +2230,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    347,
+                    353,
                 ],
             ),
             "bulb-empty-north": (
@@ -2194,7 +2238,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    348,
+                    354,
                 ],
             ),
             "bulb-empty-south": (
@@ -2202,7 +2246,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    349,
+                    355,
                 ],
             ),
             "bulb-empty-west": (
@@ -2210,7 +2254,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    350,
+                    356,
                 ],
             ),
             "bulb0-east": (
@@ -2218,7 +2262,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    351,
+                    357,
                 ],
             ),
             "bulb0-north": (
@@ -2226,7 +2270,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    352,
+                    358,
                 ],
             ),
             "bulb0-south": (
@@ -2234,7 +2278,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    353,
+                    359,
                 ],
             ),
             "bulb0-west": (
@@ -2242,7 +2286,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    354,
+                    360,
                 ],
             ),
             "bulb1-east": (
@@ -2250,7 +2294,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    355,
+                    361,
                 ],
             ),
             "bulb1-north": (
@@ -2258,7 +2302,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    356,
+                    362,
                 ],
             ),
             "bulb1-south": (
@@ -2266,7 +2310,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    357,
+                    363,
                 ],
             ),
             "bulb1-west": (
@@ -2274,7 +2318,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    358,
+                    364,
                 ],
             ),
         },
@@ -2284,7 +2328,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    359,
+                    365,
                 ],
             ),
             "light0": (
@@ -2292,7 +2336,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    360,
+                    366,
                 ],
             ),
             "light1": (
@@ -2300,7 +2344,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    361,
+                    367,
                 ],
             ),
         },
@@ -2310,7 +2354,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    362,
+                    368,
                 ],
             ),
             "broken": (
@@ -2318,7 +2362,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    363,
+                    369,
                 ],
             ),
             "burned": (
@@ -2326,7 +2370,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    364,
+                    370,
                 ],
             ),
         },
@@ -2336,7 +2380,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    365,
+                    371,
                 ],
             ),
         },
@@ -2346,7 +2390,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    366,
+                    372,
                 ],
             ),
             "securece1": (
@@ -2354,7 +2398,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    367,
+                    373,
                 ],
             ),
             "secureceopen": (
@@ -2362,7 +2406,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    368,
+                    374,
                 ],
             ),
             "welded": (
@@ -2370,7 +2414,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    369,
+                    375,
                 ],
             ),
         },
@@ -2380,7 +2424,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    370,
+                    376,
                 ],
             ),
             "secureengelec1": (
@@ -2388,7 +2432,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    371,
+                    377,
                 ],
             ),
             "toolclosetopen": (
@@ -2396,7 +2440,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    372,
+                    378,
                 ],
             ),
             "welded": (
@@ -2404,7 +2448,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    373,
+                    379,
                 ],
             ),
         },
@@ -2414,7 +2458,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    374,
+                    380,
                 ],
             ),
             "secureeng1": (
@@ -2422,7 +2466,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    375,
+                    381,
                 ],
             ),
             "secureengopen": (
@@ -2430,7 +2474,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    376,
+                    382,
                 ],
             ),
             "welded": (
@@ -2438,7 +2482,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    377,
+                    383,
                 ],
             ),
         },
@@ -2448,7 +2492,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    378,
+                    384,
                 ],
             ),
             "secureengweld1": (
@@ -2456,7 +2500,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    379,
+                    385,
                 ],
             ),
             "toolclosetopen": (
@@ -2464,7 +2508,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    380,
+                    386,
                 ],
             ),
             "welded": (
@@ -2472,7 +2516,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    381,
+                    387,
                 ],
             ),
         },
@@ -2482,7 +2526,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    382,
+                    388,
                 ],
             ),
         },
@@ -2492,7 +2536,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    383,
+                    389,
                 ],
             ),
             "1-2-8": (
@@ -2500,7 +2544,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    384,
+                    390,
                 ],
             ),
             "1-4-8": (
@@ -2508,7 +2552,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    385,
+                    391,
                 ],
             ),
             "2-4-8": (
@@ -2516,7 +2560,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    386,
+                    392,
                 ],
             ),
         },
@@ -2526,7 +2570,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    387,
+                    393,
                 ],
             ),
         },
@@ -2536,7 +2580,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    388,
+                    394,
                 ],
             ),
             "meter1_1": (
@@ -2544,7 +2588,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    389,
+                    395,
                 ],
             ),
             "meter1_2": (
@@ -2552,7 +2596,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    390,
+                    396,
                 ],
             ),
             "meter1_3": (
@@ -2560,7 +2604,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    391,
+                    397,
                 ],
             ),
             "meter1_4": (
@@ -2568,7 +2612,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    392,
+                    398,
                 ],
             ),
             "meter1_5": (
@@ -2576,7 +2620,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    393,
+                    399,
                 ],
             ),
             "meter1_6": (
@@ -2584,7 +2628,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    394,
+                    400,
                 ],
             ),
             "meter2_1": (
@@ -2592,7 +2636,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    395,
+                    401,
                 ],
             ),
             "meter2_2": (
@@ -2600,7 +2644,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    396,
+                    402,
                 ],
             ),
             "meter2_3": (
@@ -2608,7 +2652,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    397,
+                    403,
                 ],
             ),
             "meter2_4": (
@@ -2616,7 +2660,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    398,
+                    404,
                 ],
             ),
             "meter2_5": (
@@ -2624,7 +2668,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    399,
+                    405,
                 ],
             ),
             "meter2_6": (
@@ -2632,7 +2676,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    400,
+                    406,
                 ],
             ),
             "meter3_1": (
@@ -2640,7 +2684,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    401,
+                    407,
                 ],
             ),
             "meter3_2": (
@@ -2648,7 +2692,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    402,
+                    408,
                 ],
             ),
             "meter3_3": (
@@ -2656,7 +2700,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    403,
+                    409,
                 ],
             ),
             "meter3_4": (
@@ -2664,7 +2708,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    404,
+                    410,
                 ],
             ),
             "meter3_5": (
@@ -2672,7 +2716,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    405,
+                    411,
                 ],
             ),
             "meter3_6": (
@@ -2680,7 +2724,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    406,
+                    412,
                 ],
             ),
             "meter4": (
@@ -2692,9 +2736,9 @@
                     1.0,
                 ],
                 cells: [
-                    407,
-                    408,
-                    409,
+                    413,
+                    414,
+                    415,
                 ],
             ),
             "meterX": (
@@ -2705,8 +2749,8 @@
                     5.0,
                 ],
                 cells: [
-                    410,
-                    411,
+                    416,
+                    417,
                 ],
             ),
         },
@@ -2716,7 +2760,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    412,
+                    418,
                 ],
             ),
         },
@@ -2726,7 +2770,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    413,
+                    419,
                 ],
             ),
             "can-connector": (
@@ -2734,7 +2778,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    414,
+                    420,
                 ],
             ),
             "can-o0": (
@@ -2745,8 +2789,8 @@
                     2.0,
                 ],
                 cells: [
-                    415,
-                    416,
+                    421,
+                    422,
                 ],
             ),
             "can-o1": (
@@ -2754,7 +2798,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    417,
+                    423,
                 ],
             ),
             "can-o2": (
@@ -2762,7 +2806,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    418,
+                    424,
                 ],
             ),
             "can-o3": (
@@ -2770,7 +2814,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    419,
+                    425,
                 ],
             ),
         },
@@ -2780,7 +2824,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    420,
+                    426,
                 ],
             ),
         },
@@ -2790,7 +2834,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    421,
+                    427,
                 ],
             ),
             "can-connector": (
@@ -2798,7 +2842,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    422,
+                    428,
                 ],
             ),
             "can-o0": (
@@ -2809,8 +2853,8 @@
                     2.0,
                 ],
                 cells: [
-                    423,
-                    424,
+                    429,
+                    430,
                 ],
             ),
             "can-o1": (
@@ -2818,7 +2862,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    425,
+                    431,
                 ],
             ),
             "can-o2": (
@@ -2826,7 +2870,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    426,
+                    432,
                 ],
             ),
             "can-o3": (
@@ -2834,7 +2878,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    427,
+                    433,
                 ],
             ),
         },
@@ -2844,7 +2888,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    428,
+                    434,
                 ],
             ),
         },
@@ -2854,7 +2898,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    429,
+                    435,
                 ],
             ),
             "can-connector": (
@@ -2862,7 +2906,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    430,
+                    436,
                 ],
             ),
             "can-o0": (
@@ -2873,8 +2917,8 @@
                     2.0,
                 ],
                 cells: [
-                    431,
-                    432,
+                    437,
+                    438,
                 ],
             ),
             "can-o1": (
@@ -2882,7 +2926,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    433,
+                    439,
                 ],
             ),
             "can-o2": (
@@ -2890,7 +2934,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    434,
+                    440,
                 ],
             ),
             "can-o3": (
@@ -2898,7 +2942,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    435,
+                    441,
                 ],
             ),
         },
@@ -2908,7 +2952,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    436,
+                    442,
                 ],
             ),
         },
@@ -2918,7 +2962,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    437,
+                    443,
                 ],
             ),
         },
@@ -2928,7 +2972,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    438,
+                    444,
                 ],
             ),
             "portgen1": (
@@ -2936,7 +2980,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    439,
+                    445,
                 ],
             ),
         },
@@ -2946,7 +2990,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    440,
+                    446,
                 ],
             ),
             "on": (
@@ -2954,7 +2998,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    441,
+                    447,
                 ],
             ),
         },
@@ -2964,7 +3008,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    442,
+                    448,
                 ],
             ),
             "1-4": (
@@ -2972,7 +3016,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    443,
+                    449,
                 ],
             ),
             "1-8": (
@@ -2980,7 +3024,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    444,
+                    450,
                 ],
             ),
             "2-4": (
@@ -2988,7 +3032,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    445,
+                    451,
                 ],
             ),
             "2-8": (
@@ -2996,7 +3040,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    446,
+                    452,
                 ],
             ),
             "4-8": (
@@ -3004,7 +3048,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    447,
+                    453,
                 ],
             ),
         },
@@ -3014,7 +3058,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    448,
+                    454,
                 ],
             ),
             "can-connector": (
@@ -3022,7 +3066,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    449,
+                    455,
                 ],
             ),
             "can-o0": (
@@ -3033,8 +3077,8 @@
                     2.0,
                 ],
                 cells: [
-                    450,
-                    451,
+                    456,
+                    457,
                 ],
             ),
             "can-o1": (
@@ -3042,7 +3086,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    452,
+                    458,
                 ],
             ),
             "can-o2": (
@@ -3050,7 +3094,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    453,
+                    459,
                 ],
             ),
             "can-o3": (
@@ -3058,7 +3102,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    454,
+                    460,
                 ],
             ),
         },
@@ -3068,7 +3112,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    455,
+                    461,
                 ],
             ),
         },
@@ -3078,7 +3122,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    456,
+                    462,
                 ],
             ),
         },
@@ -3088,7 +3132,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    457,
+                    463,
                 ],
             ),
             "cell-o1": (
@@ -3096,7 +3140,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    458,
+                    464,
                 ],
             ),
             "cell-o2": (
@@ -3104,7 +3148,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    459,
+                    465,
                 ],
             ),
         },
@@ -3114,7 +3158,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    460,
+                    466,
                 ],
             ),
             "on": (
@@ -3128,11 +3172,11 @@
                     1.0,
                 ],
                 cells: [
-                    461,
-                    462,
-                    463,
-                    464,
-                    465,
+                    467,
+                    468,
+                    469,
+                    470,
+                    471,
                 ],
             ),
         },
@@ -3142,7 +3186,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    466,
+                    472,
                 ],
             ),
         },
@@ -3152,7 +3196,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    467,
+                    473,
                 ],
             ),
         },
@@ -3162,7 +3206,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    468,
+                    474,
                 ],
             ),
         },
@@ -3172,7 +3216,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    469,
+                    475,
                 ],
             ),
             "on": (
@@ -3180,7 +3224,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    470,
+                    476,
                 ],
             ),
         },
@@ -3190,7 +3234,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    471,
+                    477,
                 ],
             ),
         },
@@ -3200,7 +3244,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    472,
+                    478,
                 ],
             ),
         },
@@ -3210,7 +3254,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    473,
+                    479,
                 ],
             ),
         },
@@ -3220,7 +3264,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    474,
+                    480,
                 ],
             ),
             "table-east": (
@@ -3228,7 +3272,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    475,
+                    481,
                 ],
             ),
             "table-north": (
@@ -3236,7 +3280,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    476,
+                    482,
                 ],
             ),
             "table-northeast": (
@@ -3244,7 +3288,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    477,
+                    483,
                 ],
             ),
             "table-northwest": (
@@ -3252,7 +3296,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    478,
+                    484,
                 ],
             ),
             "table-south": (
@@ -3260,7 +3304,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    479,
+                    485,
                 ],
             ),
             "table-southeast": (
@@ -3268,7 +3312,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    480,
+                    486,
                 ],
             ),
             "table-southwest": (
@@ -3276,7 +3320,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    481,
+                    487,
                 ],
             ),
             "table-west": (
@@ -3284,7 +3328,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    482,
+                    488,
                 ],
             ),
             "table_1tileendtable-east": (
@@ -3292,7 +3336,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    483,
+                    489,
                 ],
             ),
             "table_1tileendtable-north": (
@@ -3300,7 +3344,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    484,
+                    490,
                 ],
             ),
             "table_1tileendtable-south": (
@@ -3308,7 +3352,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    485,
+                    491,
                 ],
             ),
             "table_1tileendtable-west": (
@@ -3316,7 +3360,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    486,
+                    492,
                 ],
             ),
             "table_1tilethick-east": (
@@ -3324,7 +3368,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    487,
+                    493,
                 ],
             ),
             "table_1tilethick-north": (
@@ -3332,7 +3376,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    488,
+                    494,
                 ],
             ),
             "table_1tilethick-northeast": (
@@ -3340,7 +3384,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    489,
+                    495,
                 ],
             ),
             "table_1tilethick-northwest": (
@@ -3348,7 +3392,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    490,
+                    496,
                 ],
             ),
             "table_1tilethick-south": (
@@ -3356,7 +3400,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    491,
+                    497,
                 ],
             ),
             "table_1tilethick-southeast": (
@@ -3364,7 +3408,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    492,
+                    498,
                 ],
             ),
             "table_1tilethick-southwest": (
@@ -3372,7 +3416,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    493,
+                    499,
                 ],
             ),
             "table_1tilethick-west": (
@@ -3380,7 +3424,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    494,
+                    500,
                 ],
             ),
             "table_middle-east": (
@@ -3388,7 +3432,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    495,
+                    501,
                 ],
             ),
             "table_middle-north": (
@@ -3396,7 +3440,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    496,
+                    502,
                 ],
             ),
             "table_middle-northeast": (
@@ -3404,7 +3448,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    497,
+                    503,
                 ],
             ),
             "table_middle-northwest": (
@@ -3412,7 +3456,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    498,
+                    504,
                 ],
             ),
             "table_middle-south": (
@@ -3420,7 +3464,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    499,
+                    505,
                 ],
             ),
             "table_middle-southeast": (
@@ -3428,7 +3472,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    500,
+                    506,
                 ],
             ),
             "table_middle-southwest": (
@@ -3436,7 +3480,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    501,
+                    507,
                 ],
             ),
             "table_middle-west": (
@@ -3444,7 +3488,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    502,
+                    508,
                 ],
             ),
             "tabledir-east": (
@@ -3452,7 +3496,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    503,
+                    509,
                 ],
             ),
             "tabledir-north": (
@@ -3460,7 +3504,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    504,
+                    510,
                 ],
             ),
             "tabledir-northeast": (
@@ -3468,7 +3512,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    505,
+                    511,
                 ],
             ),
             "tabledir-northwest": (
@@ -3476,7 +3520,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    506,
+                    512,
                 ],
             ),
             "tabledir-south": (
@@ -3484,7 +3528,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    507,
+                    513,
                 ],
             ),
             "tabledir-southeast": (
@@ -3492,7 +3536,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    508,
+                    514,
                 ],
             ),
             "tabledir-southwest": (
@@ -3500,7 +3544,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    509,
+                    515,
                 ],
             ),
             "tabledir-west": (
@@ -3508,7 +3552,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    510,
+                    516,
                 ],
             ),
             "tabledir2-east": (
@@ -3516,7 +3560,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    511,
+                    517,
                 ],
             ),
             "tabledir2-north": (
@@ -3524,7 +3568,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    512,
+                    518,
                 ],
             ),
             "tabledir2-south": (
@@ -3532,7 +3576,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    513,
+                    519,
                 ],
             ),
             "tabledir2-west": (
@@ -3540,7 +3584,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    514,
+                    520,
                 ],
             ),
             "tabledir3-east": (
@@ -3548,7 +3592,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    515,
+                    521,
                 ],
             ),
             "tabledir3-north": (
@@ -3556,7 +3600,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    516,
+                    522,
                 ],
             ),
             "tabledir3-northeast": (
@@ -3564,7 +3608,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    517,
+                    523,
                 ],
             ),
             "tabledir3-northwest": (
@@ -3572,7 +3616,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    518,
+                    524,
                 ],
             ),
             "tabledir3-south": (
@@ -3580,7 +3624,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    519,
+                    525,
                 ],
             ),
             "tabledir3-southeast": (
@@ -3588,7 +3632,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    520,
+                    526,
                 ],
             ),
             "tabledir3-southwest": (
@@ -3596,7 +3640,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    521,
+                    527,
                 ],
             ),
             "tabledir3-west": (
@@ -3604,7 +3648,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    522,
+                    528,
                 ],
             ),
         },
@@ -3614,7 +3658,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    523,
+                    529,
                 ],
             ),
         },
@@ -3624,7 +3668,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    524,
+                    530,
                 ],
             ),
         },
@@ -3634,7 +3678,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    525,
+                    531,
                 ],
             ),
         },
@@ -3644,7 +3688,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    526,
+                    532,
                 ],
             ),
             "reinf_1tileendtable-east": (
@@ -3652,7 +3696,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    527,
+                    533,
                 ],
             ),
             "reinf_1tileendtable-north": (
@@ -3660,7 +3704,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    528,
+                    534,
                 ],
             ),
             "reinf_1tileendtable-south": (
@@ -3668,7 +3712,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    529,
+                    535,
                 ],
             ),
             "reinf_1tileendtable-west": (
@@ -3676,7 +3720,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    530,
+                    536,
                 ],
             ),
             "reinf_1tilethick-east": (
@@ -3684,7 +3728,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    531,
+                    537,
                 ],
             ),
             "reinf_1tilethick-north": (
@@ -3692,7 +3736,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    532,
+                    538,
                 ],
             ),
             "reinf_1tilethick-northeast": (
@@ -3700,7 +3744,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    533,
+                    539,
                 ],
             ),
             "reinf_1tilethick-northwest": (
@@ -3708,7 +3752,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    534,
+                    540,
                 ],
             ),
             "reinf_1tilethick-south": (
@@ -3716,7 +3760,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    535,
+                    541,
                 ],
             ),
             "reinf_1tilethick-southeast": (
@@ -3724,7 +3768,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    536,
+                    542,
                 ],
             ),
             "reinf_1tilethick-southwest": (
@@ -3732,7 +3776,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    537,
+                    543,
                 ],
             ),
             "reinf_1tilethick-west": (
@@ -3740,7 +3784,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    538,
+                    544,
                 ],
             ),
             "reinf_middle-east": (
@@ -3748,7 +3792,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    539,
+                    545,
                 ],
             ),
             "reinf_middle-north": (
@@ -3756,7 +3800,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    540,
+                    546,
                 ],
             ),
             "reinf_middle-northeast": (
@@ -3764,7 +3808,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    541,
+                    547,
                 ],
             ),
             "reinf_middle-northwest": (
@@ -3772,7 +3816,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    542,
+                    548,
                 ],
             ),
             "reinf_middle-south": (
@@ -3780,7 +3824,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    543,
+                    549,
                 ],
             ),
             "reinf_middle-southeast": (
@@ -3788,7 +3832,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    544,
+                    550,
                 ],
             ),
             "reinf_middle-southwest": (
@@ -3796,7 +3840,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    545,
+                    551,
                 ],
             ),
             "reinf_middle-west": (
@@ -3804,7 +3848,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    546,
+                    552,
                 ],
             ),
             "reinf_table-east": (
@@ -3812,7 +3856,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    547,
+                    553,
                 ],
             ),
             "reinf_table-north": (
@@ -3820,7 +3864,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    548,
+                    554,
                 ],
             ),
             "reinf_table-northeast": (
@@ -3828,7 +3872,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    549,
+                    555,
                 ],
             ),
             "reinf_table-northwest": (
@@ -3836,7 +3880,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    550,
+                    556,
                 ],
             ),
             "reinf_table-south": (
@@ -3844,7 +3888,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    551,
+                    557,
                 ],
             ),
             "reinf_table-southeast": (
@@ -3852,7 +3896,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    552,
+                    558,
                 ],
             ),
             "reinf_table-southwest": (
@@ -3860,7 +3904,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    553,
+                    559,
                 ],
             ),
             "reinf_table-west": (
@@ -3868,7 +3912,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    554,
+                    560,
                 ],
             ),
             "reinf_tabledir-east": (
@@ -3876,7 +3920,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    555,
+                    561,
                 ],
             ),
             "reinf_tabledir-north": (
@@ -3884,7 +3928,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    556,
+                    562,
                 ],
             ),
             "reinf_tabledir-northeast": (
@@ -3892,7 +3936,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    557,
+                    563,
                 ],
             ),
             "reinf_tabledir-northwest": (
@@ -3900,7 +3944,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    558,
+                    564,
                 ],
             ),
             "reinf_tabledir-south": (
@@ -3908,7 +3952,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    559,
+                    565,
                 ],
             ),
             "reinf_tabledir-southeast": (
@@ -3916,7 +3960,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    560,
+                    566,
                 ],
             ),
             "reinf_tabledir-southwest": (
@@ -3924,7 +3968,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    561,
+                    567,
                 ],
             ),
             "reinf_tabledir-west": (
@@ -3932,7 +3976,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    562,
+                    568,
                 ],
             ),
             "reinf_tabledir2-east": (
@@ -3940,7 +3984,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    563,
+                    569,
                 ],
             ),
             "reinf_tabledir2-north": (
@@ -3948,7 +3992,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    564,
+                    570,
                 ],
             ),
             "reinf_tabledir2-south": (
@@ -3956,7 +4000,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    565,
+                    571,
                 ],
             ),
             "reinf_tabledir2-west": (
@@ -3964,7 +4008,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    566,
+                    572,
                 ],
             ),
             "reinf_tabledir3-east": (
@@ -3972,7 +4016,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    567,
+                    573,
                 ],
             ),
             "reinf_tabledir3-north": (
@@ -3980,7 +4024,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    568,
+                    574,
                 ],
             ),
             "reinf_tabledir3-northeast": (
@@ -3988,7 +4032,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    569,
+                    575,
                 ],
             ),
             "reinf_tabledir3-northwest": (
@@ -3996,7 +4040,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    570,
+                    576,
                 ],
             ),
             "reinf_tabledir3-south": (
@@ -4004,7 +4048,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    571,
+                    577,
                 ],
             ),
             "reinf_tabledir3-southeast": (
@@ -4012,7 +4056,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    572,
+                    578,
                 ],
             ),
             "reinf_tabledir3-southwest": (
@@ -4020,7 +4064,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    573,
+                    579,
                 ],
             ),
             "reinf_tabledir3-west": (
@@ -4028,7 +4072,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    574,
+                    580,
                 ],
             ),
         },
@@ -4038,7 +4082,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    575,
+                    581,
                 ],
             ),
             "wood_1tileendtable-east": (
@@ -4046,7 +4090,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    576,
+                    582,
                 ],
             ),
             "wood_1tileendtable-north": (
@@ -4054,7 +4098,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    577,
+                    583,
                 ],
             ),
             "wood_1tileendtable-south": (
@@ -4062,7 +4106,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    578,
+                    584,
                 ],
             ),
             "wood_1tileendtable-west": (
@@ -4070,7 +4114,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    579,
+                    585,
                 ],
             ),
             "wood_1tilethick-east": (
@@ -4078,7 +4122,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    580,
+                    586,
                 ],
             ),
             "wood_1tilethick-north": (
@@ -4086,7 +4130,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    581,
+                    587,
                 ],
             ),
             "wood_1tilethick-northeast": (
@@ -4094,7 +4138,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    582,
+                    588,
                 ],
             ),
             "wood_1tilethick-northwest": (
@@ -4102,7 +4146,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    583,
+                    589,
                 ],
             ),
             "wood_1tilethick-south": (
@@ -4110,7 +4154,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    584,
+                    590,
                 ],
             ),
             "wood_1tilethick-southeast": (
@@ -4118,7 +4162,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    585,
+                    591,
                 ],
             ),
             "wood_1tilethick-southwest": (
@@ -4126,7 +4170,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    586,
+                    592,
                 ],
             ),
             "wood_1tilethick-west": (
@@ -4134,7 +4178,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    587,
+                    593,
                 ],
             ),
             "wood_middle-east": (
@@ -4142,7 +4186,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    588,
+                    594,
                 ],
             ),
             "wood_middle-north": (
@@ -4150,7 +4194,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    589,
+                    595,
                 ],
             ),
             "wood_middle-northeast": (
@@ -4158,7 +4202,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    590,
+                    596,
                 ],
             ),
             "wood_middle-northwest": (
@@ -4166,7 +4210,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    591,
+                    597,
                 ],
             ),
             "wood_middle-south": (
@@ -4174,7 +4218,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    592,
+                    598,
                 ],
             ),
             "wood_middle-southeast": (
@@ -4182,7 +4226,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    593,
+                    599,
                 ],
             ),
             "wood_middle-southwest": (
@@ -4190,7 +4234,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    594,
+                    600,
                 ],
             ),
             "wood_middle-west": (
@@ -4198,7 +4242,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    595,
+                    601,
                 ],
             ),
             "wood_table-east": (
@@ -4206,7 +4250,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    596,
+                    602,
                 ],
             ),
             "wood_table-north": (
@@ -4214,7 +4258,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    597,
+                    603,
                 ],
             ),
             "wood_table-northeast": (
@@ -4222,7 +4266,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    598,
+                    604,
                 ],
             ),
             "wood_table-northwest": (
@@ -4230,7 +4274,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    599,
+                    605,
                 ],
             ),
             "wood_table-south": (
@@ -4238,7 +4282,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    600,
+                    606,
                 ],
             ),
             "wood_table-southeast": (
@@ -4246,7 +4290,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    601,
+                    607,
                 ],
             ),
             "wood_table-southwest": (
@@ -4254,7 +4298,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    602,
+                    608,
                 ],
             ),
             "wood_table-west": (
@@ -4262,7 +4306,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    603,
+                    609,
                 ],
             ),
             "wood_tabledir-east": (
@@ -4270,7 +4314,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    604,
+                    610,
                 ],
             ),
             "wood_tabledir-north": (
@@ -4278,7 +4322,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    605,
+                    611,
                 ],
             ),
             "wood_tabledir-northeast": (
@@ -4286,7 +4330,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    606,
+                    612,
                 ],
             ),
             "wood_tabledir-northwest": (
@@ -4294,7 +4338,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    607,
+                    613,
                 ],
             ),
             "wood_tabledir-south": (
@@ -4302,7 +4346,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    608,
+                    614,
                 ],
             ),
             "wood_tabledir-southeast": (
@@ -4310,7 +4354,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    609,
+                    615,
                 ],
             ),
             "wood_tabledir-southwest": (
@@ -4318,7 +4362,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    610,
+                    616,
                 ],
             ),
             "wood_tabledir-west": (
@@ -4326,7 +4370,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    611,
+                    617,
                 ],
             ),
             "wood_tabledir2-east": (
@@ -4334,7 +4378,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    612,
+                    618,
                 ],
             ),
             "wood_tabledir2-north": (
@@ -4342,7 +4386,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    613,
+                    619,
                 ],
             ),
             "wood_tabledir2-south": (
@@ -4350,7 +4394,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    614,
+                    620,
                 ],
             ),
             "wood_tabledir2-west": (
@@ -4358,7 +4402,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    615,
+                    621,
                 ],
             ),
             "wood_tabledir3-east": (
@@ -4366,7 +4410,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    616,
+                    622,
                 ],
             ),
             "wood_tabledir3-north": (
@@ -4374,7 +4418,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    617,
+                    623,
                 ],
             ),
             "wood_tabledir3-northeast": (
@@ -4382,7 +4426,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    618,
+                    624,
                 ],
             ),
             "wood_tabledir3-northwest": (
@@ -4390,7 +4434,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    619,
+                    625,
                 ],
             ),
             "wood_tabledir3-south": (
@@ -4398,7 +4442,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    620,
+                    626,
                 ],
             ),
             "wood_tabledir3-southeast": (
@@ -4406,7 +4450,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    621,
+                    627,
                 ],
             ),
             "wood_tabledir3-southwest": (
@@ -4414,7 +4458,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    622,
+                    628,
                 ],
             ),
             "wood_tabledir3-west": (
@@ -4422,7 +4466,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    623,
+                    629,
                 ],
             ),
         },
@@ -4432,7 +4476,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    624,
+                    630,
                 ],
             ),
             "oxygen-1": (
@@ -4440,7 +4484,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    625,
+                    631,
                 ],
             ),
             "oxygen-2": (
@@ -4448,7 +4492,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    626,
+                    632,
                 ],
             ),
             "oxygen-3": (
@@ -4456,7 +4500,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    627,
+                    633,
                 ],
             ),
             "oxygen-4": (
@@ -4464,7 +4508,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    628,
+                    634,
                 ],
             ),
             "oxygen-5": (
@@ -4472,7 +4516,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    629,
+                    635,
                 ],
             ),
         },
@@ -4482,7 +4526,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    630,
+                    636,
                 ],
             ),
         },
@@ -4492,7 +4536,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    631,
+                    637,
                 ],
             ),
         },
@@ -4502,7 +4546,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    632,
+                    638,
                 ],
             ),
         },
@@ -4512,7 +4556,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    633,
+                    639,
                 ],
             ),
             "1": (
@@ -4520,7 +4564,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    634,
+                    640,
                 ],
             ),
             "10": (
@@ -4528,7 +4572,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    635,
+                    641,
                 ],
             ),
             "11": (
@@ -4536,7 +4580,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    636,
+                    642,
                 ],
             ),
             "12": (
@@ -4544,7 +4588,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    637,
+                    643,
                 ],
             ),
             "13": (
@@ -4552,7 +4596,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    638,
+                    644,
                 ],
             ),
             "14": (
@@ -4560,7 +4604,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    639,
+                    645,
                 ],
             ),
             "15": (
@@ -4568,7 +4612,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    640,
+                    646,
                 ],
             ),
             "2": (
@@ -4576,7 +4620,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    641,
+                    647,
                 ],
             ),
             "3": (
@@ -4584,7 +4628,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    642,
+                    648,
                 ],
             ),
             "4": (
@@ -4592,7 +4636,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    643,
+                    649,
                 ],
             ),
             "5": (
@@ -4600,7 +4644,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    644,
+                    650,
                 ],
             ),
             "6": (
@@ -4608,7 +4652,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    645,
+                    651,
                 ],
             ),
             "7": (
@@ -4616,7 +4660,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    646,
+                    652,
                 ],
             ),
             "8": (
@@ -4624,7 +4668,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    647,
+                    653,
                 ],
             ),
             "9": (
@@ -4632,7 +4676,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    648,
+                    654,
                 ],
             ),
         },
@@ -4642,7 +4686,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    649,
+                    655,
                 ],
             ),
             "1": (
@@ -4650,7 +4694,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    650,
+                    656,
                 ],
             ),
             "2": (
@@ -4658,7 +4702,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    651,
+                    657,
                 ],
             ),
             "3": (
@@ -4666,7 +4710,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    652,
+                    658,
                 ],
             ),
             "4": (
@@ -4674,7 +4718,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    653,
+                    659,
                 ],
             ),
         },
@@ -4684,7 +4728,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    654,
+                    660,
                 ],
             ),
             "1": (
@@ -4692,7 +4736,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    655,
+                    661,
                 ],
             ),
             "10": (
@@ -4700,7 +4744,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    656,
+                    662,
                 ],
             ),
             "11": (
@@ -4708,7 +4752,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    657,
+                    663,
                 ],
             ),
             "12": (
@@ -4716,7 +4760,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    658,
+                    664,
                 ],
             ),
             "13": (
@@ -4724,7 +4768,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    659,
+                    665,
                 ],
             ),
             "14": (
@@ -4732,7 +4776,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    660,
+                    666,
                 ],
             ),
             "15": (
@@ -4740,7 +4784,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    661,
+                    667,
                 ],
             ),
             "2": (
@@ -4748,7 +4792,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    662,
+                    668,
                 ],
             ),
             "3": (
@@ -4756,7 +4800,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    663,
+                    669,
                 ],
             ),
             "4": (
@@ -4764,7 +4808,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    664,
+                    670,
                 ],
             ),
             "5": (
@@ -4772,7 +4816,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    665,
+                    671,
                 ],
             ),
             "6": (
@@ -4780,7 +4824,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    666,
+                    672,
                 ],
             ),
             "7": (
@@ -4788,7 +4832,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    667,
+                    673,
                 ],
             ),
             "8": (
@@ -4796,7 +4840,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    668,
+                    674,
                 ],
             ),
             "9": (
@@ -4804,7 +4848,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    669,
+                    675,
                 ],
             ),
         },
@@ -4814,14 +4858,14 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    670,
-                    671,
-                    672,
-                    673,
-                    674,
-                    675,
                     676,
                     677,
+                    678,
+                    679,
+                    680,
+                    681,
+                    682,
+                    683,
                 ],
             ),
         },
@@ -4831,7 +4875,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    678,
+                    684,
                 ],
             ),
         },
@@ -4841,7 +4885,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    679,
+                    685,
                 ],
             ),
         },
@@ -4851,7 +4895,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    680,
+                    686,
                 ],
             ),
         },
@@ -4861,7 +4905,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    681,
+                    687,
                 ],
             ),
             "open": (
@@ -4869,7 +4913,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    682,
+                    688,
                 ],
             ),
         },
@@ -4879,7 +4923,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    683,
+                    689,
                 ],
             ),
             "on": (
@@ -4896,14 +4940,14 @@
                     1.0,
                 ],
                 cells: [
-                    684,
-                    685,
-                    686,
-                    687,
-                    688,
-                    689,
                     690,
                     691,
+                    692,
+                    693,
+                    694,
+                    695,
+                    696,
+                    697,
                 ],
             ),
         },
@@ -4913,7 +4957,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    692,
+                    698,
                 ],
             ),
             "lit": (
@@ -4924,8 +4968,8 @@
                     1.0,
                 ],
                 cells: [
-                    693,
-                    694,
+                    699,
+                    700,
                 ],
             ),
         },
@@ -4935,7 +4979,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    695,
+                    701,
                 ],
             ),
         },
@@ -4945,10 +4989,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    696,
-                    697,
-                    698,
-                    699,
+                    702,
+                    703,
+                    704,
+                    705,
                 ],
             ),
             "lying": (
@@ -4956,7 +5000,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    700,
+                    706,
                 ],
             ),
         },
@@ -4966,10 +5010,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    701,
-                    702,
-                    703,
-                    704,
+                    707,
+                    708,
+                    709,
+                    710,
                 ],
             ),
             "lying": (
@@ -4977,7 +5021,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    705,
+                    711,
                 ],
             ),
         },
@@ -4987,10 +5031,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    706,
-                    707,
-                    708,
-                    709,
+                    712,
+                    713,
+                    714,
+                    715,
                 ],
             ),
             "lying": (
@@ -4998,7 +5042,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    710,
+                    716,
                 ],
             ),
         },
@@ -5008,10 +5052,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    711,
-                    712,
-                    713,
-                    714,
+                    717,
+                    718,
+                    719,
+                    720,
                 ],
             ),
             "lying": (
@@ -5019,7 +5063,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    715,
+                    721,
                 ],
             ),
         },
@@ -5029,10 +5073,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    716,
-                    717,
-                    718,
-                    719,
+                    722,
+                    723,
+                    724,
+                    725,
                 ],
             ),
             "lying": (
@@ -5040,7 +5084,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    720,
+                    726,
                 ],
             ),
         },
@@ -5050,10 +5094,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    721,
-                    722,
-                    723,
-                    724,
+                    727,
+                    728,
+                    729,
+                    730,
                 ],
             ),
             "lying": (
@@ -5061,7 +5105,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    725,
+                    731,
                 ],
             ),
         },
@@ -5071,10 +5115,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    726,
-                    727,
-                    728,
-                    729,
+                    732,
+                    733,
+                    734,
+                    735,
                 ],
             ),
             "lying": (
@@ -5082,7 +5126,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    730,
+                    736,
                 ],
             ),
         },
@@ -5092,10 +5136,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    731,
-                    732,
-                    733,
-                    734,
+                    737,
+                    738,
+                    739,
+                    740,
                 ],
             ),
             "lying": (
@@ -5103,7 +5147,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    735,
+                    741,
                 ],
             ),
         },
@@ -5113,10 +5157,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    736,
-                    737,
-                    738,
-                    739,
+                    742,
+                    743,
+                    744,
+                    745,
                 ],
             ),
             "lying": (
@@ -5124,7 +5168,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    740,
+                    746,
                 ],
             ),
         },
@@ -5134,10 +5178,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    741,
-                    742,
-                    743,
-                    744,
+                    747,
+                    748,
+                    749,
+                    750,
                 ],
             ),
             "lying": (
@@ -5145,7 +5189,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    745,
+                    751,
                 ],
             ),
         },
@@ -5155,10 +5199,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    746,
-                    747,
-                    748,
-                    749,
+                    752,
+                    753,
+                    754,
+                    755,
                 ],
             ),
             "lying": (
@@ -5166,7 +5210,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    750,
+                    756,
                 ],
             ),
         },
@@ -5176,10 +5220,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    751,
-                    752,
-                    753,
-                    754,
+                    757,
+                    758,
+                    759,
+                    760,
                 ],
             ),
             "lying": (
@@ -5187,7 +5231,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    755,
+                    761,
                 ],
             ),
         },
@@ -5197,10 +5241,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    756,
-                    757,
-                    758,
-                    759,
+                    762,
+                    763,
+                    764,
+                    765,
                 ],
             ),
             "lying": (
@@ -5208,7 +5252,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    760,
+                    766,
                 ],
             ),
         },
@@ -5218,10 +5262,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    761,
-                    762,
-                    763,
-                    764,
+                    767,
+                    768,
+                    769,
+                    770,
                 ],
             ),
             "lying": (
@@ -5229,7 +5273,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    765,
+                    771,
                 ],
             ),
         },
@@ -5239,10 +5283,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    766,
-                    767,
-                    768,
-                    769,
+                    772,
+                    773,
+                    774,
+                    775,
                 ],
             ),
             "lying": (
@@ -5250,7 +5294,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    770,
+                    776,
                 ],
             ),
         },
@@ -5260,10 +5304,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    771,
-                    772,
-                    773,
-                    774,
+                    777,
+                    778,
+                    779,
+                    780,
                 ],
             ),
             "lying": (
@@ -5271,7 +5315,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    775,
+                    781,
                 ],
             ),
         },
@@ -5281,10 +5325,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    776,
-                    777,
-                    778,
-                    779,
+                    782,
+                    783,
+                    784,
+                    785,
                 ],
             ),
             "lying": (
@@ -5292,7 +5336,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    780,
+                    786,
                 ],
             ),
         },
@@ -5302,10 +5346,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    781,
-                    782,
-                    783,
-                    784,
+                    787,
+                    788,
+                    789,
+                    790,
                 ],
             ),
             "lying": (
@@ -5313,7 +5357,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    785,
+                    791,
                 ],
             ),
         },
@@ -5323,10 +5367,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    786,
-                    787,
-                    788,
-                    789,
+                    792,
+                    793,
+                    794,
+                    795,
                 ],
             ),
             "lying": (
@@ -5334,7 +5378,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    790,
+                    796,
                 ],
             ),
         },
@@ -5344,10 +5388,10 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    791,
-                    792,
-                    793,
-                    794,
+                    797,
+                    798,
+                    799,
+                    800,
                 ],
             ),
             "lying": (
@@ -5355,7 +5399,7 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    795,
+                    801,
                 ],
             ),
         },
@@ -5365,111 +5409,76 @@
                 frames: 1,
                 delays: [],
                 cells: [
-                    796,
-                    797,
-                    798,
-                    799,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    800,
-                ],
-            ),
-        },
-        "worn:magboots": {
-            "": (
-                dirs: 4,
-                frames: 1,
-                delays: [],
-                cells: [
-                    801,
                     802,
                     803,
                     804,
+                    805,
                 ],
             ),
             "lying": (
                 dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    805,
-                ],
-            ),
-        },
-        "worn:oxygen-tank": {
-            "": (
-                dirs: 4,
                 frames: 1,
                 delays: [],
                 cells: [
                     806,
+                ],
+            ),
+        },
+        "worn:jetpack": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
                     807,
                     808,
                     809,
+                    810,
                 ],
             ),
             "lying": (
                 dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    810,
-                ],
-            ),
-        },
-        "worn:space-helmet": {
-            "": (
-                dirs: 4,
                 frames: 1,
                 delays: [],
                 cells: [
                     811,
+                ],
+            ),
+        },
+        "worn:jetpack-ce": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
                     812,
                     813,
                     814,
+                    815,
                 ],
             ),
             "lying": (
                 dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    815,
-                ],
-            ),
-        },
-        "worn:space-suit": {
-            "": (
-                dirs: 4,
                 frames: 1,
                 delays: [],
                 cells: [
                     816,
-                    817,
-                    818,
-                    819,
-                ],
-            ),
-            "lying": (
-                dirs: 1,
-                frames: 1,
-                delays: [],
-                cells: [
-                    820,
                 ],
             ),
         },
-        "worn:utility-belt": {
+        "worn:jetpack-ce-on": {
             "": (
                 dirs: 4,
-                frames: 1,
-                delays: [],
+                frames: 2,
+                delays: [
+                    1.0,
+                    1.0,
+                ],
                 cells: [
+                    817,
+                    818,
+                    819,
+                    820,
                     821,
                     822,
                     823,
@@ -5485,13 +5494,146 @@
                 ],
             ),
         },
+        "worn:jetpack-on": {
+            "": (
+                dirs: 4,
+                frames: 2,
+                delays: [
+                    1.0,
+                    1.0,
+                ],
+                cells: [
+                    826,
+                    827,
+                    828,
+                    829,
+                    830,
+                    831,
+                    832,
+                    833,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    834,
+                ],
+            ),
+        },
+        "worn:magboots": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    835,
+                    836,
+                    837,
+                    838,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    839,
+                ],
+            ),
+        },
+        "worn:oxygen-tank": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    840,
+                    841,
+                    842,
+                    843,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    844,
+                ],
+            ),
+        },
+        "worn:space-helmet": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    845,
+                    846,
+                    847,
+                    848,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    849,
+                ],
+            ),
+        },
+        "worn:space-suit": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    850,
+                    851,
+                    852,
+                    853,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    854,
+                ],
+            ),
+        },
+        "worn:utility-belt": {
+            "": (
+                dirs: 4,
+                frames: 1,
+                delays: [],
+                cells: [
+                    855,
+                    856,
+                    857,
+                    858,
+                ],
+            ),
+            "lying": (
+                dirs: 1,
+                frames: 1,
+                delays: [],
+                cells: [
+                    859,
+                ],
+            ),
+        },
         "wrench": {
             "": (
                 dirs: 1,
                 frames: 1,
                 delays: [],
                 cells: [
-                    826,
+                    860,
                 ],
             ),
         },

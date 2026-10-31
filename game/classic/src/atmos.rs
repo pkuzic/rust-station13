@@ -175,18 +175,21 @@ pub fn has_handhold(map: &TileMap, pos: TilePos) -> bool {
 }
 
 /// Drifting things keep going in a straight line until they reach something to stop on.
+/// A switched-on jetpack holds its wearer still (`jetpacks.md`).
 pub fn drift(
     time: Res<WorldTime>,
     map: Single<&MapLayer>,
-    mut drifters: Query<(Entity, &mut GridPos, &Drift)>,
+    mut drifters: Query<(Entity, &mut GridPos, &Drift, Option<&crate::equipment::Equipment>)>,
+    jetpacks: Query<&crate::jetpacks::Jetpack>,
     mut commands: Commands,
 ) {
     if !time.tick.0.is_multiple_of(DRIFT_TICKS) {
         return;
     }
-    for (entity, mut pos, drift) in &mut drifters {
+    for (entity, mut pos, drift, equipment) in &mut drifters {
         let next = pos.0.step(drift.0);
-        if !is_space(&map.0, pos.0) || map.0.is_solid(next) {
+        let held_still = crate::jetpacks::worn_jetpack(equipment, &jetpacks).is_some();
+        if held_still || !is_space(&map.0, pos.0) || map.0.is_solid(next) {
             commands.entity(entity).remove::<Drift>();
             continue;
         }

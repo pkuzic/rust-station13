@@ -51,7 +51,7 @@ pulled; broken legs randomly stop a move and stun; grabbing someone sets at leas
 
 ## Not implemented yet
 
-Health, clothing slowdown, temperature, space drift and zero-gravity movement, pulling,
+Health, temperature, pulling,
 grabs, restraints, place swapping.
 
 Tests: `game/classic/src/movement.rs`, `game/classic/tests/two_mobs_in_a_room.rs`.

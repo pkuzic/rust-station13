@@ -243,6 +243,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if let Some(cell) = crate::cells::kind(proto) {
         item.insert(cell);
     }
+    if crate::jetpacks::is_jetpack(proto) {
+        item.insert(crate::jetpacks::Jetpack::default());
+    }
     if proto == "id-card" {
         item.insert(IdCard {
             access: spec.access.clone(),
