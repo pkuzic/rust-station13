@@ -466,6 +466,11 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("laser-beam", _) => (Color::srgb(0.4, 0.4, 1.0), TILE_PX, 3.1),
         // Burning air, over everything but the walls' fixtures.
         ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
+        // A chair facing north has its back to us: drawn over its sitter and their clothes
+        // (Luna `handle_rotation`, `FLY_LAYER`).
+        (chair, "north") if rs13_classic::chairs::is_chair(chair) => {
+            (Color::srgb(0.55, 0.35, 0.20), TILE_PX - 6.0, 3.15)
+        }
         // On the wall, above people.
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
@@ -643,9 +648,23 @@ fn apply_facing(
 
 fn update_appearance(
     time: Res<Time>,
-    mut objects: Query<(&Appearance, &mut Sprite, Option<&mut Look>, Has<OwnPlayer>), Changed<Appearance>>,
+    mut objects: Query<
+        (
+            &Appearance,
+            &mut Sprite,
+            &mut Transform,
+            Option<&mut Look>,
+            Has<OwnPlayer>,
+        ),
+        Changed<Appearance>,
+    >,
 ) {
-    for (appearance, mut sprite, look, own) in &mut objects {
+    for (appearance, mut sprite, mut transform, look, own) in &mut objects {
+        // Some things change layer with their state (a chair turned to face north).
+        let z = object_look(appearance).2;
+        if transform.translation.z != z {
+            transform.translation.z = z;
+        }
         match look {
             Some(mut look) => {
                 let state = sprites::state_for(appearance);
