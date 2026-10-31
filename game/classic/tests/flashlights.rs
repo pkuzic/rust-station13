@@ -150,3 +150,25 @@ fn desk_lamps_start_lit_and_closets_keep_light_in() {
     ticks(&mut app, 1);
     assert_eq!(source(&app, mob), None, "no light gets out of a closet");
 }
+
+#[test]
+fn a_hard_hat_lamp_lights_its_wearer() {
+    let (mut app, mob) = setup();
+    let hat =
+        rs13_classic::objects::spawn_object(app.world_mut(), &rs13_world::ObjectSpec::new("hardhat"), START)
+            .unwrap();
+    ticks(&mut app, 1);
+    assert_eq!(source(&app, hat), None, "hard hats start off");
+    hold(&mut app, mob, hat);
+    act(&mut app, mob, Action::UseOn(hat));
+    assert_eq!(app.world().get::<Appearance>(hat).unwrap().state, "on");
+    assert_eq!(source(&app, mob), Some([5, 5, 5]));
+    // Worn, it still lights the way.
+    app.world_mut()
+        .entity_mut(hat)
+        .remove::<HeldBy>()
+        .insert(WornBy(mob));
+    app.world_mut().get_mut::<Hands>(mob).unwrap().right = None;
+    ticks(&mut app, 1);
+    assert_eq!(source(&app, mob), Some([5, 5, 5]));
+}

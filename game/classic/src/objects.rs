@@ -123,6 +123,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::firealarms::FIRE_ALARM {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
+    }
     if proto == "firedoor" {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firedoors::spawn_firedoor(world, spec, pos, id));
@@ -206,6 +210,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             space: def.space,
             internals: def.internals,
             siemens: def.siemens,
+            magnetic: def.magnetic,
         });
     }
     if let Some(tank) = &def.tank {

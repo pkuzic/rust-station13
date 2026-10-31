@@ -39,6 +39,7 @@
         // Cables keep their ends (Luna's icon state, "0-1" by default).
         (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
         (path: "/obj/machinery/alarm", id: "air-alarm"),
+        (path: "/obj/machinery/firealarm", id: "fire-alarm"),
 
         // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
         (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),
@@ -88,6 +89,16 @@
         (path: "/obj/item/stack/medical/bruise_pack", id: "bruise-pack"),
         (path: "/obj/item/stack/medical/ointment", id: "ointment"),
         (path: "/obj/item/device/healthanalyzer", id: "health-analyzer"),
+
+        (path: "/obj/item/clothing/mask/gas", id: "gas-mask"),
+        (path: "/obj/item/clothing/shoes/magnetic", id: "magboots"),
+        (path: "/obj/item/clothing/gloves/black", id: "black-gloves"),
+        (path: "/obj/item/clothing/suit/fire", id: "firesuit"),
+        (path: "/obj/item/clothing/head/helmet/hardhat", id: "hardhat"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/orange", id: "hardhat-orange"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/red", id: "hardhat-red"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/white", id: "hardhat-white"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/dblue", id: "hardhat-blue"),
         (path: "/obj/item/clothing/suit/space/rig", id: "space-suit"),
         (path: "/obj/item/clothing/head/helmet/space/rig", id: "space-helmet"),
         (path: "/obj/item/weapon/tank/oxygen", id: "oxygen-tank"),

@@ -153,7 +153,13 @@ pub fn process_alarms(
 /// Whether a seal covers a door at `pos`: its own tile, or a non-wall tile next to it, is in
 /// a sealed area.
 pub fn covered_by_seal(seals: &AreaSeals, map: &TileMap, pos: TilePos) -> bool {
-    !seals.0.is_empty()
+    covered_by(&seals.0, map, pos)
+}
+
+/// Whether a door at `pos` is in or next to one of `areas`: its own tile, or a non-wall tile
+/// next to it, is in one.
+pub fn covered_by(areas: &HashSet<String>, map: &TileMap, pos: TilePos) -> bool {
+    !areas.is_empty()
         && [
             None,
             Some(Dir::North),
@@ -165,7 +171,7 @@ pub fn covered_by_seal(seals: &AreaSeals, map: &TileMap, pos: TilePos) -> bool {
         .map(|d| d.map_or(pos, |d| pos.step(d)))
         .filter(|p| *p == pos || !map.is_solid(*p))
         .filter_map(|p| map.area(p))
-        .any(|area| seals.0.contains(area))
+        .any(|area| areas.contains(area))
 }
 
 /// Close and bolt every powered door in or next to a sealed area; raise the bolts the seal

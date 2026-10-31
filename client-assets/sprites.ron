@@ -110,6 +110,72 @@
             "lying": (dmi: "icons/mob/head.dmi", state: "space2"),
         },
 
+        "worn:magboots": {
+            "": (dmi: "icons/mob/feet.dmi", state: "magboots"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "magboots2"),
+        },
+        "worn:black-gloves": {
+            "": (dmi: "icons/mob/hands.dmi", state: "bgloves_rhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "bgloves2"),
+        },
+        "worn:black-gloves:l": {
+            "": (dmi: "icons/mob/hands.dmi", state: "bgloves_lhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "bgloves2"),
+        },
+        "worn:gas-mask": {
+            "": (dmi: "icons/mob/mask.dmi", state: "gas_alt"),
+            "lying": (dmi: "icons/mob/mask.dmi", state: "gas_alt2"),
+        },
+        "worn:firesuit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "fire"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "fire2"),
+        },
+        // A lit hard hat is drawn as "worn:<id>-on" (the item's state).
+        "worn:hardhat": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_yellow"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_yellow2"),
+        },
+        "worn:hardhat-on": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat1_yellow"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat1_yellow2"),
+        },
+        // A lit hard hat is drawn as "worn:<id>-on" (the item's state).
+        "worn:hardhat-orange": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_orange"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_orange2"),
+        },
+        "worn:hardhat-orange-on": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat1_orange"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat1_orange2"),
+        },
+        // A lit hard hat is drawn as "worn:<id>-on" (the item's state).
+        "worn:hardhat-red": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_red"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_red2"),
+        },
+        "worn:hardhat-red-on": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat1_red"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat1_red2"),
+        },
+        // A lit hard hat is drawn as "worn:<id>-on" (the item's state).
+        "worn:hardhat-white": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_white"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_white2"),
+        },
+        "worn:hardhat-white-on": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat1_white"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat1_white2"),
+        },
+        // A lit hard hat is drawn as "worn:<id>-on" (the item's state).
+        "worn:hardhat-blue": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_dblue"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_dblue2"),
+        },
+        "worn:hardhat-blue-on": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat1_dblue"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat1_dblue2"),
+        },
+
         // Items.
         "crowbar": { "": (dmi: "icons/obj/items.dmi", state: "crowbar") },
         "wrench": { "": (dmi: "icons/obj/items.dmi", state: "wrench") },
@@ -350,6 +416,15 @@
         "breath-mask": { "": (dmi: "icons/obj/clothing/masks.dmi", state: "breath") },
         "space-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "space") },
         "space-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "space") },
+        "hardhat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_yellow"), "on": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat1_yellow") },
+        "hardhat-orange": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_orange"), "on": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat1_orange") },
+        "hardhat-red": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_red"), "on": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat1_red") },
+        "hardhat-white": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_white"), "on": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat1_white") },
+        "hardhat-blue": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_dblue"), "on": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat1_dblue") },
+        "magboots": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "magboots") },
+        "black-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "black") },
+        "gas-mask": { "": (dmi: "icons/obj/clothing/masks.dmi", state: "gas_alt") },
+        "firesuit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "fire") },
 
         // The classic HUD (Luna `human_hud`): bar backgrounds, slot frames, buttons and
         // indicators. `dir` picks the frame variant Luna sets with `dir =`.
@@ -425,6 +500,12 @@
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
         "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
         "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        // Fire alarm: fire0 normal, fire1 its area is on alert, firep unpowered.
+        "fire-alarm": {
+            "fire0": (dmi: "icons/obj/monitors.dmi", state: "fire0"),
+            "fire1": (dmi: "icons/obj/monitors.dmi", state: "fire1"),
+            "firep": (dmi: "icons/obj/monitors.dmi", state: "firep"),
+        },
         // Air alarm: alarm0 normal, alarm1 danger, alarmp unpowered or disconnected.
         "air-alarm": {
             "alarm0": (dmi: "icons/obj/monitors.dmi", state: "alarm0"),

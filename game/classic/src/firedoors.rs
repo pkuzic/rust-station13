@@ -126,11 +126,13 @@ pub fn crosses_closed_edge(edges: &HashSet<(TilePos, TilePos)>, from: TilePos, t
 }
 
 /// Finish animations, then do what the alarm asked (Luna `firedoor/process`, `nextstate`).
-/// A seal over the area closes its firedoors; when no seal covers one any more, it opens
-/// (Luna `air_doors_close` / `air_doors_open`). Power plays no part.
+/// A seal or a fire alarm over the area closes its firedoors; when neither covers one any
+/// more, it opens (Luna `air_doors_close` / `air_doors_open`, `firealert` / `firereset`).
+/// Power plays no part.
 pub fn update_firedoors(
     time: Res<WorldTime>,
     seals: Res<AreaSeals>,
+    fires: Res<crate::firealarms::AreaFires>,
     map: Single<&MapLayer>,
     mut doors: Query<(&GridPos, &mut Firedoor)>,
 ) {
@@ -144,7 +146,8 @@ pub fn update_firedoors(
             }
             door.anim = None;
         }
-        let covered = crate::alarms::covered_by_seal(&seals, &map.0, pos.0);
+        let covered = crate::alarms::covered_by_seal(&seals, &map.0, pos.0)
+            || crate::alarms::covered_by(&fires.0, &map.0, pos.0);
         if covered != door.in_seal {
             door.in_seal = covered;
             door.pending = Some(covered);

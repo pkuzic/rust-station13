@@ -5,12 +5,7 @@
 // Skipped (no prototype yet):
 //      1 /obj/effect/landmark/disk_spawn
 //      4 /obj/item/clothing/glasses/meson
-//      3 /obj/item/clothing/gloves/black
-//      3 /obj/item/clothing/head/helmet/hardhat/red
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      3 /obj/item/clothing/mask/gas
-//      4 /obj/item/clothing/shoes/magnetic
-//      3 /obj/item/clothing/suit/fire
 //      3 /obj/item/device/flash
 //      1 /obj/item/device/radio
 //      1 /obj/item/device/radio/beacon
@@ -58,7 +53,6 @@
 //      1 /obj/machinery/embedded_controller/radio/airlock_controller
 //      4 /obj/machinery/engine/laser
 //      1 /obj/machinery/engine/supermatter
-//      1 /obj/machinery/firealarm
 //      1 /obj/machinery/hologram_ai
 //      1 /obj/machinery/navbeacon
 //      1 /obj/machinery/pipedispenser/disposal
@@ -106,7 +100,7 @@
         '5': (tile: (id: "floor"), objects: ["oxygen-canister"]),
         '6': (tile: (id: "plating"), objects: [(id: "cable", ends: [North, East])]),
         '7': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [South, West]), (id: "cable", ends: [South, East])]),
-        '8': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "wrench"]),
+        '8': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "wrench", "magboots", "magboots"]),
         '9': (tile: (id: "floor"), objects: [(id: "pipe", dir: South)]),
         ':': (tile: (id: "floor"), objects: [(id: "pipe", dir: NorthEast), (id: "cable", ends: [North, East]), (id: "cable", ends: [South, East])]),
         ';': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "manifold", dir: North)]),
@@ -135,7 +129,7 @@
         'R': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, East]), (id: "cable", ends: [North, West])]),
         'S': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "first-aid-kit"]),
         'T': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir"))]),
-        'U': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East), (id: "table", dir: NorthWest, state: Some("tabledir")), "wrench"]),
+        'U': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East), (id: "table", dir: NorthWest, state: Some("tabledir")), "wrench", "magboots", "magboots"]),
         'V': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: North)]),
         'W': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: East)]),
         'X': (tile: (id: "r-wall", solid: true)),
@@ -277,7 +271,7 @@
         'ω': (tile: (id: "floor"), objects: ["air-alarm", (id: "vent", dir: North)]),
         'А': (tile: (id: "floor"), objects: [(id: "firedoor", dir: South), (id: "airlock", access: ["engine"])]),
         'Б': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South]), "light-switch"]),
-        'В': (tile: (id: "floor"), objects: ["rack", "oxygen-tank"]),
+        'В': (tile: (id: "floor"), objects: ["rack", "black-gloves", "firesuit", "oxygen-tank", "gas-mask", "hardhat-red"]),
         'Г': (tile: (id: "floor"), objects: [(id: "vent", dir: North)]),
         'Д': (tile: (id: "floor"), objects: [(id: "light", dir: North), "rack", "space-suit", "space-helmet", "breath-mask"]),
         'Е': (tile: (id: "floor"), objects: ["rack", "space-suit", "space-helmet", "breath-mask"]),
@@ -333,7 +327,7 @@
         'ч': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "pipe", dir: North), "meter"]),
         'ш': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "carbon-dioxide-pressure-tank", dir: West)]),
         'щ': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "firedoor", dir: South)]),
-        'ъ': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "first-aid-kit"]),
+        'ъ': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "fire-alarm", "first-aid-kit"]),
         'ы': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
         'ь': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East)]),
         'э': (tile: (id: "wall", solid: true), objects: [(id: "manifold", dir: East)]),

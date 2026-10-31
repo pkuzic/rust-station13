@@ -304,3 +304,9 @@ analyzer-summary = { $oxy ->
         [severe] Severe anatomical damage detected
        *[ok] Subject brute-force injury status O.K
     }
+
+# Fire alarm (fire-alarm.md). Args: $name, $item (noun id).
+fire-alarm-raised = You pull the fire alarm.
+fire-alarm-reset = You reset the fire alarm.
+fire-alarm-disconnected = { $name } has disconnected the { NOUN($item) }'s detecting unit!
+fire-alarm-reconnected = { $name } has reconnected the { NOUN($item) }'s detecting unit!
