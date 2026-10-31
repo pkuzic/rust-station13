@@ -112,4 +112,5 @@
     "hardhat-blue": (gender: neuter, sg: (nom: "blue hard hat", indef: "a blue hard hat"), pl: Some((nom: "blue hard hats"))),
     "pacman": (gender: neuter, sg: (nom: "P.A.C.M.A.N. generator", indef: "a P.A.C.M.A.N. generator"), pl: Some((nom: "P.A.C.M.A.N. generators"))),
     "plasma-sheet": (gender: neuter, sg: (nom: "solid plasma", indef: "a sheet of solid plasma"), pl: Some((nom: "sheets of solid plasma"))),
+    "tank-dispenser": (gender: neuter, sg: (nom: "tank storage unit", indef: "a tank storage unit"), pl: Some((nom: "tank storage units"))),
 }

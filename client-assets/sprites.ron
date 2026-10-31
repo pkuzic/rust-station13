@@ -501,6 +501,15 @@
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
         "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
         "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        // Tank storage unit: the overlay shows how full it is (oxygen-5 full … oxygen-1).
+        "tank-dispenser": {
+            "": (dmi: "icons/obj/objects.dmi", state: "dispenser"),
+            "oxygen-1": (dmi: "icons/obj/objects.dmi", state: "oxygen-1"),
+            "oxygen-2": (dmi: "icons/obj/objects.dmi", state: "oxygen-2"),
+            "oxygen-3": (dmi: "icons/obj/objects.dmi", state: "oxygen-3"),
+            "oxygen-4": (dmi: "icons/obj/objects.dmi", state: "oxygen-4"),
+            "oxygen-5": (dmi: "icons/obj/objects.dmi", state: "oxygen-5"),
+        },
         // P.A.C.M.A.N. generator: portgen0 idle, portgen1 running.
         "pacman": {
             "portgen0": (dmi: "icons/obj/power.dmi", state: "portgen0"),

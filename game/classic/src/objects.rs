@@ -127,6 +127,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
+    if proto == crate::dispensers::TANK_DISPENSER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::dispensers::spawn_tank_dispenser(world, spec, pos, id));
+    }
     if proto == crate::generators::PACMAN {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::generators::spawn_pacman(world, spec, pos, id));

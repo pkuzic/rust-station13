@@ -350,3 +350,14 @@ examine-pacman = Генератор { $on ->
     [few] листа
    *[many] листов
 } плазмы, мощность { $watts } Вт.
+
+# Шкаф для баллонов (tank-dispenser.md). Аргументы: $item (id существительного), $count.
+dispenser-taken = Вы достаёте { NOUN($item, case: "acc") } из шкафа для баллонов.
+dispenser-put = Вы кладёте { NOUN($item, case: "acc") } в шкаф для баллонов.
+dispenser-full = Шкаф для баллонов полон.
+dispenser-empty = Шкаф для баллонов пуст.
+examine-tank-dispenser = В нём { $count } { $count ->
+    [one] кислородный баллон
+    [few] кислородных баллона
+   *[many] кислородных баллонов
+}.

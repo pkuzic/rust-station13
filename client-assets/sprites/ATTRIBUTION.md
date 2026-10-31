@@ -490,6 +490,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `table-wood:wood_tabledir3-southeast` | `icons/obj/structures.dmi : "wood_tabledir3"` | CC-BY-SA 3.0 |
 | `table-wood:wood_tabledir3-southwest` | `icons/obj/structures.dmi : "wood_tabledir3"` | CC-BY-SA 3.0 |
 | `table-wood:wood_tabledir3-west` | `icons/obj/structures.dmi : "wood_tabledir3"` | CC-BY-SA 3.0 |
+| `tank-dispenser:` | `icons/obj/objects.dmi : "dispenser"` | CC-BY-SA 3.0 |
+| `tank-dispenser:oxygen-1` | `icons/obj/objects.dmi : "oxygen-1"` | CC-BY-SA 3.0 |
+| `tank-dispenser:oxygen-2` | `icons/obj/objects.dmi : "oxygen-2"` | CC-BY-SA 3.0 |
+| `tank-dispenser:oxygen-3` | `icons/obj/objects.dmi : "oxygen-3"` | CC-BY-SA 3.0 |
+| `tank-dispenser:oxygen-4` | `icons/obj/objects.dmi : "oxygen-4"` | CC-BY-SA 3.0 |
+| `tank-dispenser:oxygen-5` | `icons/obj/objects.dmi : "oxygen-5"` | CC-BY-SA 3.0 |
 | `tile:floor:` | `icons/turf/floors.dmi : "floor"` | CC-BY-SA 3.0 |
 | `tile:grille:` | `icons/obj/structures.dmi : "grille"` | CC-BY-SA 3.0 |
 | `tile:plating:` | `icons/turf/floors.dmi : "plating"` | CC-BY-SA 3.0 |

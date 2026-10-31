@@ -329,3 +329,13 @@ examine-pacman = The generator is { $on ->
     [one] sheet
    *[other] sheets
 } of plasma left, producing { $watts } W.
+
+# Tank storage unit (tank-dispenser.md). Args: $item (noun id), $count.
+dispenser-taken = You take the { NOUN($item) } out of the tank storage unit.
+dispenser-put = You put the { NOUN($item) } in the tank storage unit.
+dispenser-full = The tank storage unit is full.
+dispenser-empty = The tank storage unit is empty.
+examine-tank-dispenser = It holds { $count } { $count ->
+    [one] oxygen tank
+   *[other] oxygen tanks
+}.

@@ -122,6 +122,7 @@ pub fn process_actions(
         mut flashlights,
         mut firealarms,
         mut generators,
+        mut dispensers,
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -138,6 +139,7 @@ pub fn process_actions(
         crate::flashlights::FlashlightWork,
         crate::firealarms::FireAlarmWork,
         crate::generators::GeneratorWork,
+        crate::dispensers::DispenserWork,
     ),
     mut commands: Commands,
 ) {
@@ -257,6 +259,9 @@ pub fn process_actions(
                         if let Some(more) = generators.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = dispensers.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;
                             outbox.0.push(LocMsg::new("examine-smes").num("value", percent));
@@ -345,6 +350,15 @@ pub fn process_actions(
                             sounds.tool_used(tool, mob_pos.0);
                             visible.0.push((mob_pos.0, seen, None));
                         }
+                    }
+                }
+                Action::UseOn(target) if dispensers.contains(target) => {
+                    // Tank storage units (`tank-dispenser.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = dispensers.use_on(mob, target, tool, &mut hands, &mut commands) {
+                        outbox.0.extend(outcome.to_mob);
                     }
                 }
                 Action::UseOn(target) if generators.contains(target) => {

@@ -67,7 +67,6 @@
 //      2 /obj/multiz/ladder
 //      2 /obj/multiz/stairs/active
 //      2 /obj/multiz/stairs/enter
-//      1 /obj/structure/dispenser/oxygen
 //      1 /obj/structure/disposalpipe/junction
 //     24 /obj/structure/disposalpipe/segment
 //      3 /obj/structure/disposalpipe/trunk
@@ -270,7 +269,7 @@
         'А': (tile: (id: "floor"), objects: [(id: "firedoor", dir: South), (id: "airlock", access: ["engine"])]),
         'Б': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South]), "light-switch"]),
         'В': (tile: (id: "floor"), objects: ["rack", "black-gloves", "firesuit", "oxygen-tank", "gas-mask", "hardhat-red"]),
-        'Г': (tile: (id: "floor"), objects: [(id: "vent", dir: North)]),
+        'Г': (tile: (id: "floor"), objects: [(id: "vent", dir: North), "tank-dispenser"]),
         'Д': (tile: (id: "floor"), objects: [(id: "light", dir: North), "rack", "space-suit", "space-helmet", "breath-mask"]),
         'Е': (tile: (id: "floor"), objects: ["rack", "space-suit", "space-helmet", "breath-mask"]),
         'Ж': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), "rack", "space-suit", "space-helmet", "breath-mask"]),
