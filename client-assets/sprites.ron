@@ -101,6 +101,14 @@
             "": (dmi: "icons/mob/back.dmi", state: "oxygen"),
             "lying": (dmi: "icons/mob/back.dmi", state: "oxygen2"),
         },
+        "worn:headset-eng": {
+            "": (dmi: "icons/mob/ears.dmi", state: "headset"),
+            "lying": (dmi: "icons/mob/ears.dmi", state: "headset2"),
+        },
+        "worn:meson-glasses": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "meson"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "meson2"),
+        },
         "worn:jetpack": {
             "": (dmi: "icons/mob/back.dmi", state: "jetpack0"),
             "lying": (dmi: "icons/mob/back.dmi", state: "jetpack02"),
@@ -446,6 +454,8 @@
             "east": (dmi: "icons/obj/objects.dmi", state: "comfychair_brown", dir: Some(2)),
             "west": (dmi: "icons/obj/objects.dmi", state: "comfychair_brown", dir: Some(3)),
         },
+        "headset-eng": { "": (dmi: "icons/obj/radio.dmi", state: "eng_headset") },
+        "meson-glasses": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "meson") },
         "radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "intercom": { "": (dmi: "icons/obj/radio.dmi", state: "intercom") },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
@@ -499,6 +509,8 @@
             "close": (dmi: "icons/mob/screen1.dmi", state: "x"),
             "shoes": (dmi: "icons/mob/screen1.dmi", state: "shoes"),
             "gloves": (dmi: "icons/mob/screen1.dmi", state: "gloves"),
+            "ears": (dmi: "icons/mob/screen1.dmi", state: "ears"),
+            "glasses": (dmi: "icons/mob/screen1.dmi", state: "glasses"),
             "drop": (dmi: "icons/mob/screen1.dmi", state: "act_drop"),
             "help": (dmi: "icons/mob/screen1.dmi", state: "help"),
             "harm": (dmi: "icons/mob/screen1.dmi", state: "harm"),

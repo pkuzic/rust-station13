@@ -131,10 +131,12 @@ pub enum Slot {
     Back,
     Belt,
     Id,
+    Glasses,
+    Ears,
 }
 
 impl Slot {
-    pub const ALL: [Slot; 9] = [
+    pub const ALL: [Slot; 11] = [
         Slot::Uniform,
         Slot::Suit,
         Slot::Head,
@@ -144,6 +146,8 @@ impl Slot {
         Slot::Back,
         Slot::Belt,
         Slot::Id,
+        Slot::Glasses,
+        Slot::Ears,
     ];
 
     /// Name used in content files and message ids, e.g. `uniform`.
@@ -158,6 +162,8 @@ impl Slot {
             Slot::Back => "back",
             Slot::Belt => "belt",
             Slot::Id => "id",
+            Slot::Glasses => "glasses",
+            Slot::Ears => "ears",
         }
     }
 

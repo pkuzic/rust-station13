@@ -107,6 +107,8 @@ hud-slot = { $slot ->
         [shoes] Shoes
         [back] Back
         [belt] Belt
+        [glasses] Glasses
+        [ears] Ears
        *[id] ID
     }
 

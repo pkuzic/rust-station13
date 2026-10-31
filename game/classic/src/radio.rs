@@ -19,6 +19,8 @@ pub const RADIO_TALK_RANGE: i32 = 1;
 /// The handheld radio and the wall intercom prototypes.
 pub const RADIO: &str = "radio";
 pub const INTERCOM: &str = "intercom";
+/// The engineering headset prototype.
+pub const HEADSET: &str = "headset-eng";
 
 /// On a wall-mounted intercom: what `:i` talks into.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
@@ -65,11 +67,16 @@ pub enum RadioMode {
     RightHand,
     LeftHand,
     Intercom,
+    /// The headset on the ears (Luna `;`).
+    Headset,
 }
 
 /// Split a radio prefix (`:r`, `#l`, `.i`, or the same keys on a Russian layout) off the
 /// front of what was typed. The rest is trimmed.
 pub fn split_mode(text: &str) -> (Option<RadioMode>, &str) {
+    if let Some(rest) = text.trim_start().strip_prefix(';') {
+        return (Some(RadioMode::Headset), rest.trim_start());
+    }
     let mut chars = text.trim_start().chars();
     let (Some(mark), Some(key)) = (chars.next(), chars.next()) else {
         return (None, text);
@@ -136,6 +143,10 @@ mod tests {
         assert_eq!(split_mode("Hello :i"), (None, "Hello :i"));
         assert_eq!(split_mode(":x what"), (None, ":x what"));
         assert_eq!(split_mode(":"), (None, ":"));
+        assert_eq!(
+            split_mode("; on the headset"),
+            (Some(RadioMode::Headset), "on the headset")
+        );
     }
 
     #[test]

@@ -125,4 +125,6 @@
     "pipe-vent": (gender: neuter, sg: (nom: "vent", indef: "a vent"), pl: Some((nom: "vents"))),
     "gas-filter": (gender: neuter, sg: (nom: "gas filter", indef: "a gas filter"), pl: Some((nom: "gas filters"))),
     "injector": (gender: neuter, sg: (nom: "air injector", indef: "an air injector"), pl: Some((nom: "air injectors"))),
+    "headset-eng": (gender: neuter, sg: (nom: "engineering radio headset", indef: "an engineering radio headset"), pl: Some((nom: "engineering radio headsets"))),
+    "meson-glasses": (gender: plural, sg: (nom: "optical meson scanner", indef: "an optical meson scanner"), pl: Some((nom: "optical meson scanners"))),
 }

@@ -25,6 +25,9 @@ fn gear_is_worn_where_luna_wears_it() {
     assert_eq!((gloves.slot, gloves.siemens), (Slot::Gloves, 0.5));
     assert_eq!(wearable("insulated-gloves").siemens, 0.0);
 
+    assert_eq!(wearable("meson-glasses").slot, Slot::Glasses);
+    assert_eq!(wearable("headset-eng").slot, Slot::Ears);
+
     let mask = wearable("gas-mask");
     assert_eq!(mask.slot, Slot::Mask);
     assert!(mask.internals, "takes air from a tank like a breath mask");

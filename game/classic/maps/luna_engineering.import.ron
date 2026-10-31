@@ -93,6 +93,8 @@
         (path: "/obj/structure/stool/bed/chair/comfy/brown", id: "comfy-chair-brown", dir: true),
         (path: "/obj/item/device/radio", id: "radio"),
         (path: "/obj/item/device/radio/intercom", id: "intercom"),
+        (path: "/obj/item/device/radio/headset/headset_eng", id: "headset-eng"),
+        (path: "/obj/item/clothing/glasses/meson", id: "meson-glasses"),
         // A tracking beacon is a radio subtype but no radio; nothing to make of it yet.
         (path: "/obj/item/device/radio/beacon"),
         (path: "/obj/item/weapon/tank/jetpack", id: "jetpack"),
@@ -157,6 +159,8 @@
     spawns: [
         (path: "/obj/effect/landmark/start", with: [
             (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]),
+            // Luna gives engineers an engineering headset.
+            (id: "headset-eng"),
         ]),
     ],
 

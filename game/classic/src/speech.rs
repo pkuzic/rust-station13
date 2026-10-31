@@ -107,6 +107,7 @@ pub fn speak(
             &mut PendingSpeech,
             Option<&Vitals>,
             Option<&crate::hands::Hands>,
+            Option<&crate::equipment::Equipment>,
         ),
         With<Mob>,
     >,
@@ -129,7 +130,7 @@ pub fn speak(
 
     // (speaker, where, range heard directly, message, radio message and its frequencies)
     let mut said: Vec<(Entity, TilePos, i32, LocMsg, Vec<(u16, LocMsg)>)> = Vec::new();
-    for (speaker, pos, name, mut pending, vitals, hands) in &mut speakers {
+    for (speaker, pos, name, mut pending, vitals, hands, equipment) in &mut speakers {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
@@ -155,6 +156,9 @@ pub fn speak(
             match mode {
                 Some(RadioMode::RightHand) => into.extend(hands.and_then(|h| h.right)),
                 Some(RadioMode::LeftHand) => into.extend(hands.and_then(|h| h.left)),
+                Some(RadioMode::Headset) => {
+                    into.extend(equipment.and_then(|e| e.get(rs13_world::Slot::Ears)))
+                }
                 Some(RadioMode::Intercom) => into.extend(
                     radios
                         .iter()

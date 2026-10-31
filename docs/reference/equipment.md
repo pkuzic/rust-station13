@@ -88,6 +88,8 @@ From Luna's engineering section and tool closets:
 | `gas-mask` | `clothing/mask/gas` | mask | Takes air from a tank, like a breath mask |
 | `firesuit` | `clothing/suit/fire` | suit | Slows by 1 ds |
 | `hardhat` and `-orange`, `-red` (firefighter helmet), `-white`, `-blue` | `clothing/head/helmet/hardhat` | head | A lamp of 5, switched in hand (`flashlights.md`) |
+| `meson-glasses` | `clothing/glasses/meson` | glasses | Worn only, for now (see below) |
+| `headset-eng` | `device/radio/headset/headset_eng` | ears | A radio: `;` talks into it (`radio.md`) |
 
 Tool closets hold a hard hat three times in ten (Luna `toolcloset`).
 
@@ -97,7 +99,7 @@ Tool closets hold a hard hat three times in ten (Luna `toolcloset`).
   boots' `protective_temperature`);
 - slipping (magnetic boots are `NOSLIP`);
 - gas masks filtering smoke and gases;
-- meson scanners: there is no glasses slot yet, and adding one changes `rs13_world::Slot`.
+- meson scanners (Luna `SEE_TURFS`: seeing the floor plan through walls): the client has no line of sight to see past yet.
 
 A lit hard hat is drawn as `worn:<id>-on`: an item with a state is drawn as
 `worn:<id>-<state>` when that sprite exists.

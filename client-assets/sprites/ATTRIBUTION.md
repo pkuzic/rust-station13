@@ -168,6 +168,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hardhat-red:on` | `icons/obj/clothing/hats.dmi : "hardhat1_red"` | CC-BY-SA 3.0 |
 | `hardhat-white:` | `icons/obj/clothing/hats.dmi : "hardhat0_white"` | CC-BY-SA 3.0 |
 | `hardhat-white:on` | `icons/obj/clothing/hats.dmi : "hardhat1_white"` | CC-BY-SA 3.0 |
+| `headset-eng:` | `icons/obj/radio.dmi : "eng_headset"` | CC-BY-SA 3.0 |
 | `health-analyzer:` | `icons/obj/device.dmi : "health"` | CC-BY-SA 3.0 |
 | `high-power-cell:` | `icons/obj/power.dmi : "hcell"` | CC-BY-SA 3.0 |
 | `high-power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
@@ -180,6 +181,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:center` | `icons/mob/screen1.dmi : "center"` | CC-BY-SA 3.0 |
 | `hud:close` | `icons/mob/screen1.dmi : "x"` | CC-BY-SA 3.0 |
 | `hud:drop` | `icons/mob/screen1.dmi : "act_drop"` | CC-BY-SA 3.0 |
+| `hud:ears` | `icons/mob/screen1.dmi : "ears"` | CC-BY-SA 3.0 |
 | `hud:equip-e` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
 | `hud:equip-n` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
 | `hud:equip-ne` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
@@ -188,6 +190,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:equip-w` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
 | `hud:fire0` | `icons/mob/screen1.dmi : "fire0"` | CC-BY-SA 3.0 |
 | `hud:fire1` | `icons/mob/screen1.dmi : "fire1"` | CC-BY-SA 3.0 |
+| `hud:glasses` | `icons/mob/screen1.dmi : "glasses"` | CC-BY-SA 3.0 |
 | `hud:gloves` | `icons/mob/screen1.dmi : "gloves"` | CC-BY-SA 3.0 |
 | `hud:hair` | `icons/mob/screen1.dmi : "hair"` | CC-BY-SA 3.0 |
 | `hud:hand-l` | `icons/mob/screen1.dmi : "hand"` | CC-BY-SA 3.0 |
@@ -305,6 +308,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `manifold:1-2-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
 | `manifold:1-4-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
 | `manifold:2-4-8` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
+| `meson-glasses:` | `icons/obj/clothing/glasses.dmi : "meson"` | CC-BY-SA 3.0 |
 | `metal-sheet:` | `icons/obj/items.dmi : "sheet-metal"` | CC-BY-SA 3.0 |
 | `meter:meter0` | `icons/obj/meter.dmi : "meter0"` | CC-BY-SA 3.0 |
 | `meter:meter1_1` | `icons/obj/meter.dmi : "meter1_1"` | CC-BY-SA 3.0 |
@@ -626,6 +630,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:hardhat-white:lying` | `icons/mob/head.dmi : "hardhat0_white2"` | CC-BY-SA 3.0 |
 | `worn:hardhat-white-on:` | `icons/mob/head.dmi : "hardhat1_white"` | CC-BY-SA 3.0 |
 | `worn:hardhat-white-on:lying` | `icons/mob/head.dmi : "hardhat1_white2"` | CC-BY-SA 3.0 |
+| `worn:headset-eng:` | `icons/mob/ears.dmi : "headset"` | CC-BY-SA 3.0 |
+| `worn:headset-eng:lying` | `icons/mob/ears.dmi : "headset2"` | CC-BY-SA 3.0 |
 | `worn:id-card:` | `icons/mob/mob.dmi : "id"` | CC-BY-SA 3.0 |
 | `worn:id-card:lying` | `icons/mob/mob.dmi : "id2"` | CC-BY-SA 3.0 |
 | `worn:insulated-gloves:` | `icons/mob/hands.dmi : "ygloves_rhand"` | CC-BY-SA 3.0 |
@@ -642,6 +648,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:jetpack-on:lying` | `icons/mob/back.dmi : "jetpack12"` | CC-BY-SA 3.0 |
 | `worn:magboots:` | `icons/mob/feet.dmi : "magboots"` | CC-BY-SA 3.0 |
 | `worn:magboots:lying` | `icons/mob/feet.dmi : "magboots2"` | CC-BY-SA 3.0 |
+| `worn:meson-glasses:` | `icons/mob/eyes.dmi : "meson"` | CC-BY-SA 3.0 |
+| `worn:meson-glasses:lying` | `icons/mob/eyes.dmi : "meson2"` | CC-BY-SA 3.0 |
 | `worn:oxygen-tank:` | `icons/mob/back.dmi : "oxygen"` | CC-BY-SA 3.0 |
 | `worn:oxygen-tank:lying` | `icons/mob/back.dmi : "oxygen2"` | CC-BY-SA 3.0 |
 | `worn:space-helmet:` | `icons/mob/head.dmi : "space"` | CC-BY-SA 3.0 |
