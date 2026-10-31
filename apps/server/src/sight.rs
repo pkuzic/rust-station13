@@ -166,12 +166,12 @@ pub fn update_sight<F: QueryFilter>(
             .iter()
             .filter(|(entity, pos, person, opaque, light, under_floor)| {
                 let Some(at) = pos else { return false };
-                // Under intact floor tiles (pipes, cables, vents): no one sees it.
-                *under_floor
-                    || (*entity != me
-                        && !*opaque
-                        && !*light
-                        && out_of_sight(eye, facing, at.0, *person, &mut seen))
+                // Our own mob is always sent, even shut in a closet (which hides it from
+                // everyone else). Under intact floor tiles (pipes, cables, vents): no one
+                // sees it.
+                *entity != me
+                    && (*under_floor
+                        || (!*opaque && !*light && out_of_sight(eye, facing, at.0, *person, &mut seen)))
             })
             .map(|(entity, ..)| entity)
             .collect();
