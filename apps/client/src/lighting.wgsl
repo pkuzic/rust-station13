@@ -1,6 +1,8 @@
 // Soft tile lighting (`docs/reference/lighting.md`). The texture holds one texel per
 // tile; between tile centres the light is blended with smoothstep weights, so light
 // fades smoothly with no creases. The pipeline multiplies the result over the map.
+// Alpha says whether a tile is in sight: it is read per tile, without blending, so what
+// the player can't see stays black right up to the edge of what they can.
 
 @group(2) @binding(0) var light_texture: texture_2d<f32>;
 
@@ -23,5 +25,7 @@ fn fragment(in: FragmentInput) -> @location(0) vec4<f32> {
     let c = textureLoad(light_texture, vec2<i32>(i0.x, i1.y), 0);
     let d = textureLoad(light_texture, vec2<i32>(i1.x, i1.y), 0);
     let light = mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-    return vec4<f32>(light.rgb, 1.0);
+    let tile = clamp(vec2<i32>(floor(in.uv * vec2<f32>(size))), vec2<i32>(0, 0), top);
+    let seen = textureLoad(light_texture, tile, 0).a;
+    return vec4<f32>(light.rgb * seen, 1.0);
 }

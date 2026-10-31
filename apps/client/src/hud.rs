@@ -348,9 +348,11 @@ fn click_cell(
     let action = match *cell {
         // With an empty hand, clicking what you wear is clicking the thing itself: a
         // container opens, clothes come off (Luna `attack_hand`).
+        // With something in hand, an empty slot puts it on, and an occupied one is clicked with
+        // it: a tool goes into the worn utility belt (Luna `attackby`).
         Cell::Slot(slot) => match worn.and_then(|w| w.get(slot)) {
-            _ if holding => Some(ActionInput::Equip(slot)),
             Some(item) => Some(ActionInput::UseOn(item)),
+            None if holding => Some(ActionInput::Equip(slot)),
             None => None,
         },
         // The active hand: use its item (Luna `attack_self`, e.g. light a welding tool).

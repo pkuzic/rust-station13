@@ -388,11 +388,9 @@ pub fn process_actions(
                         }
                     }
                 }
-                Action::UseOn(target)
-                    if radios.contains(target) && places.contains(target) && tool.is_none() =>
-                {
-                    // An empty hand on an intercom or a radio on the floor works its
-                    // microphone (`radio.md`), within reach.
+                Action::UseOn(target) if radios.is_intercom(target) && tool.is_none() => {
+                    // An empty hand on an intercom works its microphone (`radio.md`), within
+                    // reach. A radio on the floor is picked up like anything else.
                     if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
                         continue;
                     }
