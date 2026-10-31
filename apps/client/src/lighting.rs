@@ -126,6 +126,27 @@ struct LightCache {
     levels: Vec<[f32; 3]>,
 }
 
+/// The light to draw on a wall or closed door: the brightest of the open tiles beside it
+/// that the player sees, so a wall shows the light on the side facing them, not light
+/// from the room behind it bleeding through. `None` for an open tile, or a wall with no
+/// open tile in sight beside it (it keeps its own light).
+pub fn wall_light(
+    at: TilePos,
+    level: impl Fn(i32, i32) -> [f32; 3],
+    blocks: impl Fn(TilePos) -> bool,
+    seen: impl Fn(TilePos) -> bool,
+) -> Option<[f32; 3]> {
+    if !blocks(at) {
+        return None;
+    }
+    [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        .into_iter()
+        .map(|(dx, dy)| TilePos::new(at.x + dx, at.y + dy, at.z))
+        .filter(|p| !blocks(*p) && seen(*p))
+        .map(|p| level(p.x, p.y))
+        .reduce(|a, b| std::array::from_fn(|c| a[c].max(b[c])))
+}
+
 /// Work out the light again when the map, a light or a door changed, and what the player
 /// sees when they move; draw both.
 #[allow(clippy::too_many_arguments)]
@@ -238,12 +259,25 @@ fn update_lighting(
         }
     }
 
+    let raw = |x: i32, y: i32| {
+        let inside = (0..width as i32).contains(&x) && (0..height as i32).contains(&y);
+        if inside {
+            cache.levels[(y as u32 * width + x as u32) as usize]
+        } else {
+            [0.0; 3]
+        }
+    };
+    let blocks = |p: TilePos| map.is_opaque(p) || opaque.binary_search(&p).is_ok();
     let mut data = Vec::with_capacity((width * height * 4) as usize);
     // Texture rows run from the top of the map down.
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
-            let level = cache.levels[(y as u32 * width + x as u32) as usize].map(|c| c.max(MIN_LIGHT));
+            let level = wall_light(TilePos::new(x, y, map.z), raw, blocks, |p| {
+                me.is_some() && !unseen.contains(&p)
+            })
+            .unwrap_or_else(|| raw(x, y))
+            .map(|c| c.max(MIN_LIGHT));
             for c in level {
                 data.push((c * 255.0).round() as u8);
             }
@@ -292,4 +326,41 @@ fn update_lighting(
         MeshMaterial2d(materials.add(LightMaterial { light: image })),
         Transform::from_translation(centre.extend(LIGHT_Z)),
     ));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_wall_shows_the_light_on_the_side_you_see() {
+        // A wall at x = 0: the room behind it (x < 0) is lit, ours (x > 0) is dark.
+        let level = |x: i32, _y: i32| {
+            if x < 0 {
+                [1.0; 3]
+            } else if x == 0 {
+                [0.8; 3]
+            } else {
+                [0.1; 3]
+            }
+        };
+        let blocks = |p: TilePos| p.x == 0;
+        let ours = |p: TilePos| p.x > 0;
+        let wall = TilePos::new(0, 0, 0);
+        assert_eq!(
+            wall_light(wall, level, blocks, ours),
+            Some([0.1; 3]),
+            "not the light behind it"
+        );
+        assert_eq!(
+            wall_light(TilePos::new(1, 0, 0), level, blocks, ours),
+            None,
+            "open tiles keep theirs"
+        );
+        assert_eq!(
+            wall_light(wall, level, blocks, |_| false),
+            None,
+            "a wall out of sight keeps its own"
+        );
+    }
 }

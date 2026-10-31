@@ -86,6 +86,9 @@ made-up two-deck world.
   tile centres the light is blended with smoothstep weights, so it fades smoothly with no
   creases. It is multiplied over everything on the map, coloured light included. The HUD
   and the text panel are not darkened.
+- **Walls and closed doors** are drawn with the light of the open tiles beside them that
+  the player sees (the brightest), so a wall shows the light on the side facing you, and
+  light from the room behind it doesn't bleed through.
 - **F4** turns lighting off and on.
 
 ## Differences from Luna
@@ -111,8 +114,9 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 - **Shadows:** every wall and closed door near the player casts a shadow away from the
   player's eye, out past the edge of the screen. They follow the player's drawn position,
   so they move smoothly while walking.
-- **Walls** are seen when one of their exposed sides is; a wall none of whose sides can be
-  seen is shaded whole, so walls seen edge-on show no slivers.
+- **Walls** are seen when one of their exposed sides is, and so are the corners of a room
+  (walls on both sides, the floor touching them only at a corner), as in BYOND. A wall
+  none of whose sides can be seen is shaded whole, so walls seen edge-on show no slivers.
 - **What lies on a tile** (items, machines, people) is drawn only when the straight line
   from the player's tile centre to the tile's centre crosses no wall. A line passing
   exactly through a corner gets past if either tile beside the corner is open: a door
