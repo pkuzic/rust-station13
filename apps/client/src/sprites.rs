@@ -17,6 +17,12 @@ pub struct SpriteAtlas {
     pub atlas: Atlas,
     image: Handle<Image>,
     layout: Handle<TextureAtlasLayout>,
+    /// The atlas as decoded, kept to enlarge for the UI.
+    source: Image,
+    /// For the HUD and panels: the atlas enlarged to the screen's pixel scale and sampled
+    /// smoothly (`scaling.rs`). Both handles stay the same when the scale changes.
+    ui_image: Handle<Image>,
+    ui_layout: Handle<TextureAtlasLayout>,
 }
 
 /// What an entity looks like, by atlas key. `facing` is a DMI direction index
@@ -51,10 +57,14 @@ pub fn load_atlas(
     .expect("built-in atlas image is valid");
     let rows = image.height() / atlas.tile;
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(atlas.tile), atlas.columns, rows, None, None);
+    let ui_image = crate::scaling::enlarged_image(&image, 1).expect("the built-in atlas has pixels");
     commands.insert_resource(SpriteAtlas {
-        atlas,
+        ui_image: images.add(ui_image),
+        ui_layout: layouts.add(layout.clone()),
+        source: image.clone(),
         image: images.add(image),
         layout: layouts.add(layout),
+        atlas,
     });
 }
 
@@ -67,12 +77,32 @@ impl SpriteAtlas {
     /// A UI image of the first frame of `sprite:state`, if the atlas has it.
     pub fn ui_image(&self, sprite: &str, state: &str, facing: u32) -> Option<ImageNode> {
         Some(ImageNode::from_atlas_image(
-            self.image.clone(),
+            self.ui_image.clone(),
             TextureAtlas {
-                layout: self.layout.clone(),
+                layout: self.ui_layout.clone(),
                 index: self.index(sprite, state, facing)?,
             },
         ))
+    }
+
+    /// Enlarge the UI's copy of the atlas `k` times, in place.
+    pub fn enlarge_ui(&self, k: u32, images: &mut Assets<Image>, layouts: &mut Assets<TextureAtlasLayout>) {
+        if let (Some(enlarged), Some(mut image)) = (
+            crate::scaling::enlarged_image(&self.source, k),
+            images.get_mut(&self.ui_image),
+        ) {
+            *image = enlarged;
+        }
+        if let Some(mut layout) = layouts.get_mut(&self.ui_layout) {
+            let rows = self.source.height() / self.atlas.tile;
+            *layout = TextureAtlasLayout::from_grid(
+                UVec2::splat(self.atlas.tile * k),
+                self.atlas.columns,
+                rows,
+                None,
+                None,
+            );
+        }
     }
 
     /// A sprite showing the first frame of `sprite:state`, if the atlas has it.

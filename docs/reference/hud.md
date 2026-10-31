@@ -18,6 +18,27 @@ The screen square is 16 × 16 cells:
 Cells use Luna's `screen_loc` coordinates: x 1–16 from the left, y 0–15 from the bottom
 (`code/game/hud.dm`). The map is scaled to fit the square, so cells are not always 32 px.
 
+## Scaling
+
+Code: `apps/client/src/scaling.rs`.
+
+The square is 512 sprite pixels across, and the window can be any size. Stretching pixel art
+by a fractional factor with nearest sampling makes some pixels wider than others, and they
+shimmer as the view scrolls. Smooth sampling instead blurs everything. So the client does this:
+
+- **World:** drawn into an image of `k × 512` px with nearest sampling, where `k` is the
+  smallest whole number that makes it at least as big as the square on screen (at most
+  4). Every sprite pixel is exactly `k × k`. The image is then shown in the square with
+  smooth sampling. It only ever shrinks, by between ½ and 1, so pixels stay even and their
+  edges soften by about one screen pixel.
+- **HUD and panels:** their icons come from a copy of the sprite atlas enlarged `k` times,
+  shown the same way.
+- **Moving:** the camera and gliding mobs snap to the image's pixels (`1/k` of a sprite
+  pixel), so nothing shimmers while walking.
+- **Window resizing:** `k` is recomputed and the image and atlas copy are rebuilt when it
+  changes.
+- **Testing:** `--size WIDTHxHEIGHT` opens the client at a given size.
+
 | Cell | Where (x, y) | Luna icon |
 |---|---|---|
 | Mask, head, back | (1, 2), (2, 2), (3, 2) | `equip` N, `hair`, `equip` NE |
