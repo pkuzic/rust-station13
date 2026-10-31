@@ -7,8 +7,8 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView,
-    Hidden, Intent, LightSource, MapLayer, MobStat, NetId, Opaque, Slot, StorageView, TilePos, WirePanelView,
-    WornView,
+    Hidden, Intent, LightSource, MapLayer, MobStat, NetId, Opaque, PowerMonitorView, Slot, StorageView,
+    TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -138,6 +138,11 @@ pub struct AlarmPanel(pub Option<AlarmPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ApcPanel(pub Option<ApcPanelView>);
 
+/// Server → one client: the power monitor it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PowerMonitorPanel(pub Option<PowerMonitorView>);
+
 /// Server → one client: the container it has open, or `None` to close it. Sent when it
 /// changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -202,6 +207,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<StoragePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ApcPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<PowerMonitorPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

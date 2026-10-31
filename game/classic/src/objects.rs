@@ -131,6 +131,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::chairs::spawn_chair(world, spec, pos, id));
     }
+    if proto == crate::power_monitor::POWER_MONITOR {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::power_monitor::spawn_power_monitor(world, spec, pos, id));
+    }
     if proto == crate::radio::INTERCOM {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::radio::spawn_intercom(world, spec, pos, id));
@@ -354,6 +358,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 crate::alarms::PendingAlarmOps::default(),
                 crate::apc::PendingApcOps::default(),
                 crate::apc::ApcPanelOut::default(),
+                crate::power_monitor::PowerMonitorOut::default(),
                 crate::alarms::AlarmPanelOut::default(),
                 crate::storage::StorageOut::default(),
             ),

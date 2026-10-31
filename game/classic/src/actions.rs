@@ -120,7 +120,16 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios, mut chairs, mut apc_work),
+        (
+            mut generators,
+            mut dispensers,
+            mut chargers,
+            mut jetpacks,
+            mut radios,
+            mut chairs,
+            mut apc_work,
+            monitors,
+        ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -144,6 +153,7 @@ pub fn process_actions(
             crate::radio::RadioWork,
             crate::chairs::ChairWork,
             crate::apc::ApcWork,
+            Query<(&GridPos, &crate::power::PowerUser), With<crate::power_monitor::PowerMonitor>>,
         ),
     ),
     mut commands: Commands,
@@ -378,6 +388,10 @@ pub fn process_actions(
                     if let Some(outcome) = radios.toggle_microphone(target) {
                         outbox.0.extend(outcome.to_mob);
                     }
+                }
+                Action::UseOn(target) if monitors.contains(target) => {
+                    // Power monitoring computers (`power.md`).
+                    crate::power_monitor::open(&monitors, mob, mob_pos.0, target, &mut commands);
                 }
                 Action::UseOn(target) if apc_work.contains(target) => {
                     // APCs (`power.md`), within reach.

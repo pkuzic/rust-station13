@@ -379,6 +379,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `power-cell:` | `icons/obj/power.dmi : "cell"` | CC-BY-SA 3.0 |
 | `power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
 | `power-cell:cell-o2` | `icons/obj/power.dmi : "cell-o2"` | CC-BY-SA 3.0 |
+| `power-monitor:power` | `icons/obj/computer.dmi : "power"` | CC-BY-SA 3.0 |
+| `power-monitor:unpowered` | `icons/obj/computer.dmi : "c_unpowered"` | CC-BY-SA 3.0 |
 | `pump:off` | `icons/obj/atmospherics/pump.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `pump:on` | `icons/obj/atmospherics/pump.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `rack:` | `icons/obj/objects.dmi : "rack"` | CC-BY-SA 3.0 |

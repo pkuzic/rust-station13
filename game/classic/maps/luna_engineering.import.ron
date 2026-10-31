@@ -89,6 +89,7 @@
         (path: "/obj/machinery/power/port_gen/pacman", id: "pacman"),
         (path: "/obj/structure/dispenser/oxygen", id: "tank-dispenser"),
         (path: "/obj/machinery/cell_charger", id: "cell-charger"),
+        (path: "/obj/machinery/power/monitor", id: "power-monitor"),
         (path: "/obj/structure/stool/bed/chair", id: "chair", dir: true),
         (path: "/obj/structure/stool/bed/chair/comfy/brown", id: "comfy-chair-brown", dir: true),
         (path: "/obj/item/device/radio", id: "radio"),

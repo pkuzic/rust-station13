@@ -36,6 +36,7 @@ pub mod movement;
 pub mod names;
 pub mod objects;
 pub mod power;
+pub mod power_monitor;
 pub mod radio;
 pub mod rng;
 pub mod sound;
@@ -85,6 +86,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<machines::PipeNets>()
             .init_resource::<power::Powernets>()
             .init_resource::<power::AreaPower>()
+            .init_resource::<power::GridTotals>()
             .init_resource::<wires::WireLayout>()
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
@@ -171,6 +173,7 @@ impl Plugin for ClassicPlugin {
                     wires::update_panel_views,
                     alarms::update_alarm_views,
                     apc::update_apc_views,
+                    power_monitor::update_monitor_views,
                     storage::update_storage_views,
                     machines::update_machine_looks,
                     machines::update_canister_looks,
@@ -195,6 +198,7 @@ impl Plugin for ClassicPlugin {
                     cells::update_cell_looks,
                     jetpacks::update_jetpack_looks,
                     chairs::update_chairs,
+                    power_monitor::update_monitor_looks,
                 )
                     .in_set(TickSet::Publish),
             )

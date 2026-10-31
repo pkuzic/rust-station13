@@ -18,6 +18,7 @@ mod apc_panel;
 mod audio;
 mod hud;
 mod lighting;
+mod monitor_panel;
 mod scaling;
 mod sprites;
 mod storage_panel;
@@ -164,6 +165,7 @@ fn main() {
         .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<alarm_panel::OpenAlarm>()
         .init_resource::<apc_panel::OpenApc>()
+        .init_resource::<monitor_panel::OpenMonitor>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
         .init_resource::<TileSprites>()
@@ -194,6 +196,7 @@ fn main() {
                 (wire_panel::receive_panel, wire_panel::show_panel).chain(),
                 (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
                 (apc_panel::receive_apc, apc_panel::show_apc).chain(),
+                (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
                 (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 glide,
                 (
