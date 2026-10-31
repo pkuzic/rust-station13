@@ -136,4 +136,5 @@
     "laser-beam": (gender: neuter, sg: (nom: "laser beam", indef: "a laser beam"), pl: Some((nom: "laser beams"))),
     "laser-computer": (gender: neuter, sg: (nom: "laser control computer", indef: "a laser control computer"), pl: Some((nom: "laser control computers"))),
     "freezer": (gender: neuter, sg: (nom: "freezer", indef: "a freezer"), pl: Some((nom: "freezers"))),
+    "terminal": (gender: neuter, sg: (nom: "terminal", indef: "a terminal"), pl: Some((nom: "terminals"))),
 }

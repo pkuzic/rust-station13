@@ -119,3 +119,26 @@ fn the_imported_map_loads_and_runs() {
     }
     assert_eq!(floors, 5);
 }
+
+#[test]
+fn the_engines_generators_feed_the_smes_terminals() {
+    // Luna's engine: the generators share a network with the SMES bank's terminals, so their
+    // power charges the SMES units, which feed the station (`power.md`, `engine.md`).
+    let mut app = setup();
+    app.world_mut().run_schedule(FixedUpdate);
+    let mut tegs = app
+        .world_mut()
+        .query_filtered::<Entity, With<rs13_classic::teg::Teg>>();
+    let tegs: Vec<Entity> = tegs.iter(app.world()).collect();
+    let mut terminals = app
+        .world_mut()
+        .query_filtered::<Entity, With<rs13_classic::power::Terminal>>();
+    let terminals: Vec<Entity> = terminals.iter(app.world()).collect();
+    assert_eq!(tegs.len(), 2);
+    assert!(terminals.len() >= 9);
+    let nets = app.world().resource::<Powernets>();
+    for teg in tegs {
+        let net = nets.net_of.get(&teg);
+        assert!(net.is_some() && terminals.iter().any(|t| nets.net_of.get(t) == net));
+    }
+}

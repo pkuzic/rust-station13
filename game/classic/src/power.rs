@@ -146,6 +146,26 @@ pub struct Smes {
     pub capacity: f64,
     pub output: f64,
     pub online: bool,
+    /// Most it draws through its terminal to charge, W (Luna `chargelevel`).
+    pub input: f64,
+    /// Charges by itself when its terminal's network has spare power (Luna `chargemode`).
+    pub charge_auto: bool,
+    /// Charging now (Luna `charging`).
+    pub charging: bool,
+    /// Power it put out last cycle, W (Luna `lastout`).
+    pub last_output: f64,
+}
+
+/// Joules in one of Luna's SMES charge units: its 5 × 10⁶ units are our 200 MJ.
+pub const SMES_UNIT: f64 = SMES_CAPACITY / 5.0e6;
+/// Highest input and output level, W (Luna `SMESMAXCHARGELEVEL`, `SMESMAXOUTPUT`).
+pub const SMES_MAX_LEVEL: f64 = 200_000.0;
+
+/// The underfloor wiring terminal a SMES charges through (Luna `power/terminal`): it joins
+/// the cable on its tile, and its SMES is the next tile in `dir`.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Terminal {
+    pub dir: Dir,
 }
 
 /// A generator feeding its network, W this cycle. Unlike a SMES it stores nothing: what
@@ -348,8 +368,9 @@ pub fn power_cycle(
     mut totals: ResMut<GridTotals>,
     mut users: Query<(&GridPos, &mut PowerUser, Option<&Switch>, Option<&mut Airlock>)>,
     mut apcs: Query<(Entity, &mut Apc)>,
-    mut batteries: Query<(Entity, &mut Smes)>,
+    mut batteries: Query<(Entity, &GridPos, &mut Smes), Without<PowerUser>>,
     generators: Query<(Entity, &PowerSupply)>,
+    terminals: Query<(Entity, &GridPos, &Terminal), Without<Smes>>,
 ) {
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
         return;
@@ -381,7 +402,7 @@ pub fn power_cycle(
         }
     }
     let mut stored = vec![0.0; nets.count];
-    for (entity, smes) in &batteries {
+    for (entity, _, smes) in &batteries {
         if let (true, Some(&net)) = (smes.online, nets.net_of.get(&entity)) {
             stored[net] += smes.charge.min(smes.output * POWER_DT);
         }
@@ -468,7 +489,12 @@ pub fn power_cycle(
     };
 
     // SMES units lose only what was drawn, in proportion to what they offered.
-    for (entity, mut smes) in &mut batteries {
+    for (entity, _, mut smes) in &mut batteries {
+        smes.last_output = 0.0;
+        // Luna: an empty SMES stops its output until someone turns it on again.
+        if smes.online && smes.charge <= 0.0 {
+            smes.online = false;
+        }
         let Some(&net) = nets.net_of.get(&entity) else {
             continue;
         };
@@ -478,7 +504,33 @@ pub fn power_cycle(
         let share = smes.charge.min(smes.output * POWER_DT) / stored[net];
         let from_storage = (offered[net] - remaining[net] - generated[net]).max(0.0);
         let drawn = from_storage * share;
+        smes.last_output = drawn / POWER_DT;
         smes.charge = (smes.charge - drawn).max(0.0);
+    }
+
+    // SMES units charge through their terminals from what is left over on the terminal's
+    // network (Luna `smes/process`): up to their input level, and only room's worth.
+    let terminal_nets: Vec<(TilePos, Dir, usize)> = terminals
+        .iter()
+        .filter_map(|(e, pos, t)| nets.net_of.get(&e).map(|n| (pos.0, t.dir, *n)))
+        .collect();
+    for (_, pos, mut smes) in &mut batteries {
+        let Some(&(_, _, net)) = terminal_nets.iter().find(|(at, dir, _)| at.step(*dir) == pos.0) else {
+            if smes.charging {
+                smes.charging = false;
+            }
+            continue;
+        };
+        let spare = remaining[net].max(0.0);
+        let charging = smes.charge_auto && spare > 0.0 && smes.input > 0.0 && smes.charge < smes.capacity;
+        if smes.charging != charging {
+            smes.charging = charging;
+        }
+        if charging {
+            let drawn = spare.min(smes.input * POWER_DT).min(smes.capacity - smes.charge);
+            smes.charge += drawn;
+            remaining[net] -= drawn;
+        }
     }
 
     // Tell every machine whether it has power now.

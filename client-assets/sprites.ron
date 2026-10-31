@@ -572,7 +572,21 @@
         },
 
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
-        "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
+        // SMES: output light (smes-op0/1), charge light (smes-oc0 set to charge, smes-oc1
+        // charging) and charge level smes-og1 … smes-og5.
+        "smes": {
+            "": (dmi: "icons/obj/power.dmi", state: "smes"),
+            "smes-op0": (dmi: "icons/obj/power.dmi", state: "smes-op0"),
+            "smes-op1": (dmi: "icons/obj/power.dmi", state: "smes-op1"),
+            "smes-oc0": (dmi: "icons/obj/power.dmi", state: "smes-oc0"),
+            "smes-oc1": (dmi: "icons/obj/power.dmi", state: "smes-oc1"),
+            "smes-og1": (dmi: "icons/obj/power.dmi", state: "smes-og1"),
+            "smes-og2": (dmi: "icons/obj/power.dmi", state: "smes-og2"),
+            "smes-og3": (dmi: "icons/obj/power.dmi", state: "smes-og3"),
+            "smes-og4": (dmi: "icons/obj/power.dmi", state: "smes-og4"),
+            "smes-og5": (dmi: "icons/obj/power.dmi", state: "smes-og5"),
+        },
+        "terminal": { "": (dmi: "icons/obj/power.dmi", state: "term") },
         // APC: closed (on, low, off all look alike for now), or its cover open with or without a cell.
         "apc": {
             "": (dmi: "icons/obj/power.dmi", state: "apc0"),

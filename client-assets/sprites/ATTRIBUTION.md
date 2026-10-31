@@ -400,6 +400,15 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `scrubber:off` | `icons/obj/atmospherics/vent_scrubber.dmi : "off"` | CC-BY-SA 3.0 |
 | `scrubber:on` | `icons/obj/atmospherics/vent_scrubber.dmi : "on"` | CC-BY-SA 3.0 |
 | `smes:` | `icons/obj/power.dmi : "smes"` | CC-BY-SA 3.0 |
+| `smes:smes-oc0` | `icons/obj/power.dmi : "smes-oc0"` | CC-BY-SA 3.0 |
+| `smes:smes-oc1` | `icons/obj/power.dmi : "smes-oc1"` | CC-BY-SA 3.0 |
+| `smes:smes-og1` | `icons/obj/power.dmi : "smes-og1"` | CC-BY-SA 3.0 |
+| `smes:smes-og2` | `icons/obj/power.dmi : "smes-og2"` | CC-BY-SA 3.0 |
+| `smes:smes-og3` | `icons/obj/power.dmi : "smes-og3"` | CC-BY-SA 3.0 |
+| `smes:smes-og4` | `icons/obj/power.dmi : "smes-og4"` | CC-BY-SA 3.0 |
+| `smes:smes-og5` | `icons/obj/power.dmi : "smes-og5"` | CC-BY-SA 3.0 |
+| `smes:smes-op0` | `icons/obj/power.dmi : "smes-op0"` | CC-BY-SA 3.0 |
+| `smes:smes-op1` | `icons/obj/power.dmi : "smes-op1"` | CC-BY-SA 3.0 |
 | `space-helmet:` | `icons/obj/clothing/hats.dmi : "space"` | CC-BY-SA 3.0 |
 | `space-suit:` | `icons/obj/clothing/suits.dmi : "space"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
@@ -571,6 +580,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `teg:teg-op7` | `icons/obj/power.dmi : "teg-op7"` | CC-BY-SA 3.0 |
 | `teg:teg-op8` | `icons/obj/power.dmi : "teg-op8"` | CC-BY-SA 3.0 |
 | `teg:teg-op9` | `icons/obj/power.dmi : "teg-op9"` | CC-BY-SA 3.0 |
+| `terminal:` | `icons/obj/power.dmi : "term"` | CC-BY-SA 3.0 |
 | `thermal-plate:` | `icons/obj/atmospherics/cold_sink.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `tile:floor:` | `icons/turf/floors.dmi : "floor"` | CC-BY-SA 3.0 |
 | `tile:grille:` | `icons/obj/structures.dmi : "grille"` | CC-BY-SA 3.0 |

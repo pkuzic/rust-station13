@@ -40,6 +40,7 @@ pub mod power;
 pub mod power_monitor;
 pub mod radio;
 pub mod rng;
+pub mod smes_panel;
 pub mod sound;
 pub mod speech;
 pub mod storage;
@@ -125,6 +126,7 @@ impl Plugin for ClassicPlugin {
                     apc::process_apc_ops,
                     supermatter::process_laser_ops,
                     freezers::process_freezer_ops,
+                    smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
                     medical::resolve_treatments,
@@ -200,6 +202,7 @@ impl Plugin for ClassicPlugin {
                         power_monitor::update_monitor_views,
                         supermatter::update_laser_views,
                         freezers::update_freezer_views,
+                        smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
                     machines::update_machine_looks,

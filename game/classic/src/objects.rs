@@ -109,7 +109,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         return Err(format!("{} at {pos:?}: unknown access id {bad:?}", spec.id));
     }
     let proto = spec.id.as_str();
-    if matches!(proto, "cable" | "smes" | "apc") {
+    if matches!(proto, "cable" | "smes" | "apc" | "terminal") {
         return spawn_power_object(world, spec, pos);
     }
     world.init_resource::<crate::closets::ClosetProtos>();
@@ -379,6 +379,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 crate::supermatter::LaserPanelOut::default(),
                 crate::freezers::PendingFreezerOps::default(),
                 crate::freezers::FreezerPanelOut::default(),
+                crate::smes_panel::PendingSmesOps::default(),
+                crate::smes_panel::SmesPanelOut::default(),
                 crate::alarms::AlarmPanelOut::default(),
                 crate::storage::StorageOut::default(),
             ),
@@ -388,7 +390,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
 
 /// Cables, SMES units and APCs. An APC powers the area its tile is in.
 fn spawn_power_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
-    use crate::power::{Apc, Cable, PowerNode, SMES_CAPACITY, SMES_OUTPUT, Smes};
+    use crate::power::{Apc, Cable, PowerNode, SMES_OUTPUT, SMES_UNIT, Smes, Terminal};
     let cable = Cable::from_ends(&spec.ends);
     if spec.id == "cable" && cable.is_none() {
         return Err(format!("cable at {pos:?}: odd ends {:?}", spec.ends));
@@ -409,13 +411,31 @@ fn spawn_power_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Res
             entity.insert((Appearance::new("cable", cable.state()), cable));
         }
         "smes" => {
-            let smes = Smes {
-                charge: SMES_CAPACITY,
-                capacity: SMES_CAPACITY,
-                output: SMES_OUTPUT,
-                online: true,
+            // Luna's settings from the map; charge and capacity are in its units.
+            let number = |name: &str, default: f64| {
+                spec.vars
+                    .get(name)
+                    .and_then(|v| v.trim().parse::<f64>().ok())
+                    .unwrap_or(default)
             };
-            entity.insert((Appearance::new("smes", "on"), smes, Dense));
+            let capacity = number("capacity", 5.0e6) * SMES_UNIT;
+            let smes = Smes {
+                charge: (number("charge", 5.0e6) * SMES_UNIT).min(capacity),
+                capacity,
+                output: number("output", SMES_OUTPUT),
+                online: number("online", 1.0) != 0.0,
+                input: number("chargelevel", 0.0),
+                charge_auto: number("chargemode", 1.0) != 0.0,
+                charging: number("charging", 0.0) != 0.0,
+                last_output: 0.0,
+            };
+            entity.insert((Appearance::new("smes", ""), smes, Dense));
+        }
+        "terminal" => {
+            let terminal = Terminal {
+                dir: spec.dir.unwrap_or(rs13_world::Dir::South),
+            };
+            entity.insert((Appearance::new("terminal", ""), terminal));
         }
         _ => {
             entity.insert((Appearance::new("apc", "on"), Apc::new(area)));

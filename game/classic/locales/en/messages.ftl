@@ -501,3 +501,21 @@ freezer-status = Current status: { $on ->
 }
 freezer-gas = Gas: { $temperature } K, { $pressure } kPa
 freezer-setting = Target gas temperature:
+
+# SMES window (power.md). Args: $value (%), $charging, $auto, $on (yes/no), $load (W).
+smes-title = SMES Power Storage Unit
+smes-charge = Stored capacity: { $value }%
+smes-input = Input: { $charging ->
+    [yes] Charging
+   *[no] Not charging
+} ({ $auto ->
+    [yes] Auto
+   *[no] Off
+})
+smes-input-level = Input level:
+smes-output = Output: { $on ->
+    [yes] Online
+   *[no] Offline
+}
+smes-output-level = Output level:
+smes-load = Output load: { $load } W

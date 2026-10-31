@@ -286,6 +286,23 @@ pub struct FreezerPanelView {
     pub setting: u32,
 }
 
+/// An open SMES, as shown to the player using it (Luna's `smes` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SmesPanelView {
+    /// The SMES.
+    pub target: NetId,
+    /// Stored charge, percent.
+    pub charge_percent: u8,
+    pub charging: bool,
+    pub charge_auto: bool,
+    /// Input and output levels, W.
+    pub input: u32,
+    pub output: u32,
+    pub online: bool,
+    /// Power it put out last cycle, W.
+    pub load: u32,
+}
+
 /// One air alarm readout: a message id taking `$value`, and whether it is out of range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AlarmReading {

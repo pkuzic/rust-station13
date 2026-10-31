@@ -523,3 +523,21 @@ freezer-status = Состояние: { $on ->
 }
 freezer-gas = Газ: { $temperature } K, { $pressure } кПа
 freezer-setting = Целевая температура газа:
+
+# Окно накопителя (power.md). Аргументы: $value (%), $charging, $auto, $on (yes/no), $load (Вт).
+smes-title = Накопитель энергии
+smes-charge = Заряд: { $value }%
+smes-input = Вход: { $charging ->
+    [yes] заряжается
+   *[no] не заряжается
+} ({ $auto ->
+    [yes] авто
+   *[no] выкл.
+})
+smes-input-level = Уровень входа:
+smes-output = Выход: { $on ->
+    [yes] включён
+   *[no] выключен
+}
+smes-output-level = Уровень выхода:
+smes-load = Нагрузка выхода: { $load } Вт

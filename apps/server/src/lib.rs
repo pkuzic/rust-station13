@@ -17,6 +17,7 @@ use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::power_monitor::PowerMonitorOut;
+use rs13_classic::smes_panel::{Level, PendingSmesOps, SmesOp, SmesPanelOut};
 use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
@@ -29,12 +30,13 @@ use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, FreezerCommand,
     FreezerPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PlaySound, Player,
-    PowerMonitorPanel, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
+    PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
+    WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GridPos, LaserPanelView, MapLayer, NetId,
-    PowerMonitorView, StorageView, TileMap, WirePanelView,
+    PowerMonitorView, SmesPanelView, StorageView, TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -62,6 +64,7 @@ struct SentPanel(
     Option<PowerMonitorView>,
     Option<LaserPanelView>,
     Option<FreezerPanelView>,
+    Option<SmesPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -200,6 +203,7 @@ fn queue_actions(
         &mut PendingApcOps,
         &mut PendingLaserOps,
         &mut PendingFreezerOps,
+        &mut PendingSmesOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -218,6 +222,7 @@ fn queue_actions(
             mut apc_ops,
             mut laser_ops,
             mut freezer_ops,
+            mut smes_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -271,6 +276,25 @@ fn queue_actions(
                             AlarmCommand::PanicFill(on) => rs13_classic::alarms::AlarmCommand::PanicFill(on),
                         };
                         alarm_ops.0.push((alarm, command));
+                    }
+                    None
+                }
+                ActionInput::Smes { target, command } => {
+                    if let Some(unit) = resolve(target) {
+                        let level = |l: SmesLevel| match l {
+                            SmesLevel::Min => Level::Min,
+                            SmesLevel::Max => Level::Max,
+                            SmesLevel::Change(d) => Level::Change(f64::from(d)),
+                        };
+                        smes_ops.0.push((
+                            unit,
+                            match command {
+                                SmesCommand::ChargeMode => SmesOp::ChargeMode,
+                                SmesCommand::Online => SmesOp::Online,
+                                SmesCommand::Input(l) => SmesOp::Input(level(l)),
+                                SmesCommand::Output(l) => SmesOp::Output(level(l)),
+                            },
+                        ));
                     }
                     None
                 }
@@ -410,6 +434,7 @@ fn send_panels(
         &mut MessageSender<PowerMonitorPanel>,
         &mut MessageSender<LaserPanel>,
         &mut MessageSender<FreezerPanel>,
+        &mut MessageSender<SmesPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -419,6 +444,7 @@ fn send_panels(
         &PowerMonitorOut,
         &LaserPanelOut,
         &FreezerPanelOut,
+        &SmesPanelOut,
     )>,
 ) {
     for (
@@ -431,9 +457,10 @@ fn send_panels(
         mut monitors,
         mut lasers,
         mut freezers,
+        mut smes,
     ) in &mut links
     {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer)) =
+        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer, smes_panel)) =
             panels.get(controls.0)
         else {
             continue;
@@ -465,6 +492,10 @@ fn send_panels(
         if sent.6 != freezer.0 {
             freezers.send::<NoticeChannel>(FreezerPanel(freezer.0.clone()));
             sent.6 = freezer.0.clone();
+        }
+        if sent.7 != smes_panel.0 {
+            smes.send::<NoticeChannel>(SmesPanel(smes_panel.0.clone()));
+            sent.7 = smes_panel.0.clone();
         }
     }
 }
