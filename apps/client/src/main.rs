@@ -984,11 +984,16 @@ fn glide(
         Has<Player>,
         Option<&mut Look>,
         Option<&mut Glided>,
+        Option<&rs13_world::PixelOffset>,
     )>,
 ) {
     let dt = time.delta_secs();
-    for (entity, pos, mut transform, is_player, look, glided) in &mut movers {
-        let target = world_pos(pos.0, transform.translation.z);
+    for (entity, pos, mut transform, is_player, look, glided, offset) in &mut movers {
+        // Hung on a wall: drawn shifted onto it (BYOND `pixel_x`, `pixel_y`).
+        let shift = offset.map_or(Vec3::ZERO, |o| {
+            Vec3::new(f32::from(o.0[0]), f32::from(o.0[1]), 0.0)
+        });
+        let target = world_pos(pos.0, transform.translation.z) + shift;
         let at = glided.as_ref().map_or(transform.translation, |g| g.0);
         let offset = target - at;
         // People face the way they are moving (DMI order: S, N, E, W).

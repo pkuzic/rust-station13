@@ -94,6 +94,17 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     if crate::floors::lies_under_floor(spec) {
         world.entity_mut(entity).insert(crate::floors::UnderFloor);
     }
+    // Hung on a wall by the map (BYOND `pixel_x`, `pixel_y`): drawn there, kept on its tile.
+    let pixel = |name: &str| {
+        spec.vars
+            .get(name)
+            .and_then(|v| v.trim().parse::<i32>().ok())
+            .map_or(0, |v| v.clamp(-127, 127) as i8)
+    };
+    let offset = [pixel("pixel_x"), pixel("pixel_y")];
+    if offset != [0, 0] {
+        world.entity_mut(entity).insert(rs13_world::PixelOffset(offset));
+    }
     Ok(entity)
 }
 
