@@ -15,6 +15,7 @@ use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::power_monitor::PowerMonitorOut;
 use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
@@ -25,11 +26,12 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, MoveInput, Notice,
-    NoticeChannel, PlaySound, Player, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
+    NoticeChannel, PlaySound, Player, PowerMonitorPanel, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, DisplayName, GridPos, MapLayer, NetId, StorageView, TileMap, WirePanelView,
+    AlarmPanelView, ApcPanelView, DisplayName, GridPos, MapLayer, NetId, PowerMonitorView, StorageView,
+    TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -54,6 +56,7 @@ struct SentPanel(
     Option<AlarmPanelView>,
     Option<StorageView>,
     Option<ApcPanelView>,
+    Option<PowerMonitorView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -371,11 +374,18 @@ fn send_panels(
         &mut MessageSender<AlarmPanel>,
         &mut MessageSender<StoragePanel>,
         &mut MessageSender<ApcPanel>,
+        &mut MessageSender<PowerMonitorPanel>,
     )>,
-    panels: Query<(&WirePanelOut, &AlarmPanelOut, &StorageOut, &ApcPanelOut)>,
+    panels: Query<(
+        &WirePanelOut,
+        &AlarmPanelOut,
+        &StorageOut,
+        &ApcPanelOut,
+        &PowerMonitorOut,
+    )>,
 ) {
-    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs) in &mut links {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel)) = panels.get(controls.0) else {
+    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs, mut monitors) in &mut links {
+        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor)) = panels.get(controls.0) else {
             continue;
         };
         if sent.2 != storage.0 {
@@ -393,6 +403,10 @@ fn send_panels(
         if sent.3 != apc_panel.0 {
             apcs.send::<NoticeChannel>(ApcPanel(apc_panel.0.clone()));
             sent.3 = apc_panel.0.clone();
+        }
+        if sent.4 != monitor.0 {
+            monitors.send::<NoticeChannel>(PowerMonitorPanel(monitor.0.clone()));
+            sent.4 = monitor.0.clone();
         }
     }
 }

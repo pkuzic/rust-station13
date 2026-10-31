@@ -11,6 +11,7 @@ use rs13_classic::hands::{Hands, HeldBy};
 use rs13_classic::machines::Vent;
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_classic::power::{APC_CELL_CAPACITY, Apc, AreaPower, Channel, PowerUser, Powernets, Smes};
+use rs13_classic::power_monitor::PowerMonitorOut;
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_world::{Appearance, Dir, GridPos, ObjectSpec, TileMap, TilePos};
 
@@ -304,4 +305,27 @@ fn examining_an_apc_shows_its_cell_and_channels() {
         .map(|m| m.id.clone())
         .collect();
     assert_eq!(ids, ["examine", "examine-apc"]);
+}
+
+#[test]
+fn a_power_monitor_shows_the_grid_and_every_apc() {
+    let mut app = setup();
+    let at = ENGINEERING_APC.step(Dir::East).step(Dir::South);
+    let monitor = spawn_object(app.world_mut(), &ObjectSpec::new("power-monitor"), at).unwrap();
+    let mob = spawn_player_mob(app.world_mut(), at.step(Dir::South));
+    seconds(&mut app, 4);
+    act(&mut app, mob, Action::UseOn(monitor));
+    seconds(&mut app, 1);
+    let view = app
+        .world()
+        .get::<PowerMonitorOut>(mob)
+        .unwrap()
+        .0
+        .clone()
+        .expect("the window opens");
+    assert!(view.supply > 0, "the SMES offers power");
+    assert!(view.load > 0, "the areas draw some");
+    let areas: Vec<&str> = view.apcs.iter().map(|r| r.area.as_str()).collect();
+    assert_eq!(areas, ["eng-storage", "engineering"]);
+    assert!(view.apcs.iter().all(|r| r.cell_percent.is_some()));
 }

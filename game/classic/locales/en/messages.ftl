@@ -435,3 +435,45 @@ apc-toggle = Toggle
 apc-set-off = Off
 apc-set-on = On
 apc-set-auto = Auto
+
+# Power monitoring computer (power.md). Args: $supply, $load (W); $area; $equipment,
+# $lighting, $environment (0 off, 1 auto-off, 2 on, 3 auto-on); $value (%); $state
+# (0 not charging, 1 charging, 2 full).
+monitor-title = Power Monitoring
+monitor-totals = Total power: { $supply } W. Total load: { $load } W.
+monitor-apc = { $area }: { $equipment ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+} / { $lighting ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+} / { $environment ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+}, { $load } W, cell { $value }% { $state ->
+    [1] C
+    [2] F
+   *[0] N
+}
+monitor-apc-no-cell = { $area }: { $equipment ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+} / { $lighting ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+} / { $environment ->
+    [1] AOff
+    [2] On
+    [3] AOn
+   *[0] Off
+}, { $load } W, no cell

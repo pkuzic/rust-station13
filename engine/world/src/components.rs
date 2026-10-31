@@ -231,6 +231,35 @@ pub struct ApcPanelView {
     pub controls: bool,
 }
 
+/// An open power monitoring computer, as shown to the player using it (Luna's `powcomp`
+/// window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PowerMonitorView {
+    /// The computer.
+    pub target: NetId,
+    /// Power the grid offered last cycle, W.
+    pub supply: u32,
+    /// Power drawn from it, W.
+    pub load: u32,
+    /// Every APC, by area id.
+    pub apcs: Vec<PowerMonitorRow>,
+}
+
+/// One APC on the power monitor.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PowerMonitorRow {
+    /// Area id: the client shows the `area-<id>` message.
+    pub area: String,
+    /// Equipment, lighting and environment modes (Luna 0 off, 1 auto-off, 2 on, 3 auto-on).
+    pub channels: [u8; 3],
+    /// Last cycle's load, W.
+    pub load: u32,
+    /// Cell charge, percent; `None` with no cell.
+    pub cell_percent: Option<u8>,
+    /// 0 not charging, 1 charging, 2 full.
+    pub charging: u8,
+}
+
 /// One air alarm readout: a message id taking `$value`, and whether it is out of range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AlarmReading {

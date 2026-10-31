@@ -246,6 +246,14 @@ pub struct AreaState {
     pub used: [f64; 3],
 }
 
+/// What the grid offered and what was drawn from it last cycle, W (Luna's
+/// `TotalSupply` and `OldDraw`, for power monitors).
+#[derive(Resource, Debug, Default, Clone, Copy, PartialEq)]
+pub struct GridTotals {
+    pub supply: f64,
+    pub load: f64,
+}
+
 #[derive(Resource, Debug, Default)]
 pub struct AreaPower(pub HashMap<String, AreaState>);
 
@@ -337,6 +345,7 @@ pub fn power_cycle(
     map: Single<&MapLayer>,
     nets: Res<Powernets>,
     mut areas: ResMut<AreaPower>,
+    mut totals: ResMut<GridTotals>,
     mut users: Query<(&GridPos, &mut PowerUser, Option<&Switch>, Option<&mut Airlock>)>,
     mut apcs: Query<(Entity, &mut Apc)>,
     mut batteries: Query<(Entity, &mut Smes)>,
@@ -450,6 +459,13 @@ pub fn power_cycle(
         let operating = apc.operating && apc.cell.is_some();
         state.on = apc.channels.map(|c| operating && c.is_on());
     }
+
+    let supply: f64 = offered.iter().sum();
+    let drawn: f64 = offered.iter().zip(&remaining).map(|(o, r)| o - r).sum();
+    *totals = GridTotals {
+        supply: supply / POWER_DT,
+        load: drawn / POWER_DT,
+    };
 
     // SMES units lose only what was drawn, in proportion to what they offered.
     for (entity, mut smes) in &mut batteries {

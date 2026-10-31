@@ -127,4 +127,5 @@
     "injector": (gender: neuter, sg: (nom: "air injector", indef: "an air injector"), pl: Some((nom: "air injectors"))),
     "headset-eng": (gender: neuter, sg: (nom: "engineering radio headset", indef: "an engineering radio headset"), pl: Some((nom: "engineering radio headsets"))),
     "meson-glasses": (gender: plural, sg: (nom: "optical meson scanner", indef: "an optical meson scanner"), pl: Some((nom: "optical meson scanners"))),
+    "power-monitor": (gender: neuter, sg: (nom: "power monitoring computer", indef: "a power monitoring computer"), pl: Some((nom: "power monitoring computers"))),
 }

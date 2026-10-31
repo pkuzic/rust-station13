@@ -462,6 +462,11 @@
             "2": (dmi: "icons/effects/fire.dmi", state: "2"),
             "3": (dmi: "icons/effects/fire.dmi", state: "3"),
         },
+        // Power monitoring computer: lit, or dark without power.
+        "power-monitor": {
+            "power": (dmi: "icons/obj/computer.dmi", state: "power"),
+            "unpowered": (dmi: "icons/obj/computer.dmi", state: "c_unpowered"),
+        },
         "radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "intercom": { "": (dmi: "icons/obj/radio.dmi", state: "intercom") },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
