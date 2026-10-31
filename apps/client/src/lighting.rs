@@ -171,6 +171,10 @@ fn update_lighting(
     mut sight: ResMut<Sight>,
     maps: Query<Ref<MapLayer>>,
     sources: Query<(&GridPos, &LightSource), Without<Hidden>>,
+    (screens, glow): (
+        Query<(&GridPos, &crate::sprites::Look), (Without<LightSource>, Without<Hidden>)>,
+        Option<Res<crate::glow::GlowAtlas>>,
+    ),
     doors: Query<&GridPos, With<Opaque>>,
     own: Query<(&GridPos, Option<&WornView>), With<OwnPlayer>>,
     items: Query<(&NetId, &Appearance)>,
@@ -210,6 +214,15 @@ fn update_lighting(
         .filter(|(pos, _)| pos.0.z == map.z)
         .map(|(pos, LightSource(rgb))| (pos.0, rgb.map(f32::from)))
         .collect();
+    // Glowing screens cast a faint light of their own colour (`glow.rs`).
+    if let Some(glow) = &glow {
+        emitters.extend(
+            screens
+                .iter()
+                .filter(|(pos, _)| pos.0.z == map.z)
+                .filter_map(|(pos, look)| Some((pos.0, glow.screen_light(&look.sprite, &look.state)?))),
+        );
+    }
     emitters.sort_by_key(|(pos, _)| *pos);
     let mut opaque: Vec<TilePos> = doors.iter().map(|p| p.0).collect();
     opaque.sort();

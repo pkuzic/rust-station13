@@ -18,6 +18,7 @@ mod apc_panel;
 mod audio;
 mod fov;
 mod freezer_panel;
+mod glow;
 mod hud;
 mod laser_panel;
 mod light_map;
@@ -197,6 +198,7 @@ fn main() {
             scaling::ScalingPlugin,
             shadows::ShadowPlugin,
             fov::FovPlugin,
+            glow::GlowPlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
@@ -323,6 +325,20 @@ fn setup(mut commands: Commands, server: Res<ServerAddr>) -> Result {
         // Draws into the world image before the window is drawn (`scaling.rs`).
         Camera {
             order: -1,
+            ..default()
+        },
+        // What gives off light glows (`glow.rs`): only what is drawn brighter than white
+        // spreads, and colours are kept as drawn.
+        bevy::render::view::Tonemapping::None,
+        bevy::post_process::bloom::Bloom {
+            intensity: 0.3,
+            low_frequency_boost: 0.0,
+            high_pass_frequency: 0.6,
+            prefilter: bevy::post_process::bloom::BloomPrefilter {
+                threshold: 1.0,
+                threshold_softness: 0.2,
+            },
+            composite_mode: bevy::post_process::bloom::BloomCompositeMode::Additive,
             ..default()
         },
         Projection::Orthographic(OrthographicProjection {

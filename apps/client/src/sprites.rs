@@ -69,6 +69,16 @@ pub fn load_atlas(
 }
 
 impl SpriteAtlas {
+    /// The atlas as decoded.
+    pub fn source(&self) -> &Image {
+        &self.source
+    }
+
+    /// The atlas image the map's sprites are drawn from.
+    pub fn image(&self) -> Handle<Image> {
+        self.image.clone()
+    }
+
     /// Atlas cell of the first frame of `sprite:state` facing `facing`.
     pub fn index(&self, sprite: &str, state: &str, facing: u32) -> Option<usize> {
         Some(self.atlas.get(sprite, state)?.cell(0, facing) as usize)
