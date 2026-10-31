@@ -96,6 +96,17 @@ pub fn shadow_quads(eye: Vec2, opaque: &HashSet<TilePos>) -> Vec<[Vec2; 4]> {
                 .into_iter()
                 .any(|t| clear(eye, a + edge * t + normal, tile.z, opaque));
         }
+        // The corner of a room: walls on both sides, and the room's floor touching it only
+        // at its corner. It has no face to see, but is seen, as in BYOND.
+        seen = seen
+            || [(1, 1), (1, -1), (-1, 1), (-1, -1)].into_iter().any(|(dx, dy)| {
+                let at = |x: i32, y: i32| TilePos::new(tile.x + x, tile.y + y, tile.z);
+                let floor = at(dx, dy);
+                !opaque.contains(&floor)
+                    && opaque.contains(&at(dx, 0))
+                    && opaque.contains(&at(0, dy))
+                    && sees(eye, floor, opaque)
+            });
         if !seen {
             quads.push(c);
         }
@@ -254,6 +265,20 @@ mod tests {
         let quads = shadow_quads(Vec2::ZERO, &opaque);
         assert!(quads.contains(&corners(back)), "the hidden wall is covered");
         assert!(!quads.contains(&corners(front)), "the near one is not");
+    }
+
+    #[test]
+    fn the_corners_of_the_room_you_stand_in_are_seen() {
+        // A room from (-2, -2) to (2, 2) inside a ring of walls.
+        let opaque: HashSet<TilePos> = (-3..=3)
+            .flat_map(|x| (-3..=3).map(move |y| TilePos::new(x, y, 0)))
+            .filter(|p| p.x.abs() == 3 || p.y.abs() == 3)
+            .collect();
+        let quads = shadow_quads(Vec2::ZERO, &opaque);
+        for corner in [(3, 3), (3, -3), (-3, 3), (-3, -3)] {
+            let tile = TilePos::new(corner.0, corner.1, 0);
+            assert!(!quads.contains(&corners(tile)), "corner {corner:?} is seen");
+        }
     }
 
     #[test]
