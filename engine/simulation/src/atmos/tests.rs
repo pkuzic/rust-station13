@@ -175,3 +175,67 @@ fn air_at_a_door_tile_comes_from_a_neighbouring_zone() {
     assert!((grid.pressure_at(inner) - ONE_ATMOSPHERE).abs() < 1e-9);
     assert_eq!(grid.pressure_at(TilePos::new(0, 0, 0)), 0.0, "space");
 }
+
+/// A 4×1 corridor with an edge barrier across its middle, between x=2 and x=3.
+fn corridor_with_edge() -> AtmosGrid {
+    let map = TileMap::from_ron(
+        r#"(
+            legend: {
+                'W': (tile: (id: "wall", solid: true)),
+                '.': (tile: (id: "floor")),
+            },
+            rows: ["WWWWWW", "W....W", "WWWWWW"],
+        )"#,
+        0,
+    )
+    .unwrap();
+    let mut grid = AtmosGrid::new(&map, &[]);
+    grid.add_edge(EDGE_WEST, Dir::East);
+    grid.step(DT);
+    grid
+}
+
+const EDGE_WEST: TilePos = TilePos::new(2, 1, 0);
+const EDGE_EAST: TilePos = TilePos::new(3, 1, 0);
+
+#[test]
+fn an_edge_barrier_splits_zones() {
+    let grid = corridor_with_edge();
+    assert_eq!(grid.zones().len(), 2);
+    assert_ne!(grid.zone_at(EDGE_WEST), grid.zone_at(EDGE_EAST));
+    for zone in grid.zones() {
+        assert!((zone.pressure() - ONE_ATMOSPHERE).abs() < 1e-9);
+    }
+}
+
+#[test]
+fn a_closed_edge_holds_a_pressure_difference() {
+    let mut grid = corridor_with_edge();
+    grid.set_edge_open(EDGE_EAST, Dir::West, false);
+    let east = grid.air_at(EDGE_EAST).total_moles() * 2.0;
+    grid.remove_at(EDGE_EAST, east);
+    let before = grid.total_moles();
+    run(&mut grid, 10.0);
+    assert_eq!(grid.total_moles(), before);
+    assert!(grid.openings().is_empty());
+    assert!(grid.pressure_at(EDGE_EAST) < 1e-6);
+    assert!((grid.pressure_at(EDGE_WEST) - ONE_ATMOSPHERE).abs() < 1e-9);
+}
+
+#[test]
+fn an_open_edge_lets_the_sides_equalise() {
+    let mut grid = corridor_with_edge();
+    grid.set_edge_open(EDGE_WEST, Dir::East, false);
+    let east = grid.air_at(EDGE_EAST).total_moles() * 2.0;
+    grid.remove_at(EDGE_EAST, east);
+    let before = grid.total_moles();
+    grid.set_edge_open(EDGE_WEST, Dir::East, true);
+    run(&mut grid, 60.0);
+    assert!(
+        (grid.total_moles() - before).abs() < 1e-9 * before,
+        "moles conserved"
+    );
+    let (w, e) = (grid.pressure_at(EDGE_WEST), grid.pressure_at(EDGE_EAST));
+    assert!((w - e).abs() < 0.5, "equalised: {w:.2} vs {e:.2}");
+    assert!(e > 10.0, "air came through: {e:.2}");
+}

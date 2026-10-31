@@ -150,6 +150,24 @@ pub fn process_alarms(
     }
 }
 
+/// Whether a seal covers a door at `pos`: its own tile, or a non-wall tile next to it, is in
+/// a sealed area.
+pub fn covered_by_seal(seals: &AreaSeals, map: &TileMap, pos: TilePos) -> bool {
+    !seals.0.is_empty()
+        && [
+            None,
+            Some(Dir::North),
+            Some(Dir::South),
+            Some(Dir::East),
+            Some(Dir::West),
+        ]
+        .into_iter()
+        .map(|d| d.map_or(pos, |d| pos.step(d)))
+        .filter(|p| *p == pos || !map.is_solid(*p))
+        .filter_map(|p| map.area(p))
+        .any(|area| seals.0.contains(area))
+}
+
 /// Close and bolt every powered door in or next to a sealed area; raise the bolts the seal
 /// dropped once no seal covers the door (Luna `air_doors_close` / `air_doors_open`).
 /// Unpowered doors are left alone either way.
@@ -161,19 +179,7 @@ pub fn apply_seals(
 ) {
     let now = time.deciseconds();
     for (pos, mut door) in &mut doors {
-        let covered = !seals.0.is_empty()
-            && [
-                None,
-                Some(Dir::North),
-                Some(Dir::South),
-                Some(Dir::East),
-                Some(Dir::West),
-            ]
-            .into_iter()
-            .map(|d| d.map_or(pos.0, |d| pos.0.step(d)))
-            .filter(|p| *p == pos.0 || !map.0.is_solid(*p))
-            .filter_map(|p| map.0.area(p))
-            .any(|area| seals.0.contains(area));
+        let covered = covered_by_seal(&seals, &map.0, pos.0);
         if covered && !door.in_seal {
             door.in_seal = true;
             door.seal_pending = true;

@@ -82,6 +82,9 @@ pub struct AtmosGrid {
     z: i32,
     cells: Vec<Cell>,
     portal_open: Vec<bool>,
+    /// Edge barriers (firedoors) between two neighbouring tiles, by their indices (lower
+    /// first): open or closed.
+    edges: BTreeMap<(usize, usize), bool>,
     zone_of: Vec<Option<usize>>,
     zones: Vec<Zone>,
     openings: Vec<Opening>,
@@ -114,6 +117,7 @@ impl AtmosGrid {
             height,
             z: map.z,
             portal_open: vec![false; cells.len()],
+            edges: BTreeMap::new(),
             zone_of: vec![None; cells.len()],
             cells,
             zones: Vec::new(),
@@ -182,6 +186,43 @@ impl AtmosGrid {
             self.portal_open[i] = open;
             self.openings_dirty = true;
         }
+    }
+
+    fn edge_key(&self, at: TilePos, dir: Dir) -> Option<(usize, usize)> {
+        let (a, b) = (self.index(at)?, self.index(at.step(dir))?);
+        Some((a.min(b), a.max(b)))
+    }
+
+    /// Put a barrier on the edge between `at` and the tile in `dir`, such as a firedoor
+    /// that seals one side of its tile. It starts open. Zones never extend across an edge
+    /// barrier; while it is open, gas flows through it as through a doorway.
+    pub fn add_edge(&mut self, at: TilePos, dir: Dir) {
+        if let Some(key) = self.edge_key(at, dir)
+            && self.edges.insert(key, true).is_none()
+        {
+            self.zones_dirty = true;
+        }
+    }
+
+    /// Open or close an edge barrier added with `add_edge`.
+    pub fn set_edge_open(&mut self, at: TilePos, dir: Dir, open: bool) {
+        if let Some(key) = self.edge_key(at, dir)
+            && let Some(state) = self.edges.get_mut(&key)
+            && *state != open
+        {
+            *state = open;
+            self.openings_dirty = true;
+        }
+    }
+
+    /// The edge barrier between two cells, if any: `Some(open)`.
+    fn edge(&self, i: usize, j: usize) -> Option<bool> {
+        self.edges.get(&(i.min(j), i.max(j))).copied()
+    }
+
+    /// Whether a closed edge barrier lies between two cells.
+    fn edge_closed(&self, i: usize, j: usize) -> bool {
+        self.edge(i, j) == Some(false)
     }
 
     /// The zone a tile draws air from: its own, or for a door tile the first zone next to
@@ -321,6 +362,7 @@ impl AtmosGrid {
                     if let Some(j) = self.index(pos.step(d))
                         && self.cells[j] == Cell::Open
                         && self.zone_of[j].is_none()
+                        && self.edge(i, j).is_none()
                     {
                         self.zone_of[j] = Some(id);
                         queue.push_back(j);
@@ -367,7 +409,11 @@ impl AtmosGrid {
             for pos in &zone.tiles {
                 for d in [Dir::North, Dir::East, Dir::South, Dir::West] {
                     let next = pos.step(d);
-                    if self.cell(next) == Cell::Space {
+                    let sealed = match (self.index(*pos), self.index(next)) {
+                        (Some(i), Some(j)) => self.edge_closed(i, j),
+                        _ => false,
+                    };
+                    if self.cell(next) == Cell::Space && !sealed {
                         openings.push(Opening {
                             zone: z,
                             other: Side::Space,
@@ -394,6 +440,9 @@ impl AtmosGrid {
                 for d in [Dir::North, Dir::East, Dir::South, Dir::West] {
                     let next = pos.step(d);
                     let Some(j) = self.index(next) else { continue };
+                    if self.edge_closed(i, j) {
+                        continue;
+                    }
                     match self.cells[j] {
                         Cell::Portal if self.portal_open[j] && !seen[j] => {
                             seen[j] = true;
@@ -428,6 +477,25 @@ impl AtmosGrid {
                         flow: 0.0,
                     });
                 }
+            }
+        }
+        // Open edge barriers between two zones: a doorway on the edge.
+        for (&(i, j), &open) in &self.edges {
+            if !open || self.cells[i] != Cell::Open || self.cells[j] != Cell::Open {
+                continue;
+            }
+            let (Some(a), Some(b)) = (self.zone_of[i], self.zone_of[j]) else {
+                continue;
+            };
+            if a != b {
+                openings.push(Opening {
+                    zone: a,
+                    other: Side::Zone(b),
+                    at: self.pos(i),
+                    through: self.pos(j),
+                    area: DOOR_AREA,
+                    flow: 0.0,
+                });
             }
         }
         self.openings = openings;
@@ -532,6 +600,9 @@ impl AtmosGrid {
             // Where the gas leaves this zone, and where it goes from there.
             let (exit, toward) = if source == opening.zone {
                 (opening.at, opening.through)
+            } else if self.zone_at(opening.through) == Some(source) {
+                // Back across an open edge barrier.
+                (opening.through, opening.at)
             } else {
                 // Flowing into `opening.zone` from the other zone through a door.
                 let Some(exit) = [Dir::North, Dir::East, Dir::South, Dir::West]

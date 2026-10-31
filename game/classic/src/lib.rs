@@ -13,6 +13,7 @@ pub mod combat;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
+pub mod firedoors;
 pub mod floors;
 pub mod furniture;
 pub mod hands;
@@ -108,6 +109,7 @@ impl Plugin for ClassicPlugin {
                 (
                     wires::update_wiring,
                     alarms::apply_seals,
+                    firedoors::update_firedoors,
                     doors::update_doors,
                     movement::move_mobs,
                     closets::leave_closets,
@@ -152,6 +154,7 @@ impl Plugin for ClassicPlugin {
                     welding::update_welder_looks,
                     lights::update_light_looks,
                     closets::update_closet_looks,
+                    firedoors::update_firedoor_looks,
                 )
                     .in_set(TickSet::Publish),
             );

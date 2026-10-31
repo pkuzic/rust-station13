@@ -57,8 +57,19 @@ pub fn step_delay_ds(run: bool) -> f32 {
 /// Where a step from `from` in `dir` ends up, or `None` if it is blocked.
 ///
 /// A blocked diagonal slides along its horizontal component, then its vertical one.
-pub fn resolve_step(map: &TileMap, occupied: &HashSet<TilePos>, from: TilePos, dir: Dir) -> Option<TilePos> {
-    let free = |pos: TilePos| !map.is_solid(pos) && !occupied.contains(&pos);
+/// `sealed` holds the edges closed firedoors block (`firedoors::closed_edges`).
+pub fn resolve_step(
+    map: &TileMap,
+    occupied: &HashSet<TilePos>,
+    sealed: &HashSet<(TilePos, TilePos)>,
+    from: TilePos,
+    dir: Dir,
+) -> Option<TilePos> {
+    let free = |pos: TilePos| {
+        !map.is_solid(pos)
+            && !occupied.contains(&pos)
+            && !crate::firedoors::crosses_closed_edge(sealed, from, pos)
+    };
     let target = from.step(dir);
     if free(target) {
         return Some(target);
@@ -93,8 +104,10 @@ pub fn move_mobs(
     electrified: Query<&crate::wires::Wiring>,
     mut shocks: ResMut<crate::wires::PendingShocks>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
+    firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
 ) {
     let now = time.deciseconds();
+    let sealed = crate::firedoors::closed_edges(firedoors.iter());
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
     occupied.extend(
         objects
@@ -131,7 +144,7 @@ pub fn move_mobs(
             continue;
         }
         mob.facing = Some(dir);
-        if let Some(target) = resolve_step(&map.0, &occupied, pos.0, dir) {
+        if let Some(target) = resolve_step(&map.0, &occupied, &sealed, pos.0, dir) {
             occupied.remove(&pos.0);
             occupied.insert(target);
             pos.0 = target;
@@ -194,9 +207,15 @@ mod tests {
     fn walls_and_mobs_block() {
         let map = room();
         let from = TilePos::new(1, 1, 0);
-        assert_eq!(resolve_step(&map, &HashSet::new(), from, Dir::West), None);
+        assert_eq!(
+            resolve_step(&map, &HashSet::new(), &HashSet::new(), from, Dir::West),
+            None
+        );
         let occupied = HashSet::from([TilePos::new(2, 1, 0)]);
-        assert_eq!(resolve_step(&map, &occupied, from, Dir::East), None);
+        assert_eq!(
+            resolve_step(&map, &occupied, &HashSet::new(), from, Dir::East),
+            None
+        );
     }
 
     #[test]
@@ -205,7 +224,7 @@ mod tests {
         // From the top-left floor tile, north-east hits the top wall: slide east.
         let from = TilePos::new(1, 2, 0);
         assert_eq!(
-            resolve_step(&map, &HashSet::new(), from, Dir::NorthEast),
+            resolve_step(&map, &HashSet::new(), &HashSet::new(), from, Dir::NorthEast),
             Some(TilePos::new(2, 2, 0))
         );
     }

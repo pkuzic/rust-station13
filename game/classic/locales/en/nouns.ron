@@ -61,6 +61,7 @@
     "nitrous-oxide-canister": (gender: neuter, sg: (nom: "nitrous oxide canister", indef: "a nitrous oxide canister"), pl: Some((nom: "nitrous oxide canisters"))),
     "smes": (gender: neuter, sg: (nom: "SMES", indef: "a SMES unit"), pl: Some((nom: "SMES units"))),
     "cable": (gender: neuter, sg: (nom: "power cable", indef: "a power cable"), pl: Some((nom: "power cables"))),
+    "firedoor": (gender: neuter, sg: (nom: "firelock", indef: "a firelock"), pl: Some((nom: "firelocks"))),
     // Closets, lockers and crates.
     "closet": (gender: neuter, sg: (nom: "closet", indef: "a closet"), pl: Some((nom: "closets"))),
     "closet-emergency": (gender: neuter, sg: (nom: "emergency closet", indef: "an emergency closet"), pl: Some((nom: "emergency closets"))),

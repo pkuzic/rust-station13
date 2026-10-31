@@ -77,10 +77,13 @@ pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
     world.init_resource::<crate::machines::PipeNets>();
     world.resource_mut::<crate::machines::PipeNets>().dirty = true;
 
-    // Air: every door tile is a portal between zones.
+    // Air: every door tile is a portal between zones, and every firedoor seals an edge.
     let mut doors = world.query_filtered::<&GridPos, With<Airlock>>();
     let portals: Vec<TilePos> = doors.iter(world).map(|p| p.0).collect();
-    let atmos = crate::atmos::build(&layout, &portals);
+    let mut firedoors = world.query::<(&GridPos, &crate::firedoors::Firedoor)>();
+    let edges: Vec<(TilePos, rs13_world::Dir)> =
+        firedoors.iter(world).filter_map(|(p, d)| d.edge(p.0)).collect();
+    let atmos = crate::atmos::build(&layout, &portals, &edges);
     world.insert_resource(atmos);
     problems
 }
@@ -119,6 +122,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         if let Some(closet) = crate::closets::spawn_closet(world, spec, pos, id) {
             return closet;
         }
+    }
+    if proto == "firedoor" {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::firedoors::spawn_firedoor(world, spec, pos, id));
     }
     if crate::lights::is_light_proto(proto) {
         let id = world.resource_mut::<NetIds>().alloc();

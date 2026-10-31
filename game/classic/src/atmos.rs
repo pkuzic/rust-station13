@@ -9,6 +9,7 @@ use rs13_simulation::atmos::AtmosGrid;
 use rs13_world::{AtmosView, Dense, Dir, GridPos, MapLayer, TileMap, TilePos};
 
 use crate::doors::Airlock;
+use crate::firedoors::{Firedoor, closed_edges, crosses_closed_edge};
 use crate::hands::Item;
 use crate::movement::Mob;
 use crate::time::WorldTime;
@@ -30,17 +31,31 @@ pub struct StationAtmos(pub AtmosGrid);
 #[derive(Resource, Debug, Default)]
 pub struct WindCooldowns(HashMap<Entity, u64>);
 
-/// Build the air for a map with doors at `portals`.
-pub fn build(map: &rs13_world::TileMap, portals: &[TilePos]) -> StationAtmos {
-    StationAtmos(AtmosGrid::new(map, portals))
+/// Build the air for a map with doors at `portals` and firedoors sealing the `edges`
+/// between a tile and its neighbour in a direction.
+pub fn build(map: &rs13_world::TileMap, portals: &[TilePos], edges: &[(TilePos, Dir)]) -> StationAtmos {
+    let mut grid = AtmosGrid::new(map, portals);
+    for (at, dir) in edges {
+        grid.add_edge(*at, *dir);
+    }
+    StationAtmos(grid)
 }
 
-/// Tell the solver which doors are open, then advance it one tick. An airlock lets air
-/// through only while fully open, like it lets people through.
-pub fn step_atmos(atmos: Option<ResMut<StationAtmos>>, doors: Query<(&GridPos, &Airlock)>) {
+/// Tell the solver which doors and firedoors are open, then advance it one tick. An
+/// airlock lets air through only while fully open, like it lets people through.
+pub fn step_atmos(
+    atmos: Option<ResMut<StationAtmos>>,
+    doors: Query<(&GridPos, &Airlock)>,
+    firedoors: Query<(&GridPos, &Firedoor)>,
+) {
     let Some(mut atmos) = atmos else { return };
     for (pos, door) in &doors {
         atmos.0.set_portal_open(pos.0, !door.is_dense());
+    }
+    for (pos, door) in &firedoors {
+        if let Some((at, dir)) = door.edge(pos.0) {
+            atmos.0.set_edge_open(at, dir, !door.closed);
+        }
     }
     atmos.0.step(TICK_SECONDS);
 }
@@ -62,11 +77,13 @@ pub fn space_wind(
         (Or<(With<Mob>, With<Item>)>, Without<crate::closets::InCloset>),
     >,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<Item>)>,
+    firedoors: Query<(&GridPos, &Firedoor), (Without<Mob>, Without<Item>)>,
     mut commands: Commands,
 ) {
     let Some(atmos) = atmos else { return };
     let now = time.tick.0;
     cooldowns.0.retain(|_, until| *until > now);
+    let sealed = closed_edges(firedoors.iter());
 
     let mob_tiles: Vec<TilePos> = movers
         .iter()
@@ -97,7 +114,11 @@ pub fn space_wind(
             (mob_tiles.contains(&p) && !moved_mobs.iter().any(|(from, _)| *from == p))
                 || moved_mobs.iter().any(|(_, to)| *to == p)
         };
-        if map.0.is_solid(target) || blocked.contains(&target) || (is_mob && occupied(target)) {
+        if map.0.is_solid(target)
+            || blocked.contains(&target)
+            || crosses_closed_edge(&sealed, pos.0, target)
+            || (is_mob && occupied(target))
+        {
             continue;
         }
         if is_mob {

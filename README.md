@@ -88,6 +88,10 @@ Click a closet or crate to open or close it. Lockers open with an engineering ID
 welding tool welds a closet shut. Anyone shut inside is hidden and pushes the door open by
 walking, unless it is welded or locked (`docs/reference/closets.md`).
 
+Firedoors seal one edge of their tile against air and people. An air alarm seal closes
+the ones around its area and opens them again after. A crowbar opens or closes one by hand,
+and a lit welding tool welds a closed one so neither works (`docs/reference/firedoors.md`).
+
 Each area has an air alarm on its wall. Click it to read the room's air. When the pressure
 turns dangerous it seals the area: every powered door around it closes and bolts until the
 air recovers. Standing next to it you can seal or unseal by hand and turn on panic fill
