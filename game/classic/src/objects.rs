@@ -105,6 +105,10 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     if offset != [0, 0] {
         world.entity_mut(entity).insert(rs13_world::PixelOffset(offset));
     }
+    // Placed facing a way: drawn that way.
+    if let Some(dir) = spec.dir {
+        world.entity_mut(entity).insert(rs13_world::Facing::of(dir));
+    }
     Ok(entity)
 }
 
