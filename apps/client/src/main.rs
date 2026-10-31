@@ -20,6 +20,7 @@ mod fov;
 mod freezer_panel;
 mod hud;
 mod laser_panel;
+mod light_map;
 mod lighting;
 mod monitor_panel;
 mod scaling;
