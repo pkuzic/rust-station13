@@ -156,6 +156,7 @@ impl Plugin for ClassicPlugin {
                     floors::hide_under_floors,
                     welding::update_welder_looks,
                     lights::update_light_looks,
+                    lights::update_light_sources,
                     closets::update_closet_looks,
                     firedoors::update_firedoor_looks,
                 )

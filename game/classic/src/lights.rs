@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dir, GridPos, Hand, MapLayer, ObjectSpec, Slot, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, Hand, LightSource, MapLayer, ObjectSpec, Slot, TilePos};
 
 use crate::actions::ClickOutcome;
 use crate::equipment::Equipment;
@@ -107,6 +107,9 @@ pub struct Light {
     /// Times it went on or off since this tube went in (Luna `switchcount`).
     pub switches: u32,
     pub facing: Dir,
+    /// Red, green and blue strength while lit, in tiles of reach (Luna `brightnessred`
+    /// …).
+    pub color: [u8; 3],
 }
 
 /// A light switch: turns every light in its area on or off.
@@ -125,7 +128,20 @@ impl AreaLights {
 
 /// Prototype ids of light fixtures and switches.
 pub fn is_light_proto(proto: &str) -> bool {
-    matches!(proto, "light" | "light-small" | "light-switch")
+    proto == "light-switch" || fixture_kind(proto).is_some()
+}
+
+/// A fixture prototype's fitting and colour (Luna `brightnessred`, `brightnessgreen`,
+/// `brightnessblue`). The coloured ones look like the plain ones.
+pub fn fixture_kind(proto: &str) -> Option<(Fitting, [u8; 3])> {
+    Some(match proto {
+        "light" => (Fitting::Tube, [8, 8, 8]),
+        "light-blue" => (Fitting::Tube, [5, 5, 7]),
+        "light-red" => (Fitting::Tube, [8, 2, 2]),
+        "light-small" => (Fitting::Bulb, [5, 5, 4]),
+        "light-small-red" => (Fitting::Bulb, [5, 0, 0]),
+        _ => return None,
+    })
 }
 
 /// Spawn a light fixture or a light switch. Fixtures face the wall they hang on (Luna's
@@ -144,10 +160,10 @@ pub fn spawn_light(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: rs13_
             ))
             .id();
     }
-    let fitting = if proto == "light-small" {
-        Fitting::Bulb
-    } else {
-        Fitting::Tube
+    let (fitting, color) = fixture_kind(proto).unwrap_or((Fitting::Tube, [8, 8, 8]));
+    let sprite = match fitting {
+        Fitting::Tube => "light",
+        Fitting::Bulb => "light-small",
     };
     world.init_resource::<GameRng>();
     let broken = fitting == Fitting::Bulb && world.resource_mut::<GameRng>().prob(SMALL_BROKEN_CHANCE);
@@ -161,12 +177,13 @@ pub fn spawn_light(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: rs13_
         on: false,
         switches: 0,
         facing: spec.dir.unwrap_or(Dir::South),
+        color,
     };
     world
         .spawn((
             GridPos(pos),
             id,
-            Appearance::new(proto, light_look(&light)),
+            Appearance::new(sprite, light_look(&light)),
             light,
             power,
         ))
@@ -257,6 +274,23 @@ pub fn update_light_looks(
         if look.state != state {
             look.state = state.to_owned();
         }
+    }
+}
+
+/// A lit fixture gives off its light; an unlit one none (Luna `ul_SetLuminosity`).
+pub fn update_light_sources(
+    mut commands: Commands,
+    lights: Query<(Entity, &Light, Option<&LightSource>), Changed<Light>>,
+) {
+    for (entity, light, source) in &lights {
+        let wanted = light.on.then_some(LightSource(light.color));
+        if source.copied() == wanted {
+            continue;
+        }
+        match wanted {
+            Some(source) => commands.entity(entity).insert(source),
+            None => commands.entity(entity).remove::<LightSource>(),
+        };
     }
 }
 
@@ -495,6 +529,7 @@ mod tests {
             on: true,
             switches: 0,
             facing: Dir::North,
+            color: [8, 8, 8],
         };
         assert_eq!(light_look(&light), "tube1-north");
         light.on = false;
@@ -503,6 +538,16 @@ mod tests {
         light.status = LightStatus::Burned;
         light.facing = Dir::South;
         assert_eq!(light_look(&light), "bulb-burned-south");
+    }
+
+    #[test]
+    fn coloured_fixtures_keep_luna_brightness() {
+        assert_eq!(fixture_kind("light"), Some((Fitting::Tube, [8, 8, 8])));
+        assert_eq!(fixture_kind("light-blue"), Some((Fitting::Tube, [5, 5, 7])));
+        assert_eq!(fixture_kind("light-red"), Some((Fitting::Tube, [8, 2, 2])));
+        assert_eq!(fixture_kind("light-small"), Some((Fitting::Bulb, [5, 5, 4])));
+        assert_eq!(fixture_kind("light-small-red"), Some((Fitting::Bulb, [5, 0, 0])));
+        assert!(is_light_proto("light-switch") && !is_light_proto("light-tube"));
     }
 
     #[test]

@@ -10,7 +10,7 @@ use rs13_classic::lights::{Light, LightStatus};
 use rs13_classic::machines::MACHINE_TICKS;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::power::{Apc, PowerUser};
-use rs13_world::{Appearance, GridPos, TileMap, TilePos};
+use rs13_world::{Appearance, GridPos, LightSource, TileMap, TilePos};
 
 /// A powered room with a tube light on its north wall, a light switch, a spare tube and a
 /// wrench.
@@ -106,6 +106,11 @@ fn a_light_is_lit_by_power_and_its_area_switch() {
     assert_eq!(look(&app, fixture), "tube1-north");
     assert_eq!(app.world().get::<PowerUser>(fixture).unwrap().watts, 200.0);
     assert_eq!(look(&app, switch), "light1");
+    // A lit tube gives off Luna's white light (`lighting.md`).
+    assert_eq!(
+        app.world().get::<LightSource>(fixture),
+        Some(&LightSource([8, 8, 8]))
+    );
 
     // The switch is out of reach from under the light; walk over.
     app.world_mut().get_mut::<GridPos>(mob).unwrap().0 = TilePos::new(4, 2, 0);
@@ -115,10 +120,12 @@ fn a_light_is_lit_by_power_and_its_area_switch() {
     assert_eq!(look(&app, fixture), "tube0-north");
     assert_eq!(app.world().get::<PowerUser>(fixture).unwrap().watts, 0.0);
     assert_eq!(look(&app, switch), "light0");
+    assert_eq!(app.world().get::<LightSource>(fixture), None);
 
     click(&mut app, mob, switch);
     ticks(&mut app, 1);
     assert!(light(&app, fixture).on);
+    assert!(app.world().get::<LightSource>(fixture).is_some());
 }
 
 #[test]

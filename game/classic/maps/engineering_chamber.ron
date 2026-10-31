@@ -51,6 +51,12 @@
         'g': (tile: (id: "floor"), objects: ["insulated-gloves"]),
         // An air alarm on the wall of each area, watching the floor tile beside it.
         'L': (tile: (id: "wall", solid: true), objects: ["air-alarm"]),
+        // Light fixtures, facing the wall they hang on: tubes in the room, a blue one in
+        // the alcove and a red bulb in the closet (Luna's coloured lights, `lighting.md`).
+        'l': (tile: (id: "floor"), objects: [(id: "light", dir: South)]),
+        'W': (tile: (id: "floor"), objects: [(id: "light", dir: West)]),
+        'b': (tile: (id: "floor"), objects: [(id: "light-blue", dir: North)]),
+        'r': (tile: (id: "floor"), objects: [(id: "light-small-red", dir: East)]),
     },
     // Areas: each one is powered by its own APC.
     area_legend: { 'e': "engineering", 's': "eng-storage" },
@@ -76,11 +82,11 @@
         " QBZ----------Z-=-O-Q ",
         " #..............#U.H# ",
         " #.....####.....#M.e# ",
-        " #..w..#..#.....A.m.E ",
-        " L.....#..#..d..#...# ",
+        " #W.w..#b.#.....A.m.E ",
+        " L.....#..#..d..#..r# ",
         " #.......a...i.u#...# ",
         " #.S..........S.#.c.L ",
-        " #...x..spp...g.#...# ",
+        " #.l.x..spp..lg.#...# ",
         " #################### ",
         "                      ",
     ],

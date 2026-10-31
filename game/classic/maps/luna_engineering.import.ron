@@ -92,9 +92,12 @@
         (path: "/obj/item/weapon/storage/box/light/tubes", id: "light-tubes-box"),
         (path: "/obj/item/weapon/storage/box/light/bulb", id: "light-bulbs-box"),
 
-        // Lights face the wall they hang on; the coloured ones are plain here.
+        // Lights face the wall they hang on, and keep Luna's colours (`lighting.md`).
         (path: "/obj/machinery/light", id: "light", dir: true),
+        (path: "/obj/machinery/light/blue", id: "light-blue", dir: true),
+        (path: "/obj/machinery/light/red", id: "light-red", dir: true),
         (path: "/obj/machinery/light/small", id: "light-small", dir: true),
+        (path: "/obj/machinery/light/small/red", id: "light-small-red", dir: true),
         (path: "/obj/machinery/light_switch", id: "light-switch"),
 
         // Closets, lockers and crates come with what Luna puts in them (`closets.md`). No

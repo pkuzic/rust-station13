@@ -65,13 +65,14 @@ A light is lit while all three hold:
 
 ## Differences from Luna
 
-- **No darkness:** a lit light doesn't light the tiles around it. The client has no
-  lighting yet; only the sprites and the power draw change.
+- **Light on the tiles:** a lit fixture lights the tiles around it in its colour, worked
+  out on the client (`lighting.md`).
 - **Instant changes:** lights switch together on the next tick. Luna waits up to 1.5 s at
   random after a power change.
 - **Switch count:** a fresh tube starts counting switches from zero. In Luna the count
   travels with the tube.
-- **Coloured lights:** Luna's blue, red and floor lights import as plain ones.
+- **Coloured lights:** Luna's blue and red tubes and red bulbs keep their colours
+  (`light-blue`, `light-red`, `light-small-red`); floor lights have no prototype yet.
 - **Not implemented:**
   - building and taking apart fixtures (the screwdriver, frames, wiring);
   - smashing a held tube;
