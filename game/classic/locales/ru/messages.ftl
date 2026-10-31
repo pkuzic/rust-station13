@@ -295,3 +295,9 @@ locker-locked = { $name } запирает шкафчик.
 locker-unlocked = { $name } отпирает шкафчик.
 locker-access-denied = Доступ запрещён
 locker-locked-inside = Шкафчик заперт!
+
+# Пожарная сигнализация (fire-alarm.md). Аргументы: $name, $item (id существительного).
+fire-alarm-raised = Вы включаете пожарную тревогу.
+fire-alarm-reset = Вы сбрасываете пожарную тревогу.
+fire-alarm-disconnected = { $name } отключает датчик { NOUN($item, case: "gen") }!
+fire-alarm-reconnected = { $name } снова подключает датчик { NOUN($item, case: "gen") }!

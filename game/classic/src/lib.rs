@@ -13,6 +13,7 @@ pub mod combat;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
+pub mod firealarms;
 pub mod firedoors;
 pub mod flashlights;
 pub mod floors;
@@ -77,6 +78,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<wires::WireLayout>()
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
+            .init_resource::<firealarms::AreaFires>()
             .init_resource::<lights::AreaLights>()
             .init_resource::<lighting::TileLight>()
             .init_resource::<closets::ClosetProtos>()
@@ -133,6 +135,7 @@ impl Plugin for ClassicPlugin {
                     machines::run_machines,
                     meters::update_meters,
                     alarms::process_alarms,
+                    firealarms::process_fire_alarms,
                     atmos::step_atmos,
                     atmos::space_wind,
                     atmos::drift,

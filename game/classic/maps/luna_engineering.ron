@@ -59,7 +59,6 @@
 //      1 /obj/machinery/embedded_controller/radio/airlock_controller
 //      4 /obj/machinery/engine/laser
 //      1 /obj/machinery/engine/supermatter
-//      1 /obj/machinery/firealarm
 //      1 /obj/machinery/hologram_ai
 //      1 /obj/machinery/navbeacon
 //      1 /obj/machinery/pipedispenser/disposal
@@ -332,7 +331,7 @@
         'ц': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "pipe", dir: North), "meter"]),
         'ч': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "carbon-dioxide-pressure-tank", dir: West)]),
         'ш': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "firedoor", dir: South)]),
-        'щ': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir"))]),
+        'щ': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "fire-alarm"]),
         'ъ': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
         'ы': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East)]),
         'ь': (tile: (id: "wall", solid: true), objects: [(id: "manifold", dir: East)]),

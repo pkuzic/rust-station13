@@ -39,6 +39,7 @@
         // Cables keep their ends (Luna's icon state, "0-1" by default).
         (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
         (path: "/obj/machinery/alarm", id: "air-alarm"),
+        (path: "/obj/machinery/firealarm", id: "fire-alarm"),
 
         // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
         (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),

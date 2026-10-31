@@ -119,6 +119,7 @@ pub fn process_actions(
         inside,
         mut firedoors,
         mut flashlights,
+        mut firealarms,
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -133,6 +134,7 @@ pub fn process_actions(
         Query<(), With<crate::closets::InCloset>>,
         crate::firedoors::FiredoorWork,
         crate::flashlights::FlashlightWork,
+        crate::firealarms::FireAlarmWork,
     ),
     mut commands: Commands,
 ) {
@@ -311,6 +313,25 @@ pub fn process_actions(
                     let lit = welding.lit(hands.active_item()).is_some();
                     if let Some(outcome) = firedoors.use_on(target, crowbar, lit) {
                         outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if firealarms.contains(target) => {
+                    // Fire alarms (`fire-alarm.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    let held = tool.map(str::to_owned);
+                    let name = appearances
+                        .get(mob)
+                        .ok()
+                        .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                        .unwrap_or_default();
+                    if let Some(outcome) = firealarms.use_on(target, held.as_deref(), &name) {
+                        outbox.0.extend(outcome.to_mob.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            sounds.tool_used(tool, mob_pos.0);
+                            visible.0.push((mob_pos.0, seen, None));
+                        }
                     }
                 }
                 Action::UseOn(target) if closets.contains(target) => {
