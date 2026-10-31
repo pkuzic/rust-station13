@@ -359,3 +359,12 @@ examine-cell-charger = { $charge ->
 # Jetpacks (jetpacks.md).
 jetpack-on = You toggle the jetpack on.
 jetpack-off = You toggle the jetpack off.
+
+# Radio (radio.md). Args: $name, $frequency ("145.9"), $verb (say/ask/exclaim), $text.
+radio-say = [{ $frequency }] { $name } { $verb ->
+        [ask] asks
+        [exclaim] exclaims
+       *[say] says
+    }, "{ $text }"
+radio-microphone-on = You engage the microphone.
+radio-microphone-off = You disengage the microphone.

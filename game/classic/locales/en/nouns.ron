@@ -118,4 +118,6 @@
     "cell-charger": (gender: neuter, sg: (nom: "cell charger", indef: "a cell charger"), pl: Some((nom: "cell chargers"))),
     "jetpack": (gender: neuter, sg: (nom: "jetpack", indef: "a jetpack"), pl: Some((nom: "jetpacks"))),
     "jetpack-ce": (gender: neuter, sg: (nom: "chief engineer's jetpack", indef: "a chief engineer's jetpack"), pl: Some((nom: "chief engineer's jetpacks"))),
+    "radio": (gender: neuter, sg: (nom: "station bounced radio", indef: "a station bounced radio"), pl: Some((nom: "station bounced radios"))),
+    "intercom": (gender: neuter, sg: (nom: "station intercom", indef: "a station intercom"), pl: Some((nom: "station intercoms"))),
 }

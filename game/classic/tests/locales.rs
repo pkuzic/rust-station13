@@ -107,6 +107,7 @@ fn every_message_formats_in_both_locales() {
     args.set("watts", 5000);
     args.set("rating", 2500);
     args.set("charge", 1000);
+    args.set("frequency", "145.9");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

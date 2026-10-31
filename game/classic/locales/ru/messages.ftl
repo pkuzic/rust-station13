@@ -381,3 +381,12 @@ examine-cell-charger = { $charge ->
 # Реактивные ранцы (jetpacks.md).
 jetpack-on = Вы включаете реактивный ранец.
 jetpack-off = Вы выключаете реактивный ранец.
+
+# Рация (radio.md). Аргументы: $name, $frequency («145.9»), $verb (say/ask/exclaim), $text.
+radio-say = [{ $frequency }] { $name } { $verb ->
+        [ask] спрашивает
+        [exclaim] восклицает
+       *[say] говорит
+    }: «{ $text }»
+radio-microphone-on = Вы включаете микрофон.
+radio-microphone-off = Вы выключаете микрофон.

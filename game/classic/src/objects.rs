@@ -127,6 +127,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
+    if proto == crate::radio::INTERCOM {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::radio::spawn_intercom(world, spec, pos, id));
+    }
     if proto == crate::cells::CELL_CHARGER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::cells::spawn_cell_charger(world, spec, pos, id));
@@ -242,6 +246,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if let Some(cell) = crate::cells::kind(proto) {
         item.insert(cell);
+    }
+    if proto == crate::radio::RADIO {
+        item.insert(crate::radio::Radio::handheld());
     }
     if crate::jetpacks::is_jetpack(proto) {
         item.insert(crate::jetpacks::Jetpack::default());
