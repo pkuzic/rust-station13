@@ -164,6 +164,20 @@ pub struct Apc {
     /// The main breaker.
     pub operating: bool,
     pub channels: [ChannelMode; 3],
+    /// The interface is locked; an ID card with access unlocks it (Luna `locked`).
+    pub locked: bool,
+    /// The cover is locked shut (Luna `coverlocked`), set from the interface.
+    pub cover_locked: bool,
+    /// The cover is open: the cell can be taken out or put in (Luna `opened`).
+    pub opened: bool,
+    /// The cell charges from the grid's spare power (Luna `chargemode`).
+    pub charge_auto: bool,
+    /// Grid power last cycle: 0 none, 1 low, 2 good (Luna `main_status`).
+    pub main_status: u8,
+    /// 0 not charging, 1 charging, 2 full (Luna `charging`).
+    pub charging: u8,
+    /// Each channel's load last cycle, W.
+    pub last_used: [f64; 3],
 }
 
 impl Apc {
@@ -173,6 +187,13 @@ impl Apc {
             cell: Some((APC_CELL_CAPACITY * APC_START_CHARGE, APC_CELL_CAPACITY)),
             operating: true,
             channels: [ChannelMode::AutoOn; 3],
+            locked: true,
+            cover_locked: true,
+            opened: false,
+            charge_auto: true,
+            main_status: 0,
+            charging: 0,
+            last_used: [0.0; 3],
         }
     }
 
@@ -367,17 +388,31 @@ pub fn power_cycle(
         };
         let state = areas.0.entry(apc.area.clone()).or_default();
         let usage: f64 = state.used.iter().sum();
+        apc.last_used = state.used.map(|j| j / POWER_DT);
         state.used = [0.0; 3];
         let grid = nets.net_of.get(&entity).map(|n| &mut remaining[*n]);
         let mut spare = grid.as_deref().copied().unwrap_or(0.0);
+        apc.main_status = if spare <= 0.0 {
+            0
+        } else if spare < usage {
+            1
+        } else {
+            2
+        };
 
         match apc.cell {
             Some((mut charge, capacity)) => {
-                let trickle = (capacity * APC_TRICKLE).min(capacity - charge);
+                let trickle = if apc.charge_auto {
+                    (capacity * APC_TRICKLE).min(capacity - charge)
+                } else {
+                    0.0
+                };
                 let mut can_cover = true;
+                let mut charged = false;
                 if spare >= usage + trickle {
                     spare -= usage + trickle;
                     charge += trickle;
+                    charged = trickle > 0.0;
                 } else if spare + charge >= usage {
                     let from_grid = spare.min(usage);
                     spare -= from_grid;
@@ -386,6 +421,13 @@ pub fn power_cycle(
                     can_cover = false;
                 }
                 apc.cell = Some((charge, capacity));
+                apc.charging = if charge >= capacity {
+                    2
+                } else if charged {
+                    1
+                } else {
+                    0
+                };
                 let percent = 100.0 * charge / capacity;
                 if !can_cover || charge <= 0.0 {
                     apc.autoset_all([0, 0, 0]);
@@ -397,7 +439,10 @@ pub fn power_cycle(
                     apc.autoset_all([1, 1, 1]);
                 }
             }
-            None => apc.autoset_all([0, 0, 0]),
+            None => {
+                apc.charging = 0;
+                apc.autoset_all([0, 0, 0]);
+            }
         }
         if let Some(grid) = grid {
             *grid = spare;
@@ -432,10 +477,13 @@ pub fn power_cycle(
     }
 }
 
-/// APC sprite: off with the breaker open, "low" once equipment has been cut, else on.
+/// APC sprite: the cover open, with or without its cell; else off with the breaker open,
+/// "low" once equipment has been cut, else on.
 pub fn update_power_looks(mut apcs: Query<(&Apc, &mut rs13_world::Appearance), Changed<Apc>>) {
     for (apc, mut appearance) in &mut apcs {
-        let state = if !apc.operating {
+        let state = if apc.opened {
+            if apc.cell.is_some() { "open" } else { "open-empty" }
+        } else if !apc.operating {
             "off"
         } else if !apc.channels[Channel::Equipment as usize].is_on() {
             "low"

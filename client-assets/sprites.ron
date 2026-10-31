@@ -550,7 +550,15 @@
 
         // Power. Cables: state = the two directions joined (0 = a knot in the middle).
         "smes": { "": (dmi: "icons/obj/power.dmi", state: "smes") },
-        "apc": { "": (dmi: "icons/obj/power.dmi", state: "apc0") },
+        // APC: closed (on, low, off all look alike for now), or its cover open with or without a cell.
+        "apc": {
+            "": (dmi: "icons/obj/power.dmi", state: "apc0"),
+            "on": (dmi: "icons/obj/power.dmi", state: "apc0"),
+            "low": (dmi: "icons/obj/power.dmi", state: "apc0"),
+            "off": (dmi: "icons/obj/power.dmi", state: "apc0"),
+            "open": (dmi: "icons/obj/power.dmi", state: "apc2"),
+            "open-empty": (dmi: "icons/obj/power.dmi", state: "apc1"),
+        },
         // Tank storage unit: the overlay shows how full it is (oxygen-5 full … oxygen-1).
         "tank-dispenser": {
             "": (dmi: "icons/obj/objects.dmi", state: "dispenser"),

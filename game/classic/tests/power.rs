@@ -4,13 +4,15 @@ use bevy_app::{App, FixedUpdate};
 use bevy_ecs::prelude::*;
 use rs13_classic::access::IdCard;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
+use rs13_classic::apc::{ApcCommand, ApcPanelOut, PendingApcOps};
+use rs13_classic::cells::PowerCell;
 use rs13_classic::doors::{Airlock, DoorState};
 use rs13_classic::hands::{Hands, HeldBy};
 use rs13_classic::machines::Vent;
-use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_classic::power::{APC_CELL_CAPACITY, Apc, AreaPower, Channel, PowerUser, Powernets, Smes};
 use rs13_classic::{ClassicPlugin, maps};
-use rs13_world::{Appearance, Dir, GridPos, TileMap, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, ObjectSpec, TileMap, TilePos};
 
 const TICKS_PER_SECOND: usize = 20;
 const ENGINEERING_APC: TilePos = TilePos::new(1, 9, 0);
@@ -191,15 +193,29 @@ fn an_unpowered_airlock_will_not_open_but_a_crowbar_forces_it() {
 }
 
 #[test]
-fn the_apc_breaker_needs_engineering_access_and_cuts_the_area() {
+fn the_apc_interface_unlocks_with_engineering_access_and_its_breaker_cuts_the_area() {
     let mut app = setup();
     seconds(&mut app, 2);
     let apc_entity = entity_at::<Apc>(&mut app, STORAGE_APC);
     let mob = spawn_player_mob(app.world_mut(), STORAGE_APC.step(Dir::West));
 
+    // Locked: the window shows, but its buttons do nothing.
     act(&mut app, mob, Action::UseOn(apc_entity));
-    assert_eq!(last_message(&app, mob), "apc-locked");
-    assert!(apc(&mut app, STORAGE_APC).operating);
+    let view = app
+        .world()
+        .get::<ApcPanelOut>(mob)
+        .unwrap()
+        .0
+        .clone()
+        .expect("the window opens");
+    assert!(view.locked && view.breaker && view.cover_locked);
+    app.world_mut()
+        .get_mut::<PendingApcOps>(mob)
+        .unwrap()
+        .0
+        .push((apc_entity, ApcCommand::Breaker));
+    seconds(&mut app, 1);
+    assert!(apc(&mut app, STORAGE_APC).operating, "locked");
 
     let card = {
         let mut q = app.world_mut().query::<(Entity, &IdCard)>();
@@ -210,8 +226,14 @@ fn the_apc_breaker_needs_engineering_access_and_cuts_the_area() {
     };
     give(&mut app, mob, card);
     act(&mut app, mob, Action::UseOn(apc_entity));
-    assert_eq!(last_message(&app, mob), "apc-breaker-off");
+    assert_eq!(last_message(&app, mob), "apc-interface-unlocked");
+    app.world_mut()
+        .get_mut::<PendingApcOps>(mob)
+        .unwrap()
+        .0
+        .push((apc_entity, ApcCommand::Breaker));
     seconds(&mut app, 2);
+    assert!(!apc(&mut app, STORAGE_APC).operating);
     for channel in Channel::ALL {
         assert!(!powered(&app, "eng-storage", channel));
     }
@@ -220,6 +242,50 @@ fn the_apc_breaker_needs_engineering_access_and_cuts_the_area() {
         "other areas unaffected"
     );
     assert_eq!(app.world().get::<Appearance>(apc_entity).unwrap().state, "off");
+}
+
+#[test]
+fn with_the_cover_unlocked_a_crowbar_opens_it_and_the_cell_comes_out() {
+    let mut app = setup();
+    seconds(&mut app, 2);
+    let apc_entity = entity_at::<Apc>(&mut app, STORAGE_APC);
+    let mob = spawn_player_mob(app.world_mut(), STORAGE_APC.step(Dir::West));
+    let crowbar = spawn_object(app.world_mut(), &ObjectSpec::new("crowbar"), STORAGE_APC).unwrap();
+    give(&mut app, mob, crowbar);
+    act(&mut app, mob, Action::UseOn(apc_entity));
+    assert_eq!(last_message(&app, mob), "apc-cover-locked");
+
+    app.world_mut().get_mut::<Apc>(apc_entity).unwrap().cover_locked = false;
+    act(&mut app, mob, Action::UseOn(apc_entity));
+    assert_eq!(last_message(&app, mob), "apc-cover-opened");
+    seconds(&mut app, 1);
+    assert_eq!(app.world().get::<Appearance>(apc_entity).unwrap().state, "open");
+
+    // An empty hand takes the cell, with its charge.
+    let charge = apc(&mut app, STORAGE_APC).cell.unwrap().0;
+    app.world_mut().get_mut::<Hands>(mob).unwrap().right = None;
+    act(&mut app, mob, Action::UseOn(apc_entity));
+    assert_eq!(last_message(&app, mob), "apc-cell-removed");
+    seconds(&mut app, 1);
+    assert!(apc(&mut app, STORAGE_APC).cell.is_none());
+    let cell = app
+        .world()
+        .get::<Hands>(mob)
+        .unwrap()
+        .right
+        .expect("the cell is in hand");
+    let item = *app.world().get::<PowerCell>(cell).unwrap();
+    assert_eq!((item.charge, item.capacity), (charge, APC_CELL_CAPACITY));
+    assert_eq!(
+        app.world().get::<Appearance>(apc_entity).unwrap().state,
+        "open-empty"
+    );
+
+    // And back in.
+    act(&mut app, mob, Action::UseOn(apc_entity));
+    assert_eq!(last_message(&app, mob), "apc-cell-inserted");
+    assert!(apc(&mut app, STORAGE_APC).cell.is_some());
+    assert_eq!(app.world().get::<Hands>(mob).unwrap().right, None);
 }
 
 #[test]

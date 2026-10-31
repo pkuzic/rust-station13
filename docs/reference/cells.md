@@ -29,4 +29,4 @@ Sources: `luna:code/modules/power/cell.dm`, `luna:code/game/machinery/cell_charg
 | Charging | 175 kJ into the cell per machine cycle, drawing 200 W on the equipment channel | keep Luna's numbers. Like Luna, it makes more energy than it uses. |
 | Charge overlay | levels 0–4, level 2 shown | **fixed**: the misspelt icon state |
 | Rigged cells, EMP | none | no syringes, explosions or EMPs |
-| Putting cells in APCs | none | APC covers are locked; that needs the APC's panel |
+| Putting cells in APCs | through the open APC cover (`power.md`) | keep |

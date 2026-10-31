@@ -7,14 +7,14 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, DisplayName, GridPos, Hidden, Intent, MobStat, TilePos};
 
-use crate::access::{IdCard, allowed};
+use crate::access::IdCard;
 use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::{Airlock, DoorState};
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::{Body, Vitals};
 use crate::machines::{Canister, Connector, GasStore, PipeMember, PipeNets, Switch, Valve};
 use crate::movement::Mob;
-use crate::power::{APC_ACCESS, Apc, Channel, Smes};
+use crate::power::{Channel, Smes};
 use crate::time::WorldTime;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -93,7 +93,6 @@ pub fn process_actions(
     ports: Query<&GridPos, (With<Connector>, Without<Mob>)>,
     stores: Query<&GasStore>,
     mut nets: ResMut<PipeNets>,
-    mut apcs: Query<&mut Apc>,
     batteries: Query<&Smes>,
     cards: Query<&IdCard>,
     people: Query<(), With<Body>>,
@@ -121,7 +120,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios, mut chairs),
+        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios, mut chairs, mut apc_work),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -144,6 +143,7 @@ pub fn process_actions(
             crate::jetpacks::JetpackWork,
             crate::radio::RadioWork,
             crate::chairs::ChairWork,
+            crate::apc::ApcWork,
         ),
     ),
     mut commands: Commands,
@@ -230,7 +230,7 @@ pub fn process_actions(
                         outbox
                             .0
                             .push(LocMsg::new("examine").arg("item", appearance.sprite.clone()));
-                        if let Ok(apc) = apcs.get(target) {
+                        if let Some(apc) = apc_work.get(target) {
                             let mode = |c: Channel| {
                                 if apc.operating && apc.channels[c as usize].is_on() {
                                     "on"
@@ -376,6 +376,19 @@ pub fn process_actions(
                         continue;
                     }
                     if let Some(outcome) = radios.toggle_microphone(target) {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if apc_work.contains(target) => {
+                    // APCs (`power.md`), within reach.
+                    let Ok(at) = places.get(target).map(|p| p.0) else {
+                        continue;
+                    };
+                    if !in_reach(mob_pos.0, at) {
+                        continue;
+                    }
+                    if let Some(outcome) = apc_work.use_on(mob, target, tool, &mut hands, at, &mut commands) {
+                        sounds.tool_used(tool, at);
                         outbox.0.extend(outcome.to_mob);
                     }
                 }
@@ -564,19 +577,6 @@ pub fn process_actions(
                                 .get(target)
                                 .map_or("canister", |(a, _)| a.sprite.as_str());
                             outbox.0.push(LocMsg::new(id).arg("item", noun));
-                        }
-                    } else if let Ok(mut apc) = apcs.get_mut(target) {
-                        let card = hands.active_item().and_then(|e| cards.get(e).ok());
-                        if allowed(&[APC_ACCESS.to_owned()], card) {
-                            apc.operating = !apc.operating;
-                            let id = if apc.operating {
-                                "apc-breaker-on"
-                            } else {
-                                "apc-breaker-off"
-                            };
-                            outbox.0.push(LocMsg::new(id));
-                        } else {
-                            outbox.0.push(LocMsg::new("apc-locked"));
                         }
                     } else if let Ok((mut alarm, power)) = alarms.get_mut(target) {
                         // Luna `attackby`: wirecutters disconnect or reconnect it; anything

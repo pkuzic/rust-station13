@@ -14,6 +14,7 @@
 //! internals indicator connects the breath mask to a gas tank.
 
 mod alarm_panel;
+mod apc_panel;
 mod audio;
 mod hud;
 mod lighting;
@@ -162,6 +163,7 @@ fn main() {
         .init_resource::<hud::HudTip>()
         .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<alarm_panel::OpenAlarm>()
+        .init_resource::<apc_panel::OpenApc>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
         .init_resource::<TileSprites>()
@@ -191,6 +193,7 @@ fn main() {
                 receive_status,
                 (wire_panel::receive_panel, wire_panel::show_panel).chain(),
                 (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
+                (apc_panel::receive_apc, apc_panel::show_apc).chain(),
                 (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 glide,
                 (

@@ -197,6 +197,34 @@ pub struct AlarmPanelView {
     pub controls: bool,
 }
 
+/// An open APC window, as shown to the player using it (Luna's "apc" window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ApcPanelView {
+    /// The APC.
+    pub target: NetId,
+    /// Area id: the client shows the `area-<id>` message.
+    pub area: String,
+    /// The interface is locked: settings show, but only an ID card swipe unlocks them.
+    pub locked: bool,
+    /// The main breaker is on.
+    pub breaker: bool,
+    /// Power from the grid this cycle: 0 none, 1 low, 2 good (Luna `main_status`).
+    pub external: u8,
+    /// Cell charge, percent; `None` with no cell fitted.
+    pub cell_percent: Option<u8>,
+    /// 0 not charging, 1 charging, 2 fully charged (Luna `charging`).
+    pub charging: u8,
+    /// The cell charges automatically (Luna `chargemode`).
+    pub charge_auto: bool,
+    /// Equipment, lighting and environment: mode (Luna 0 off, 1 auto-off, 2 on, 3 auto-on)
+    /// and last cycle's load, W.
+    pub channels: [(u8, u32); 3],
+    /// The cover is locked and a crowbar won't open it.
+    pub cover_locked: bool,
+    /// The viewer is close enough to press the buttons.
+    pub controls: bool,
+}
+
 /// One air alarm readout: a message id taking `$value`, and whether it is out of range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AlarmReading {

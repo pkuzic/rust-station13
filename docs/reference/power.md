@@ -84,7 +84,9 @@ one cycle is 2 J.
 | Trickle charge | 0.1% of capacity per cycle while the grid has spare | keep |
 | Channel thresholds and auto settings | as in the table above | keep |
 | Area without an APC | always powered | keep |
-| APC main breaker | Click with an ID card with `engine_equip` access | **simplified**: Luna uses a locked UI |
+| APC interface | An ID card with `engine_equip` access locks or unlocks it (cover shut). An empty hand opens the APC window: breaker, grid power (none/low/good), cell % and charging, each channel's load and mode, cover lock. Unlocked and in reach, the window switches the breaker, sets channels off/on/auto, turns cell charging on or off, and locks or unlocks the cover | keep (Luna `interact` and `Topic`); shielding and AI rows left out |
+| APC cover and cell | With the cover lock off, a crowbar opens or shuts the cover; through the open cover an empty hand takes the cell (as a power cell item, with its charge) and a cell goes back in. Without a cell every channel goes off | keep |
+| Cell charging | only while automatic charging is on (Luna `chargemode`) | keep |
 | Airlock | Equipment channel; 100 J per open or close; no power means no movement | keep |
 | Crowbar on an unpowered closed door | forces it open; also closes an open door unless bolted | keep |
 | Vents, scrubbers, pumps | Environment channel, 150 W each while on; stop without power | **changed**: Luna's vents ignore power and nothing draws; we follow /tg/ |
@@ -93,5 +95,5 @@ one cycle is 2 J.
 
 ## Not yet
 
-Solar panels, SMES charging input, APC wires and hacking,
+Solar panels, SMES charging input, APC wires, hacking and emagging,
 power monitors. Lights draw on the lighting channel (`lights.md`).
