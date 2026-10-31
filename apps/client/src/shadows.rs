@@ -132,24 +132,63 @@ fn tile_at(p: Vec2, z: i32) -> TilePos {
 
 /// Whether the straight line from `eye` to `p` passes through no opaque square.
 fn clear(eye: Vec2, p: Vec2, z: i32, opaque: &HashSet<TilePos>) -> bool {
-    let steps = ((p - eye).length() / 6.0).ceil().max(1.0) as i32;
-    (1..=steps).all(|i| !opaque.contains(&tile_at(eye + (p - eye) * (i as f32 / steps as f32), z)))
+    unblocked(eye, p, z, |at| !opaque.contains(&at))
 }
 
 /// Whether the centre of `tile` can be seen from `eye`: the straight line between them
 /// passes through no opaque square but the tile's own.
 pub fn sees(eye: Vec2, tile: TilePos, opaque: &HashSet<TilePos>) -> bool {
     let target = Vec2::new(tile.x as f32, tile.y as f32) * TILE_PX;
-    let steps = ((target - eye).length() / 4.0).ceil().max(1.0) as i32;
-    (1..steps).all(|i| {
-        let p = eye + (target - eye) * (i as f32 / steps as f32);
-        let at = TilePos::new(
-            (p.x / TILE_PX).round() as i32,
-            (p.y / TILE_PX).round() as i32,
-            tile.z,
-        );
-        at == tile || !opaque.contains(&at)
-    })
+    unblocked(eye, target, tile.z, |at| at == tile || !opaque.contains(&at))
+}
+
+/// Whether every square the line from `from` to `to` crosses after the first is one
+/// `open` lets through. Squares are walked edge by edge, so none is skipped; where the
+/// line passes exactly through a corner, it gets past if either square beside the corner
+/// is open: grazing one wall's corner is seen past, squeezing between two that touch is not.
+fn unblocked(from: Vec2, to: Vec2, z: i32, open: impl Fn(TilePos) -> bool) -> bool {
+    // In tile units, with square edges on whole numbers.
+    let a = from / TILE_PX + 0.5;
+    let b = to / TILE_PX + 0.5;
+    let d = b - a;
+    let (mut x, mut y) = (a.x.floor() as i32, a.y.floor() as i32);
+    let end = (b.x.floor() as i32, b.y.floor() as i32);
+    let axis = |start: f32, cell: i32, delta: f32| -> (i32, f32, f32) {
+        if delta > 0.0 {
+            (1, (cell as f32 + 1.0 - start) / delta, 1.0 / delta)
+        } else if delta < 0.0 {
+            (-1, (start - cell as f32) / -delta, -1.0 / delta)
+        } else {
+            (0, f32::INFINITY, f32::INFINITY)
+        }
+    };
+    let (sx, mut next_x, step_x) = axis(a.x, x, d.x);
+    let (sy, mut next_y, step_y) = axis(a.y, y, d.y);
+    let at = |x: i32, y: i32| TilePos::new(x, y, z);
+    // Never more squares than the walk could cross.
+    for _ in 0..=(end.0 - x).abs() + (end.1 - y).abs() {
+        if (x, y) == end {
+            return true;
+        }
+        if (next_x - next_y).abs() < 1e-4 {
+            if !open(at(x + sx, y)) && !open(at(x, y + sy)) {
+                return false;
+            }
+            (x, y) = (x + sx, y + sy);
+            next_x += step_x;
+            next_y += step_y;
+        } else if next_x < next_y {
+            x += sx;
+            next_x += step_x;
+        } else {
+            y += sy;
+            next_y += step_y;
+        }
+        if !open(at(x, y)) {
+            return false;
+        }
+    }
+    true
 }
 
 /// Rebuild the shadows when the eye moves a pixel or a wall or door changes.
@@ -258,6 +297,33 @@ mod tests {
         let quads = shadow_quads(Vec2::ZERO, &opaque);
         assert!(quads.contains(&corners(back)), "the hidden wall is covered");
         assert!(!quads.contains(&corners(front)), "the near one is not");
+    }
+
+    #[test]
+    fn a_door_diagonally_past_a_wall_corner_is_seen() {
+        // The line to it runs exactly through the corner of the wall beside the eye, on
+        // either side of the map's origin.
+        for eye in [Vec2::ZERO, Vec2::new(32.0, 18.0) * TILE_PX] {
+            let me = tile_at(eye, 0);
+            let at = |dx: i32, dy: i32| TilePos::new(me.x + dx, me.y + dy, 0);
+            let opaque = HashSet::from([at(1, 1), at(1, 0), at(1, -1), at(1, -2)]);
+            assert!(
+                sees(eye, at(1, -1), &opaque),
+                "the door below the wall, from {eye}"
+            );
+            let opaque = HashSet::from([at(1, -1), at(1, 0), at(1, 1), at(1, 2)]);
+            assert!(
+                sees(eye, at(1, 1), &opaque),
+                "the door above the wall, from {eye}"
+            );
+        }
+    }
+
+    #[test]
+    fn sight_does_not_squeeze_between_walls_that_meet_at_a_corner() {
+        let opaque = HashSet::from([TilePos::new(1, 0, 0), TilePos::new(0, 1, 0)]);
+        assert!(!sees(Vec2::ZERO, TilePos::new(2, 2, 0), &opaque));
+        assert!(!sees(Vec2::ZERO, TilePos::new(1, 1, 0), &opaque));
     }
 
     #[test]
