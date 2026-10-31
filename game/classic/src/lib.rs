@@ -33,6 +33,7 @@ pub mod movement;
 pub mod names;
 pub mod objects;
 pub mod power;
+pub mod radio;
 pub mod rng;
 pub mod sound;
 pub mod speech;

@@ -45,5 +45,5 @@ the name. At least 2 letters are required. "space", "floor", "wall", "r-wall", "
 
 ## Not implemented yet
 
-Emotes, radio and headsets, whispering, stuttering and brain damage, languages
+Emotes, headsets (radios and intercoms are in `radio.md`), whispering, stuttering and brain damage, languages
 (understood or not), deafness, rate limiting, logging.

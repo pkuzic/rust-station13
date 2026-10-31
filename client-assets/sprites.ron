@@ -433,6 +433,8 @@
             "cell-o1": (dmi: "icons/obj/power.dmi", state: "cell-o1"),
             "cell-o2": (dmi: "icons/obj/power.dmi", state: "cell-o2"),
         },
+        "radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
+        "intercom": { "": (dmi: "icons/obj/radio.dmi", state: "intercom") },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },

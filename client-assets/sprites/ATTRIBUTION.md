@@ -203,6 +203,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
+| `intercom:` | `icons/obj/radio.dmi : "intercom"` | CC-BY-SA 3.0 |
 | `jetpack:` | `icons/obj/tank.dmi : "jetpack0"` | CC-BY-SA 3.0 |
 | `jetpack:on` | `icons/obj/tank.dmi : "jetpack1"` | CC-BY-SA 3.0 |
 | `jetpack-ce:` | `icons/obj/tank.dmi : "jetpack0_ce"` | CC-BY-SA 3.0 |
@@ -351,6 +352,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pump:on` | `icons/obj/atmospherics/pump.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `rack:` | `icons/obj/objects.dmi : "rack"` | CC-BY-SA 3.0 |
 | `rack-parts:` | `icons/obj/items.dmi : "rack_parts"` | CC-BY-SA 3.0 |
+| `radio:` | `icons/obj/radio.dmi : "walkietalkie"` | CC-BY-SA 3.0 |
 | `screwdriver:` | `icons/obj/items.dmi : "screwdriver"` | CC-BY-SA 3.0 |
 | `scrubber:off` | `icons/obj/atmospherics/vent_scrubber.dmi : "off"` | CC-BY-SA 3.0 |
 | `scrubber:on` | `icons/obj/atmospherics/vent_scrubber.dmi : "on"` | CC-BY-SA 3.0 |

@@ -78,7 +78,25 @@ pub(crate) fn line(a: TilePos, b: TilePos) -> impl Iterator<Item = TilePos> {
     })
 }
 
-/// Deliver each pending line to every mob that can see the speaker.
+/// Radio sets, wherever they are: on a tile, in a hand or worn.
+type RadioSets<'w, 's> = Query<
+    'w,
+    's,
+    (
+        Entity,
+        &'static crate::radio::Radio,
+        Option<&'static GridPos>,
+        Option<&'static crate::hands::HeldBy>,
+        Option<&'static crate::equipment::WornBy>,
+        Has<crate::radio::Intercom>,
+    ),
+    Without<Mob>,
+>;
+
+/// Deliver each pending line to every mob that can see the speaker. A radio prefix sends
+/// it into a radio instead, heard directly only next to the speaker; radios with their
+/// microphone on pass on what they hear. Every listening radio on the frequency plays it
+/// to the mobs near it (`radio.md`).
 pub fn speak(
     map: Single<&MapLayer>,
     mut speakers: Query<
@@ -88,35 +106,125 @@ pub fn speak(
             &DisplayName,
             &mut PendingSpeech,
             Option<&Vitals>,
+            Option<&crate::hands::Hands>,
         ),
         With<Mob>,
     >,
     mut listeners: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
+    radios: RadioSets,
 ) {
+    use crate::radio::{RADIO_TALK_RANGE, RadioMode, format_frequency, split_mode};
+
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
-    let mut said: Vec<(Entity, TilePos, LocMsg)> = Vec::new();
-    for (speaker, pos, name, mut pending, vitals) in &mut speakers {
+    let mob_at: std::collections::HashMap<Entity, TilePos> =
+        listeners.iter().map(|(e, p, ..)| (e, p.0)).collect();
+    // Where each radio is: its tile, or the tile of whoever holds or wears it.
+    let radio_at = |radio: Entity| -> Option<TilePos> {
+        let (_, _, pos, held, worn, _) = radios.get(radio).ok()?;
+        pos.map(|p| p.0)
+            .or_else(|| held.and_then(|h| mob_at.get(&h.0).copied()))
+            .or_else(|| worn.and_then(|w| mob_at.get(&w.0).copied()))
+    };
+
+    // (speaker, where, range heard directly, message, radio message and its frequencies)
+    let mut said: Vec<(Entity, TilePos, i32, LocMsg, Vec<(u16, LocMsg)>)> = Vec::new();
+    for (speaker, pos, name, mut pending, vitals, hands) in &mut speakers {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
         }
         for raw in pending.0.drain(..) {
-            let Some(text) = sanitize_speech(&raw) else {
+            let (mode, rest) = split_mode(&raw);
+            let Some(text) = sanitize_speech(rest) else {
                 continue;
             };
+            let verb = speech_verb(&text);
             let msg = LocMsg::new("say")
                 .arg("name", name.0.clone())
-                .arg("verb", speech_verb(&text))
-                .arg("text", text);
-            said.push((speaker, pos.0, msg));
+                .arg("verb", verb)
+                .arg("text", text.clone());
+            let range = if mode.is_some() {
+                RADIO_TALK_RANGE
+            } else {
+                HEARING_RANGE
+            };
+            // The radios it goes into: the one named, and any with the microphone on that
+            // hear it.
+            let mut into: Vec<Entity> = Vec::new();
+            match mode {
+                Some(RadioMode::RightHand) => into.extend(hands.and_then(|h| h.right)),
+                Some(RadioMode::LeftHand) => into.extend(hands.and_then(|h| h.left)),
+                Some(RadioMode::Intercom) => into.extend(
+                    radios
+                        .iter()
+                        .filter(|(_, _, at, _, _, intercom)| {
+                            *intercom && at.is_some_and(|p| can_see(&map.0, &opaque, pos.0, p.0, 1))
+                        })
+                        .map(|(e, ..)| e),
+                ),
+                None => {}
+            }
+            into.extend(
+                radios
+                    .iter()
+                    .filter(|(_, radio, at, ..)| {
+                        radio.broadcasting && at.is_some_and(|p| can_see(&map.0, &opaque, pos.0, p.0, range))
+                    })
+                    .map(|(e, ..)| e),
+            );
+            let mut frequencies: Vec<u16> = into
+                .iter()
+                .filter_map(|e| radios.get(*e).ok())
+                .map(|(_, radio, ..)| radio.frequency)
+                .collect();
+            frequencies.sort_unstable();
+            frequencies.dedup();
+            let on_air = frequencies
+                .into_iter()
+                .map(|f| {
+                    let msg = LocMsg::new("radio-say")
+                        .arg("name", name.0.clone())
+                        .arg("frequency", format_frequency(f))
+                        .arg("verb", verb)
+                        .arg("text", text.clone());
+                    (f, msg)
+                })
+                .collect();
+            said.push((speaker, pos.0, range, msg, on_air));
         }
     }
-    for (speaker, from, msg) in said {
+    for (speaker, from, range, msg, on_air) in said {
+        // Who hears each frequency: anyone near a listening radio on it, once.
+        let mut tuned: Vec<(Entity, LocMsg)> = Vec::new();
+        for (frequency, radio_msg) in on_air {
+            for (radio_entity, radio, ..) in &radios {
+                if radio.frequency != frequency || !radio.listening {
+                    continue;
+                }
+                let Some(at) = radio_at(radio_entity) else {
+                    continue;
+                };
+                for (listener, to) in &mob_at {
+                    if can_see(&map.0, &opaque, at, *to, radio.range)
+                        && !tuned.iter().any(|(e, m)| e == listener && *m == radio_msg)
+                    {
+                        tuned.push((*listener, radio_msg.clone()));
+                    }
+                }
+            }
+        }
+        tuned.sort_by_key(|(e, _)| *e);
         for (listener, to, mut outbox, vitals) in &mut listeners {
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
-            if awake && (listener == speaker || can_see(&map.0, &opaque, from, to.0, HEARING_RANGE)) {
+            if !awake {
+                continue;
+            }
+            if listener == speaker || can_see(&map.0, &opaque, from, to.0, range) {
                 outbox.0.push(msg.clone());
+            }
+            for (_, radio_msg) in tuned.iter().filter(|(e, _)| *e == listener) {
+                outbox.0.push(radio_msg.clone());
             }
         }
     }

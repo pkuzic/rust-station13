@@ -121,7 +121,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut generators, mut dispensers, mut chargers, mut jetpacks),
+        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -142,6 +142,7 @@ pub fn process_actions(
             crate::dispensers::DispenserWork,
             crate::cells::ChargerWork,
             crate::jetpacks::JetpackWork,
+            crate::radio::RadioWork,
         ),
     ),
     mut commands: Commands,
@@ -312,7 +313,8 @@ pub fn process_actions(
                         && (welding.is_welder(target)
                             || furniture.uses_self(target)
                             || flashlights.contains(target)
-                            || jetpacks.contains(target)) =>
+                            || jetpacks.contains(target)
+                            || radios.contains(target)) =>
                 {
                     // The item in the active hand used on itself (Luna `attack_self`): a
                     // welding tool lights or goes out, rack parts become a rack, a
@@ -321,6 +323,7 @@ pub fn process_actions(
                         .use_self(target)
                         .or_else(|| flashlights.use_self(target))
                         .or_else(|| jetpacks.use_self(target))
+                        .or_else(|| radios.toggle_microphone(target))
                     {
                         outbox.0.extend(outcome.to_mob);
                     }
@@ -361,6 +364,18 @@ pub fn process_actions(
                             sounds.tool_used(tool, mob_pos.0);
                             visible.0.push((mob_pos.0, seen, None));
                         }
+                    }
+                }
+                Action::UseOn(target)
+                    if radios.contains(target) && places.contains(target) && tool.is_none() =>
+                {
+                    // An empty hand on an intercom or a radio on the floor works its
+                    // microphone (`radio.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = radios.toggle_microphone(target) {
+                        outbox.0.extend(outcome.to_mob);
                     }
                 }
                 Action::UseOn(target) if chargers.contains(target) => {
