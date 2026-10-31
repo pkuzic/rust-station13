@@ -129,25 +129,36 @@ struct LightCache {
 }
 
 /// The light to draw on a wall or closed door: the light just outside its faces on the
-/// side the player sees, the brightest of the open tiles around it in sight, diagonals
-/// included (a room's corner). So light from a room behind a wall never shows on this side
-/// of it. `None` if no open tile around it is in sight.
+/// side the player sees, the brightest of the open tiles beside it in sight, and only on
+/// the faces that turn towards the player's eye (in tiles; `None` before our player
+/// arrives). So light from a room behind a wall, or on a window beside a door, or falling
+/// past its corner, never shows on the face we see. A room's corner, with no face to see,
+/// takes the light at its corner instead. `None` if no such tile is in sight.
 pub fn wall_light(
     at: TilePos,
+    eye: Option<[f32; 2]>,
     light_at: impl Fn([f32; 2]) -> [f32; 3],
     blocks: impl Fn(TilePos) -> bool,
     seen: impl Fn(TilePos) -> bool,
 ) -> Option<[f32; 3]> {
-    (-1..=1)
-        .flat_map(|dy| (-1..=1).map(move |dx| (dx, dy)))
-        .filter(|d| *d != (0, 0))
-        .filter(|(dx, dy)| {
-            let p = TilePos::new(at.x + dx, at.y + dy, at.z);
-            !blocks(p) && seen(p)
-        })
-        // Just past the wall's face, or its corner, into that tile.
-        .map(|(dx, dy)| light_at([at.x as f32 + 0.6 * dx as f32, at.y as f32 + 0.6 * dy as f32]))
-        .reduce(|a, b| std::array::from_fn(|c| a[c].max(b[c])))
+    let brightest = |sides: &[(i32, i32)]| {
+        sides
+            .iter()
+            .filter(|(dx, dy)| {
+                let p = TilePos::new(at.x + dx, at.y + dy, at.z);
+                // The face or corner on that side, and whether it turns towards the eye.
+                let side = [at.x as f32 + 0.5 * *dx as f32, at.y as f32 + 0.5 * *dy as f32];
+                let faces =
+                    eye.is_none_or(|e| (e[0] - side[0]) * *dx as f32 + (e[1] - side[1]) * *dy as f32 > 0.0);
+                faces && !blocks(p) && seen(p)
+            })
+            // Just past the wall's face, or its corner, into that tile.
+            .map(|(dx, dy)| light_at([at.x as f32 + 0.55 * *dx as f32, at.y as f32 + 0.55 * *dy as f32]))
+            .reduce(|a, b| std::array::from_fn(|c| a[c].max(b[c])))
+    };
+    // Its faces; only a room's corner, with no face to see, takes the light at its corner.
+    brightest(&[(0, 1), (0, -1), (1, 0), (-1, 0)])
+        .or_else(|| brightest(&[(1, 1), (1, -1), (-1, 1), (-1, -1)]))
 }
 
 /// Work out the light again when the map, a light or a door changed, and what the player
@@ -274,6 +285,7 @@ fn update_lighting(
     }
 
     // Walls and closed doors show the light on the side the player sees.
+    let eye = me.map(|(p, _)| [p.0.x as f32, p.0.y as f32]);
     let raster = &cache.raster;
     let inside = |p: TilePos| (0..width as i32).contains(&p.x) && (0..height as i32).contains(&p.y);
     let seen = |p: TilePos| inside(p) && (me.is_none() || !unseen.contains(&p));
@@ -281,7 +293,7 @@ fn update_lighting(
         .flat_map(|y| (0..width as i32).map(move |x| (x, y)))
         .filter(|(x, y)| blocks(TilePos::new(*x, *y, map.z)))
         .map(|(x, y)| {
-            let light = wall_light(TilePos::new(x, y, map.z), |p| raster.at(p), blocks, seen);
+            let light = wall_light(TilePos::new(x, y, map.z), eye, |p| raster.at(p), blocks, seen);
             ((x, y), light.unwrap_or([0.0; 3]))
         })
         .collect();
@@ -360,14 +372,35 @@ mod tests {
         let ours = |p: TilePos| p.x > 0;
         let wall = TilePos::new(0, 0, 0);
         assert_eq!(
-            wall_light(wall, light_at, blocks, ours),
+            wall_light(wall, None, light_at, blocks, ours),
             Some([0.1; 3]),
             "not the light behind it"
         );
         assert_eq!(
-            wall_light(wall, light_at, blocks, |_| false),
+            wall_light(wall, None, light_at, blocks, |_| false),
             None,
             "a wall out of sight"
+        );
+    }
+
+    #[test]
+    fn a_door_shows_the_light_on_the_face_you_see_not_a_lit_window_beside_it() {
+        // A door at (0, 2) in a wall row, a lit window east of it with its light falling on
+        // the floor below it, a dark room south where we stand at (0, 0).
+        let blocks = |p: TilePos| p.y == 2 && p.x != 1;
+        let seen = |p: TilePos| p.y <= 2;
+        let light_at = |p: [f32; 2]| {
+            if p[0] > 0.5 { [1.0; 3] } else { [0.05; 3] }
+        };
+        let door = TilePos::new(0, 2, 0);
+        assert_eq!(
+            wall_light(door, Some([0.0, 0.0]), light_at, blocks, seen),
+            Some([0.05; 3])
+        );
+        // From the window's side the lit face is the one seen.
+        assert_eq!(
+            wall_light(door, Some([3.0, 2.0]), light_at, blocks, seen),
+            Some([1.0; 3])
         );
     }
 
@@ -384,7 +417,7 @@ mod tests {
             }
         };
         assert_eq!(
-            wall_light(TilePos::new(0, 0, 0), light_at, blocks, ours),
+            wall_light(TilePos::new(0, 0, 0), None, light_at, blocks, ours),
             Some([0.1; 3])
         );
     }

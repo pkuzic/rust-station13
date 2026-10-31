@@ -17,8 +17,9 @@ use crate::{OwnPlayer, TILE_PX};
 const HALF_BLIND: f32 = sight::BLIND_HALF_ANGLE_DEG.to_radians();
 /// Over the light, under the line-of-sight shadows.
 const FOV_Z: f32 = 20.4;
-/// The cone starts this far from the eye, so our own tile stays clear, px.
-const INNER: f32 = 0.75 * TILE_PX;
+/// The cone fades in from nothing at the eye to full by this far out, px, so it has no
+/// hard edge round the player.
+const FADE: f32 = 1.5 * TILE_PX;
 const OUTER: f32 = 40.0 * TILE_PX;
 /// How many slices the cone's curved edges are made of.
 const SEGMENTS: usize = 16;
@@ -66,24 +67,39 @@ fn spawn_cone(
     ));
 }
 
-/// The blind arc of someone at the origin facing north: centred on straight down, a band
-/// from `INNER` to `OUTER`.
+/// The blind arc of someone at the origin facing north: centred on straight down, fading
+/// in from the eye to `FADE`, then full out to `OUTER`. Vertex colours carry the fade.
 fn cone_mesh() -> Mesh {
     let mut positions = Vec::new();
+    let mut colors = Vec::new();
     let mut indices = Vec::new();
     let start = -std::f32::consts::FRAC_PI_2 - HALF_BLIND;
+    // Three corners along each spoke: the eye (clear), the end of the fade, the far end.
+    let rings = [(0.0, 0.0), (FADE, 1.0), (OUTER, 1.0)];
     for i in 0..=SEGMENTS {
         let angle = start + 2.0 * HALF_BLIND * i as f32 / SEGMENTS as f32;
         let dir = Vec2::from_angle(angle);
-        positions.push([dir.x * INNER, dir.y * INNER, 0.0]);
-        positions.push([dir.x * OUTER, dir.y * OUTER, 0.0]);
+        for (r, alpha) in rings {
+            positions.push([dir.x * r, dir.y * r, 0.0]);
+            colors.push([1.0, 1.0, 1.0, alpha]);
+        }
         if i > 0 {
-            let k = 2 * i as u32;
-            indices.extend([k - 2, k - 1, k + 1, k - 2, k + 1, k]);
+            let (a, b) = (3 * (i as u32 - 1), 3 * i as u32);
+            for ring in 0..2 {
+                indices.extend([
+                    a + ring,
+                    a + ring + 1,
+                    b + ring + 1,
+                    a + ring,
+                    b + ring + 1,
+                    b + ring,
+                ]);
+            }
         }
     }
     Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default())
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions)
+        .with_inserted_attribute(Mesh::ATTRIBUTE_COLOR, colors)
         .with_inserted_indices(Indices::U32(indices))
 }
 
