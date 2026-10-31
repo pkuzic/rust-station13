@@ -8,10 +8,11 @@ Sources:
 Code:
 - `engine/simulation/src/lighting.rs`: works out the light on each tile;
 - `apps/client/src/lighting.rs` and `lighting.wgsl`: draw it;
-- `game/classic/src/lights.rs`: which fixtures give off light.
+- `game/classic/src/lights.rs`: which fixtures give off light;
+- `game/classic/src/lighting.rs`: the light on each tile on the server, for game rules.
 
 Tests: `engine/simulation/src/lighting.rs` (the rules) and `game/classic/tests/lights.rs`
-(lit fixtures give off light). ADR: `docs/adr/0008-soft-tile-lighting.md`.
+(lit fixtures give off light; the server knows where it is dark). ADR: `docs/adr/0008-soft-tile-lighting.md`.
 
 ## Light sources
 
@@ -47,6 +48,20 @@ A tube lights its own tile and the next ones fully, and fades out eight tiles aw
 - **Space** is always fully lit, as Luna's space area has no lighting of its own.
 - **The darkest** a tile is drawn is 4 % light, so a dark room is not quite black.
 
+## Darkness
+
+A tile is **dark** when its brightest colour is below 20 % light (`DARK_BELOW`): about six
+and a half tiles from a tube, with nothing else lighting it. Taking the brightest colour
+means a tile lit only red is as bright as its red light. Space is never dark.
+
+Game rules ask the server: `TileLight::is_dark(pos)`, `brightness(pos)` (0 to 1) and
+`level(pos)` (red, green and blue) in `game/classic/src/lighting.rs`. The server works the
+light out from the same lit fixtures, closed airlocks and map as the client draws, with the
+same engine code (`MapDecks`), again only when one of them changes, at the end of the tick.
+Rules see the light as it was at the end of the previous tick.
+
+Luna has no such check: its game rules never ask how much light is on a tile. Nothing
+here uses darkness yet.
 ## Decks
 
 Positions carry the deck. Light passes between decks only through a tile with no floor
@@ -63,7 +78,7 @@ made-up two-deck world.
 ## Drawing it
 
 - **Who works it out:** the client, from the light sources and closed doors the server
-  replicates. Light is only looks for now: nothing in the game depends on it.
+  replicates. The server works out the same light for game rules (see Darkness).
 - **When:** the client works it out again only when the map, a light or a closed door
   changes.
 - **How it is drawn:** a texture with one texel per tile of the deck you stand on. Between
@@ -78,7 +93,8 @@ made-up two-deck world.
   across tiles.
 - **Light across decks:** Luna has no light between decks.
 - **Not implemented:**
-  - darkness hiding things from players (nothing checks light on the server);
+  - darkness hiding things from players (the server knows where it is dark, but no rule
+    uses it yet);
   - red alert lighting (`isalert`, fire alarm lights);
   - other things that glow in Luna: lit welding tools, flashlights, fires, computers,
     igniters, floodlights;
