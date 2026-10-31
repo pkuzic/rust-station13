@@ -252,7 +252,9 @@ fn update_lighting(
             for c in level {
                 data.push((c * 255.0).round() as u8);
             }
-            data.push(255);
+            // Alpha marks whether the tile is seen at all: the shader cuts unseen tiles off
+            // sharply, so the soft light never shows what lies beyond a wall.
+            data.push(if unseen.contains(&tile) && !meson { 0 } else { 255 });
         }
     }
     sight.unseen = unseen;

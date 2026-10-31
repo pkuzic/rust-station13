@@ -482,6 +482,7 @@ fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
         "human" => 3,
         "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
+        chair if rs13_classic::chairs::is_chair(chair) => 2,
         closet if rs13_classic::closets::is_closet(closet) => 2,
         // A closed or moving firedoor is what gets clicked; an open one is out of the way.
         "firedoor" if appearance.state.starts_with("door0") => 5,
@@ -985,7 +986,7 @@ fn glide(
         Option<&mut Glided>,
     )>,
 ) {
-    let max_step = GLIDE_TILES_PER_SEC * TILE_PX * time.delta_secs();
+    let dt = time.delta_secs();
     for (entity, pos, mut transform, is_player, look, glided) in &mut movers {
         let target = world_pos(pos.0, transform.translation.z);
         let at = glided.as_ref().map_or(transform.translation, |g| g.0);
@@ -1014,7 +1015,10 @@ fn glide(
             }
             continue;
         }
-        let at = at + offset.clamp_length_max(max_step);
+        // Glide at least at walking pace, faster the further behind: running in shoes can
+        // outpace a fixed glide, which then falls behind and jumps.
+        let speed = GLIDE_TILES_PER_SEC + 8.0 * offset.length() / TILE_PX;
+        let at = at + offset.clamp_length_max(speed * TILE_PX * dt);
         let snapped = Vec3::new(scale.snap(at.x), scale.snap(at.y), at.z);
         if transform.translation != snapped {
             transform.translation = snapped;

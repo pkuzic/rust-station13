@@ -109,11 +109,16 @@ pub fn spawn_intercom(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: Ne
 #[derive(SystemParam)]
 pub struct RadioWork<'w, 's> {
     radios: Query<'w, 's, &'static mut Radio>,
+    intercoms: Query<'w, 's, (), With<Intercom>>,
 }
 
 impl RadioWork<'_, '_> {
     pub fn contains(&self, target: Entity) -> bool {
         self.radios.contains(target)
+    }
+
+    pub fn is_intercom(&self, target: Entity) -> bool {
+        self.intercoms.contains(target)
     }
 
     /// An empty hand on an intercom, or a radio clicked in the active hand, engages or

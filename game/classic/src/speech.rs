@@ -41,14 +41,30 @@ pub fn speech_verb(text: &str) -> &'static str {
 }
 
 /// Whether `to` can be seen from `from`: same deck, within `range`, and the straight
-/// line between them crosses no opaque tile. The end points themselves never block.
+/// line between them crosses no opaque tile, nor squeezes diagonally between two that meet
+/// at a corner. The end points themselves never block.
 pub fn can_see(map: &TileMap, opaque: &[TilePos], from: TilePos, to: TilePos, range: i32) -> bool {
     if from.z != to.z || (from.x - to.x).abs() > range || (from.y - to.y).abs() > range {
         return false;
     }
-    line(from, to)
-        .filter(|p| *p != from && *p != to)
-        .all(|p| !map.is_opaque(p) && !opaque.contains(&p))
+    let blocks = |p: TilePos| map.is_opaque(p) || opaque.contains(&p);
+    let mut previous: Option<TilePos> = None;
+    for p in line(from, to) {
+        if p != from && p != to && blocks(p) {
+            return false;
+        }
+        // A diagonal step can't squeeze between two walls that meet at a corner.
+        if let Some(q) = previous
+            && q.x != p.x
+            && q.y != p.y
+            && blocks(TilePos::new(p.x, q.y, p.z))
+            && blocks(TilePos::new(q.x, p.y, p.z))
+        {
+            return false;
+        }
+        previous = Some(p);
+    }
+    true
 }
 
 /// Tiles on the Bresenham line from `a` to `b`, both included.
@@ -263,5 +279,33 @@ mod tests {
         assert_eq!(pts.first(), Some(&TilePos::new(0, 0, 0)));
         assert_eq!(pts.last(), Some(&TilePos::new(3, 1, 0)));
         assert_eq!(pts.len(), 4);
+    }
+}
+
+#[cfg(test)]
+mod sight_tests {
+    use super::*;
+
+    #[test]
+    fn sight_does_not_squeeze_between_walls_that_meet_at_a_corner() {
+        // Two walls touching at a corner, diagonally between the viewer and the target.
+        let map = TileMap::from_ron(
+            r#"(
+                legend: { 'W': (tile: (id: "wall", solid: true)), '.': (tile: (id: "floor")) },
+                rows: ["...", ".W.", "W..", "..."],
+            )"#,
+            0,
+        )
+        .unwrap();
+        // Rows run top down: the walls are at (1, 2) and (0, 1).
+        let (from, to) = (TilePos::new(0, 2, 0), TilePos::new(1, 1, 0));
+        assert!(!can_see(&map, &[], from, to, 7));
+        assert!(can_see(
+            &map,
+            &[],
+            TilePos::new(0, 3, 0),
+            TilePos::new(2, 3, 0),
+            7
+        ));
     }
 }
