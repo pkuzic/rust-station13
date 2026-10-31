@@ -705,6 +705,23 @@
             "on": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "on", dir: 0),
             "off": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "off", dir: 0),
         },
+        // Thermo-electric generator: its lights show its output (teg-op1 … teg-op11).
+        "teg": {
+            "": (dmi: "icons/obj/power.dmi", state: "teg"),
+            "teg-op1": (dmi: "icons/obj/power.dmi", state: "teg-op1"),
+            "teg-op2": (dmi: "icons/obj/power.dmi", state: "teg-op2"),
+            "teg-op3": (dmi: "icons/obj/power.dmi", state: "teg-op3"),
+            "teg-op4": (dmi: "icons/obj/power.dmi", state: "teg-op4"),
+            "teg-op5": (dmi: "icons/obj/power.dmi", state: "teg-op5"),
+            "teg-op6": (dmi: "icons/obj/power.dmi", state: "teg-op6"),
+            "teg-op7": (dmi: "icons/obj/power.dmi", state: "teg-op7"),
+            "teg-op8": (dmi: "icons/obj/power.dmi", state: "teg-op8"),
+            "teg-op9": (dmi: "icons/obj/power.dmi", state: "teg-op9"),
+            "teg-op10": (dmi: "icons/obj/power.dmi", state: "teg-op10"),
+            "teg-op11": (dmi: "icons/obj/power.dmi", state: "teg-op11"),
+        },
+        "generator-input": { "": (dmi: "icons/obj/atmospherics/heat_exchanger.dmi", state: "intact", dir: 0) },
+        "thermal-plate": { "": (dmi: "icons/obj/atmospherics/cold_sink.dmi", state: "intact_off", dir: 0) },
         "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact", dir: 0) },
         "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
         // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).

@@ -477,3 +477,6 @@ monitor-apc-no-cell = { $area }: { $equipment ->
     [3] AOn
    *[0] Off
 }, { $load } W, no cell
+
+# Thermo-electric generator (engine.md). Args: $watts; $hot, $cold (K); $hotkpa, $coldkpa.
+examine-teg = Output: { $watts } W. Hot loop: { $hot } K, { $hotkpa } kPa. Cold loop: { $cold } K, { $coldkpa } kPa.

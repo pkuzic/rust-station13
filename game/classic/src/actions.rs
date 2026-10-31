@@ -129,6 +129,7 @@ pub fn process_actions(
             mut chairs,
             mut apc_work,
             monitors,
+            tegs,
         ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
@@ -154,6 +155,7 @@ pub fn process_actions(
             crate::chairs::ChairWork,
             crate::apc::ApcWork,
             Query<(&GridPos, &crate::power::PowerUser), With<crate::power_monitor::PowerMonitor>>,
+            Query<&crate::teg::Teg>,
         ),
     ),
     mut commands: Commands,
@@ -279,6 +281,9 @@ pub fn process_actions(
                         }
                         if let Some(more) = chargers.examine(target) {
                             outbox.0.push(more);
+                        }
+                        if let Ok(teg) = tegs.get(target) {
+                            outbox.0.push(crate::teg::examine(teg));
                         }
                         if let Ok(smes) = batteries.get(target) {
                             let percent = (100.0 * smes.charge / smes.capacity).round() as i64;

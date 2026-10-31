@@ -499,3 +499,6 @@ monitor-apc-no-cell = { $area }: { $equipment ->
     [3] АВкл
    *[0] Выкл
 }, { $load } Вт, нет батареи
+
+# Термоэлектрический генератор (engine.md). Аргументы: $watts; $hot, $cold (K); $hotkpa, $coldkpa.
+examine-teg = Мощность: { $watts } Вт. Горячий контур: { $hot } K, { $hotkpa } кПа. Холодный контур: { $cold } K, { $coldkpa } кПа.

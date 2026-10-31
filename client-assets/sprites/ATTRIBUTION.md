@@ -160,6 +160,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `gas-filter:on-south` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `gas-filter:on-west` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `gas-mask:` | `icons/obj/clothing/masks.dmi : "gas_alt"` | CC-BY-SA 3.0 |
+| `generator-input:` | `icons/obj/atmospherics/heat_exchanger.dmi : "intact"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
 | `hardhat:` | `icons/obj/clothing/hats.dmi : "hardhat0_yellow"` | CC-BY-SA 3.0 |
 | `hardhat:on` | `icons/obj/clothing/hats.dmi : "hardhat1_yellow"` | CC-BY-SA 3.0 |
@@ -548,6 +549,19 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `tank-dispenser:oxygen-3` | `icons/obj/objects.dmi : "oxygen-3"` | CC-BY-SA 3.0 |
 | `tank-dispenser:oxygen-4` | `icons/obj/objects.dmi : "oxygen-4"` | CC-BY-SA 3.0 |
 | `tank-dispenser:oxygen-5` | `icons/obj/objects.dmi : "oxygen-5"` | CC-BY-SA 3.0 |
+| `teg:` | `icons/obj/power.dmi : "teg"` | CC-BY-SA 3.0 |
+| `teg:teg-op1` | `icons/obj/power.dmi : "teg-op1"` | CC-BY-SA 3.0 |
+| `teg:teg-op10` | `icons/obj/power.dmi : "teg-op10"` | CC-BY-SA 3.0 |
+| `teg:teg-op11` | `icons/obj/power.dmi : "teg-op11"` | CC-BY-SA 3.0 |
+| `teg:teg-op2` | `icons/obj/power.dmi : "teg-op2"` | CC-BY-SA 3.0 |
+| `teg:teg-op3` | `icons/obj/power.dmi : "teg-op3"` | CC-BY-SA 3.0 |
+| `teg:teg-op4` | `icons/obj/power.dmi : "teg-op4"` | CC-BY-SA 3.0 |
+| `teg:teg-op5` | `icons/obj/power.dmi : "teg-op5"` | CC-BY-SA 3.0 |
+| `teg:teg-op6` | `icons/obj/power.dmi : "teg-op6"` | CC-BY-SA 3.0 |
+| `teg:teg-op7` | `icons/obj/power.dmi : "teg-op7"` | CC-BY-SA 3.0 |
+| `teg:teg-op8` | `icons/obj/power.dmi : "teg-op8"` | CC-BY-SA 3.0 |
+| `teg:teg-op9` | `icons/obj/power.dmi : "teg-op9"` | CC-BY-SA 3.0 |
+| `thermal-plate:` | `icons/obj/atmospherics/cold_sink.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `tile:floor:` | `icons/turf/floors.dmi : "floor"` | CC-BY-SA 3.0 |
 | `tile:grille:` | `icons/obj/structures.dmi : "grille"` | CC-BY-SA 3.0 |
 | `tile:plating:` | `icons/turf/floors.dmi : "plating"` | CC-BY-SA 3.0 |
