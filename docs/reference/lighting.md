@@ -123,8 +123,12 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 - **F4** (lighting off) shows everything, for debugging.
 - **Server side** (`apps/server/src/sight.rs`): each client is sent only the things on the
   map its mob can see, by the same test (`rs13_world::sight`), out to one tile past the
-  view. Always sent: the player's own mob, anything not on the map (held, worn, stored),
-  closed doors and light sources (the client needs them to draw shadows and light). Never
+  view. Always sent: the player's own mob and what it holds and wears, closed doors and
+  light sources (the client needs them to draw shadows and light). What other people hold
+  and wear is sent while they are. What is inside a container (a backpack, a box, a first
+  aid kit, the player's own too) is sent only while the player has it open, and nothing
+  shut in a closet or locker is sent. Shut in a closet yourself, you see from where it
+  stands. Never
   sent: anything under intact floor tiles (pipes, cables, vents), until the tile is pried
   up. A client that has just joined gets its first pass before anything is sent to it. So
   a modified client can't see through walls or floors.
