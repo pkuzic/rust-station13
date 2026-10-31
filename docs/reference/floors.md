@@ -40,7 +40,8 @@ Nothing is said in any of these cases, as in Luna (which plays a sound).
 
 ## Differences from Luna
 
-- Luna plays the crowbar and tile sounds; we have no sounds yet.
+- Luna plays the crowbar and tile sounds; we play the crowbar (`sound.md`) but not the
+  tile sound.
 - Luna's floors keep their own look, such as white or dark tiles, and get it back when
   the tiles return. All our floors look alike.
 - **Not implemented:**

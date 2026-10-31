@@ -111,11 +111,27 @@ pub struct AlarmPanel(pub Option<AlarmPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct StoragePanel(pub Option<StorageView>);
 
+/// Server → one client: a sound its player hears. The server has already decided that the
+/// player hears it and how loud, after distance, walls, doors and air; the client only pans
+/// it by where it came from.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PlaySound {
+    /// Sound id, e.g. `airlock`. The client picks the file.
+    pub sound: String,
+    /// The tile it came from.
+    pub at: TilePos,
+    /// Loudness for this player, 1–100.
+    pub volume: u8,
+}
+
 /// Reliable, ordered channel for player intentions.
 pub struct IntentChannel;
 
 /// Reliable, ordered channel for messages shown to the player.
 pub struct NoticeChannel;
+
+/// Unreliable channel for sounds: a late sound is worse than a lost one.
+pub struct SoundChannel;
 
 pub struct ProtocolPlugin;
 
@@ -133,6 +149,12 @@ impl Plugin for ProtocolPlugin {
         })
         .add_direction(NetworkDirection::ServerToClient);
 
+        app.add_channel::<SoundChannel>(ChannelSettings {
+            mode: ChannelMode::UnorderedUnreliable,
+            ..Default::default()
+        })
+        .add_direction(NetworkDirection::ServerToClient);
+
         app.register_message::<MoveInput>()
             .add_direction(NetworkDirection::ClientToServer);
         app.register_message::<ActionInput>()
@@ -146,6 +168,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<AlarmPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<StoragePanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();

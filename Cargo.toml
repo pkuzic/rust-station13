@@ -43,6 +43,8 @@ bevy = { version = "=0.20.1", default-features = false }
 bevy_ecs = "=0.20.1"
 bevy_app = "=0.20.1"
 lightyear = { version = "=0.31.0", default-features = false }
+# The rodio bevy_audio 0.20.1 builds on; the client uses it directly to pan sounds.
+rodio = { version = "=0.22.2", default-features = false }
 
 # Content, i18n
 serde = { version = "1.0.229", features = ["derive"] }

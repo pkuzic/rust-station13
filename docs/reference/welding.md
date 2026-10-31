@@ -49,4 +49,4 @@ Tests: `game/classic/tests/welding.rs`.
   - lit welding tools setting things on fire (Luna's hot spots);
   - the screwdriver and rods flamethrower assembly;
   - the mini, industrial and high-volume variants (imported as the ordinary ones);
-  - sounds.
+  - sounds other than welding itself (`sound.md`).

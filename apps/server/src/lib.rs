@@ -14,6 +14,7 @@ use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
 use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
@@ -22,8 +23,8 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, Player, StatusUpdate,
-    StoragePanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, PlaySound, Player, SoundChannel,
+    StatusUpdate, StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -81,6 +82,7 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
             apply_move_inputs,
             queue_actions,
             send_notices,
+            send_sounds,
             send_status,
             send_panels,
         ),
@@ -285,6 +287,22 @@ fn send_notices(mut links: Query<(&Controls, &mut MessageSender<Notice>)>, mut o
         };
         for msg in outbox.0.drain(..) {
             sender.send::<NoticeChannel>(Notice(msg));
+        }
+    }
+}
+
+/// Send each client the sounds its mob heard. The game has already decided who hears what.
+fn send_sounds(mut links: Query<(&Controls, &mut MessageSender<PlaySound>)>, mut ears: Query<&mut Earshot>) {
+    for (controls, mut sender) in &mut links {
+        let Ok(mut earshot) = ears.get_mut(controls.0) else {
+            continue;
+        };
+        for heard in earshot.0.drain(..) {
+            sender.send::<SoundChannel>(PlaySound {
+                sound: heard.sound.to_owned(),
+                at: heard.at,
+                volume: heard.volume.round().clamp(1.0, 100.0) as u8,
+            });
         }
     }
 }

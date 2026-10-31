@@ -21,3 +21,4 @@ rs13-classic.workspace = true
 rs13-network = { workspace = true, features = ["client"] }
 # System fonts give Cyrillic text (Tahoma on Windows, DejaVu Sans on Linux).
 bevy = { workspace = true, features = ["default", "system_font_discovery"] }
+rodio.workspace = true

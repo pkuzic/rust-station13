@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **11**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **12**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -42,6 +42,7 @@ Player mobs are despawned on the server when their client disconnects.
 | `ActionInput` | client → server | `IntentChannel` | `UseOn(NetId)`, `Examine(NetId)`, `Drop`, `SwapHands`, `Say(String)`, `SetName(String)`, `SetIntent(Intent)`. Queued and applied on the next tick; unknown ids are ignored. `SetName` is accepted once per session; an invalid name keeps the random one and sends `name-rejected`. |
 | `Notice(LocMsg)` | server → one client | `NoticeChannel` (ordered, reliable) | A message for that player: message id + arguments, formatted by the client in its own language. |
 | `StatusUpdate { health, stat, intent, pressure_dkpa, alerts }` | server → one client | `NoticeChannel` | The player's own health, state, intent, the pressure where they stand and environment alerts (vacuum, low/high pressure, low oxygen, cold, hot), sent when they change. Nobody else's health is sent. |
+| `PlaySound { sound, at, volume }` | server → one client | `SoundChannel` (unordered, unreliable) | A sound the player hears: sound id, source tile and loudness 1–100. The server decides who hears it and how loud (distance, walls, closed doors and edges, air); the client only pans it by the source's x offset. See `reference/sound.md`. |
 
 ## Rules
 

@@ -80,5 +80,5 @@ A light is lit while all three hold:
   - rigged tubes exploding;
   - heat and explosions breaking lights;
   - light replacers;
-  - sounds and sparks;
+  - sparks (breaking glass is heard, `sound.md`);
   - switches controlling another area.

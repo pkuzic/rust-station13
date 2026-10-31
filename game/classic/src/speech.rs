@@ -52,7 +52,7 @@ pub fn can_see(map: &TileMap, opaque: &[TilePos], from: TilePos, to: TilePos, ra
 }
 
 /// Tiles on the Bresenham line from `a` to `b`, both included.
-fn line(a: TilePos, b: TilePos) -> impl Iterator<Item = TilePos> {
+pub(crate) fn line(a: TilePos, b: TilePos) -> impl Iterator<Item = TilePos> {
     let (dx, dy) = ((b.x - a.x).abs(), -(b.y - a.y).abs());
     let (sx, sy) = ((b.x - a.x).signum(), (b.y - a.y).signum());
     let mut err = dx + dy;

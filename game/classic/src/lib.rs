@@ -26,6 +26,7 @@ pub mod names;
 pub mod objects;
 pub mod power;
 pub mod rng;
+pub mod sound;
 pub mod speech;
 pub mod storage;
 pub mod time;
@@ -77,6 +78,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<lights::AreaLights>()
             .init_resource::<closets::ClosetProtos>()
             .init_resource::<closets::PendingClosetExits>()
+            .init_resource::<sound::SoundEvents>()
+            .init_resource::<sound::SoundBarriers>()
             .configure_sets(
                 FixedUpdate,
                 (
@@ -157,6 +160,18 @@ impl Plugin for ClassicPlugin {
                     firedoors::update_firedoor_looks,
                 )
                     .in_set(TickSet::Publish),
+            )
+            // Last: sounds made anywhere this tick reach their listeners.
+            .add_systems(
+                FixedUpdate,
+                (
+                    sound::door_sounds,
+                    sound::closet_sounds,
+                    sound::light_sounds,
+                    sound::deliver_sounds,
+                )
+                    .chain()
+                    .after(TickSet::Publish),
             );
     }
 }

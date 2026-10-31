@@ -51,4 +51,5 @@ welded. There is a single check, 150 ds after opening.
 ## Not implemented yet
 
 Wires, the maintenance panel, electrification and bolts are covered in `wires.md`. Still
-missing: emag, crushing, `closeOther` pairs and sounds.
+missing: emag, crushing and `closeOther` pairs. Opening, closing and refusing sounds are
+in `sound.md`.

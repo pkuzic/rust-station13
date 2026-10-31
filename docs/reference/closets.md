@@ -89,4 +89,4 @@ A crate holds items like a closet, with these differences:
   - explosions, blobs and bullets breaking closets;
   - secure crates;
   - the other closet kinds: fire, radiation, bomb suit, wardrobes and the rest;
-  - sounds.
+  - sounds other than the open and close click (`sound.md`).
