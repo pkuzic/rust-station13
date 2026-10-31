@@ -54,6 +54,17 @@ pub const SCRUBBER_VOLUME_RATE: f64 = 120.0;
 pub const FILTER_TARGET: f64 = ONE_ATMOSPHERE;
 /// Default litres an outlet injector lets out per cycle (Luna `volume_rate`).
 pub const INJECTOR_VOLUME_RATE: f64 = 50.0;
+/// Litres of gas a unary device holds as part of its network (Luna `air_contents`, 200 L):
+/// generator inputs and thermal plates.
+pub const DEVICE_VOLUME: f64 = 200.0;
+/// Share of its own gas, and of the room's, a thermal plate evens out each cycle (Luna 0.25).
+pub const PLATE_SHARE: f64 = 0.25;
+/// With fewer moles than this around it, a thermal plate radiates instead (Luna).
+pub const PLATE_MIN_MOLES: f64 = 10.0;
+/// Heat capacity of what a radiating plate gives its heat to, J/K, and that sink's
+/// temperature, K (Luna `RADIATION_CAPACITY` and 6.4 K).
+pub const RADIATION_CAPACITY: f64 = 30_000.0;
+pub const RADIATION_TEMPERATURE: f64 = 6.4;
 /// Litres of an open pipe end (Luna `pipe/vent` volume), and of pipe gas it mixes with
 /// the room each cycle (`mingle_with_turf(loc, 250)`).
 pub const PIPE_VENT_VOLUME: f64 = 250.0;
@@ -195,6 +206,15 @@ pub fn clockwise(dir: Dir) -> Dir {
 pub struct Injector {
     pub volume_rate: f64,
 }
+
+/// A thermo-electric generator's pipe connection (Luna `unary/generator_input`).
+#[derive(Component, Debug, Clone, Copy)]
+pub struct GeneratorInput;
+
+/// Trades heat between its pipe network and the room it stands in, or radiates it away
+/// into space (Luna `unary/thermal_plate`).
+#[derive(Component, Debug, Clone, Copy)]
+pub struct ThermalPlate;
 
 /// A port a canister can be wrenched onto.
 #[derive(Component, Debug, Clone, Copy)]
@@ -420,6 +440,7 @@ pub fn run_machines(
     scrubbers: Query<(Entity, &GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
     pipe_vents: Query<(Entity, &GridPos), With<PipeVent>>,
+    plates: Query<(Entity, &GridPos), With<ThermalPlate>>,
     (filters, injectors): (
         Query<(&GridPos, &GasFilter, &Switch, &PowerUser)>,
         Query<(Entity, &GridPos, &Injector, &Switch)>,
@@ -547,6 +568,38 @@ pub fn run_machines(
         let moles = moles_for(net.pressure(), injector.volume_rate, net.mix.temperature);
         let moved = net.mix.remove_moles(moles);
         atmos.0.add_at(pos.0, &moved);
+    }
+
+    // Thermal plates (Luna `thermal_plate/process`): a quarter of the plate's 200 L and a
+    // quarter of the tile's air even out their temperatures; with almost no air around, a
+    // quarter of the plate's gas evens out with a cold radiation sink instead.
+    for (entity, pos) in &plates {
+        let Some(&id) = nets.net_of.get(&entity) else {
+            continue;
+        };
+        let net = &mut nets.nets[id];
+        if net.volume <= 0.0 {
+            continue;
+        }
+        let mut inside = net.mix.remove_fraction(PLATE_SHARE * DEVICE_VOLUME / net.volume);
+        let tile_moles = atmos.0.air_at(pos.0).total_moles();
+        if tile_moles < PLATE_MIN_MOLES {
+            let capacity = inside.heat_capacity();
+            if capacity > 0.0 {
+                inside.temperature = (inside.thermal_energy() + RADIATION_CAPACITY * RADIATION_TEMPERATURE)
+                    / (capacity + RADIATION_CAPACITY);
+            }
+        } else {
+            let mut outside = atmos.0.remove_at(pos.0, PLATE_SHARE * tile_moles);
+            let capacity = inside.heat_capacity() + outside.heat_capacity();
+            if capacity > 0.0 {
+                let temperature = (inside.thermal_energy() + outside.thermal_energy()) / capacity;
+                inside.temperature = temperature;
+                outside.temperature = temperature;
+            }
+            atmos.0.add_at(pos.0, &outside);
+        }
+        net.mix.merge(&inside);
     }
 
     // Pipe vents (Luna `mingle_with_turf`): 250 L of the network's gas evens out with the
@@ -732,6 +785,20 @@ pub fn machine_bundle(
             .member(device)
             .scrubber(),
         "connector" => MachineSpawn::new("connector", "").member(device).connector(),
+        "generator-input" => {
+            let mut spawn = MachineSpawn::new("generator-input", "")
+                .member(member(DEVICE_VOLUME))
+                .dense();
+            spawn.generator_input = true;
+            spawn
+        }
+        "thermal-plate" => {
+            let mut spawn = MachineSpawn::new("thermal-plate", "")
+                .member(member(DEVICE_VOLUME))
+                .dense();
+            spawn.thermal_plate = true;
+            spawn
+        }
         "pipe-vent" => MachineSpawn::new("pipe-vent", "")
             .member(member(PIPE_VENT_VOLUME))
             .pipe_vent(),
@@ -787,6 +854,8 @@ pub struct MachineSpawn {
     pub connector: bool,
     pub pipe_vent: bool,
     pub filter: Option<GasFilter>,
+    pub generator_input: bool,
+    pub thermal_plate: bool,
     pub injector: Option<Injector>,
     pub dense: bool,
     pub power: Option<crate::power::PowerUser>,
@@ -809,6 +878,8 @@ impl MachineSpawn {
             connector: false,
             pipe_vent: false,
             filter: None,
+            generator_input: false,
+            thermal_plate: false,
             injector: None,
             dense: false,
             power: None,
@@ -895,6 +966,12 @@ impl MachineSpawn {
         }
         if self.pipe_vent {
             entity.insert(PipeVent);
+        }
+        if self.generator_input {
+            entity.insert(GeneratorInput);
+        }
+        if self.thermal_plate {
+            entity.insert(ThermalPlate);
         }
         if let Some(f) = self.filter {
             entity.insert(f);

@@ -42,6 +42,7 @@ pub mod rng;
 pub mod sound;
 pub mod speech;
 pub mod storage;
+pub mod teg;
 pub mod time;
 pub mod welding;
 pub mod wires;
@@ -146,6 +147,7 @@ impl Plugin for ClassicPlugin {
                     machines::rebuild_networks,
                     power::rebuild_powernets,
                     generators::run_generators,
+                    teg::run_tegs,
                     power::power_cycle,
                     cells::run_chargers,
                     lights::run_lights,

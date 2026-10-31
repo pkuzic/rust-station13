@@ -131,6 +131,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::chairs::spawn_chair(world, spec, pos, id));
     }
+    if proto == crate::teg::TEG {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::teg::spawn_teg(world, spec, pos, id));
+    }
     if proto == crate::power_monitor::POWER_MONITOR {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::power_monitor::spawn_power_monitor(world, spec, pos, id));
