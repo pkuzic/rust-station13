@@ -54,6 +54,8 @@
         (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
         (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
         (path: "/obj/machinery/atmospherics/pipe/vent", id: "pipe-vent", dir: true),
+        (path: "/obj/machinery/atmospherics/trinary/filter", id: "gas-filter", dir: true, vars: ["filter_type", "target_pressure", "on"]),
+        (path: "/obj/machinery/atmospherics/unary/outlet_injector", id: "injector", dir: true, vars: ["volume_rate", "on"]),
         (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
         (path: "/obj/machinery/meter", id: "meter"),
         // Canisters. A canister on a connector port starts connected.

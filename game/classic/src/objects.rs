@@ -182,7 +182,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             .spawn((GridPos(pos), id, Appearance::new(proto, ""), tank, Dense))
             .id());
     }
-    if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir) {
+    if let Some(machine) = crate::machines::machine_bundle(proto, spec.dir, &spec.vars) {
         let id = world.resource_mut::<NetIds>().alloc();
         let appearance = Appearance::new(machine.sprite, machine.state.clone());
         let mut entity = world.spawn((GridPos(pos), id, appearance));
