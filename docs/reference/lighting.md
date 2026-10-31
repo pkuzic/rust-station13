@@ -47,7 +47,7 @@ A tube lights its own tile and the next ones fully, and fades out eight tiles aw
   its corners, crosses no opaque tile: walls and closed airlocks. The opaque tile at the end
   is lit, so walls are lit on the sides that face the light and cast shadows behind them.
 - **Space** is always fully lit, as Luna's space area has no lighting of its own.
-- **The darkest** a tile is drawn is 4 % light, so a dark room is not quite black.
+- **The darkest** a tile is drawn is a dim blue (see Depth), so a dark room is not quite black.
 
 ## Darkness
 
@@ -114,6 +114,15 @@ What gives off light of its own stays bright in the dark and glows
   the server's darkness for game rules counts only the lights Luna gives light to.
 - Colours are kept exactly as drawn (no tone mapping); only what is brighter than white
   blooms.
+
+## Depth
+
+- **Wall bases** (`apps/client/src/depth.rs`): the floor darkens softly along the foot of
+  every wall, half shade at the wall fading to nothing two fifths of a tile out, so walls
+  seem to stand up out of the floor. Corners, where two strips meet, come out a little
+  darker. Drawn over the floor, under everything on it.
+- **Darkness is cool:** the darkest a tile is drawn is a dim blue (3 %, 4 %, 7.5 %
+  light), not grey, as darkness reads.
 
 ## Differences from Luna
 
