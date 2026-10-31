@@ -126,25 +126,32 @@ struct LightCache {
     levels: Vec<[f32; 3]>,
 }
 
-/// The light to draw on a wall or closed door: the brightest of the open tiles beside it
-/// that the player sees, so a wall shows the light on the side facing them, not light
-/// from the room behind it bleeding through. `None` for an open tile, or a wall with no
-/// open tile in sight beside it (it keeps its own light).
-pub fn wall_light(
+/// The light to draw on a tile, and whether the player sees it lit: only tiles in sight
+/// give light to the picture (the shader blends between them alone), so light from a room
+/// behind a wall never shows on this side of it.
+///
+/// An open tile has its own light, in sight if the player sees it. A wall or closed door
+/// shows the light on the side facing the player: the brightest of the open tiles around
+/// it, diagonals included (a room's corner), that the player sees. One with none in sight
+/// keeps its own light, but isn't in sight.
+pub fn drawn_light(
     at: TilePos,
     level: impl Fn(i32, i32) -> [f32; 3],
     blocks: impl Fn(TilePos) -> bool,
     seen: impl Fn(TilePos) -> bool,
-) -> Option<[f32; 3]> {
+) -> ([f32; 3], bool) {
+    let own = level(at.x, at.y);
     if !blocks(at) {
-        return None;
+        return (own, seen(at));
     }
-    [(0, 1), (0, -1), (1, 0), (-1, 0)]
-        .into_iter()
+    (-1..=1)
+        .flat_map(|dy| (-1..=1).map(move |dx| (dx, dy)))
+        .filter(|d| *d != (0, 0))
         .map(|(dx, dy)| TilePos::new(at.x + dx, at.y + dy, at.z))
         .filter(|p| !blocks(*p) && seen(*p))
         .map(|p| level(p.x, p.y))
         .reduce(|a, b| std::array::from_fn(|c| a[c].max(b[c])))
+        .map_or((own, false), |light| (light, true))
 }
 
 /// Work out the light again when the map, a light or a door changed, and what the player
@@ -273,15 +280,16 @@ fn update_lighting(
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
-            let level = wall_light(TilePos::new(x, y, map.z), raw, blocks, |p| {
-                me.is_some() && !unseen.contains(&p)
-            })
-            .unwrap_or_else(|| raw(x, y))
-            .map(|c| c.max(MIN_LIGHT));
-            for c in level {
+            // Without our player yet, everything counts as seen.
+            let inside = |p: TilePos| (0..width as i32).contains(&p.x) && (0..height as i32).contains(&p.y);
+            let (level, in_sight) = drawn_light(TilePos::new(x, y, map.z), raw, blocks, |p| {
+                inside(p) && (me.is_none() || !unseen.contains(&p))
+            });
+            for c in level.map(|c| c.max(MIN_LIGHT)) {
                 data.push((c * 255.0).round() as u8);
             }
-            data.push(255);
+            // Alpha: whether this tile gives light to the picture (`lighting.wgsl`).
+            data.push(if in_sight { 255 } else { 0 });
         }
     }
     sight.unseen = unseen;
@@ -332,35 +340,53 @@ fn update_lighting(
 mod tests {
     use super::*;
 
+    /// A wall along x = 0: the room behind it (x < 0) is lit, ours (x > 0) is dark, and
+    /// only ours is in sight.
+    fn level(x: i32, _y: i32) -> [f32; 3] {
+        if x < 0 {
+            [1.0; 3]
+        } else if x == 0 {
+            [0.8; 3]
+        } else {
+            [0.1; 3]
+        }
+    }
+
     #[test]
-    fn a_wall_shows_the_light_on_the_side_you_see() {
-        // A wall at x = 0: the room behind it (x < 0) is lit, ours (x > 0) is dark.
-        let level = |x: i32, _y: i32| {
-            if x < 0 {
-                [1.0; 3]
-            } else if x == 0 {
-                [0.8; 3]
-            } else {
-                [0.1; 3]
-            }
-        };
+    fn walls_show_the_light_on_the_side_you_see_and_nothing_behind_gives_light() {
         let blocks = |p: TilePos| p.x == 0;
         let ours = |p: TilePos| p.x > 0;
         let wall = TilePos::new(0, 0, 0);
         assert_eq!(
-            wall_light(wall, level, blocks, ours),
-            Some([0.1; 3]),
+            drawn_light(wall, level, blocks, ours),
+            ([0.1; 3], true),
             "not the light behind it"
         );
         assert_eq!(
-            wall_light(TilePos::new(1, 0, 0), level, blocks, ours),
-            None,
-            "open tiles keep theirs"
+            drawn_light(TilePos::new(2, 0, 0), level, blocks, ours),
+            ([0.1; 3], true)
         );
         assert_eq!(
-            wall_light(wall, level, blocks, |_| false),
-            None,
-            "a wall out of sight keeps its own"
+            drawn_light(TilePos::new(-1, 0, 0), level, blocks, ours),
+            ([1.0; 3], false),
+            "the room behind keeps its light but gives none to the picture"
+        );
+        assert_eq!(
+            drawn_light(wall, level, blocks, |_| false),
+            ([0.8; 3], false),
+            "a wall out of sight"
+        );
+    }
+
+    #[test]
+    fn a_room_corner_takes_the_light_of_the_floor_at_its_corner() {
+        // Walls along x = 0 and y = 0; our room is x > 0, y > 0; the rest is lit.
+        let blocks = |p: TilePos| (p.x == 0 && p.y >= 0) || (p.y == 0 && p.x >= 0);
+        let ours = |p: TilePos| p.x > 0 && p.y > 0;
+        let lit = |x: i32, y: i32| if x > 0 && y > 0 { [0.1; 3] } else { [1.0; 3] };
+        assert_eq!(
+            drawn_light(TilePos::new(0, 0, 0), lit, blocks, ours),
+            ([0.1; 3], true)
         );
     }
 }

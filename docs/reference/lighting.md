@@ -86,9 +86,11 @@ made-up two-deck world.
   tile centres the light is blended with smoothstep weights, so it fades smoothly with no
   creases. It is multiplied over everything on the map, coloured light included. The HUD
   and the text panel are not darkened.
-- **Walls and closed doors** are drawn with the light of the open tiles beside them that
-  the player sees (the brightest), so a wall shows the light on the side facing you, and
-  light from the room behind it doesn't bleed through.
+- **Only what you see gives light to the picture:** the blending uses only tiles in sight,
+  so light from a room behind a wall never shows on this side of it.
+- **Walls and closed doors** show the light on the side facing you: the brightest of the
+  open tiles around them that you see, diagonals included, so a room's corners follow the
+  room.
 - **F4** turns lighting off and on.
 
 ## Differences from Luna
