@@ -13,7 +13,7 @@ pub use lightyear;
 
 /// Bumped on every incompatible protocol change. Clients and servers with
 /// different versions refuse to connect.
-pub const PROTOCOL_VERSION: u32 = 13;
+pub const PROTOCOL_VERSION: u32 = 14;
 
 /// Default UDP port for game servers.
 pub const DEFAULT_PORT: u16 = 13013;

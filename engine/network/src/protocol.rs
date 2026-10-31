@@ -6,8 +6,9 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView, Hidden, Intent,
-    LightSource, MapLayer, MobStat, NetId, Opaque, Slot, StorageView, TilePos, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView,
+    Hidden, Intent, LightSource, MapLayer, MobStat, NetId, Opaque, Slot, StorageView, TilePos, WirePanelView,
+    WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -60,6 +61,11 @@ pub enum ActionInput {
         target: NetId,
         command: AlarmCommand,
     },
+    /// A button on an open APC window.
+    Apc {
+        target: NetId,
+        command: ApcCommand,
+    },
     /// Close the open container.
     CloseStorage,
     /// Click on a tile with nothing on it to click: lay cable from a coil.
@@ -73,6 +79,27 @@ pub enum AlarmCommand {
     Seal(bool),
     /// Turn panic fill on the area's vents on or off.
     PanicFill(bool),
+}
+
+/// APC window buttons (Luna's `apc` Topic links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ApcCommand {
+    /// Flip the main breaker.
+    Breaker,
+    /// Set a channel (0 equipment, 1 lighting, 2 environment) off, on or automatic.
+    Channel { channel: u8, mode: ApcChannelSetting },
+    /// Turn automatic cell charging on or off.
+    ChargeMode,
+    /// Engage or disengage the cover lock.
+    CoverLock,
+}
+
+/// What a channel button sets.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ApcChannelSetting {
+    Off,
+    On,
+    Auto,
 }
 
 /// Server → the controlling client: its own health, state and intent. Sent when any of
@@ -105,6 +132,11 @@ pub struct WirePanel(pub Option<WirePanelView>);
 /// it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AlarmPanel(pub Option<AlarmPanelView>);
+
+/// Server → one client: the APC window it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ApcPanel(pub Option<ApcPanelView>);
 
 /// Server → one client: the container it has open, or `None` to close it. Sent when it
 /// changes.
@@ -168,6 +200,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<AlarmPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<StoragePanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ApcPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

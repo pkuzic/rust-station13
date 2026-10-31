@@ -6,6 +6,7 @@
 pub mod access;
 pub mod actions;
 pub mod alarms;
+pub mod apc;
 pub mod atmos;
 pub mod cables;
 pub mod cells;
@@ -112,6 +113,7 @@ impl Plugin for ClassicPlugin {
                     equipment::process_equipment,
                     wires::process_wire_ops,
                     alarms::process_alarm_ops,
+                    apc::process_apc_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
                     medical::resolve_treatments,
@@ -165,6 +167,7 @@ impl Plugin for ClassicPlugin {
                     equipment::sync_worn_view,
                     wires::update_panel_views,
                     alarms::update_alarm_views,
+                    apc::update_apc_views,
                     storage::update_storage_views,
                     machines::update_machine_looks,
                     machines::update_canister_looks,

@@ -85,8 +85,6 @@ examine-apc = The APC's cell is at { $value }%. Equipment: { $equipment ->
        *[off] off
     }.
 examine-smes = The SMES is { $value }% charged.
-apc-breaker-on = You switch the APC's main breaker on.
-apc-breaker-off = You switch the APC's main breaker off.
 apc-locked = Access denied.
 door-forced = You force the { NOUN($item) } with the crowbar.
 
@@ -375,3 +373,63 @@ chair-buckles = { $name } buckles in!
 chair-unbuckled-self = You unbuckle yourself from the chair.
 chair-unbuckles = { $name } unbuckles.
 chair-unbuckled-by = { $target } was unbuckled by { $name }!
+
+# APC (power.md): clicks.
+apc-close-cover-first = You must close the cover to swipe an ID card.
+apc-interface-locked = You lock the APC interface.
+apc-interface-unlocked = You unlock the APC interface.
+apc-cover-opened = You open the APC cover.
+apc-cover-closed = You close the APC cover.
+apc-cover-locked = The cover is locked and cannot be opened.
+apc-has-cell = There is a power cell already installed.
+apc-cell-inserted = You insert the power cell.
+apc-cell-removed = You remove the power cell.
+# APC window. Args: $area, $on (yes/no), $state, $value, $auto (yes/no), $load (W),
+# $mode (0 off, 1 auto-off, 2 on, 3 auto-on).
+apc-title = Area Power Controller ({ $area })
+apc-hint-locked = (Swipe ID card to unlock interface.)
+apc-hint-unlocked = (Swipe ID card to lock interface.)
+apc-breaker = Main breaker: { $on ->
+    [yes] On
+   *[no] Off
+}
+apc-external = External power: { $state ->
+    [2] Good
+    [1] Low
+   *[0] None
+}
+apc-cell = Power cell: { $value }% ({ $state ->
+    [1] Charging
+    [2] Fully charged
+   *[0] Not charging
+}) ({ $auto ->
+    [yes] Auto
+   *[no] Off
+})
+apc-no-cell = Power cell: Not connected.
+apc-equipment = Equipment: { $load } W: { $mode ->
+    [1] Off (Auto)
+    [2] On
+    [3] On (Auto)
+   *[0] Off
+}
+apc-lighting = Lighting: { $load } W: { $mode ->
+    [1] Off (Auto)
+    [2] On
+    [3] On (Auto)
+   *[0] Off
+}
+apc-environment = Environmental: { $load } W: { $mode ->
+    [1] Off (Auto)
+    [2] On
+    [3] On (Auto)
+   *[0] Off
+}
+apc-cover-lock = Cover lock: { $on ->
+    [yes] Engaged
+   *[no] Disengaged
+}
+apc-toggle = Toggle
+apc-set-off = Off
+apc-set-on = On
+apc-set-auto = Auto

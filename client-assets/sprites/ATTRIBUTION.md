@@ -22,6 +22,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `airlock:panel` | `icons/obj/doors/Doorint.dmi : "panel_open"` | CC-BY-SA 3.0 |
 | `airlock:welded` | `icons/obj/doors/Doorint.dmi : "welded"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:low` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:off` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:open` | `icons/obj/power.dmi : "apc2"` | CC-BY-SA 3.0 |
+| `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |

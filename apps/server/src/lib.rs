@@ -7,6 +7,7 @@ use bevy::prelude::*;
 use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
+use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
@@ -23,12 +24,12 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, MoveInput, Notice, NoticeChannel, PlaySound, Player, SoundChannel,
-    StatusUpdate, StoragePanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, MoveInput, Notice,
+    NoticeChannel, PlaySound, Player, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, DisplayName, GridPos, MapLayer, NetId, StorageView, TileMap, WirePanelView,
+    AlarmPanelView, ApcPanelView, DisplayName, GridPos, MapLayer, NetId, StorageView, TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -48,7 +49,12 @@ struct SentStatus(Option<StatusUpdate>);
 
 /// The wire panel, air alarm window and open container last sent to this client.
 #[derive(Component, Default)]
-struct SentPanel(Option<WirePanelView>, Option<AlarmPanelView>, Option<StorageView>);
+struct SentPanel(
+    Option<WirePanelView>,
+    Option<AlarmPanelView>,
+    Option<StorageView>,
+    Option<ApcPanelView>,
+);
 
 /// On a mob whose player has already chosen a name this session.
 #[derive(Component)]
@@ -183,6 +189,7 @@ fn queue_actions(
         &mut PendingEquipment,
         &mut PendingWires,
         &mut PendingAlarmOps,
+        &mut PendingApcOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -198,6 +205,7 @@ fn queue_actions(
             mut equipment,
             mut wires,
             mut alarm_ops,
+            mut apc_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -251,6 +259,27 @@ fn queue_actions(
                             AlarmCommand::PanicFill(on) => rs13_classic::alarms::AlarmCommand::PanicFill(on),
                         };
                         alarm_ops.0.push((alarm, command));
+                    }
+                    None
+                }
+                ActionInput::Apc { target, command } => {
+                    if let Some(apc) = resolve(target) {
+                        use rs13_classic::apc::ApcCommand as Op;
+                        use rs13_classic::power::ChannelMode;
+                        let op = match command {
+                            ApcCommand::Breaker => Op::Breaker,
+                            ApcCommand::ChargeMode => Op::ChargeMode,
+                            ApcCommand::CoverLock => Op::CoverLock,
+                            ApcCommand::Channel { channel, mode } => Op::Channel(
+                                usize::from(channel),
+                                match mode {
+                                    ApcChannelSetting::Off => ChannelMode::Off,
+                                    ApcChannelSetting::On => ChannelMode::On,
+                                    ApcChannelSetting::Auto => ChannelMode::AutoOn,
+                                },
+                            ),
+                        };
+                        apc_ops.0.push((apc, op));
                     }
                     None
                 }
@@ -341,11 +370,12 @@ fn send_panels(
         &mut MessageSender<WirePanel>,
         &mut MessageSender<AlarmPanel>,
         &mut MessageSender<StoragePanel>,
+        &mut MessageSender<ApcPanel>,
     )>,
-    panels: Query<(&WirePanelOut, &AlarmPanelOut, &StorageOut)>,
+    panels: Query<(&WirePanelOut, &AlarmPanelOut, &StorageOut, &ApcPanelOut)>,
 ) {
-    for (controls, mut sent, mut wires, mut alarms, mut storages) in &mut links {
-        let Ok((wire_panel, alarm_panel, storage)) = panels.get(controls.0) else {
+    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs) in &mut links {
+        let Ok((wire_panel, alarm_panel, storage, apc_panel)) = panels.get(controls.0) else {
             continue;
         };
         if sent.2 != storage.0 {
@@ -359,6 +389,10 @@ fn send_panels(
         if sent.1 != alarm_panel.0 {
             alarms.send::<NoticeChannel>(AlarmPanel(alarm_panel.0.clone()));
             sent.1 = alarm_panel.0.clone();
+        }
+        if sent.3 != apc_panel.0 {
+            apcs.send::<NoticeChannel>(ApcPanel(apc_panel.0.clone()));
+            sent.3 = apc_panel.0.clone();
         }
     }
 }
