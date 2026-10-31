@@ -105,16 +105,34 @@ made-up two-deck world.
 ## Line of sight
 
 Luna's view is BYOND's: a 15 × 15 square around the player, minus what walls and closed
-doors hide. The client draws the same (`apps/client/src/lighting.rs`, `Sight`):
+doors hide. The client draws it as real shadows, as if sight weren't tile based
+(`apps/client/src/shadows.rs`):
 
-- **Visible:** a tile is seen when it is within 7 tiles and the straight line to it crosses
-  no opaque tile or object (the same test as speech, `speech::can_see`). Walls bordering
-  what you see are seen.
-- **Unseen tiles:** drawn black in the light texture, so the edge of sight fades softly
-  like light does, and nothing on them (items, machines, people) is drawn.
-- **Meson scanners** (Luna `SEE_TURFS`): unseen tiles show dimly, the floor plan without
-  what lies on it.
+- **Shadows:** every wall and closed door near the player casts a shadow away from the
+  player's eye, out past the edge of the screen. They follow the player's drawn position,
+  so they move smoothly while walking.
+- **Walls** are seen when one of their exposed sides is; a wall none of whose sides can be
+  seen is shaded whole, so walls seen edge-on show no slivers.
+- **What lies on a tile** (items, machines, people) is drawn only when the straight line
+  from the player's tile centre to the tile's centre crosses no wall. A line passing
+  exactly through a corner gets past if either tile beside the corner is open: a door
+  diagonally past a wall's corner is seen, a gap between two walls that touch at a corner
+  is not.
+- **Meson scanners** (Luna `SEE_TURFS`): the shadows are see-through, showing the floor
+  plan without what lies on it.
 - **F4** (lighting off) shows everything, for debugging.
 - **Not yet:** the server still sends what the player can't see, so a modified client
-  could see it. BYOND's own `view()` shadow casting differs from a straight line in a few
-  corner cases.
+  could see it.
+
+## Field of view
+
+Not in Luna; it follows later SS13 servers' view cones (`apps/client/src/fov.rs`).
+
+- **Behind your back:** a 120° arc behind the player, centred on the way they face, is
+  grayed over, and other people standing in it are not drawn (nor can they be clicked).
+  Items, machines and the floor still show, grayed.
+- **Neighbours:** the player's own tile and the eight around it are never hidden: you
+  notice someone right next to you.
+- **Facing** is the way the player last walked, so stepping turns you.
+- **Not yet:** turning on the spot without stepping, and the server still sends the
+  people behind you.

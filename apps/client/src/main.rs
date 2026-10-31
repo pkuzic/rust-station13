@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod apc_panel;
 mod audio;
+mod fov;
 mod freezer_panel;
 mod hud;
 mod laser_panel;
@@ -165,6 +166,7 @@ fn main() {
             lighting::LightingPlugin,
             scaling::ScalingPlugin,
             shadows::ShadowPlugin,
+            fov::FovPlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
@@ -663,16 +665,26 @@ fn update_appearance(
     }
 }
 
-/// Things inside something else (a held item) have no `GridPos` and are not drawn, nor
-/// are things under floor tiles.
-/// Draw what lies on the map in sight: not held items, not things under floor tiles, not
-/// what the player can't see (`lighting::Sight`).
+/// Draw what lies on the map in sight: not held items (they have no `GridPos`), not things
+/// under floor tiles, not what the player can't see (`lighting::Sight`), and not other
+/// people behind the player's back (`fov`).
 fn show_only_placed(
     sight: Res<lighting::Sight>,
-    mut objects: Query<(&mut Visibility, Option<&GridPos>, Has<Hidden>), With<Appearance>>,
+    fov: Res<fov::Fov>,
+    mut objects: Query<
+        (
+            &mut Visibility,
+            Option<&GridPos>,
+            Has<Hidden>,
+            Has<Player>,
+            Has<OwnPlayer>,
+        ),
+        With<Appearance>,
+    >,
 ) {
-    for (mut visibility, placed, hidden) in &mut objects {
-        let seen = placed.is_some_and(|p| !sight.unseen.contains(&p.0));
+    for (mut visibility, placed, hidden, person, own) in &mut objects {
+        let seen =
+            placed.is_some_and(|p| !sight.unseen.contains(&p.0) && !(person && !own && fov.hides(p.0)));
         visibility.set_if_neq(if seen && !hidden {
             Visibility::Inherited
         } else {
