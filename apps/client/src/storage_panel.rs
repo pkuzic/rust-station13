@@ -50,8 +50,15 @@ pub fn show_storage(
     open: Res<OpenStorage>,
     drawn: Query<Entity, With<StorageCell>>,
     items: Query<(&NetId, &Appearance)>,
+    arrived: Query<&NetId, Added<Appearance>>,
 ) {
-    if !open.is_changed() {
+    // The server sends what is inside only once the container is open, so its items may
+    // arrive just after the window does.
+    let arrived = open
+        .0
+        .as_ref()
+        .is_some_and(|view| arrived.iter().any(|id| view.items.contains(id)));
+    if !open.is_changed() && !arrived {
         return;
     }
     for cell in &drawn {

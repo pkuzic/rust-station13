@@ -1,12 +1,16 @@
 //! Send each player only what their mob can see (`docs/reference/lighting.md`, Line of
-//! sight and Field of view), so a modified client can't look through walls or behind its
-//! back. The client draws with the same rules (`rs13_world::sight`).
+//! sight and Field of view), so a modified client can't look through walls, floors, bags
+//! or behind its back. The client draws with the same rules (`rs13_world::sight`).
 
 use std::collections::{HashMap, HashSet};
 
 use bevy::ecs::query::QueryFilter;
 use bevy::prelude::*;
+use rs13_classic::closets::InCloset;
+use rs13_classic::equipment::WornBy;
+use rs13_classic::hands::HeldBy;
 use rs13_classic::movement::Mob;
+use rs13_classic::storage::{InStorage, OpenStorage};
 use rs13_network::lightyear::prelude::*;
 use rs13_world::{Facing, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
 
@@ -34,13 +38,51 @@ pub fn out_of_sight(
     far || !seen(at) || (person && sight::behind_back(eye_f, sight::facing_vector(facing.dir()), at))
 }
 
+/// Where something off the map is.
+#[derive(Debug, Clone, Copy)]
+pub enum Holder {
+    /// In a mob's hand, or worn by it.
+    Mob(Entity),
+    /// In a container (a backpack, a box).
+    Storage(Entity),
+    /// Shut inside a closet or locker.
+    Closet,
+}
+
+/// Whether something off the map is out of sight: held or worn by someone out of sight,
+/// inside a container the viewer hasn't got open, or shut in a closet. `placed_hidden`
+/// says which things on the map are out of sight; `me` is the viewer's own mob.
+pub fn held_out_of_sight(
+    entity: Entity,
+    me: Entity,
+    open: Option<Entity>,
+    holders: &HashMap<Entity, Holder>,
+    placed_hidden: &HashSet<Entity>,
+) -> bool {
+    let mut at = entity;
+    // Bounded, in case containers ever nest in a loop.
+    for _ in 0..8 {
+        if at == me {
+            return false;
+        }
+        match holders.get(&at) {
+            Some(Holder::Mob(mob)) => at = *mob,
+            Some(Holder::Storage(container)) if open == Some(*container) => at = *container,
+            Some(Holder::Storage(_) | Holder::Closet) => return true,
+            None => return placed_hidden.contains(&at),
+        }
+    }
+    true
+}
+
 /// Work out what each client's mob can't see, and stop or resume sending it.
 ///
-/// Never sent: anything under intact floor tiles (`Hidden`).
+/// Never sent: anything under intact floor tiles (`Hidden`), and anything off the map that
+/// is out of sight (`held_out_of_sight`).
 ///
-/// Always sent otherwise: anything not on the map (held, worn or stored: the client needs its own
-/// inventory), closed doors and light sources (the client needs them to draw shadows and
-/// light around what it does see), and the client's own mob.
+/// Always sent: the client's own mob and what it carries (but not what is in its bags
+/// until one is opened), closed doors and light sources (the client needs them to draw
+/// shadows and light around what it does see).
 ///
 /// Only links Lightyear replicates to (they carry a `PriorityMap`) are handled, so every
 /// change lands. Run once a tick for everyone, and every frame, before replication sends,
@@ -49,7 +91,7 @@ pub fn out_of_sight(
 #[allow(clippy::type_complexity)]
 pub fn update_sight<F: QueryFilter>(
     mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
-    viewers: Query<(&GridPos, Option<&Facing>)>,
+    viewers: Query<(Option<&Facing>, Option<&OpenStorage>)>,
     maps: Query<&MapLayer>,
     things: Query<
         (
@@ -62,6 +104,13 @@ pub fn update_sight<F: QueryFilter>(
         ),
         With<NetId>,
     >,
+    contained: Query<(
+        Entity,
+        Option<&HeldBy>,
+        Option<&WornBy>,
+        Option<&InStorage>,
+        Option<&InCloset>,
+    )>,
     mut commands: Commands,
 ) {
     let closed: HashSet<TilePos> = things
@@ -69,12 +118,39 @@ pub fn update_sight<F: QueryFilter>(
         .filter(|(_, _, _, opaque, ..)| *opaque)
         .filter_map(|(_, pos, ..)| pos.map(|p| p.0))
         .collect();
+    let holders: HashMap<Entity, Holder> = contained
+        .iter()
+        .filter_map(|(entity, held, worn, stored, closet)| {
+            let holder = if let Some(h) = held {
+                Holder::Mob(h.0)
+            } else if let Some(w) = worn {
+                Holder::Mob(w.0)
+            } else if let Some(s) = stored {
+                Holder::Storage(s.0)
+            } else if closet.is_some() {
+                Holder::Closet
+            } else {
+                return None;
+            };
+            Some((entity, holder))
+        })
+        .collect();
+    let place = |entity: Entity| things.get(entity).ok().and_then(|(_, pos, ..)| pos.map(|p| p.0));
     for (link, controls, out) in &mut links {
-        let Ok((eye, facing)) = viewers.get(controls.0) else {
+        let me = controls.0;
+        let Ok((facing, open)) = viewers.get(me) else {
             continue;
         };
-        let eye = eye.0;
+        // Shut in a closet, you see from where the closet stands.
+        let eye = place(me).or_else(|| {
+            contained
+                .get(me)
+                .ok()
+                .and_then(|(.., closet)| closet.and_then(|c| place(c.0)))
+        });
+        let Some(eye) = eye else { continue };
         let facing = facing.copied().unwrap_or(Facing(0));
+        let open = open.map(|o| o.0);
         let Some(map) = maps.iter().find(|m| m.0.z == eye.z) else {
             continue;
         };
@@ -86,16 +162,27 @@ pub fn update_sight<F: QueryFilter>(
                 })
             })
         };
-        let hidden: HashSet<Entity> = things
+        let placed_hidden: HashSet<Entity> = things
             .iter()
             .filter(|(entity, pos, person, opaque, light, under_floor)| {
                 let Some(at) = pos else { return false };
                 // Under intact floor tiles (pipes, cables, vents): no one sees it.
                 *under_floor
-                    || (*entity != controls.0
+                    || (*entity != me
                         && !*opaque
                         && !*light
                         && out_of_sight(eye, facing, at.0, *person, &mut seen))
+            })
+            .map(|(entity, ..)| entity)
+            .collect();
+        let hidden: HashSet<Entity> = things
+            .iter()
+            .filter(|(entity, pos, ..)| {
+                if pos.is_some() {
+                    placed_hidden.contains(entity)
+                } else {
+                    held_out_of_sight(*entity, me, open, &holders, &placed_hidden)
+                }
             })
             .map(|(entity, ..)| entity)
             .collect();
@@ -154,5 +241,29 @@ mod tests {
             out_of_sight(eye, north, TilePos::new(0, 1, 1), false, &mut seen),
             "another deck"
         );
+    }
+
+    #[test]
+    fn what_people_carry_follows_them_and_bags_stay_shut() {
+        let mut world = World::new();
+        let [me, other, my_bag, their_bag, coin, wrench, locker_item] =
+            std::array::from_fn(|_| world.spawn_empty().id());
+        let holders = HashMap::from([
+            (my_bag, Holder::Mob(me)),
+            (coin, Holder::Storage(my_bag)),
+            (their_bag, Holder::Mob(other)),
+            (wrench, Holder::Storage(their_bag)),
+            (locker_item, Holder::Closet),
+        ]);
+        let none = HashSet::new();
+        let gone = HashSet::from([other]);
+        let check = |e, open, hidden: &HashSet<Entity>| held_out_of_sight(e, me, open, &holders, hidden);
+        assert!(!check(my_bag, None, &none), "what I carry");
+        assert!(check(coin, None, &none), "inside my bag, shut");
+        assert!(!check(coin, Some(my_bag), &none), "inside my bag, open");
+        assert!(!check(their_bag, None, &none), "what someone in sight carries");
+        assert!(check(their_bag, None, &gone), "carried by someone out of sight");
+        assert!(check(wrench, None, &none), "inside their bag");
+        assert!(check(locker_item, None, &none), "in a closet");
     }
 }
