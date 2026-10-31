@@ -62,6 +62,8 @@ pub struct Zone {
     /// Plasma burnt last step, mol/s: the zone is on fire while this is above zero
     /// (`fire.rs`).
     pub burn_rate: f64,
+    /// Wall, floor and ceiling area its air touches, m²: where it gains or loses heat.
+    pub surface: f64,
 }
 
 impl Zone {
@@ -351,6 +353,15 @@ impl AtmosGrid {
         burnt
     }
 
+    /// Air trades heat with its zone's walls, floor and ceiling for `dt` seconds: hot rooms
+    /// cool, cold ones warm, toward [`WALL_TEMPERATURE`]. Kept apart from [`Self::step`] so the
+    /// flow itself conserves energy exactly.
+    pub fn exchange_heat(&mut self, dt: f64) {
+        for zone in &mut self.zones {
+            exchange_heat_with_walls(zone, dt);
+        }
+    }
+
     /// Whether the air on `pos` is burning.
     pub fn burning_at(&self, pos: TilePos) -> bool {
         self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0)
@@ -408,7 +419,26 @@ impl AtmosGrid {
                 volume,
                 mix: GasMix::default(),
                 burn_rate: 0.0,
+                surface: 0.0,
             });
+        }
+
+        // Each zone's surface: a wall face for every side that leaves the zone, and the floor
+        // and ceiling of every tile.
+        for z in 0..self.zones.len() {
+            let mut faces = 0usize;
+            for pos in &self.zones[z].tiles {
+                for d in [Dir::North, Dir::East, Dir::South, Dir::West] {
+                    let inside = self
+                        .index(pos.step(d))
+                        .is_some_and(|j| self.zone_of[j] == Some(z));
+                    if !inside {
+                        faces += 1;
+                    }
+                }
+            }
+            let tiles = self.zones[z].tiles.len();
+            self.zones[z].surface = faces as f64 * WALL_FACE_AREA + tiles as f64 * 2.0 * FLOOR_AREA;
         }
 
         // Conservative hand-over from the old zones.
@@ -714,4 +744,27 @@ fn orifice_flow(mix: &GasMix, p_up: f64, p_down: f64, area: f64) -> f64 {
         (2.0 * gamma / ((gamma - 1.0) * molar_mass * R * t) * term.max(0.0)).sqrt()
     };
     DISCHARGE_COEFFICIENT * area * p0 * core
+}
+
+/// Area of one wall face of a tile, m² (1 m wide, 2.5 m high).
+pub const WALL_FACE_AREA: f64 = 2.5;
+/// Area of a tile's floor, and of its ceiling, m².
+pub const FLOOR_AREA: f64 = 1.0;
+/// How readily air and the station's structure trade heat, W/(m²·K): slow natural
+/// convection.
+pub const WALL_HEAT_TRANSFER: f64 = 5.0;
+/// The structure's temperature. Walls are treated as a heat sink that never warms up
+/// until materials get their own temperature (`docs/ATMOSPHERICS.md`, P1).
+pub const WALL_TEMPERATURE: f64 = super::gas::T20C;
+
+/// Air trades heat with the zone's walls, floor and ceiling (Newton's law of cooling),
+/// never overshooting the walls' temperature.
+fn exchange_heat_with_walls(zone: &mut Zone, dt: f64) {
+    let capacity = zone.mix.heat_capacity();
+    if capacity <= 0.0 || zone.mix.is_vacuum() {
+        return;
+    }
+    let difference = zone.mix.temperature - WALL_TEMPERATURE;
+    let fraction = (WALL_HEAT_TRANSFER * zone.surface * dt / capacity).min(1.0);
+    zone.mix.temperature -= difference * fraction;
 }

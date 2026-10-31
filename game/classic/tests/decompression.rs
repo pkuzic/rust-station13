@@ -80,10 +80,11 @@ fn opening_the_external_airlock_vents_the_closet_but_not_the_room() {
     seconds(&mut app, 5);
     let after_5 = pressure(&app, CLOSET);
     assert!(after_5 < 60.0, "closet after 5 s: {after_5:.1} kPa");
-    seconds(&mut app, 25);
+    // The walls keep the escaping air warm, so it takes a little over 30 s.
+    seconds(&mut app, 30);
     assert!(
         pressure(&app, CLOSET) < 1.0,
-        "closet after 30 s: {:.2} kPa",
+        "closet after 35 s: {:.2} kPa",
         pressure(&app, CLOSET)
     );
     assert!(
@@ -135,7 +136,7 @@ fn after_a_blowout_the_vents_restore_the_closet() {
     // and machinery restores pressure.
     let mut app = setup();
     hold_open(&mut app, OUTER_DOOR);
-    seconds(&mut app, 30);
+    seconds(&mut app, 35);
     assert!(pressure(&app, CLOSET) < 1.0, "vented");
     let door = door_at(&mut app, OUTER_DOOR);
     app.world_mut().get_mut::<Airlock>(door).unwrap().state = DoorState::Closed;

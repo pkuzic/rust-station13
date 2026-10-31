@@ -254,7 +254,8 @@ fn panic_fill_refills_a_vented_closet_fast() {
     let alarm = at::<AirAlarm>(&mut app, CLOSET_ALARM);
     app.world_mut().get_mut::<AirAlarm>(alarm).unwrap().broken = true;
     hold_open(&mut app, OUTER_DOOR);
-    seconds(&mut app, 30);
+    // The walls keep the escaping air warm, so it takes a little over 30 s.
+    seconds(&mut app, 35);
     assert!(pressure(&app, CLOSET) < 1.0, "vented");
     let outer = at::<Airlock>(&mut app, OUTER_DOOR);
     app.world_mut().get_mut::<Airlock>(outer).unwrap().state = DoorState::Closed;

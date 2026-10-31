@@ -22,5 +22,5 @@ fire, and the grid gains `expose` and `burning_at`.
   burns its fuel and oxygen, and hot gas carries it through open doors.
 - A room catches fire all at once rather than from one corner; local cells will refine
   this without changing the reaction.
-- Nothing cools a room yet, so burnt-out rooms stay hot until mixed or vented. Heat
-  exchange with walls (P1) fixes that.
+- Rooms cool by trading heat with their walls, which are treated as a heat sink at 20 °C
+  until materials get their own temperature (P1).
