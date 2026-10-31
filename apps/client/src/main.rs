@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod apc_panel;
 mod audio;
+mod depth;
 mod fov;
 mod freezer_panel;
 mod glow;
@@ -198,6 +199,7 @@ fn main() {
             shadows::ShadowPlugin,
             fov::FovPlugin,
             glow::GlowPlugin,
+            depth::DepthPlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))

@@ -27,8 +27,9 @@ use crate::{ChatInput, OwnPlayer, TILE_PX};
 
 /// Above every sprite on the map.
 const LIGHT_Z: f32 = 20.0;
-/// The darkest a tile gets, so that people can still make out a dark room.
-const MIN_LIGHT: f32 = 0.04;
+/// The darkest a tile gets, so that people can still make out a dark room: a dim, cool
+/// blue rather than grey, as darkness reads.
+const MIN_LIGHT: [f32; 3] = [0.03, 0.04, 0.075];
 
 pub struct LightingPlugin;
 
@@ -269,7 +270,8 @@ fn update_lighting(
             } else {
                 (level(x, y), seen(tile))
             };
-            for c in light.map(|c| c.max(MIN_LIGHT)) {
+            for (c, min) in light.into_iter().zip(MIN_LIGHT) {
+                let c = c.max(min);
                 data.push((c * 255.0).round() as u8);
             }
             // Alpha: whether this tile gives light to the picture (`lighting.wgsl`).
