@@ -21,7 +21,6 @@ mod freezer_panel;
 mod glow;
 mod hud;
 mod laser_panel;
-mod light_map;
 mod lighting;
 mod monitor_panel;
 mod scaling;
@@ -48,7 +47,7 @@ use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
-    Opaque, TilePos,
+    TilePos,
 };
 use sprites::{Look, SpriteAtlas};
 
@@ -726,11 +725,11 @@ fn update_appearance(
 }
 
 /// Draw what lies on the map in sight: not held items (they have no `GridPos`), not things
-/// under floor tiles, not what the player can't see (`lighting::Sight`), and not other
-/// people behind the player's back (`fov`). A closed door is drawn like the wall it stands
-/// in: the shadows hide it unless one of its sides is in sight (`shadows.rs`).
+/// under floor tiles, not what the player can't see (`shadows::Sight`), and not other
+/// people behind the player's back (`fov`). A closed door's tile is seen like a wall's
+/// (`shadows::seen_tiles`).
 fn show_only_placed(
-    sight: Res<lighting::Sight>,
+    sight: Res<shadows::Sight>,
     fov: Res<fov::Fov>,
     mut objects: Query<
         (
@@ -739,14 +738,12 @@ fn show_only_placed(
             Has<Hidden>,
             Has<Player>,
             Has<OwnPlayer>,
-            Has<Opaque>,
         ),
         With<Appearance>,
     >,
 ) {
-    for (mut visibility, placed, hidden, person, own, door) in &mut objects {
-        let seen = placed
-            .is_some_and(|p| (door || !sight.unseen.contains(&p.0)) && !(person && !own && fov.hides(p.0)));
+    for (mut visibility, placed, hidden, person, own) in &mut objects {
+        let seen = placed.is_some_and(|p| sight.sees(p.0) && !(person && !own && fov.hides(p.0)));
         visibility.set_if_neq(if seen && !hidden {
             Visibility::Inherited
         } else {

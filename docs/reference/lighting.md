@@ -79,25 +79,18 @@ made-up two-deck world.
 ## Drawing it
 
 - **Who works it out:** the client, from the light sources and closed doors the server
-  replicates. The server works the light out per tile for game rules (see Darkness).
-- **Cast geometrically** (`apps/client/src/light_map.rs`): the client doesn't decide
-  tile by tile whether a light reaches a tile. Each light lights the area it can see past
-  the faces of walls and closed doors, worked out as a polygon from its tile centre, so
-  its shadows have true edges at any angle, as the line-of-sight shadows do. Inside that
-  area the rules above apply at every point (strength less distance, adding up, capped by
-  the strongest light reaching it), worked out sixteen times across a tile. Shadow edges
-  are softened over an eighth of a tile.
+  replicates, with the same engine code as the server (`MapDecks`), per tile as above.
 - **When:** the client works it out again only when the map, a light or a closed door
-  changes.
-- **How it is drawn:** a texture of that light over the deck you stand on, sampled
-  smoothly and multiplied over everything on the map, coloured light included. The HUD
-  and the text panel are not darkened.
-- **Walls and closed doors** show the light just outside the faces that turn towards you:
-  the brightest of the open tiles beside them that you see. Light from a room behind a
-  wall, on a window beside a door, or falling past a corner never shows on the face you
-  see. A room's corner, with no face to see, takes the light at its corner.
-- **Not yet:** light between decks (only the server works that out; no map has open
-  floors yet).
+  changes, and redraws it when what the player sees changes.
+- **How it is drawn:** a texture with one texel per tile of the deck you stand on. Between
+  tile centres the light is blended with smoothstep weights, so it fades smoothly with no
+  creases, but only between tiles the player sees: light from a room behind a wall never
+  shows on this side of it. It is multiplied over everything on the map, coloured light
+  included. The HUD and the text panel are not darkened.
+- **Walls and closed doors** show the light of the floor in front of the faces that turn
+  towards you: the brightest of the open tiles beside them that you see. Light from a room
+  behind a wall, or on a window beside a door, never shows on the face you see. A room's
+  corner, with no face to see, takes the light at its corner.
 - **F4** turns lighting off and on.
 
 ## Glow
@@ -131,32 +124,28 @@ What gives off light of its own stays bright in the dark and glows
   - darkness hiding things from players (the server knows where it is dark, but no rule
     uses it yet);
   - red alert lighting (`isalert`, fire alarm lights);
-  - other things that glow in Luna: lit welding tools, fires, computers, igniters,
-    floodlights (flashlights and desk lamps do: `flashlights.md`);
+  - other things that give light in Luna: lit welding tools, igniters, floodlights
+    (flashlights and desk lamps do: `flashlights.md`; screens glow: Glow);
   - floor lights;
   - light from a lower deck seen through open space (only the light levels are carried).
 
 ## Line of sight
 
-Luna's view is BYOND's: a 15 × 15 square around the player, minus what walls and closed
-doors hide. The client draws it as real shadows, as if sight weren't tile based
-(`apps/client/src/shadows.rs`):
+Luna's view is BYOND's: a 15 × 15 square around the player, each tile either seen or
+black, as the client draws it (`apps/client/src/shadows.rs`):
 
-- **Shadows:** every wall and closed door near the player casts a shadow away from the
-  player's eye, out past the edge of the screen. They follow the player's drawn position,
-  so they move smoothly while walking.
-- **Walls** are seen when one of their exposed sides is, and so are the corners of a room
-  (walls on both sides, the floor touching them only at a corner), as in BYOND. A wall
-  none of whose sides can be seen is shaded whole, so walls seen edge-on show no slivers.
-- **What lies on a tile** (items, machines, people) is drawn only when the straight line
-  from the player's tile centre to the tile's centre crosses no wall. A line passing
-  exactly through a corner gets past if either tile beside the corner is open: a door
-  diagonally past a wall's corner is seen, a gap between two walls that touch at a corner
-  is not.
-- **Closed doors** are drawn like the walls they stand in: seen when one of their sides is,
-  not only when their centre is.
-- **Meson scanners** (Luna `SEE_TURFS`): the shadows are see-through, showing the floor
-  plan without what lies on it.
+- **Seen:** a tile whose centre the straight line from the centre of the player's tile
+  reaches without crossing a wall or closed door (`rs13_world::sight::sees`). A line
+  passing exactly through a corner gets past if either tile beside the corner is open: a
+  door diagonally past a wall's corner is seen, a gap between two walls that touch at a
+  corner is not.
+- **Walls and closed doors** are seen when a floor tile beside them is seen, and a room's
+  corner when the floor touching its corner is, so the walls bordering what you see show,
+  and the wall behind them doesn't.
+- **Everything else** within view is covered by a black square, and nothing on it (items,
+  machines, people) is drawn. The squares change as the player steps from tile to tile.
+- **Meson scanners** (Luna `SEE_TURFS`): the black squares are see-through, showing the
+  floor plan without what lies on it.
 - **F4** (lighting off) shows everything, for debugging.
 - **Server side** (`apps/server/src/sight.rs`): each client is sent only the things on the
   map its mob can see, by the same test (`rs13_world::sight`), out to one tile past the
