@@ -49,6 +49,11 @@ pub struct Dense;
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Opaque;
 
+/// Gives off light while present: red, green and blue strengths, in tiles of reach
+/// (Luna `ul_SetLuminosity`). See `rs13_simulation::lighting`.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LightSource(pub [u8; 3]);
+
 /// A person's name, as others see it. English only, never declined.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DisplayName(pub String);

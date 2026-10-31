@@ -7292,6 +7292,7 @@ dependencies = [
  "rs13-dmi-import",
  "rs13-i18n",
  "rs13-network",
+ "rs13-simulation",
  "rs13-world",
 ]
 

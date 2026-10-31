@@ -48,6 +48,7 @@ In the client (`rs13-client [ADDR] [--lang en|ru] [--name "First Last"]`):
 | T | Say something (Enter sends, Esc cancels) |
 | 1 / 4 | Help / harm intent (a held item hits people on any intent; fists need harm) |
 | F3 | Atmos debug overlay (pressure per tile) |
+| F4 | Lighting on/off |
 
 The EVA closet by the outer airlock has a space suit, a helmet, a breath mask and an
 emergency oxygen tank. Suit up, then turn internals on before you open the door.
@@ -83,6 +84,8 @@ in Luna's colours. A canister's light shows how full it is (`docs/reference/gas-
 Lights run on their APC's lighting channel. A light switch turns off every light in its
 area. Take a tube out with an empty hand, but switch it off first or wear gloves: a lit
 one burns. Put in a new tube or bulb from a box of spares (`docs/reference/lights.md`).
+Lit fixtures light the tiles around them in their colour, softly, and walls and closed
+doors cast shadows (`docs/reference/lighting.md`).
 
 Click a closet or crate to open or close it. Lockers open with an engineering ID. A lit
 welding tool welds a closet shut. Anyone shut inside is hidden and pushes the door open by

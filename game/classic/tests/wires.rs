@@ -9,6 +9,7 @@ use rs13_classic::hands::{Hands, HeldBy};
 use rs13_classic::health::Body;
 use rs13_classic::movement::MoveIntent;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::rng::GameRng;
 use rs13_classic::wires::{PendingWires, WireFn, WireLayout, WireOp, WirePanelOut, Wiring};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_world::{Appearance, Dir, GridPos, Slot, TileMap, TilePos};
@@ -32,6 +33,8 @@ fn setup() -> (App, Entity, Entity) {
         q.iter(app.world()).find(|(_, p, _)| p.0 == DOOR).unwrap().0
     };
     ticks(&mut app, 1);
+    // Rolls made while the map starts up (lights, for one) don't change the shocks here.
+    *app.world_mut().resource_mut::<GameRng>() = GameRng::default();
     (app, mob, door)
 }
 

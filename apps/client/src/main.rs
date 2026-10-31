@@ -6,7 +6,7 @@
 //! Controls: arrow keys or WASD move (hold Shift to walk); left click uses the active
 //! hand on something in reach (a held item hits people on any intent); Shift+click
 //! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
-//! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay.
+//! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay; F4 toggles lighting.
 //!
 //! The screen is laid out like the classic BYOND client: the map with Luna's HUD on the
 //! left (`hud.rs`), messages on the right. Click an inventory slot to put on what the
@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod audio;
 mod hud;
+mod lighting;
 mod sprites;
 mod storage_panel;
 mod wire_panel;
@@ -139,7 +140,7 @@ fn main() {
                 // Crisp pixel art.
                 .set(ImagePlugin::default_nearest()),
         )
-        .add_plugins((ClientNetworkPlugin, audio::SoundPlugin))
+        .add_plugins((ClientNetworkPlugin, audio::SoundPlugin, lighting::LightingPlugin))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
