@@ -515,3 +515,11 @@ laser-output = Излучение: { $on ->
 core-overload = [{ $frequency }] Компьютер управления ядром: ПЕРЕГРУЗКА ЯДРА
 core-explosion-imminent = [{ $frequency }] Компьютер управления ядром: ВЗРЫВ ЯДРА НЕМИНУЕМ
 core-safe = [{ $frequency }] Компьютер управления ядром: ядро возвращается к безопасному режиму.
+
+# Окно охладителя (engine.md). Аргументы: $on (yes/no), $temperature (K), $pressure (кПа).
+freezer-status = Состояние: { $on ->
+    [yes] включён
+   *[no] выключен
+}
+freezer-gas = Газ: { $temperature } K, { $pressure } кПа
+freezer-setting = Целевая температура газа:

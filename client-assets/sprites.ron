@@ -720,6 +720,10 @@
             "teg-op10": (dmi: "icons/obj/power.dmi", state: "teg-op10"),
             "teg-op11": (dmi: "icons/obj/power.dmi", state: "teg-op11"),
         },
+        "freezer": {
+            "freezer": (dmi: "icons/obj/Cryogenic2.dmi", state: "freezer"),
+            "freezer_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "freezer_1"),
+        },
         "generator-input": { "": (dmi: "icons/obj/atmospherics/heat_exchanger.dmi", state: "intact", dir: 0) },
         "thermal-plate": { "": (dmi: "icons/obj/atmospherics/cold_sink.dmi", state: "intact_off", dir: 0) },
         // The engine core (engine.md).

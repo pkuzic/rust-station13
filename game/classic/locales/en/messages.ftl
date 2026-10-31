@@ -493,3 +493,11 @@ laser-output = Output: { $on ->
 core-overload = [{ $frequency }] Core control computer: CORE OVERLOAD
 core-explosion-imminent = [{ $frequency }] Core control computer: CORE EXPLOSION IMMINENT
 core-safe = [{ $frequency }] Core control computer: Core returning to safe operating levels.
+
+# Freezer window (engine.md). Args: $on (yes/no), $temperature (K), $pressure (kPa).
+freezer-status = Current status: { $on ->
+    [yes] On
+   *[no] Off
+}
+freezer-gas = Gas: { $temperature } K, { $pressure } kPa
+freezer-setting = Target gas temperature:

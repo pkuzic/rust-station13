@@ -117,6 +117,8 @@ fn every_message_formats_in_both_locales() {
     args.set("cold", 100);
     args.set("hotkpa", 4000);
     args.set("coldkpa", 3000);
+    args.set("temperature", 120.5);
+    args.set("pressure", 4000.0);
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();
