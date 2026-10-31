@@ -50,6 +50,9 @@ pub const GAS_CANISTERS: [(&str, Gas); 5] = [
 pub const PUMP_TARGET: f64 = 300.0;
 /// Litres of room air a scrubber processes per cycle (SS13 `volume_rate`).
 pub const SCRUBBER_VOLUME_RATE: f64 = 120.0;
+/// Litres of an open pipe end (Luna `pipe/vent` volume), and of pipe gas it mixes with
+/// the room each cycle (`mingle_with_turf(loc, 250)`).
+pub const PIPE_VENT_VOLUME: f64 = 250.0;
 /// Gases scrubbers remove.
 pub const SCRUBBED: [Gas; 3] = [Gas::CarbonDioxide, Gas::Plasma, Gas::NitrousOxide];
 
@@ -142,6 +145,11 @@ pub struct Vent {
 /// Pulls CO2, plasma and N2O out of the room into the network under it.
 #[derive(Component, Debug, Clone, Copy)]
 pub struct Scrubber;
+
+/// An open end of a pipe network: each cycle some of the network's gas evens out with
+/// the room it opens into, or is lost to space (Luna `pipe/vent`).
+#[derive(Component, Debug, Clone, Copy)]
+pub struct PipeVent;
 
 /// A port a canister can be wrenched onto.
 #[derive(Component, Debug, Clone, Copy)]
@@ -366,6 +374,7 @@ pub fn run_machines(
     mut vents: Query<(Entity, &GridPos, &mut Vent, &Switch, &PowerUser)>,
     scrubbers: Query<(Entity, &GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
+    pipe_vents: Query<(Entity, &GridPos), With<PipeVent>>,
 ) {
     let Some(mut atmos) = atmos else { return };
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
@@ -444,6 +453,39 @@ pub fn run_machines(
             .0
             .remove_gases_at(pos.0, &SCRUBBED, SCRUBBER_VOLUME_RATE / TILE_VOLUME);
         nets.nets[id].mix.merge(&filtered);
+    }
+
+    // Pipe vents (Luna `mingle_with_turf`): 250 L of the network's gas evens out with the
+    // room's whole zone by volume; in space it is simply lost.
+    for (entity, pos) in &pipe_vents {
+        let Some(&id) = nets.net_of.get(&entity) else {
+            continue;
+        };
+        let net = &mut nets.nets[id];
+        if net.volume <= 0.0 {
+            continue;
+        }
+        let mut sample = net.mix.remove_fraction(PIPE_VENT_VOLUME / net.volume);
+        let zone = atmos.0.zone_at(pos.0).map(|z| &atmos.0.zones()[z]);
+        match zone.map(|z| (z.volume, z.mix.total_moles())) {
+            Some((zone_volume, zone_moles)) => {
+                let even =
+                    (sample.total_moles() + zone_moles) * PIPE_VENT_VOLUME / (PIPE_VENT_VOLUME + zone_volume);
+                let excess = sample.total_moles() - even;
+                if excess > 0.0 {
+                    let out = sample.remove_moles(excess);
+                    atmos.0.add_at(pos.0, &out);
+                } else {
+                    let back = atmos.0.remove_at(pos.0, -excess);
+                    sample.merge(&back);
+                }
+            }
+            None => {
+                atmos.0.add_at(pos.0, &sample);
+                sample = GasMix::default();
+            }
+        }
+        net.mix.merge(&sample);
     }
 
     for (pos, canister, release, member, mut store) in &mut canisters {
@@ -569,6 +611,9 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
             .member(device)
             .scrubber(),
         "connector" => MachineSpawn::new("connector", "").member(device).connector(),
+        "pipe-vent" => MachineSpawn::new("pipe-vent", "")
+            .member(member(PIPE_VENT_VOLUME))
+            .pipe_vent(),
         "canister" => canister("canister", air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE)),
         _ => {
             if let Some(&(id, gas)) = GAS_TANKS.iter().find(|(id, _)| *id == proto) {
@@ -599,6 +644,7 @@ pub struct MachineSpawn {
     pub valve: bool,
     pub scrubber: bool,
     pub connector: bool,
+    pub pipe_vent: bool,
     pub dense: bool,
     pub power: Option<crate::power::PowerUser>,
     pub alarm: bool,
@@ -618,6 +664,7 @@ impl MachineSpawn {
             valve: false,
             scrubber: false,
             connector: false,
+            pipe_vent: false,
             dense: false,
             power: None,
             alarm: false,
@@ -666,6 +713,10 @@ impl MachineSpawn {
         self.connector = true;
         self
     }
+    fn pipe_vent(mut self) -> Self {
+        self.pipe_vent = true;
+        self
+    }
     fn dense(mut self) -> Self {
         self.dense = true;
         self
@@ -696,6 +747,9 @@ impl MachineSpawn {
         }
         if self.connector {
             entity.insert(Connector);
+        }
+        if self.pipe_vent {
+            entity.insert(PipeVent);
         }
         if self.dense {
             entity.insert(rs13_world::Dense);

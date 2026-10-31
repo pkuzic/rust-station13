@@ -122,4 +122,5 @@
     "intercom": (gender: neuter, sg: (nom: "station intercom", indef: "a station intercom"), pl: Some((nom: "station intercoms"))),
     "chair": (gender: neuter, sg: (nom: "chair", indef: "a chair"), pl: Some((nom: "chairs"))),
     "comfy-chair-brown": (gender: neuter, sg: (nom: "comfy chair", indef: "a comfy chair"), pl: Some((nom: "comfy chairs"))),
+    "pipe-vent": (gender: neuter, sg: (nom: "vent", indef: "a vent"), pl: Some((nom: "vents"))),
 }
