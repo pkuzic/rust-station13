@@ -95,4 +95,13 @@
     "lantern": (gender: neuter, sg: (nom: "lantern", indef: "a lantern"), pl: Some((nom: "lanterns"))),
     "desk-lamp": (gender: neuter, sg: (nom: "desk lamp", indef: "a desk lamp"), pl: Some((nom: "desk lamps"))),
     "desk-lamp-green": (gender: neuter, sg: (nom: "green desk lamp", indef: "a green desk lamp"), pl: Some((nom: "green desk lamps"))),
+    "magboots": (gender: plural, sg: (nom: "magboots", indef: "a pair of magboots")),
+    "black-gloves": (gender: plural, sg: (nom: "black gloves", indef: "a pair of black gloves")),
+    "gas-mask": (gender: neuter, sg: (nom: "gas mask", indef: "a gas mask"), pl: Some((nom: "gas masks"))),
+    "firesuit": (gender: neuter, sg: (nom: "firesuit", indef: "a firesuit"), pl: Some((nom: "firesuits"))),
+    "hardhat": (gender: neuter, sg: (nom: "hard hat", indef: "a hard hat"), pl: Some((nom: "hard hats"))),
+    "hardhat-orange": (gender: neuter, sg: (nom: "orange hard hat", indef: "an orange hard hat"), pl: Some((nom: "orange hard hats"))),
+    "hardhat-red": (gender: neuter, sg: (nom: "firefighter helmet", indef: "a firefighter helmet"), pl: Some((nom: "firefighter helmets"))),
+    "hardhat-white": (gender: neuter, sg: (nom: "white hard hat", indef: "a white hard hat"), pl: Some((nom: "white hard hats"))),
+    "hardhat-blue": (gender: neuter, sg: (nom: "blue hard hat", indef: "a blue hard hat"), pl: Some((nom: "blue hard hats"))),
 }
