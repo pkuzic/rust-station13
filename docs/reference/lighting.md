@@ -92,10 +92,10 @@ made-up two-deck world.
 - **How it is drawn:** a texture of that light over the deck you stand on, sampled
   smoothly and multiplied over everything on the map, coloured light included. The HUD
   and the text panel are not darkened.
-- **Walls and closed doors** show the light just outside their faces on the side facing
-  you: the brightest of the open tiles around them that you see, diagonals included, so a
-  room's corners follow the room, and light from a room behind a wall never shows on this
-  side of it.
+- **Walls and closed doors** show the light just outside the faces that turn towards you:
+  the brightest of the open tiles beside them that you see. Light from a room behind a
+  wall, on a window beside a door, or falling past a corner never shows on the face you
+  see. A room's corner, with no face to see, takes the light at its corner.
 - **Not yet:** light between decks (only the server works that out; no map has open
   floors yet).
 - **F4** turns lighting off and on.
@@ -131,6 +131,8 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
   exactly through a corner gets past if either tile beside the corner is open: a door
   diagonally past a wall's corner is seen, a gap between two walls that touch at a corner
   is not.
+- **Closed doors** are drawn like the walls they stand in: seen when one of their sides is,
+  not only when their centre is.
 - **Meson scanners** (Luna `SEE_TURFS`): the shadows are see-through, showing the floor
   plan without what lies on it.
 - **F4** (lighting off) shows everything, for debugging.
@@ -151,7 +153,8 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 Not in Luna; it follows later SS13 servers' view cones (`apps/client/src/fov.rs`).
 
 - **Behind your back:** a 120° arc behind the player, centred on the way they face, is
-  darkened (never lightened), and other people standing in it are not drawn (nor can they be clicked).
+  darkened (never lightened, fading in from nothing at the player over a tile and a half),
+  and other people standing in it are not drawn (nor can they be clicked).
   Items, machines and the floor still show, darker.
 - **Neighbours:** the player's own tile and the eight around it are never hidden: you
   notice someone right next to you.
