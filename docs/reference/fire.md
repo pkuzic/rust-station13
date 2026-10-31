@@ -30,5 +30,5 @@ reaction rather than its broken fire object:
 | Looks | every tile of a burning zone shows fire (`fire.dmi` 2, or 3 when fierce) and gives off warm light | keep |
 | Effects | the hot air does the rest: heat damage to people (`environment.md`), fire alarms above 200 °C (`fire-alarm.md`) | keep |
 | Putting it out | burn the fuel or the oxygen away, or vent the room | extinguishers aren't on the map yet |
-| Heat loss | none yet: a burnt-out room stays hot until its air is mixed or vented | heat exchange with walls is a later P1 item |
+| Heat loss | the air trades heat with its zone's walls, floor and ceiling at 5 W/(m²·K), toward 20 °C (`AtmosGrid::exchange_heat`): a 9-tile room has a time constant of about 80 s, so a room at 5 000 K is back near room temperature in five or six minutes | **ours**: walls are a heat sink at 20 °C until materials get their own temperature (P1) |
 | Other sparks | none yet | electrical sparks, igniters, lighters |

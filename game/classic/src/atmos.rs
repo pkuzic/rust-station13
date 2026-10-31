@@ -58,6 +58,7 @@ pub fn step_atmos(
         }
     }
     atmos.0.step(TICK_SECONDS);
+    atmos.0.exchange_heat(TICK_SECONDS);
 }
 
 /// Ticks between pushes for a wind of `speed` m/s: faster wind, faster flight.

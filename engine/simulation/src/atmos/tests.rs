@@ -239,3 +239,24 @@ fn an_open_edge_lets_the_sides_equalise() {
     assert!((w - e).abs() < 0.5, "equalised: {w:.2} vs {e:.2}");
     assert!(e > 10.0, "air came through: {e:.2}");
 }
+
+#[test]
+fn hot_air_cools_toward_the_walls() {
+    let (mut grid, ..) = two_rooms();
+    let left = grid.zone_at(LEFT).unwrap();
+    // Heat the left room by adding hot air of the same make-up.
+    let mut hot = grid.air_at(LEFT);
+    hot.temperature = 2000.0;
+    grid.add_at(LEFT, &hot);
+    let start = grid.zones()[left].mix.temperature;
+    assert!(start > 500.0);
+    for _ in 0..600 {
+        grid.exchange_heat(0.1);
+    }
+    let after = grid.zones()[left].mix.temperature;
+    assert!(after < start, "{start} → {after}");
+    assert!(after >= T20C, "never below the walls");
+    // Air at the walls' temperature stays put.
+    let right = grid.zone_at(RIGHT).unwrap();
+    assert!((grid.zones()[right].mix.temperature - T20C).abs() < 1e-9);
+}
