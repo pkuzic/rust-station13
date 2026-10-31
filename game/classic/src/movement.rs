@@ -104,6 +104,7 @@ pub fn move_mobs(
     wearables: Query<&crate::equipment::Wearable>,
     electrified: Query<&crate::wires::Wiring>,
     mut shocks: ResMut<crate::wires::PendingShocks>,
+    mut stepped: ResMut<crate::pulling::Stepped>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
     (jetpacks, mut tanks, mut commands): (
@@ -163,6 +164,7 @@ pub fn move_mobs(
         if let Some(target) = resolve_step(&map.0, &occupied, &sealed, pos.0, dir) {
             occupied.remove(&pos.0);
             occupied.insert(target);
+            stepped.0.push((entity, pos.0));
             pos.0 = target;
             let worn = equipment.map_or(0.0, |e| crate::equipment::slowdown(e, &wearables));
             mob.next_move_ds = now + step_delay_ds(intent.run) + worn;

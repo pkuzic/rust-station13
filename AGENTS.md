@@ -36,7 +36,7 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
     click a sprite, any action, wait, snapshot what was received); see
     `apps/headless/tests/sight_and_storage.rs`.
   - `rs13-server --map-file PATH`: a small map of your own for the case at hand.
-  - `rs13-client --size 1400x900 --use DX,DY|swap|held … --screenshot PATH`: clicks and
+  - `rs13-client --size 1400x900 --use DX,DY|pull:DX,DY|swap|held … --screenshot PATH`: clicks and
     keys a player would do, then a screenshot to look at.
   If a path can't be driven yet, build the means to drive it first.
 - Deliver: code, tests, a short summary, known limits, and any interface changes.

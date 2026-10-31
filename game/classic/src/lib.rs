@@ -38,6 +38,7 @@ pub mod names;
 pub mod objects;
 pub mod power;
 pub mod power_monitor;
+pub mod pulling;
 pub mod radio;
 pub mod rng;
 pub mod smes_panel;
@@ -80,6 +81,8 @@ impl Plugin for ClassicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<time::WorldTime>()
             .init_resource::<objects::NetIds>()
+            .init_resource::<pulling::Stepped>()
+            .init_resource::<pulling::PendingPulls>()
             .init_resource::<objects::ItemProtos>()
             .init_resource::<access::AccessIds>()
             .init_resource::<rng::GameRng>()
@@ -143,7 +146,10 @@ impl Plugin for ClassicPlugin {
                     alarms::apply_seals,
                     firedoors::update_firedoors,
                     doors::update_doors,
+                    pulling::start_pulls,
                     movement::move_mobs,
+                    pulling::follow_pullers,
+                    pulling::drop_lost_pulls,
                     closets::leave_closets,
                     movement::sync_facing,
                 )

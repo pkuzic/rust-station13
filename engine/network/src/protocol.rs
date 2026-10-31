@@ -38,6 +38,10 @@ pub enum ActionInput {
     SwapHands,
     /// Turn to face a way without stepping (Ctrl + a direction).
     Face(Dir),
+    /// Start pulling something within a tile (Ctrl-click).
+    Pull(NetId),
+    /// Let go of what is being pulled (the HUD pull button).
+    StopPulling,
     Examine(NetId),
     /// Say something out loud. The server cleans it up and limits its length.
     Say(String),
@@ -173,6 +177,8 @@ pub struct StatusUpdate {
     pub internals: bool,
     /// Body temperature, kelvin.
     pub body_temperature: u16,
+    /// Pulling something (the HUD pull button lights up).
+    pub pulling: bool,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its

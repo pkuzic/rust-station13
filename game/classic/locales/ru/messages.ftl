@@ -129,6 +129,7 @@ hud-tip = { $what ->
         [hand-right] Правая рука
         [swap] Сменить руку
         [drop] Бросить
+        [pull] Отпустить
         [intent] Намерение
         [move] Бег / шаг
         [internals] Баллон
