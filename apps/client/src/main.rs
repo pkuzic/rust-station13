@@ -68,7 +68,14 @@ struct Args {
     screenshot: Option<String>,
     /// Window size in logical pixels, as `WIDTHxHEIGHT`.
     size: Option<(f32, f32)>,
+    /// For checking windows in screenshots: once joined, use whatever is this many tiles
+    /// east and north of our player, as `DX,DY`.
+    use_at: Option<(i32, i32)>,
 }
+
+/// `--use`: what to use once joined, and whether it has been.
+#[derive(Resource)]
+struct ScriptedUse(Option<(i32, i32)>);
 
 #[derive(Resource)]
 struct ScreenshotPlan(Option<String>);
@@ -158,6 +165,7 @@ fn main() {
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
         .insert_resource(ScreenshotPlan(args.screenshot))
+        .insert_resource(ScriptedUse(args.use_at))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<hud::WalkMode>()
@@ -216,6 +224,7 @@ fn main() {
                     spawn_overlay,
                     update_overlay,
                     take_screenshot,
+                    scripted_use,
                 )
                     .chain(),
             )
@@ -231,6 +240,7 @@ fn parse_args() -> Args {
         name: None,
         screenshot: None,
         size: None,
+        use_at: None,
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
@@ -238,6 +248,12 @@ fn parse_args() -> Args {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
+            "--use" => {
+                args.use_at = it.next().and_then(|s| {
+                    let (x, y) = s.split_once(',')?;
+                    Some((x.trim().parse().ok()?, y.trim().parse().ok()?))
+                })
+            }
             "--size" => {
                 args.size = it.next().and_then(|s| {
                     let (w, h) = s.split_once('x')?;
@@ -1037,6 +1053,38 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
     } else {
         String::new()
     };
+}
+
+/// With `--use DX,DY`: two seconds after our player appears, use the thing on that tile, as a
+/// click there would.
+fn scripted_use(
+    time: Res<Time>,
+    mut plan: ResMut<ScriptedUse>,
+    own: Query<&GridPos, With<OwnPlayer>>,
+    objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
+    mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+    mut joined_at: Local<Option<f32>>,
+) {
+    let (Some((dx, dy)), Ok(me)) = (plan.0, own.single()) else {
+        return;
+    };
+    let now = time.elapsed_secs();
+    if now < *joined_at.get_or_insert(now) + 2.0 {
+        return;
+    }
+    let Ok(mut sender) = sender.single_mut() else {
+        return;
+    };
+    let tile = (me.0.x + dx, me.0.y + dy);
+    let target = objects
+        .iter()
+        .filter(|(_, pos, a)| (pos.0.x, pos.0.y) == tile && a.sprite != "fire")
+        .min_by_key(|(_, _, a)| click_rank(a))
+        .map(|(id, ..)| *id);
+    if let Some(target) = target {
+        sender.send::<IntentChannel>(ActionInput::UseOn(target));
+    }
+    plan.0 = None;
 }
 
 /// With `--screenshot PATH`: four seconds after our player appears, save the window to PATH;
