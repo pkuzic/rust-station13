@@ -121,8 +121,11 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 - **Meson scanners** (Luna `SEE_TURFS`): the shadows are see-through, showing the floor
   plan without what lies on it.
 - **F4** (lighting off) shows everything, for debugging.
-- **Not yet:** the server still sends what the player can't see, so a modified client
-  could see it.
+- **Server side** (`apps/server/src/sight.rs`): each client is sent only the things on the
+  map its mob can see, by the same test (`rs13_world::sight`), out to one tile past the
+  view. Always sent: the player's own mob, anything not on the map (held, worn, stored),
+  closed doors and light sources (the client needs them to draw shadows and light). So a
+  modified client can't see through walls.
 
 ## Field of view
 
@@ -137,4 +140,6 @@ Not in Luna; it follows later SS13 servers' view cones (`apps/client/src/fov.rs`
   tried to walk, or turned with **Ctrl + a direction** without stepping. Someone buckled
   into a chair faces the way the chair does (Luna `buckle_mob`). Diagonal steps face
   diagonally; four-direction sprites then show their east or west side, as BYOND does.
-- **Not yet:** the server still sends the people behind you.
+- **Server side:** people behind your back aren't sent either (the same
+  `rs13_world::sight::behind_back` test, from your tile and server-side facing). Turning
+  round, they reappear after a round trip.

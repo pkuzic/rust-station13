@@ -8,13 +8,13 @@
 use bevy::asset::RenderAssetUsages;
 use bevy::mesh::{Indices, PrimitiveTopology};
 use bevy::prelude::*;
-use rs13_world::TilePos;
+use rs13_world::{Facing, TilePos, sight};
 
 use crate::sprites::Look;
 use crate::{OwnPlayer, TILE_PX};
 
 /// How wide the arc behind is, either side of straight back.
-const HALF_BLIND: f32 = 60.0_f32.to_radians();
+const HALF_BLIND: f32 = sight::BLIND_HALF_ANGLE_DEG.to_radians();
 /// Over the light, under the line-of-sight shadows.
 const FOV_Z: f32 = 20.4;
 /// The cone starts this far from the eye, so our own tile stays clear, px.
@@ -29,37 +29,13 @@ const GRAY: Color = Color::srgba(0.12, 0.12, 0.14, 0.55);
 pub struct Fov(Option<(Vec2, Vec2)>);
 
 impl Fov {
-    /// Whether something on `tile` is behind our player, out of sight. Our own tile and the
-    /// ones around it never are.
+    /// Whether a person on `tile` is behind our player's back, out of sight: the same test
+    /// the server uses (`rs13_world::sight::behind_back`).
     pub fn hides(&self, tile: TilePos) -> bool {
-        let Some((eye, facing)) = self.0 else {
-            return false;
-        };
-        let centre = Vec2::new(tile.x as f32, tile.y as f32) * TILE_PX;
-        let near = (centre - eye).abs().max_element() < 1.5 * TILE_PX;
-        !near && behind(eye, facing, centre)
+        self.0.is_some_and(|(eye, facing)| {
+            sight::behind_back([eye.x / TILE_PX, eye.y / TILE_PX], facing.to_array(), tile)
+        })
     }
-}
-
-/// Whether `p` lies in the blind arc of someone at `eye` facing `facing` (a unit vector).
-pub fn behind(eye: Vec2, facing: Vec2, p: Vec2) -> bool {
-    let to = (p - eye).normalize_or_zero();
-    to != Vec2::ZERO && to.dot(-facing) > HALF_BLIND.cos()
-}
-
-/// The way a DMI facing index points (0 S, 1 N, 2 E, 3 W, 4 SE, 5 SW, 6 NE, 7 NW).
-fn facing_vec(facing: u32) -> Vec2 {
-    let (x, y) = match facing {
-        1 => (0.0, 1.0),
-        2 => (1.0, 0.0),
-        3 => (-1.0, 0.0),
-        4 => (1.0, -1.0),
-        5 => (-1.0, -1.0),
-        6 => (1.0, 1.0),
-        7 => (-1.0, 1.0),
-        _ => (0.0, -1.0),
-    };
-    Vec2::new(x, y).normalize()
 }
 
 #[derive(Component)]
@@ -124,7 +100,7 @@ fn update_fov(
         return;
     };
     let eye = at.translation.truncate();
-    let facing = facing_vec(look.facing);
+    let facing = Vec2::from_array(sight::facing_vector(Facing(look.facing as u8).dir()));
     fov.0 = Some((eye, facing));
     visibility.set_if_neq(Visibility::Inherited);
     transform.translation = eye.extend(FOV_Z);
@@ -135,16 +111,6 @@ fn update_fov(
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn behind_is_the_back_arc() {
-        let eye = Vec2::ZERO;
-        let north = Vec2::Y;
-        assert!(behind(eye, north, Vec2::new(0.0, -100.0)));
-        assert!(behind(eye, north, Vec2::new(40.0, -100.0)));
-        assert!(!behind(eye, north, Vec2::new(100.0, 0.0)), "beside is seen");
-        assert!(!behind(eye, north, Vec2::new(0.0, 100.0)), "ahead is seen");
-    }
 
     #[test]
     fn neighbours_are_never_hidden() {

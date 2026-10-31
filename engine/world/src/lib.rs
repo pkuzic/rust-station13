@@ -2,6 +2,7 @@
 
 mod components;
 mod map;
+pub mod sight;
 
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, AtmosView, Dense, DisplayName, EnvAlert, Facing,

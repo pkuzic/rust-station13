@@ -13,7 +13,11 @@ connect.
 - **Authentication is development-only:** a zero netcode key and client-chosen ids.
   Anyone can connect. Hub-issued connect tokens replace this before public servers.
 
-## Replicated components (server → all clients)
+## Replicated components (server → clients)
+
+Entities on the map are sent only to the clients whose mob can see them
+(`apps/server/src/sight.rs`, spec `docs/reference/lighting.md`); an entity that goes out of
+sight is despawned on that client and spawned again when it comes back.
 
 | Component | On | Meaning |
 |---|---|---|

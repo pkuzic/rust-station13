@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use bevy::asset::RenderAssetUsages;
 use bevy::mesh::{Indices, PrimitiveTopology};
 use bevy::prelude::*;
-use rs13_world::{GridPos, MapLayer, Opaque, TilePos};
+use rs13_world::{GridPos, MapLayer, Opaque, TilePos, sight};
 
 use crate::lighting::Sight;
 use crate::{OwnPlayer, TILE_PX};
@@ -130,65 +130,22 @@ fn tile_at(p: Vec2, z: i32) -> TilePos {
     TilePos::new((p.x / TILE_PX).round() as i32, (p.y / TILE_PX).round() as i32, z)
 }
 
+/// A point in px as tile units, for `rs13_world::sight`.
+fn in_tiles(p: Vec2) -> [f32; 2] {
+    [p.x / TILE_PX, p.y / TILE_PX]
+}
+
 /// Whether the straight line from `eye` to `p` passes through no opaque square.
 fn clear(eye: Vec2, p: Vec2, z: i32, opaque: &HashSet<TilePos>) -> bool {
-    unblocked(eye, p, z, |at| !opaque.contains(&at))
+    sight::line_clear(in_tiles(eye), in_tiles(p), |x, y| {
+        !opaque.contains(&TilePos::new(x, y, z))
+    })
 }
 
-/// Whether the centre of `tile` can be seen from `eye`: the straight line between them
-/// passes through no opaque square but the tile's own.
+/// Whether the centre of `tile` can be seen from `eye`: the same test the server uses to
+/// decide what to send (`rs13_world::sight::sees`).
 pub fn sees(eye: Vec2, tile: TilePos, opaque: &HashSet<TilePos>) -> bool {
-    let target = Vec2::new(tile.x as f32, tile.y as f32) * TILE_PX;
-    unblocked(eye, target, tile.z, |at| at == tile || !opaque.contains(&at))
-}
-
-/// Whether every square the line from `from` to `to` crosses after the first is one
-/// `open` lets through. Squares are walked edge by edge, so none is skipped; where the
-/// line passes exactly through a corner, it gets past if either square beside the corner
-/// is open: grazing one wall's corner is seen past, squeezing between two that touch is not.
-fn unblocked(from: Vec2, to: Vec2, z: i32, open: impl Fn(TilePos) -> bool) -> bool {
-    // In tile units, with square edges on whole numbers.
-    let a = from / TILE_PX + 0.5;
-    let b = to / TILE_PX + 0.5;
-    let d = b - a;
-    let (mut x, mut y) = (a.x.floor() as i32, a.y.floor() as i32);
-    let end = (b.x.floor() as i32, b.y.floor() as i32);
-    let axis = |start: f32, cell: i32, delta: f32| -> (i32, f32, f32) {
-        if delta > 0.0 {
-            (1, (cell as f32 + 1.0 - start) / delta, 1.0 / delta)
-        } else if delta < 0.0 {
-            (-1, (start - cell as f32) / -delta, -1.0 / delta)
-        } else {
-            (0, f32::INFINITY, f32::INFINITY)
-        }
-    };
-    let (sx, mut next_x, step_x) = axis(a.x, x, d.x);
-    let (sy, mut next_y, step_y) = axis(a.y, y, d.y);
-    let at = |x: i32, y: i32| TilePos::new(x, y, z);
-    // Never more squares than the walk could cross.
-    for _ in 0..=(end.0 - x).abs() + (end.1 - y).abs() {
-        if (x, y) == end {
-            return true;
-        }
-        if (next_x - next_y).abs() < 1e-4 {
-            if !open(at(x + sx, y)) && !open(at(x, y + sy)) {
-                return false;
-            }
-            (x, y) = (x + sx, y + sy);
-            next_x += step_x;
-            next_y += step_y;
-        } else if next_x < next_y {
-            x += sx;
-            next_x += step_x;
-        } else {
-            y += sy;
-            next_y += step_y;
-        }
-        if !open(at(x, y)) {
-            return false;
-        }
-    }
-    true
+    sight::sees(in_tiles(eye), tile, |p| opaque.contains(&p))
 }
 
 /// Rebuild the shadows when the eye moves a pixel or a wall or door changes.

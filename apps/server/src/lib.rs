@@ -1,5 +1,7 @@
 //! The dedicated server as a library, so tests can run it in-process.
 
+mod sight;
+
 use std::time::Duration;
 
 use bevy::app::ScheduleRunnerPlugin;
@@ -103,7 +105,9 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
             send_status,
             send_panels,
         ),
-    );
+    )
+    // What each client is sent follows what its mob sees, once a tick, after the tick.
+    .add_systems(FixedPostUpdate, sight::update_sight);
     app
 }
 
