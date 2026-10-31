@@ -17,6 +17,7 @@ mod alarm_panel;
 mod audio;
 mod hud;
 mod lighting;
+mod scaling;
 mod sprites;
 mod storage_panel;
 mod wire_panel;
@@ -63,6 +64,8 @@ struct Args {
     name: Option<String>,
     /// Save a screenshot here a few seconds after joining, then quit (for checking).
     screenshot: Option<String>,
+    /// Window size in logical pixels, as `WIDTHxHEIGHT`.
+    size: Option<(f32, f32)>,
 }
 
 #[derive(Resource)]
@@ -133,6 +136,9 @@ fn main() {
                 .set(WindowPlugin {
                     primary_window: Some(Window {
                         title: format!("rust-station13 (protocol {})", rs13_network::PROTOCOL_VERSION),
+                        resolution: args.size.map_or_else(default, |(w, h)| {
+                            bevy::window::WindowResolution::new(w as u32, h as u32)
+                        }),
                         ..default()
                     }),
                     ..default()
@@ -140,7 +146,12 @@ fn main() {
                 // Crisp pixel art.
                 .set(ImagePlugin::default_nearest()),
         )
-        .add_plugins((ClientNetworkPlugin, audio::SoundPlugin, lighting::LightingPlugin))
+        .add_plugins((
+            ClientNetworkPlugin,
+            audio::SoundPlugin,
+            lighting::LightingPlugin,
+            scaling::ScalingPlugin,
+        ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
@@ -158,7 +169,11 @@ fn main() {
         .init_resource::<MessageLog>()
         .add_systems(
             Startup,
-            ((sprites::load_atlas, hud::spawn_hud).chain(), setup, spawn_panel),
+            (
+                (sprites::load_atlas, hud::spawn_hud).chain(),
+                (setup, scaling::spawn_world_view).chain(),
+                spawn_panel,
+            ),
         )
         .add_systems(
             Update,
@@ -185,7 +200,7 @@ fn main() {
                     sprites::animate,
                 )
                     .chain(),
-                (fit_camera, follow_own_player),
+                follow_own_player,
                 (
                     hud::update_hud,
                     update_tip_line,
@@ -209,6 +224,7 @@ fn parse_args() -> Args {
         russian: false,
         name: None,
         screenshot: None,
+        size: None,
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
@@ -216,6 +232,12 @@ fn parse_args() -> Args {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
+            "--size" => {
+                args.size = it.next().and_then(|s| {
+                    let (w, h) = s.split_once('x')?;
+                    Some((w.parse().ok()?, h.parse().ok()?))
+                })
+            }
             addr => args.server = addr.parse().expect("SERVER_ADDR must look like 127.0.0.1:13013"),
         }
     }
@@ -234,6 +256,11 @@ fn setup(mut commands: Commands, server: Res<ServerAddr>) -> Result {
     let screen = hud::SCREEN_CELLS * TILE_PX;
     commands.spawn((
         Camera2d,
+        // Draws into the world image before the window is drawn (`scaling.rs`).
+        Camera {
+            order: -1,
+            ..default()
+        },
         Projection::Orthographic(OrthographicProjection {
             scaling_mode: bevy::camera::ScalingMode::Fixed {
                 width: screen,
@@ -243,13 +270,12 @@ fn setup(mut commands: Commands, server: Res<ServerAddr>) -> Result {
         }),
         WorldCamera,
     ));
-    // UI is drawn inside its camera's viewport, so the HUD and the text panel get their
-    // own camera over the whole window. It draws no world: nothing is on its layer.
+    // The window's camera: it draws the UI, which includes the world image, the HUD and the
+    // text panel. It draws no world itself: nothing is on its layer.
     commands.spawn((
         Camera2d,
         Camera {
             order: 1,
-            clear_color: ClearColorConfig::None,
             ..default()
         },
         IsDefaultUiCamera,
@@ -712,7 +738,7 @@ fn send_clicks(
     mouse: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
     window: Single<&Window, With<PrimaryWindow>>,
-    camera: Single<(&Camera, &GlobalTransform), With<WorldCamera>>,
+    camera: Single<&GlobalTransform, With<WorldCamera>>,
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     maps: Query<&MapLayer>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
@@ -729,13 +755,13 @@ fn send_clicks(
         return;
     };
     // Right of the map square is the text panel.
-    if cursor.x > window.width().min(window.height()) {
+    let square = window.width().min(window.height());
+    if cursor.x > square || square <= 0.0 {
         return;
     }
-    let (camera, camera_transform) = *camera;
-    let Ok(world) = camera.viewport_to_world_2d(camera_transform, cursor) else {
-        return;
-    };
+    // The square shows the camera's 16 cells, centred on the camera (`scaling.rs`).
+    let centre = camera.translation().truncate();
+    let world = centre + Vec2::new(cursor.x / square - 0.5, 0.5 - cursor.y / square) * scaling::SCREEN_PX;
     let tile = (
         (world.x / TILE_PX).round() as i32,
         (world.y / TILE_PX).round() as i32,
@@ -895,12 +921,30 @@ fn receive_notices(
     }
 }
 
+/// Where a gliding mob really is; its `Transform` is this snapped to the world image's
+/// pixels (`scaling.rs`).
+#[derive(Component)]
+struct Glided(Vec3);
+
 /// Slide mobs towards their server position, like BYOND's glide; other objects snap.
-fn glide(time: Res<Time>, mut movers: Query<(&GridPos, &mut Transform, Has<Player>, Option<&mut Look>)>) {
+fn glide(
+    mut commands: Commands,
+    time: Res<Time>,
+    scale: Res<scaling::PixelScale>,
+    mut movers: Query<(
+        Entity,
+        &GridPos,
+        &mut Transform,
+        Has<Player>,
+        Option<&mut Look>,
+        Option<&mut Glided>,
+    )>,
+) {
     let max_step = GLIDE_TILES_PER_SEC * TILE_PX * time.delta_secs();
-    for (pos, mut transform, is_player, look) in &mut movers {
+    for (entity, pos, mut transform, is_player, look, glided) in &mut movers {
         let target = world_pos(pos.0, transform.translation.z);
-        let offset = target - transform.translation;
+        let at = glided.as_ref().map_or(transform.translation, |g| g.0);
+        let offset = target - at;
         // People face the way they are moving (DMI order: S, N, E, W).
         if is_player
             && let Some(mut look) = look
@@ -920,8 +964,21 @@ fn glide(time: Res<Time>, mut movers: Query<(&GridPos, &mut Transform, Has<Playe
         // Teleports and large corrections snap instead of sliding across the map.
         if !is_player || offset.length() > TILE_PX * 2.0 {
             transform.translation = target;
-        } else {
-            transform.translation += offset.clamp_length_max(max_step);
+            if glided.is_some() {
+                commands.entity(entity).remove::<Glided>();
+            }
+            continue;
+        }
+        let at = at + offset.clamp_length_max(max_step);
+        let snapped = Vec3::new(scale.snap(at.x), scale.snap(at.y), at.z);
+        if transform.translation != snapped {
+            transform.translation = snapped;
+        }
+        match glided {
+            Some(mut g) => g.0 = at,
+            None => {
+                commands.entity(entity).insert(Glided(at));
+            }
         }
     }
 }
@@ -932,7 +989,7 @@ fn follow_own_player(
 ) {
     // The player stands in the middle of the 15 x 15 view: half a cell left of the
     // screen's centre (the HUD column is on the right) and half a cell above it (the
-    // HUD row is below).
+    // HUD row is below). The player's position is already on the world image's pixels.
     if let Ok(player) = own.single() {
         camera.translation.x = player.translation.x + TILE_PX / 2.0;
         camera.translation.y = player.translation.y - TILE_PX / 2.0;
@@ -947,22 +1004,6 @@ fn update_tip_line(tip: Res<hud::HudTip>, mut text: Single<&mut Text, With<TipLi
         } else {
             tip.0.clone()
         };
-    }
-}
-
-/// The map is drawn in a square on the left, as large as the window's shorter side,
-/// 16 cells across: the 15 x 15 view plus the HUD row and column.
-fn fit_camera(
-    window: Single<&Window, With<PrimaryWindow>>,
-    mut camera: Single<&mut Camera, With<WorldCamera>>,
-) {
-    let size = window.physical_width().min(window.physical_height()).max(1);
-    if camera.viewport.as_ref().map(|v| v.physical_size) != Some(UVec2::splat(size)) {
-        camera.viewport = Some(bevy::camera::Viewport {
-            physical_position: UVec2::ZERO,
-            physical_size: UVec2::splat(size),
-            ..default()
-        });
     }
 }
 
