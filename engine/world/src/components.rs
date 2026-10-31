@@ -55,6 +55,21 @@ impl Facing {
             NorthWest => 7,
         })
     }
+
+    /// The direction this facing points.
+    pub fn dir(self) -> crate::Dir {
+        use crate::Dir::*;
+        match self.0 {
+            1 => North,
+            2 => East,
+            3 => West,
+            4 => SouthEast,
+            5 => SouthWest,
+            6 => NorthEast,
+            7 => NorthWest,
+            _ => South,
+        }
+    }
 }
 
 /// Drawn this many pixels east and north of its tile (BYOND `pixel_x`, `pixel_y`): how a map

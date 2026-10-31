@@ -68,7 +68,8 @@ fn two_clients_move_in_one_room() {
         server,
         Dir::East,
         Extra {
-            examine: Some("crowbar"),
+            // In sight of the spawn: what a mob can't see isn't sent to it at all.
+            examine: Some("wrench"),
             ..Extra::default()
         },
     );
@@ -124,8 +125,8 @@ fn two_clients_move_in_one_room() {
 
     // The examine answer went only to the bot that asked.
     assert_eq!(ids(&first), ["examine", "say"]);
-    assert_eq!(en.format_msg(&first.notices[0]), "That's a crowbar.");
-    assert_eq!(ru.format_msg(&first.notices[0]), "Это лом.");
+    assert_eq!(en.format_msg(&first.notices[0]), "That's a wrench.");
+    assert_eq!(ru.format_msg(&first.notices[0]), "Это гаечный ключ.");
 
     // The second bot's name was cleaned up by the server, and both heard its words.
     assert_eq!(ids(&second), ["say"]);
