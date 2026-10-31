@@ -26,8 +26,6 @@
 //      1 /obj/item/weapon/reagent_containers/spray/pepper
 //      1 /obj/item/weapon/stamp/ce
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
-//      2 /obj/item/weapon/tank/jetpack
-//      1 /obj/item/weapon/tank/jetpack/ce
 //      2 /obj/machinery/access_button
 //      1 /obj/machinery/air_sensor
 //      1 /obj/machinery/airlock_sensor
@@ -79,7 +77,7 @@
         '#': (tile: (id: "wall", solid: true)),
         '$': (tile: (id: "floor"), objects: ["smes", (id: "cable", ends: [West])]),
         '%': (tile: (id: "floor"), objects: [(id: "cable", ends: [North])]),
-        '&': (tile: (id: "floor"), objects: ["apc", (id: "cable", ends: [South]), "rack", "breath-mask", "space-suit", "space-helmet"]),
+        '&': (tile: (id: "floor"), objects: ["apc", (id: "cable", ends: [South]), "rack", "jetpack-ce", "breath-mask", "space-suit", "space-helmet"]),
         '*': (tile: (id: "floor"), objects: ["air-alarm", (id: "table", dir: West, state: Some("tabledir"))]),
         '+': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South])]),
         ',': (tile: (id: "plating")),
@@ -271,8 +269,8 @@
         'Е': (tile: (id: "floor"), objects: ["rack", "space-suit", "space-helmet", "breath-mask"]),
         'Ж': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), "rack", "space-suit", "space-helmet", "breath-mask"]),
         'З': (tile: (id: "floor"), objects: ["air-alarm", "rack", "space-suit", "space-helmet", "breath-mask"]),
-        'И': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir"))]),
-        'Й': (tile: (id: "floor"), objects: [(id: "light", dir: North), (id: "table", dir: SouthEast, state: Some("tabledir"))]),
+        'И': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "jetpack"]),
+        'Й': (tile: (id: "floor"), objects: [(id: "light", dir: North), (id: "table", dir: SouthEast, state: Some("tabledir")), "jetpack"]),
         'К': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthEast), "oxygen-canister"]),
         'Л': (tile: (id: "floor"), objects: [(id: "pipe", dir: East)]),
         'М': (tile: (id: "floor"), objects: [(id: "manifold", dir: North, above_floor: true)]),

@@ -41,6 +41,9 @@
     (id: "oxygen-tank", force: 5.0, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     // Luna: 15 L at 2 atm, worn on the belt.
     (id: "emergency-oxygen", force: 7.0, size: 2, slot: "belt", tank: (volume: 15.0, pressure: 202.65, gas: "oxygen")),
+    // Luna `tank/jetpack`: an oxygen tank like the big one, worn on the back; w_class 4.
+    (id: "jetpack", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
+    (id: "jetpack-ce", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     (id: "grey-jumpsuit", force: 0.0, slot: "uniform"),
     (id: "black-shoes", force: 0.0, slot: "shoes", slowdown: -1.0),
     (id: "insulated-gloves", force: 0.0, size: 2, slot: "gloves", siemens: 0.0),

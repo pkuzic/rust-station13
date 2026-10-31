@@ -101,6 +101,22 @@
             "": (dmi: "icons/mob/back.dmi", state: "oxygen"),
             "lying": (dmi: "icons/mob/back.dmi", state: "oxygen2"),
         },
+        "worn:jetpack": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack0"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack02"),
+        },
+        "worn:jetpack-on": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack1"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack12"),
+        },
+        "worn:jetpack-ce": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack0_ce"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack0_ce2"),
+        },
+        "worn:jetpack-ce-on": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack1_ce"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack1_ce2"),
+        },
         "worn:breath-mask": {
             "": (dmi: "icons/mob/mask.dmi", state: "breath"),
             "lying": (dmi: "icons/mob/mask.dmi", state: "breath2"),
@@ -421,6 +437,14 @@
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
+        "jetpack": {
+            "": (dmi: "icons/obj/tank.dmi", state: "jetpack0"),
+            "on": (dmi: "icons/obj/tank.dmi", state: "jetpack1"),
+        },
+        "jetpack-ce": {
+            "": (dmi: "icons/obj/tank.dmi", state: "jetpack0_ce"),
+            "on": (dmi: "icons/obj/tank.dmi", state: "jetpack1_ce"),
+        },
         "emergency-oxygen": { "": (dmi: "icons/obj/tank.dmi", state: "emergency") },
         "grey-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "grey") },
         "black-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "black") },
