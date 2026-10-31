@@ -84,6 +84,7 @@
         (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
         (path: "/obj/item/stack/sheet/mineral/plasma", id: "plasma-sheet"),
         (path: "/obj/machinery/power/port_gen/pacman", id: "pacman"),
+        (path: "/obj/structure/dispenser/oxygen", id: "tank-dispenser"),
         (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
         (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),
         (path: "/obj/item/weapon/storage/firstaid/regular", id: "first-aid-kit"),
