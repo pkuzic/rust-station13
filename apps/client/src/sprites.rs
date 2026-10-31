@@ -85,6 +85,23 @@ impl SpriteAtlas {
         ))
     }
 
+    /// Whether atlas cell `index` has a visible pixel at (`x`, `y`), counted from its top-left
+    /// corner: what a click there lands on (BYOND clicks only opaque pixels).
+    pub fn opaque_at(&self, index: usize, x: u32, y: u32) -> bool {
+        let tile = self.atlas.tile;
+        if x >= tile || y >= tile {
+            return false;
+        }
+        let Some(data) = self.source.data.as_ref() else {
+            return false;
+        };
+        let columns = self.atlas.columns.max(1) as usize;
+        let (col, row) = (index % columns, index / columns);
+        let width = self.source.width() as usize;
+        let (px, py) = (col * tile as usize + x as usize, row * tile as usize + y as usize);
+        data.get((py * width + px) * 4 + 3).is_some_and(|a| *a > 0)
+    }
+
     /// Enlarge the UI's copy of the atlas `k` times, in place.
     pub fn enlarge_ui(&self, k: u32, images: &mut Assets<Image>, layouts: &mut Assets<TextureAtlasLayout>) {
         if let (Some(enlarged), Some(mut image)) = (

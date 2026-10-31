@@ -36,6 +36,27 @@ impl Appearance {
     }
 }
 
+/// Which way a placed thing faces, as a DMI direction index (0 S, 1 N, 2 E, 3 W, 4 SE, 5 SW,
+/// 6 NE, 7 NW): the client draws that direction of its sprite (BYOND `dir`).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Facing(pub u8);
+
+impl Facing {
+    pub fn of(dir: crate::Dir) -> Self {
+        use crate::Dir::*;
+        Self(match dir {
+            South => 0,
+            North => 1,
+            East => 2,
+            West => 3,
+            SouthEast => 4,
+            SouthWest => 5,
+            NorthEast => 6,
+            NorthWest => 7,
+        })
+    }
+}
+
 /// Drawn this many pixels east and north of its tile (BYOND `pixel_x`, `pixel_y`): how a map
 /// hangs a device on the wall beside the floor tile it belongs to.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

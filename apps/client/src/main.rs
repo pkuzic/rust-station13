@@ -22,6 +22,7 @@ mod laser_panel;
 mod lighting;
 mod monitor_panel;
 mod scaling;
+mod shadows;
 mod smes_panel;
 mod sprites;
 mod storage_panel;
@@ -163,6 +164,7 @@ fn main() {
             audio::SoundPlugin,
             lighting::LightingPlugin,
             scaling::ScalingPlugin,
+            shadows::ShadowPlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
@@ -220,6 +222,7 @@ fn main() {
                 ),
                 glide,
                 (
+                    apply_facing,
                     sprites::wear_layers,
                     sprites::overlays,
                     sprites::dress,
@@ -477,6 +480,34 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
     }
 }
 
+/// The topmost visible sprite with a non-transparent pixel at `world`. Fire and beams can't
+/// be clicked (BYOND `mouse_opacity = 0`).
+fn pick_sprite(
+    world: Vec2,
+    drawn: &Query<(&NetId, &Appearance, &GlobalTransform, &Sprite, &Visibility), Without<Hidden>>,
+    atlas: &SpriteAtlas,
+) -> Option<NetId> {
+    let half = TILE_PX / 2.0;
+    drawn
+        .iter()
+        .filter(|(_, a, _, _, v)| {
+            **v != Visibility::Hidden && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+        })
+        .filter_map(|(id, _, at, sprite, _)| {
+            let centre = at.translation();
+            let (x, y) = (world.x - (centre.x - half), (centre.y + half) - world.y);
+            if !(0.0..TILE_PX).contains(&x) || !(0.0..TILE_PX).contains(&y) {
+                return None;
+            }
+            let index = sprite.texture_atlas.as_ref()?.index;
+            atlas
+                .opaque_at(index, x as u32, y as u32)
+                .then_some((*id, centre.z))
+        })
+        .max_by(|a, b| a.1.total_cmp(&b.1))
+        .map(|(id, _)| id)
+}
+
 /// Which thing on a tile a click picks: lowest rank wins.
 fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
@@ -592,6 +623,18 @@ fn add_sprites(
             since: time.elapsed_secs(),
         };
         commands.entity(entity).insert((image, transform, look));
+    }
+}
+
+/// Things placed facing a way show that direction of their sprite (BYOND `dir`).
+fn apply_facing(
+    mut objects: Query<(&rs13_world::Facing, &mut Look), Or<(Changed<rs13_world::Facing>, Added<Look>)>>,
+) {
+    for (facing, mut look) in &mut objects {
+        let facing = u32::from(facing.0);
+        if look.facing != facing {
+            look.facing = facing;
+        }
     }
 }
 
@@ -784,6 +827,8 @@ fn send_clicks(
     window: Single<&Window, With<PrimaryWindow>>,
     camera: Single<&GlobalTransform, With<WorldCamera>>,
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
+    drawn: Query<(&NetId, &Appearance, &GlobalTransform, &Sprite, &Visibility), Without<Hidden>>,
+    atlas: Res<SpriteAtlas>,
     maps: Query<&MapLayer>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     hud: Query<&bevy::picking::hover::Hovered>,
@@ -811,14 +856,18 @@ fn send_clicks(
         (world.y / TILE_PX).round() as i32,
     );
 
-    // Items first, then machines, doors and tables, people, and bare pipes last.
-    let target = objects
-        .iter()
-        .filter(|(_, pos, a)| {
-            (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
-        })
-        .min_by_key(|(_, _, a)| click_rank(a))
-        .map(|(id, ..)| *id);
+    // What is drawn on top under the cursor, where its sprite isn't see-through (BYOND's
+    // click rule); failing that, the tile's things by rank: items first, then machines,
+    // doors and tables, people, and bare pipes last.
+    let target = pick_sprite(world, &drawn, &atlas).or_else(|| {
+        objects
+            .iter()
+            .filter(|(_, pos, a)| {
+                (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+            })
+            .min_by_key(|(_, _, a)| click_rank(a))
+            .map(|(id, ..)| *id)
+    });
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     // Nothing there: click the tile itself (to lay cable, pry up floor tiles).
     let Some(target) = target else {

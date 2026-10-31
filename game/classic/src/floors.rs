@@ -34,6 +34,12 @@ pub fn intact(map: &MapLayer, pos: TilePos) -> bool {
     map.0.tile(pos).is_some_and(|t| t.id == FLOOR)
 }
 
+/// Whether things under the floor on `pos` are covered: by floor tiles, or by a wall (Luna
+/// walls are `intact` too, so pipes and cables in them are hidden).
+pub fn covered(map: &MapLayer, pos: TilePos) -> bool {
+    intact(map, pos) || map.0.is_solid(pos)
+}
+
 /// Floors, and the piles of things laid on them: floor tiles, lengths of cable.
 #[derive(SystemParam)]
 pub struct FloorWork<'w, 's> {
@@ -173,7 +179,7 @@ pub fn hide_under_floors(
 ) {
     let Some(map) = map.iter().next() else { return };
     for (entity, pos, hidden) in &things {
-        match (intact(map, pos.0), hidden) {
+        match (covered(map, pos.0), hidden) {
             (true, false) => {
                 commands.entity(entity).insert(Hidden);
             }

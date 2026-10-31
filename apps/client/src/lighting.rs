@@ -46,7 +46,7 @@ impl Plugin for LightingPlugin {
 
 /// Whether lighting is drawn (F4).
 #[derive(Resource)]
-struct LightingOn(bool);
+pub struct LightingOn(pub bool);
 
 /// The darkness over the map.
 #[derive(Component)]
@@ -114,8 +114,6 @@ pub struct Sight {
 
 /// How far the player sees: Luna's 15 × 15 view.
 const VIEW_RANGE: i32 = 7;
-/// Brightness of a tile seen only through meson scanners.
-const MESON_LIGHT: f32 = 0.22;
 
 /// The last light worked out, kept so moving about only redoes what the player sees.
 #[derive(Resource, Default)]
@@ -223,13 +221,17 @@ fn update_lighting(
     }
     cache.sight = Some(view);
 
-    // Line of sight from our tile, within the view (as speech carries).
+    // Tiles whose centre our eye can't see, within the view: what lies on them isn't drawn.
+    // The darkness itself is drawn as shadows (`shadows.rs`).
     let mut unseen = HashSet::new();
     if let Some((pos, _)) = me {
+        let eye = Vec2::new(pos.0.x as f32, pos.0.y as f32) * TILE_PX;
+        let walls = crate::shadows::opaque_near(map, pos.0, opaque.iter().copied());
         for y in 0..height as i32 {
             for x in 0..width as i32 {
                 let tile = TilePos::new(x, y, map.z);
-                if !rs13_classic::speech::can_see(map, &opaque, pos.0, tile, VIEW_RANGE) {
+                let far = (tile.x - pos.0.x).abs() > VIEW_RANGE || (tile.y - pos.0.y).abs() > VIEW_RANGE;
+                if far || !crate::shadows::sees(eye, tile, &walls) {
                     unseen.insert(tile);
                 }
             }
@@ -241,20 +243,11 @@ fn update_lighting(
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
-            let tile = TilePos::new(x, y, map.z);
-            let level = if !unseen.contains(&tile) {
-                cache.levels[(y as u32 * width + x as u32) as usize].map(|c| c.max(MIN_LIGHT))
-            } else if meson {
-                [MESON_LIGHT; 3]
-            } else {
-                [0.0; 3]
-            };
+            let level = cache.levels[(y as u32 * width + x as u32) as usize].map(|c| c.max(MIN_LIGHT));
             for c in level {
                 data.push((c * 255.0).round() as u8);
             }
-            // Alpha marks whether the tile is seen at all: the shader cuts unseen tiles off
-            // sharply, so the soft light never shows what lies beyond a wall.
-            data.push(if unseen.contains(&tile) && !meson { 0 } else { 255 });
+            data.push(255);
         }
     }
     sight.unseen = unseen;

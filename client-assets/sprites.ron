@@ -689,20 +689,20 @@
             "1-2-4": (dmi: "icons/obj/atmospherics/pipe_manifold.dmi", state: "manifold", dir: 3),
         },
         "vent": {
-            "on": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "out", dir: 0),
-            "off": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "off", dir: 0),
+            "on": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "out"),
+            "off": (dmi: "icons/obj/atmospherics/vent_pump.dmi", state: "off"),
         },
         "scrubber": {
-            "on": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "on", dir: 0),
-            "off": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "off", dir: 0),
+            "on": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "on"),
+            "off": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "off"),
         },
         "pump": {
-            "on": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: 2),
-            "off": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: 2),
+            "on": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on"),
+            "off": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off"),
         },
         "valve": {
-            "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1", dir: 2),
-            "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0", dir: 2),
+            "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1"),
+            "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0"),
         },
         // Gas filters: on or off, facing (dir index: south 0, north 1, east 2, west 3).
         "gas-filter": {
@@ -716,8 +716,8 @@
             "off-west": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(3)),
         },
         "injector": {
-            "on": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "on", dir: 0),
-            "off": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "off", dir: 0),
+            "on": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "on"),
+            "off": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "off"),
         },
         // Thermo-electric generator: its lights show its output (teg-op1 … teg-op11).
         "teg": {
@@ -738,11 +738,11 @@
             "freezer": (dmi: "icons/obj/Cryogenic2.dmi", state: "freezer"),
             "freezer_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "freezer_1"),
         },
-        "generator-input": { "": (dmi: "icons/obj/atmospherics/heat_exchanger.dmi", state: "intact", dir: 0) },
-        "thermal-plate": { "": (dmi: "icons/obj/atmospherics/cold_sink.dmi", state: "intact_off", dir: 0) },
+        "generator-input": { "": (dmi: "icons/obj/atmospherics/heat_exchanger.dmi", state: "intact") },
+        "thermal-plate": { "": (dmi: "icons/obj/atmospherics/cold_sink.dmi", state: "intact_off") },
         // The engine core (engine.md).
         "supermatter": { "": (dmi: "icons/obj/machines/engine.dmi", state: "darkmatter") },
-        "engine-laser": { "": (dmi: "icons/obj/machines/engine.dmi", state: "laser", dir: Some(0)) },
+        "engine-laser": { "": (dmi: "icons/obj/machines/engine.dmi", state: "laser") },
         "laser-beam": {
             "south": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(0)),
             "north": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(1)),
@@ -753,14 +753,14 @@
             "atmos": (dmi: "icons/obj/computer.dmi", state: "atmos"),
             "unpowered": (dmi: "icons/obj/computer.dmi", state: "c_unpowered"),
         },
-        "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact", dir: 0) },
-        "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
+        "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact") },
+        "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact") },
         // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).
-        "air-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact", dir: 2) },
-        "oxygen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/blue_pipe_tank.dmi", state: "intact", dir: 2) },
-        "nitrogen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact", dir: 2) },
-        "carbon-dioxide-pressure-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact", dir: 2) },
-        "plasma-pressure-tank": { "": (dmi: "icons/obj/atmospherics/orange_pipe_tank.dmi", state: "intact", dir: 2) },
+        "air-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact") },
+        "oxygen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/blue_pipe_tank.dmi", state: "intact") },
+        "nitrogen-pressure-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact") },
+        "carbon-dioxide-pressure-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact") },
+        "plasma-pressure-tank": { "": (dmi: "icons/obj/atmospherics/orange_pipe_tank.dmi", state: "intact") },
         // Canisters: one colour per gas; grey is air.
         "canister": {
             "": (dmi: "icons/obj/atmos.dmi", state: "grey"),
