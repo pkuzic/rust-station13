@@ -273,7 +273,7 @@ fn update_lighting(
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
-            let level = wall_light(TilePos::new(x, y, map.z), &raw, &blocks, |p| {
+            let level = wall_light(TilePos::new(x, y, map.z), raw, blocks, |p| {
                 me.is_some() && !unseen.contains(&p)
             })
             .unwrap_or_else(|| raw(x, y))
