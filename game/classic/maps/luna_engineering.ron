@@ -12,7 +12,6 @@
 //      4 /obj/item/clothing/shoes/magnetic
 //      3 /obj/item/clothing/suit/fire
 //      3 /obj/item/device/flash
-//      3 /obj/item/device/flashlight
 //      1 /obj/item/device/radio
 //      1 /obj/item/device/radio/beacon
 //      5 /obj/item/device/radio/intercom
@@ -229,8 +228,8 @@
         'õ': (tile: (id: "space"), objects: [(id: "pipe", dir: NorthEast, above_floor: true)]),
         'Α': (tile: (id: "floor"), objects: [(id: "table", dir: South, state: Some("table")), (id: "pipe", dir: South)]),
         'Β': (tile: (id: "floor"), objects: [(id: "light", dir: South), "apc", (id: "cable", ends: [East])]),
-        'Γ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), (id: "cable", ends: [South, West]), "utility-belt-loaded"]),
-        'Δ': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "utility-belt-loaded"]),
+        'Γ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), (id: "cable", ends: [South, West]), "flashlight", "utility-belt-loaded"]),
+        'Δ': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "flashlight", "utility-belt-loaded"]),
         'Ε': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'Ζ': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "firedoor", dir: South), (id: "airlock", access: ["construction"])]),
         'Η': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical"]),

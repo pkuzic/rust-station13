@@ -52,6 +52,14 @@
     (id: "light-bulbs-box", force: 0.0, storage: (),
         contents: ["light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb", "light-bulb"]),
 
+    // Hand-held lights (luna:code/game/objects/items/devices/flashlight2.dm), lit by
+    // using them in hand (`docs/reference/flashlights.md`). Desk lamps start lit.
+    (id: "flashlight", force: 0.0, size: 2, slot: "belt", conducts: true),
+    (id: "penlight", force: 0.0, size: 2, slot: "belt", conducts: true),
+    (id: "lantern", force: 0.0, size: 2, slot: "belt", conducts: true),
+    (id: "desk-lamp", force: 0.0, size: 4, conducts: true),
+    (id: "desk-lamp-green", force: 0.0, size: 4, conducts: true),
+
     // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's analyzers
     // and scanners have no prototype yet and are left out. Luna's electrical
     // toolbox swaps its third coil for insulated gloves one time in ten; ours always has
@@ -61,11 +69,11 @@
     (id: "toolbox-electrical", force: 10.0, size: 4, storage: (),
         contents: ["screwdriver", "wirecutters", "crowbar", "cable-coil", "cable-coil", "cable-coil"]),
     (id: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"])),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder", "flashlight", "penlight", "lantern"])),
     (id: "utility-belt-loaded", base: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"]),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder", "flashlight", "penlight", "lantern"]),
         contents: ["screwdriver", "wrench", "welder", "crowbar", "wirecutters", "cable-coil"]),
     (id: "utility-belt-full", base: "utility-belt", force: 0.0, slot: "belt",
-        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder"]),
+        storage: (holds: ["crowbar", "screwdriver", "wirecutters", "wrench", "multitool", "cable-coil", "welder", "flashlight", "penlight", "lantern"]),
         contents: ["screwdriver", "wrench", "welder", "crowbar", "wirecutters", "cable-coil", "multitool"]),
 ]

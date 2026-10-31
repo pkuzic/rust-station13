@@ -18,7 +18,8 @@ Tests: `engine/simulation/src/lighting.rs` (the rules) and `game/classic/tests/l
 
 A light has a red, a green and a blue strength, in tiles of reach. A lit fixture gives off
 its light (`LightSource`, replicated); an unlit, empty, burnt out or broken one gives off
-none.
+none. Flashlights, lanterns and desk lamps give off light too, from their own tile or from whoever
+carries them (`flashlights.md`).
 
 | Prototype | Luna type | Red, green, blue |
 |---|---|---|
@@ -96,7 +97,7 @@ made-up two-deck world.
   - darkness hiding things from players (the server knows where it is dark, but no rule
     uses it yet);
   - red alert lighting (`isalert`, fire alarm lights);
-  - other things that glow in Luna: lit welding tools, flashlights, fires, computers,
-    igniters, floodlights;
+  - other things that glow in Luna: lit welding tools, fires, computers, igniters,
+    floodlights (flashlights and desk lamps do: `flashlights.md`);
   - floor lights;
   - light from a lower deck seen through open space (only the light levels are carried).

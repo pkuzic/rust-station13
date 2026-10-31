@@ -26,7 +26,7 @@ connect.
 | `HandsView { left, right, active }` | mobs | Held items as `NetId`s and the active hand |
 | `DisplayName(String)` | people | Character name (English only) |
 | `AtmosView { pressure_dkpa }` | the map entity | Pressure of every tile, 0.1 kPa, twice a second, for the F3 debug overlay |
-| `LightSource([u8; 3])` | lit light fixtures | Red, green and blue strength in tiles of reach; clients compute the light on each tile from these (`docs/reference/lighting.md`) |
+| `LightSource([u8; 3])` | lit light fixtures and flashlights on the floor; people carrying lit flashlights (summed) | Red, green and blue strength in tiles of reach; clients compute the light on each tile from these (`docs/reference/lighting.md`) |
 | `Opaque` | closed airlocks | Blocks sight and light through its tile |
 
 An item in a hand has no `GridPos`; removing the component replicates, and clients

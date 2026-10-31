@@ -90,4 +90,9 @@
     "breath-mask": (gender: neuter, sg: (nom: "breath mask", indef: "a breath mask"), pl: Some((nom: "breath masks"))),
     "space-suit": (gender: neuter, sg: (nom: "space suit", indef: "a space suit"), pl: Some((nom: "space suits"))),
     "space-helmet": (gender: neuter, sg: (nom: "space helmet", indef: "a space helmet"), pl: Some((nom: "space helmets"))),
+    "flashlight": (gender: neuter, sg: (nom: "flashlight", indef: "a flashlight"), pl: Some((nom: "flashlights"))),
+    "penlight": (gender: neuter, sg: (nom: "penlight", indef: "a penlight"), pl: Some((nom: "penlights"))),
+    "lantern": (gender: neuter, sg: (nom: "lantern", indef: "a lantern"), pl: Some((nom: "lanterns"))),
+    "desk-lamp": (gender: neuter, sg: (nom: "desk lamp", indef: "a desk lamp"), pl: Some((nom: "desk lamps"))),
+    "desk-lamp-green": (gender: neuter, sg: (nom: "green desk lamp", indef: "a green desk lamp"), pl: Some((nom: "green desk lamps"))),
 }

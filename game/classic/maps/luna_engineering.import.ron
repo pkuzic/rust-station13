@@ -68,6 +68,11 @@
         (path: "/obj/item/weapon/wirecutters", id: "wirecutters"),
         (path: "/obj/item/device/multitool", id: "multitool"),
         (path: "/obj/item/weapon/weldingtool", id: "welder"),
+        (path: "/obj/item/device/flashlight", id: "flashlight"),
+        (path: "/obj/item/device/flashlight/pen", id: "penlight"),
+        (path: "/obj/item/device/flashlight/lantern", id: "lantern"),
+        (path: "/obj/item/device/flashlight/lamp", id: "desk-lamp"),
+        (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
 
         // Tables keep the look the mapper chose: an icon state and a direction.
