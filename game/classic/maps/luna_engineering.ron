@@ -4,7 +4,6 @@
 //
 // Skipped (no prototype yet):
 //      1 /obj/effect/landmark/disk_spawn
-//      4 /obj/item/clothing/glasses/meson
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      3 /obj/item/device/flash
 //      2 /obj/item/stack/sheet/glass
@@ -113,7 +112,7 @@
         'R': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, East]), (id: "cable", ends: [North, West])]),
         'S': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "first-aid-kit"]),
         'T': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "high-power-cell", "high-power-cell"]),
-        'U': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East), (id: "table", dir: NorthWest, state: Some("tabledir")), "wrench", "magboots", "magboots"]),
+        'U': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East), (id: "table", dir: NorthWest, state: Some("tabledir")), "wrench", "magboots", "magboots", "meson-glasses"]),
         'V': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: North)]),
         'W': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: East)]),
         'X': (tile: (id: "r-wall", solid: true)),
@@ -164,9 +163,9 @@
         'Ë': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), "metal-sheet"]),
         'Ì': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir"))]),
         'Í': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir"))]),
-        'Î': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), (id: "light", dir: East)]),
+        'Î': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "light", dir: East)]),
         'Ï': (tile: (id: "wall", solid: true), objects: [(id: "pipe", dir: NorthEast)]),
-        'Ð': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "air-alarm", (id: "scrubber", dir: West, above_floor: true)]),
+        'Ð': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", "air-alarm", (id: "scrubber", dir: West, above_floor: true)]),
         'Ñ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "vent", dir: North)]),
         'Ò': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: South)]),
         'Ó': (tile: (id: "plating"), objects: [(id: "injector", dir: East, vars: {"volume_rate": "150", "on": "1"})]),
@@ -175,12 +174,12 @@
         'Ö': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, East])]),
         'Ø': (tile: (id: "floor"), objects: [(id: "firedoor", dir: South), (id: "airlock", access: ["engine_equip"]), (id: "cable", ends: [East, West])]),
         'Ù': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "cable", ends: [South, West])]),
-        'Ú': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: East), (id: "cable", ends: [North, South]), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), (id: "pipe", dir: South)]),
+        'Ú': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: East), (id: "cable", ends: [North, South]), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "pipe", dir: South)]),
         'Û': (tile: (id: "plating"), objects: [(id: "injector", dir: South, vars: {"on": "1"})]),
         'Ü': (tile: (id: "floor"), objects: [(id: "pipe", dir: North), "meter"]),
         'Ý': (tile: (id: "floor"), objects: ["closet-tools"]),
         'Þ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North]), "apc"]),
-        'ß': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "intercom"]),
+        'ß': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", "intercom"]),
         'à': (tile: (id: "plating"), objects: [(id: "manifold", dir: West, above_floor: true)]),
         'á': (tile: (id: "plating"), objects: [(id: "pipe", dir: NorthWest)]),
         'â': (tile: (id: "floor"), objects: [(id: "gas-filter", dir: South, vars: {"filter_type": "1", "target_pressure": "5000", "on": "1"})]),
@@ -268,7 +267,7 @@
         'Б': (tile: (id: "floor"), objects: ["air-alarm", (id: "vent", dir: North)]),
         'В': (tile: (id: "floor"), objects: [(id: "firedoor", dir: South), (id: "airlock", access: ["engine"])]),
         'Г': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South]), "light-switch"]),
-        'Д': (tile: (id: "floor"), objects: ["rack", "black-gloves", "firesuit", "oxygen-tank", "gas-mask", "hardhat-red"]),
+        'Д': (tile: (id: "floor"), objects: ["rack", "black-gloves", "firesuit", "oxygen-tank", "meson-glasses", "gas-mask", "hardhat-red"]),
         'Е': (tile: (id: "floor"), objects: [(id: "vent", dir: North), "tank-dispenser"]),
         'Ж': (tile: (id: "floor"), objects: [(id: "light", dir: North), "rack", "space-suit", "space-helmet", "breath-mask"]),
         'З': (tile: (id: "floor"), objects: ["rack", "space-suit", "space-helmet", "breath-mask"]),
@@ -299,7 +298,7 @@
         'а': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "pipe", dir: East)]),
         'б': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: NorthWest)]),
         'в': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "cable", ends: [North, South]), "intercom", (id: "cable", ends: [North, East]), "crate-radiation"]),
-        'г': (tile: (id: "floor"), spawn: true, objects: [(id: "cable", ends: [North, East]), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), (id: "cable", ends: [South, West])]),
+        'г': (tile: (id: "floor"), spawn: true, objects: [(id: "cable", ends: [North, East]), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "cable", ends: [South, West])]),
         'д': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "cable", ends: [South, East])]),
         'е': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "pipe", dir: South), (id: "firedoor", dir: South), (id: "cable", ends: [North, South]), (id: "airlock", access: ["engine"])]),
         'ж': (tile: (id: "floor"), objects: [(id: "valve", dir: South), (id: "cable", ends: [East, West])]),

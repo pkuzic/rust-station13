@@ -40,7 +40,7 @@ pub enum Cell {
 }
 
 /// Luna's layout (`code/game/hud.dm` `ui_*`): cell, screen x, screen y.
-const LAYOUT: [(Cell, u8, u8); 21] = [
+const LAYOUT: [(Cell, u8, u8); 23] = [
     (Cell::Slot(Slot::Mask), 1, 2),
     (Cell::Slot(Slot::Head), 2, 2),
     (Cell::Slot(Slot::Back), 3, 2),
@@ -50,6 +50,8 @@ const LAYOUT: [(Cell, u8, u8); 21] = [
     (Cell::Hand(Hand::Left), 3, 1),
     (Cell::Slot(Slot::Shoes), 4, 1),
     (Cell::Slot(Slot::Gloves), 5, 1),
+    (Cell::Slot(Slot::Ears), 6, 1),
+    (Cell::Slot(Slot::Glasses), 7, 1),
     (Cell::Slot(Slot::Id), 1, 0),
     (Cell::Slot(Slot::Uniform), 2, 0),
     (Cell::Slot(Slot::Belt), 3, 0),
@@ -111,6 +113,8 @@ fn cell_state(
         Cell::Slot(Slot::Id) => "equip-sw".into(),
         Cell::Slot(Slot::Uniform) => "center".into(),
         Cell::Slot(Slot::Belt) => "belt".into(),
+        Cell::Slot(Slot::Ears) => "ears".into(),
+        Cell::Slot(Slot::Glasses) => "glasses".into(),
         Cell::Hand(Hand::Right) => "equip-w".into(),
         Cell::Hand(Hand::Left) => "equip-e".into(),
         Cell::SwapHands => match hands.map(|h| h.active) {

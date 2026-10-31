@@ -251,7 +251,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if let Some(cell) = crate::cells::kind(proto) {
         item.insert(cell);
     }
-    if proto == crate::radio::RADIO {
+    if proto == crate::radio::RADIO || proto == crate::radio::HEADSET {
         item.insert(crate::radio::Radio::handheld());
     }
     if crate::jetpacks::is_jetpack(proto) {

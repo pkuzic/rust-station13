@@ -44,6 +44,7 @@ shimmer as the view scrolls. Smooth sampling instead blurs everything. So the cl
 | Mask, head, back | (1, 2), (2, 2), (3, 2) | `equip` N, `hair`, `equip` NE |
 | Right hand, suit, left hand | (1, 1), (2, 1), (3, 1) | `equip` W, `equip` S, `equip` E |
 | Shoes, gloves | (4, 1), (5, 1) | `shoes`, `gloves` |
+| Ears, glasses | (6, 1), (7, 1) | `ears`, `glasses` |
 | ID, uniform, belt | (1, 0), (2, 0), (3, 0) | `equip` SW, `center`, `belt` |
 | Swap hands | (6, 0) | `hand`: S when the left hand is active, N for the right |
 | Drop | (7, 0) | `act_drop` |
@@ -57,10 +58,10 @@ shimmer as the view scrolls. Smooth sampling instead blurs everything. So the cl
 **Inventory slots:**
 - The right hand is on the left of the screen: you face the player.
 - The slots overlap the bottom-left corner of the map, as in Luna.
-- Luna hides shoes and gloves behind an "other" toggle. We show them all the time.
+- Luna hides shoes, gloves, ears and glasses behind an "other" toggle. We show them all the time.
 
 **Left out, with nothing behind them yet:**
-- pockets, ears and glasses slots;
+- pockets;
 - throw, pull and resist buttons;
 - sleep and rest indicators.
 

@@ -118,6 +118,8 @@ hud-slot = { $slot ->
         [shoes] Обувь
         [back] Спина
         [belt] Пояс
+        [glasses] Очки
+        [ears] Уши
        *[id] ID
     }
 

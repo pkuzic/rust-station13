@@ -30,4 +30,5 @@ Sources: `luna:code/game/objects/radio/radio.dm`, `luna:code/game/objects/radio/
 | Receiving | every listening radio on the frequency plays it within 1 tile (radio) or 7 (intercom) in sight; a mob hears each message once | keep |
 | Format | `[145.9] John Smith says, "Hello."` | keep, with the frequency first |
 | Speaker switch, frequency, wires, two-a-second limit | none | need the radio window; the limit drops messages |
-| Headsets and department channels | none | no ears slot yet (a shared change) |
+| Headsets | the engineering headset, worn on the ears: `;` talks into it (heard directly within a tile), and it plays the common channel to its wearer and anyone beside them. Engineer spawn points get one, as Luna's engineers start with one | keep |
+| Department channels | none | Luna's humans can't use them either: its say code only handles `:e` and the rest for robots |

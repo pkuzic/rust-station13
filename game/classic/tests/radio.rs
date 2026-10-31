@@ -148,3 +148,33 @@ fn an_intercom_with_its_microphone_on_passes_on_what_it_hears() {
         "said three tiles from an open microphone"
     );
 }
+
+fn wear_headset(app: &mut App, mob: Entity) {
+    let headset = spawn_object(app.world_mut(), &ObjectSpec::new("headset-eng"), at(1)).unwrap();
+    app.world_mut()
+        .entity_mut(headset)
+        .remove::<GridPos>()
+        .insert(rs13_classic::equipment::WornBy(mob));
+    app.world_mut()
+        .get_mut::<rs13_classic::equipment::Equipment>(mob)
+        .unwrap()
+        .0
+        .insert(rs13_world::Slot::Ears, headset);
+}
+
+#[test]
+fn a_semicolon_talks_into_the_headset() {
+    let mut app = setup();
+    let speaker = mob(&mut app, 9);
+    let listener = mob(&mut app, 13);
+    wear_headset(&mut app, speaker);
+    wear_headset(&mut app, listener);
+    app.world_mut().run_schedule(FixedUpdate);
+    say(&mut app, speaker, "; engineering, report");
+    assert_eq!(
+        ids(&app, listener),
+        ["radio-say"],
+        "four tiles off, heard on the headset"
+    );
+    assert!(format!("{:?}", heard(&app, listener)[0]).contains("Engineering, report"));
+}
