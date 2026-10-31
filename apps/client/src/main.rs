@@ -426,6 +426,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("valve", _) => (Color::srgb(0.80, 0.30, 0.30), 12.0, 0.7),
         ("connector", _) => (Color::srgb(0.50, 0.50, 0.50), 14.0, 0.65),
         ("meter", _) => (Color::srgb(0.85, 0.85, 0.85), 10.0, 0.75),
+        // Burning air, over everything but the walls' fixtures.
+        ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
         // On the wall, above people.
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
@@ -779,7 +781,7 @@ fn send_clicks(
     // Items first, then machines, doors and tables, people, and bare pipes last.
     let target = objects
         .iter()
-        .filter(|(_, pos, _)| (pos.0.x, pos.0.y) == tile)
+        .filter(|(_, pos, a)| (pos.0.x, pos.0.y) == tile && a.sprite != "fire")
         .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);

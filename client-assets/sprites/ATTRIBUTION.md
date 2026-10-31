@@ -122,6 +122,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:on` | `icons/obj/lighting.dmi : "lampgreen-on"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
+| `fire:1` | `icons/effects/fire.dmi : "1"` | CC-BY-SA 3.0 |
+| `fire:2` | `icons/effects/fire.dmi : "2"` | CC-BY-SA 3.0 |
+| `fire:3` | `icons/effects/fire.dmi : "3"` | CC-BY-SA 3.0 |
 | `fire-alarm:fire0` | `icons/obj/monitors.dmi : "fire0"` | CC-BY-SA 3.0 |
 | `fire-alarm:fire1` | `icons/obj/monitors.dmi : "fire1"` | CC-BY-SA 3.0 |
 | `fire-alarm:firep` | `icons/obj/monitors.dmi : "firep"` | CC-BY-SA 3.0 |

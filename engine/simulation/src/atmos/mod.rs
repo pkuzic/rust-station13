@@ -1,5 +1,6 @@
 //! Atmospherics: gas mixtures, zones and flow. Design: `docs/ATMOSPHERICS.md`.
 
+pub mod fire;
 pub mod gas;
 pub mod grid;
 
