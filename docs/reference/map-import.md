@@ -62,12 +62,13 @@ counted from 0 with the top row first.
 - **Fuel tank:** the high-volume fuel tank, as an ordinary one (`welding.md`).
 - **Lights:** tube and small light fixtures facing their walls, light switches, and boxes of spare tubes and bulbs (`lights.md`).
 - **Closets:** the emergency and tool closets, the engineering lockers and the internals, radiation and RCD crates, with what Luna puts in them (`closets.md`).
+- **Firedoors:** Luna's border firedoors. None of them sets a direction on Luna's map, so all keep the default and seal the south edge of their tile (`firedoors.md`).
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Skipped for now** (84 types, listed in the generated file):
+**Skipped for now** (83 types, listed in the generated file):
 - **Atmos machines without a prototype:** filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** chairs.
-- **Machines:** computers, vending machines, the engine itself, cameras, firedoors, disposals.
+- **Machines:** computers, vending machines, the engine itself, cameras, disposals.
 - **Stairs and ladders:** multi-z.
 - **Most items.**
 

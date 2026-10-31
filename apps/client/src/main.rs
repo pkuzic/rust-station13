@@ -398,6 +398,9 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         // On the wall, above people.
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
+        // Over the airlock it shares a tile with.
+        ("firedoor", state) if state.starts_with("door0") => (Color::srgb(0.85, 0.30, 0.20), 6.0, 2.1),
+        ("firedoor", _) => (Color::srgb(0.85, 0.30, 0.20), TILE_PX - 2.0, 2.1),
         // Under what is put on them.
         (closet, _) if rs13_classic::closets::is_closet(closet) => {
             (Color::srgb(0.45, 0.50, 0.55), TILE_PX - 2.0, 0.9)
@@ -415,6 +418,9 @@ fn click_rank(appearance: &Appearance) -> u8 {
         "human" => 3,
         "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
         closet if rs13_classic::closets::is_closet(closet) => 2,
+        // A closed or moving firedoor is what gets clicked; an open one is out of the way.
+        "firedoor" if appearance.state.starts_with("door0") => 5,
+        "firedoor" => 1,
         "pipe" | "cable" => 4,
         "pump" | "vent" | "scrubber" | "valve" | "connector" | "meter" | "smes" | "apc" | "light"
         | "light-small" | "light-switch" => 1,

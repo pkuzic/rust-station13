@@ -656,5 +656,25 @@
             "crate": (dmi: "icons/obj/storage.dmi", state: "crate"),
             "crateopen": (dmi: "icons/obj/storage.dmi", state: "crateopen"),
         },
+        // Firedoors: state = open (door0), closed (door1), opening (doorc0) or closing
+        // (doorc1), and the edge it seals.
+        "firedoor": {
+            "door0-south": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door0", dir: Some(0)),
+            "door0-north": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door0", dir: Some(1)),
+            "door0-east": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door0", dir: Some(2)),
+            "door0-west": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door0", dir: Some(3)),
+            "door1-south": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door1", dir: Some(0)),
+            "door1-north": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door1", dir: Some(1)),
+            "door1-east": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door1", dir: Some(2)),
+            "door1-west": (dmi: "icons/obj/doors/door_fire2.dmi", state: "door1", dir: Some(3)),
+            "doorc0-south": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc0", dir: Some(0)),
+            "doorc0-north": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc0", dir: Some(1)),
+            "doorc0-east": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc0", dir: Some(2)),
+            "doorc0-west": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc0", dir: Some(3)),
+            "doorc1-south": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc1", dir: Some(0)),
+            "doorc1-north": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc1", dir: Some(1)),
+            "doorc1-east": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc1", dir: Some(2)),
+            "doorc1-west": (dmi: "icons/obj/doors/door_fire2.dmi", state: "doorc1", dir: Some(3)),
+        },
     },
 )

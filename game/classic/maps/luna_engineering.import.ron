@@ -32,6 +32,8 @@
 
     objects: [
         (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),
+        // Border firedoors seal the edge on the side they face (`firedoors.md`).
+        (path: "/obj/machinery/door/firedoor/border_only", id: "firedoor", dir: true),
         (path: "/obj/machinery/power/apc", id: "apc"),
         (path: "/obj/machinery/power/smes", id: "smes"),
         // Cables keep their ends (Luna's icon state, "0-1" by default).

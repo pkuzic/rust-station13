@@ -116,6 +116,7 @@ pub fn process_actions(
         mut lights,
         mut closets,
         inside,
+        mut firedoors,
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -128,6 +129,7 @@ pub fn process_actions(
         crate::lights::LightWork,
         crate::closets::ClosetWork,
         Query<(), With<crate::closets::InCloset>>,
+        crate::firedoors::FiredoorWork,
     ),
     mut commands: Commands,
 ) {
@@ -280,6 +282,17 @@ pub fn process_actions(
                     // (`meters.md`).
                     if let Some(said) = crate::meters::click(mob_pos.0, target, &meters) {
                         outbox.0.extend(said);
+                    }
+                }
+                Action::UseOn(target) if firedoors.contains(target) => {
+                    // Firedoors (`firedoors.md`), within reach: a crowbar or a lit welding tool.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    let crowbar = holding(&hands, &appearances, "crowbar");
+                    let lit = welding.lit(hands.active_item()).is_some();
+                    if let Some(outcome) = firedoors.use_on(target, crowbar, lit) {
+                        outbox.0.extend(outcome.to_mob);
                     }
                 }
                 Action::UseOn(target) if closets.contains(target) => {
