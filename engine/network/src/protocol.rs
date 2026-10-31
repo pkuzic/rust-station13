@@ -7,8 +7,8 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView,
-    Hidden, Intent, LightSource, MapLayer, MobStat, NetId, Opaque, PowerMonitorView, Slot, StorageView,
-    TilePos, WirePanelView, WornView,
+    Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PowerMonitorView, Slot,
+    StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -66,6 +66,11 @@ pub enum ActionInput {
         target: NetId,
         command: ApcCommand,
     },
+    /// A button on an open laser control computer.
+    Laser {
+        target: NetId,
+        command: LaserCommand,
+    },
     /// Close the open container.
     CloseStorage,
     /// Click on a tile with nothing on it to click: lay cable from a coil.
@@ -92,6 +97,15 @@ pub enum ApcCommand {
     ChargeMode,
     /// Engage or disengage the cover lock.
     CoverLock,
+}
+
+/// Laser control computer buttons (Luna's `lascomp` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LaserCommand {
+    /// Change every laser's power by this much (kept within 1–3000).
+    Power(i32),
+    /// Turn every laser on or off.
+    Toggle,
 }
 
 /// What a channel button sets.
@@ -142,6 +156,11 @@ pub struct ApcPanel(pub Option<ApcPanelView>);
 /// changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PowerMonitorPanel(pub Option<PowerMonitorView>);
+
+/// Server → one client: the laser control computer it has open, or `None` to close it.
+/// Sent when it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct LaserPanel(pub Option<LaserPanelView>);
 
 /// Server → one client: the container it has open, or `None` to close it. Sent when it
 /// changes.
@@ -209,6 +228,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<ApcPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PowerMonitorPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<LaserPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

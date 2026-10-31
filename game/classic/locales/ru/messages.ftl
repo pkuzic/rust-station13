@@ -502,3 +502,16 @@ monitor-apc-no-cell = { $area }: { $equipment ->
 
 # Термоэлектрический генератор (engine.md). Аргументы: $watts; $hot, $cold (K); $hotkpa, $coldkpa.
 examine-teg = Мощность: { $watts } Вт. Горячий контур: { $hot } K, { $hotkpa } кПа. Холодный контур: { $cold } K, { $coldkpa } кПа.
+
+# Ядро двигателя (engine.md). Окно управления лазерами; $on (yes/no). Предупреждения ядра
+# по рации; $frequency («145.9»).
+laser-title = Состояние лазеров
+laser-none = Лазеры не найдены
+laser-power = Мощность:
+laser-output = Излучение: { $on ->
+    [yes] включено
+   *[no] выключено
+}
+core-overload = [{ $frequency }] Компьютер управления ядром: ПЕРЕГРУЗКА ЯДРА
+core-explosion-imminent = [{ $frequency }] Компьютер управления ядром: ВЗРЫВ ЯДРА НЕМИНУЕМ
+core-safe = [{ $frequency }] Компьютер управления ядром: ядро возвращается к безопасному режиму.

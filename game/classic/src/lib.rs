@@ -42,6 +42,7 @@ pub mod rng;
 pub mod sound;
 pub mod speech;
 pub mod storage;
+pub mod supermatter;
 pub mod teg;
 pub mod time;
 pub mod welding;
@@ -93,6 +94,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
+            .init_resource::<supermatter::Beams>()
+            .init_resource::<supermatter::CoreAlerts>()
             .init_resource::<lights::AreaLights>()
             .init_resource::<lighting::TileLight>()
             .init_resource::<closets::ClosetProtos>()
@@ -119,6 +122,7 @@ impl Plugin for ClassicPlugin {
                     wires::process_wire_ops,
                     alarms::process_alarm_ops,
                     apc::process_apc_ops,
+                    supermatter::process_laser_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
                     medical::resolve_treatments,
@@ -170,12 +174,26 @@ impl Plugin for ClassicPlugin {
             .add_systems(
                 FixedUpdate,
                 (
+                    supermatter::fire_lasers,
+                    supermatter::update_beam_power,
+                    supermatter::run_supermatter,
+                    supermatter::broadcast_core_alerts,
+                )
+                    .chain()
+                    .after(machines::run_machines)
+                    .before(atmos::step_atmos)
+                    .in_set(TickSet::Simulation),
+            )
+            .add_systems(
+                FixedUpdate,
+                (
                     hands::sync_hands_view,
                     equipment::sync_worn_view,
                     wires::update_panel_views,
                     alarms::update_alarm_views,
                     apc::update_apc_views,
                     power_monitor::update_monitor_views,
+                    supermatter::update_laser_views,
                     storage::update_storage_views,
                     machines::update_machine_looks,
                     machines::update_canister_looks,
@@ -191,6 +209,10 @@ impl Plugin for ClassicPlugin {
                     firedoors::update_firedoor_looks,
                 )
                     .in_set(TickSet::Publish),
+            )
+            .add_systems(
+                FixedUpdate,
+                supermatter::update_computer_looks.in_set(TickSet::Publish),
             )
             .add_systems(FixedUpdate, fires::update_fire_sprites.in_set(TickSet::Publish))
             .add_systems(

@@ -722,6 +722,19 @@
         },
         "generator-input": { "": (dmi: "icons/obj/atmospherics/heat_exchanger.dmi", state: "intact", dir: 0) },
         "thermal-plate": { "": (dmi: "icons/obj/atmospherics/cold_sink.dmi", state: "intact_off", dir: 0) },
+        // The engine core (engine.md).
+        "supermatter": { "": (dmi: "icons/obj/machines/engine.dmi", state: "darkmatter") },
+        "engine-laser": { "": (dmi: "icons/obj/machines/engine.dmi", state: "laser", dir: Some(0)) },
+        "laser-beam": {
+            "south": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(0)),
+            "north": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(1)),
+            "east": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(2)),
+            "west": (dmi: "icons/obj/projectiles.dmi", state: "u_laser", dir: Some(3)),
+        },
+        "laser-computer": {
+            "atmos": (dmi: "icons/obj/computer.dmi", state: "atmos"),
+            "unpowered": (dmi: "icons/obj/computer.dmi", state: "c_unpowered"),
+        },
         "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact", dir: 0) },
         "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
         // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).

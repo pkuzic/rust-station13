@@ -260,6 +260,19 @@ pub struct PowerMonitorRow {
     pub charging: u8,
 }
 
+/// An open laser control computer, as shown to the player using it (Luna's `lascomp`
+/// window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LaserPanelView {
+    /// The computer.
+    pub target: NetId,
+    /// How many lasers it controls; none means "No laser found".
+    pub lasers: u8,
+    /// The first laser's power level (1–3000) and whether it is firing.
+    pub power: u32,
+    pub online: bool,
+}
+
 /// One air alarm readout: a message id taking `$value`, and whether it is out of range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AlarmReading {

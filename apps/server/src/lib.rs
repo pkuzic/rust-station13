@@ -19,19 +19,21 @@ use rs13_classic::power_monitor::PowerMonitorOut;
 use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
+use rs13_classic::supermatter::{LaserOp, LaserPanelOut, PendingLaserOps};
 use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, MoveInput, Notice,
-    NoticeChannel, PlaySound, Player, PowerMonitorPanel, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, LaserCommand, LaserPanel,
+    MoveInput, Notice, NoticeChannel, PlaySound, Player, PowerMonitorPanel, SoundChannel, StatusUpdate,
+    StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, DisplayName, GridPos, MapLayer, NetId, PowerMonitorView, StorageView,
-    TileMap, WirePanelView,
+    AlarmPanelView, ApcPanelView, DisplayName, GridPos, LaserPanelView, MapLayer, NetId, PowerMonitorView,
+    StorageView, TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -57,6 +59,7 @@ struct SentPanel(
     Option<StorageView>,
     Option<ApcPanelView>,
     Option<PowerMonitorView>,
+    Option<LaserPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -193,6 +196,7 @@ fn queue_actions(
         &mut PendingWires,
         &mut PendingAlarmOps,
         &mut PendingApcOps,
+        &mut PendingLaserOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -209,6 +213,7 @@ fn queue_actions(
             mut wires,
             mut alarm_ops,
             mut apc_ops,
+            mut laser_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -262,6 +267,18 @@ fn queue_actions(
                             AlarmCommand::PanicFill(on) => rs13_classic::alarms::AlarmCommand::PanicFill(on),
                         };
                         alarm_ops.0.push((alarm, command));
+                    }
+                    None
+                }
+                ActionInput::Laser { target, command } => {
+                    if let Some(computer) = resolve(target) {
+                        laser_ops.0.push((
+                            computer,
+                            match command {
+                                LaserCommand::Power(delta) => LaserOp::Power(delta),
+                                LaserCommand::Toggle => LaserOp::Toggle,
+                            },
+                        ));
                     }
                     None
                 }
@@ -375,6 +392,7 @@ fn send_panels(
         &mut MessageSender<StoragePanel>,
         &mut MessageSender<ApcPanel>,
         &mut MessageSender<PowerMonitorPanel>,
+        &mut MessageSender<LaserPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -382,10 +400,13 @@ fn send_panels(
         &StorageOut,
         &ApcPanelOut,
         &PowerMonitorOut,
+        &LaserPanelOut,
     )>,
 ) {
-    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs, mut monitors) in &mut links {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor)) = panels.get(controls.0) else {
+    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs, mut monitors, mut lasers) in
+        &mut links
+    {
+        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser)) = panels.get(controls.0) else {
             continue;
         };
         if sent.2 != storage.0 {
@@ -407,6 +428,10 @@ fn send_panels(
         if sent.4 != monitor.0 {
             monitors.send::<NoticeChannel>(PowerMonitorPanel(monitor.0.clone()));
             sent.4 = monitor.0.clone();
+        }
+        if sent.5 != laser.0 {
+            lasers.send::<NoticeChannel>(LaserPanel(laser.0.clone()));
+            sent.5 = laser.0.clone();
         }
     }
 }

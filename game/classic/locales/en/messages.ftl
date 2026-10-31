@@ -480,3 +480,16 @@ monitor-apc-no-cell = { $area }: { $equipment ->
 
 # Thermo-electric generator (engine.md). Args: $watts; $hot, $cold (K); $hotkpa, $coldkpa.
 examine-teg = Output: { $watts } W. Hot loop: { $hot } K, { $hotkpa } kPa. Cold loop: { $cold } K, { $coldkpa } kPa.
+
+# Engine core (engine.md). Laser computer window; $on (yes/no). Core warnings on the
+# radio; $frequency ("145.9").
+laser-title = Laser status monitor
+laser-none = No laser found
+laser-power = Power level:
+laser-output = Output: { $on ->
+    [yes] Online
+   *[no] Offline
+}
+core-overload = [{ $frequency }] Core control computer: CORE OVERLOAD
+core-explosion-imminent = [{ $frequency }] Core control computer: CORE EXPLOSION IMMINENT
+core-safe = [{ $frequency }] Core control computer: Core returning to safe operating levels.

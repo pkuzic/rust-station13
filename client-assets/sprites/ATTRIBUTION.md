@@ -122,6 +122,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:on` | `icons/obj/lighting.dmi : "lampgreen-on"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
+| `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `fire:1` | `icons/effects/fire.dmi : "1"` | CC-BY-SA 3.0 |
 | `fire:2` | `icons/effects/fire.dmi : "2"` | CC-BY-SA 3.0 |
 | `fire:3` | `icons/effects/fire.dmi : "3"` | CC-BY-SA 3.0 |
@@ -240,6 +241,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `jetpack-ce:on` | `icons/obj/tank.dmi : "jetpack1_ce"` | CC-BY-SA 3.0 |
 | `lantern:` | `icons/obj/lighting.dmi : "lantern"` | CC-BY-SA 3.0 |
 | `lantern:on` | `icons/obj/lighting.dmi : "lantern-on"` | CC-BY-SA 3.0 |
+| `laser-beam:east` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
+| `laser-beam:north` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
+| `laser-beam:south` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
+| `laser-beam:west` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
+| `laser-computer:atmos` | `icons/obj/computer.dmi : "atmos"` | CC-BY-SA 3.0 |
+| `laser-computer:unpowered` | `icons/obj/computer.dmi : "c_unpowered"` | CC-BY-SA 3.0 |
 | `light:tube-broken-east` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
 | `light:tube-broken-north` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
 | `light:tube-broken-south` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
@@ -393,6 +400,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `smes:` | `icons/obj/power.dmi : "smes"` | CC-BY-SA 3.0 |
 | `space-helmet:` | `icons/obj/clothing/hats.dmi : "space"` | CC-BY-SA 3.0 |
 | `space-suit:` | `icons/obj/clothing/suits.dmi : "space"` | CC-BY-SA 3.0 |
+| `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `table:` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-east` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-north` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
