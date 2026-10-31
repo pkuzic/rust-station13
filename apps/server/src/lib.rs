@@ -106,8 +106,13 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
             send_panels,
         ),
     )
-    // What each client is sent follows what its mob sees, once a tick, after the tick.
-    .add_systems(FixedPostUpdate, sight::update_sight);
+    // What each client is sent follows what its mob sees: once a tick, after the tick, and
+    // for a client that has just joined, before anything is sent to it.
+    .add_systems(FixedPostUpdate, sight::update_sight::<()>)
+    .add_systems(
+        PostUpdate,
+        sight::update_sight::<Without<sight::OutOfSight>>.before(ReplicationSystems::Send),
+    );
     app
 }
 
