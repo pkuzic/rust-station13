@@ -303,11 +303,16 @@ pub fn wear_layers(
         let keys: Vec<String> = DRAW_ORDER
             .into_iter()
             .filter_map(|slot| worn.get(slot))
-            .filter_map(|id| {
-                items
-                    .iter()
-                    .find(|(n, _)| **n == id)
-                    .map(|(_, a)| a.sprite.as_str())
+            .filter_map(|id| items.iter().find(|(n, _)| **n == id).map(|(_, a)| a))
+            // An item in a state of its own (a lit hard hat) is drawn as
+            // "worn:<sprite>-<state>" when there is one.
+            .map(|a| {
+                let stated = format!("{}-{}", a.sprite, a.state);
+                if !a.state.is_empty() && atlas.atlas.get(&format!("worn:{stated}"), "").is_some() {
+                    stated
+                } else {
+                    a.sprite.clone()
+                }
             })
             .flat_map(|sprite| [format!("worn:{sprite}"), format!("worn:{sprite}:l")])
             .filter(|key| atlas.atlas.get(key, "").is_some())

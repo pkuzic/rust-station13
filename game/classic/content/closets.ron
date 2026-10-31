@@ -27,6 +27,7 @@
         (id: "multitool", chance: 30.0),
         (id: "toolbox-mechanical", chance: 80.0, or: Some("toolbox-electrical")),
         (id: "cable-coil", chance: 50.0),
+        (id: "hardhat", chance: 30.0),
         (id: "wrench"), (id: "wirecutters"), (id: "screwdriver"), (id: "crowbar"),
         (id: "flashlight"),
     ]),

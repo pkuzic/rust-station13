@@ -55,6 +55,10 @@ pub struct ItemDef {
     /// Electricity goes through it (Luna `CONDUCT`).
     #[serde(default)]
     pub conducts: bool,
+    /// Shoes that hold to the floor: space wind doesn't move the wearer (Luna
+    /// `shoes/magnetic`).
+    #[serde(default)]
+    pub magnetic: bool,
 }
 
 fn normal_size() -> u8 {
@@ -77,6 +81,8 @@ pub struct Wearable {
     pub internals: bool,
     /// Share of an electric shock that gets through (gloves).
     pub siemens: f32,
+    /// Magnetic boots: the wearer isn't moved by space wind.
+    pub magnetic: bool,
 }
 
 /// A gas tank: its contents and the pressure it releases breaths at.
@@ -205,6 +211,7 @@ mod tests {
             space: false,
             internals: false,
             siemens: 1.0,
+            magnetic: false,
         }
     }
 

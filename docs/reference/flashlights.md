@@ -2,7 +2,7 @@
 
 Sources:
 - `luna:code/game/objects/items/devices/flashlight2.dm` (flashlights, penlights, lanterns,
-  desk lamps);
+  desk lamps, the hard hat lamp);
 - `luna:code/game/objects/storage/belts.dm` (what a utility belt holds);
 - `luna:code/defines/obj/closet.dm` (the tool closet's flashlight).
 
@@ -18,6 +18,7 @@ Light itself: `lighting.md`.
 | `lantern` | `flashlight/lantern` | 6, 6, 5 | off | 2 | belt |
 | `desk-lamp` | `flashlight/lamp` | 6, 6, 6 | lit | 4 | no |
 | `desk-lamp-green` | `flashlight/lamp/green` | 6, 6, 6 | lit | 4 | no |
+| `hardhat` (all colours) | `clothing/head/helmet/hardhat` | 5, 5, 5 | off | 3 | head |
 
 They conduct electricity and do no damage. A lit one shows its `on` sprite.
 

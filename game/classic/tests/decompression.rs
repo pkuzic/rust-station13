@@ -7,12 +7,13 @@ use rs13_classic::alarms::AirAlarm;
 use rs13_classic::atmos::StationAtmos;
 use rs13_classic::doors::{Airlock, DoorState};
 use rs13_classic::environment::Lungs;
+use rs13_classic::equipment::{Equipment, WornBy};
 use rs13_classic::health::{Body, Vitals};
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_simulation::atmos::Gas;
 use rs13_simulation::atmos::gas::ONE_ATMOSPHERE;
-use rs13_world::{Dir, GridPos, MobStat, ObjectSpec, TileMap, TilePos};
+use rs13_world::{Dir, GridPos, MobStat, ObjectSpec, Slot, TileMap, TilePos};
 
 const INNER_DOOR: TilePos = TilePos::new(16, 6, 0);
 const OUTER_DOOR: TilePos = TilePos::new(20, 6, 0);
@@ -246,4 +247,27 @@ fn blown_into_space_you_keep_drifting_until_something_stops_you() {
     seconds(&mut app, 5);
     // The map's last column: drifted all the way to the edge of the map.
     assert_eq!(app.world().get::<GridPos>(mob).unwrap().0, TilePos::new(21, 6, 0));
+}
+
+#[test]
+fn magnetic_boots_hold_against_the_wind() {
+    let mut app = setup();
+    let mob = spawn_player_mob(app.world_mut(), OUTER_DOOR.step(Dir::West));
+    let boots = spawn_object(app.world_mut(), &ObjectSpec::new("magboots"), ROOM).unwrap();
+    app.world_mut()
+        .entity_mut(boots)
+        .remove::<GridPos>()
+        .insert(WornBy(mob));
+    app.world_mut()
+        .get_mut::<Equipment>(mob)
+        .unwrap()
+        .0
+        .insert(Slot::Shoes, boots);
+    hold_open(&mut app, OUTER_DOOR);
+    seconds(&mut app, 5);
+    assert_eq!(
+        app.world().get::<GridPos>(mob).unwrap().0,
+        OUTER_DOOR.step(Dir::West),
+        "Luna's `shoes/magnetic` keep the wearer in place"
+    );
 }
