@@ -93,6 +93,10 @@ pub struct ObjectSpec {
     /// The look the map gives it (BYOND `icon_state`), for things whose look the mapper
     /// chose, such as the edge pieces of a table.
     pub state: Option<String>,
+    /// Other settings the map gives this one object, by name, as written: a gas
+    /// filter's `filter_type`, an injector's `volume_rate`. Each game reads the ones it
+    /// knows.
+    pub vars: BTreeMap<String, String>,
 }
 
 impl ObjectSpec {
@@ -104,6 +108,7 @@ impl ObjectSpec {
             ends: Vec::new(),
             above_floor: false,
             state: None,
+            vars: BTreeMap::new(),
         }
     }
 }
@@ -124,6 +129,8 @@ enum ObjectEntry {
         above_floor: bool,
         #[serde(default)]
         state: Option<String>,
+        #[serde(default)]
+        vars: BTreeMap<String, String>,
     },
 }
 
@@ -138,6 +145,7 @@ impl From<ObjectEntry> for ObjectSpec {
                 ends,
                 above_floor,
                 state,
+                vars,
             } => ObjectSpec {
                 id,
                 access,
@@ -145,6 +153,7 @@ impl From<ObjectEntry> for ObjectSpec {
                 ends,
                 above_floor,
                 state,
+                vars,
             },
         }
     }
@@ -433,6 +442,7 @@ mod tests {
                         ends: Vec::new(),
                         above_floor: false,
                         state: None,
+                        vars: BTreeMap::new(),
                     }
                 ),
                 (TilePos::new(1, 1, 0), ObjectSpec::new("crowbar")),

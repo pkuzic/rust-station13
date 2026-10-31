@@ -205,6 +205,9 @@ pub struct ObjectRule {
     /// The value is the type's own icon state, used when the map doesn't set one.
     #[serde(default)]
     pub state: Option<String>,
+    /// Map variables to keep as the object's settings (`vars`), when the map sets them.
+    #[serde(default)]
+    pub vars: Vec<String>,
 }
 
 /// BYOND direction numbers → our direction names.
@@ -516,6 +519,18 @@ fn object_ron(
             .map_or(default.as_str(), String::as_str);
         fields.push(format!("state: Some({state:?})"));
     }
+    let kept: Vec<String> = rule
+        .vars
+        .iter()
+        .filter_map(|name| {
+            atom.vars
+                .get(name)
+                .map(|value| format!("{name:?}: {:?}", value.trim()))
+        })
+        .collect();
+    if !kept.is_empty() {
+        fields.push(format!("vars: {{{}}}", kept.join(", ")));
+    }
     // Luna maps lay some pipes over the floor tiles instead of under them.
     if atom.vars.get("level").is_some_and(|l| l.trim() == "2") {
         fields.push("above_floor: true".to_owned());
@@ -636,5 +651,35 @@ aaabaaaa
         let imported = convert(&dmm, &rules).unwrap();
         assert_eq!(imported.skipped["/obj/item/weapon/wrench"], 1);
         assert_eq!(imported.skipped["/obj/effect/decal/sign"], 1);
+    }
+}
+
+#[cfg(test)]
+mod vars_tests {
+    use super::*;
+
+    #[test]
+    fn rules_keep_the_map_variables_they_name() {
+        let rule: ObjectRule =
+            ron::from_str(r#"(path: "/obj/filter", id: Some("gas-filter"), vars: ["filter_type", "on"])"#)
+                .unwrap();
+        let atom = Atom {
+            path: "/obj/filter".into(),
+            vars: BTreeMap::from([
+                ("filter_type".to_owned(), "2".to_owned()),
+                ("name".to_owned(), "Nitrogen Filter".to_owned()),
+            ]),
+        };
+        let ron = object_ron(
+            "gas-filter",
+            &rule,
+            &atom,
+            &BTreeMap::new(),
+            &mut Vec::new(),
+            (0, 0),
+        );
+        assert_eq!(ron, r#"(id: "gas-filter", vars: {"filter_type": "2"})"#);
+        let spec: rs13_world::ObjectSpec = ron::from_str(&ron).unwrap();
+        assert_eq!(spec.vars["filter_type"], "2");
     }
 }
