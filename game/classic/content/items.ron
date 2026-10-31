@@ -24,6 +24,8 @@
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
     (id: "metal-sheet", force: 5.0),
+    // Luna `sheet/mineral/plasma`: up to 50; fuel for the P.A.C.M.A.N. (`generators.md`).
+    (id: "plasma-sheet", force: 5.0, stack: 50),
     // Luna `table_rack_parts.dm`.
     (id: "table-parts", force: 0.0),
     (id: "table-parts-reinforced", force: 0.0),

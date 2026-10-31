@@ -312,6 +312,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `oxygen-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `oxygen-pressure-tank:` | `icons/obj/atmospherics/blue_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `oxygen-tank:` | `icons/obj/tank.dmi : "oxygen"` | CC-BY-SA 3.0 |
+| `pacman:portgen0` | `icons/obj/power.dmi : "portgen0"` | CC-BY-SA 3.0 |
+| `pacman:portgen1` | `icons/obj/power.dmi : "portgen1"` | CC-BY-SA 3.0 |
 | `penlight:` | `icons/obj/lighting.dmi : "penlight"` | CC-BY-SA 3.0 |
 | `penlight:on` | `icons/obj/lighting.dmi : "penlight-on"` | CC-BY-SA 3.0 |
 | `pipe:1-2` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
@@ -327,6 +329,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `plasma-canister:can-o2` | `icons/obj/atmos.dmi : "can-o2"` | CC-BY-SA 3.0 |
 | `plasma-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `plasma-pressure-tank:` | `icons/obj/atmospherics/orange_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
+| `plasma-sheet:` | `icons/obj/mining.dmi : "sheet-plasma"` | CC-BY-SA 3.0 |
 | `pump:off` | `icons/obj/atmospherics/pump.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `pump:on` | `icons/obj/atmospherics/pump.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `rack:` | `icons/obj/objects.dmi : "rack"` | CC-BY-SA 3.0 |

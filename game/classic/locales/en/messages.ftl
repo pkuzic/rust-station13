@@ -310,3 +310,22 @@ fire-alarm-raised = You pull the fire alarm.
 fire-alarm-reset = You reset the fire alarm.
 fire-alarm-disconnected = { $name } has disconnected the { NOUN($item) }'s detecting unit!
 fire-alarm-reconnected = { $name } has reconnected the { NOUN($item) }'s detecting unit!
+
+# Portable generator (generators.md). Args: $count, $watts, $on (yes/no).
+pacman-fuel-added = You add { $count } { $count ->
+    [one] sheet
+   *[other] sheets
+} of plasma to the generator.
+pacman-full = The generator is full!
+pacman-secured = You secure the generator to the floor.
+pacman-unsecured = You unsecure the generator from the floor.
+pacman-on = You switch the generator on.
+pacman-off = You switch the generator off.
+pacman-no-fuel = The generator has no fuel.
+examine-pacman = The generator is { $on ->
+    [yes] on
+   *[no] off
+}. It has { $count } { $count ->
+    [one] sheet
+   *[other] sheets
+} of plasma left, producing { $watts } W.

@@ -11,7 +11,6 @@
 //      1 /obj/item/device/radio/beacon
 //      5 /obj/item/device/radio/intercom
 //      2 /obj/item/stack/sheet/glass
-//      1 /obj/item/stack/sheet/mineral/plasma
 //      2 /obj/item/stack/sheet/plasteel
 //      2 /obj/item/stack/sheet/rglass
 //      1 /obj/item/weapon/cartridge/engineering
@@ -58,7 +57,6 @@
 //      1 /obj/machinery/pipedispenser/disposal
 //      2 /obj/machinery/power/generator_type2
 //      4 /obj/machinery/power/monitor
-//      1 /obj/machinery/power/port_gen/pacman
 //      9 /obj/machinery/power/terminal
 //      1 /obj/machinery/recharger
 //      2 /obj/machinery/shielding/emitter/plate
@@ -122,7 +120,7 @@
         'K': (tile: (id: "plating"), objects: [(id: "pipe", dir: East), (id: "firedoor", dir: South), "airlock"]),
         'L': (tile: (id: "plating"), objects: [(id: "pipe", dir: East), (id: "cable", ends: [North, South])]),
         'M': (tile: (id: "plating"), objects: [(id: "manifold", dir: East)]),
-        'N': (tile: (id: "plating"), objects: [(id: "cable", ends: [East])]),
+        'N': (tile: (id: "plating"), objects: ["pacman", "plasma-sheet", (id: "cable", ends: [East])]),
         'O': (tile: (id: "plating"), objects: [(id: "cable", ends: [South, West])]),
         'P': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), "airlock", (id: "cable", ends: [North, South])]),
         'Q': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "insulated-gloves", "utility-belt-loaded"]),
