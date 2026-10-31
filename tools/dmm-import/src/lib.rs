@@ -520,9 +520,18 @@ fn object_ron(
             .map_or(default.as_str(), String::as_str);
         fields.push(format!("state: Some({state:?})"));
     }
+    // Every object keeps its pixel offset: it is how maps hang devices on walls.
+    let offsets = ["pixel_x", "pixel_y"].into_iter().filter(|name| {
+        atom.vars
+            .get(*name)
+            .and_then(|v| v.trim().parse::<i32>().ok())
+            .is_some_and(|v| v != 0)
+    });
     let kept: Vec<String> = rule
         .vars
         .iter()
+        .map(String::as_str)
+        .chain(offsets)
         .filter_map(|name| {
             atom.vars
                 .get(name)

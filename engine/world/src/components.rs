@@ -36,6 +36,11 @@ impl Appearance {
     }
 }
 
+/// Drawn this many pixels east and north of its tile (BYOND `pixel_x`, `pixel_y`): how a map
+/// hangs a device on the wall beside the floor tile it belongs to.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PixelOffset(pub [i8; 2]);
+
 /// Seen by no one and out of reach while present, such as a pipe or cable under floor
 /// tiles (BYOND `invisibility = 101`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

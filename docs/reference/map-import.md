@@ -65,6 +65,8 @@ counted from 0 with the top row first.
 - **Firedoors:** Luna's border firedoors. None of them sets a direction on Luna's map, so all keep the default and seal the south edge of their tile (`firedoors.md`).
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
+**Wall-mounted devices:** Luna puts intercoms, alarms, APCs and the like on the floor tile beside a wall and shifts their sprite onto it with `pixel_x` and `pixel_y`. Every object keeps those (`vars`), and the client draws it shifted (`PixelOffset`); it still belongs to its floor tile.
+
 **Skipped for now** (83 types, listed in the generated file):
 - **Atmos machines without a prototype:** filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.
 - **Furniture and structures:** chairs.
