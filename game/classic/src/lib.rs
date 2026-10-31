@@ -8,6 +8,7 @@ pub mod actions;
 pub mod alarms;
 pub mod atmos;
 pub mod cables;
+pub mod cells;
 pub mod closets;
 pub mod combat;
 pub mod dispensers;
@@ -137,6 +138,7 @@ impl Plugin for ClassicPlugin {
                     power::rebuild_powernets,
                     generators::run_generators,
                     power::power_cycle,
+                    cells::run_chargers,
                     lights::run_lights,
                     machines::run_machines,
                     meters::update_meters,
@@ -178,7 +180,7 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                dispensers::update_dispenser_looks.in_set(TickSet::Publish),
+                (dispensers::update_dispenser_looks, cells::update_cell_looks).in_set(TickSet::Publish),
             )
             // After the fixtures say whether they are lit: rules next tick see this light.
             .add_systems(FixedUpdate, lighting::update_tile_light.after(TickSet::Publish))

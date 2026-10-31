@@ -406,6 +406,17 @@
         "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
+        // Power cells: the meter overlay is cell-o1 part full, cell-o2 full.
+        "power-cell": {
+            "": (dmi: "icons/obj/power.dmi", state: "cell"),
+            "cell-o1": (dmi: "icons/obj/power.dmi", state: "cell-o1"),
+            "cell-o2": (dmi: "icons/obj/power.dmi", state: "cell-o2"),
+        },
+        "high-power-cell": {
+            "": (dmi: "icons/obj/power.dmi", state: "hcell"),
+            "cell-o1": (dmi: "icons/obj/power.dmi", state: "cell-o1"),
+            "cell-o2": (dmi: "icons/obj/power.dmi", state: "cell-o2"),
+        },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
@@ -509,6 +520,17 @@
             "oxygen-3": (dmi: "icons/obj/objects.dmi", state: "oxygen-3"),
             "oxygen-4": (dmi: "icons/obj/objects.dmi", state: "oxygen-4"),
             "oxygen-5": (dmi: "icons/obj/objects.dmi", state: "oxygen-5"),
+        },
+        // Cell charger: ccharger1 with a cell, and its charge level 0–4 as an overlay. Luna's
+        // icon misspells level 2 as "ccharge-o2", so Luna never showed it.
+        "cell-charger": {
+            "ccharger0": (dmi: "icons/obj/power.dmi", state: "ccharger0"),
+            "ccharger1": (dmi: "icons/obj/power.dmi", state: "ccharger1"),
+            "ccharger-o0": (dmi: "icons/obj/power.dmi", state: "ccharger-o0"),
+            "ccharger-o1": (dmi: "icons/obj/power.dmi", state: "ccharger-o1"),
+            "ccharger-o2": (dmi: "icons/obj/power.dmi", state: "ccharge-o2"),
+            "ccharger-o3": (dmi: "icons/obj/power.dmi", state: "ccharger-o3"),
+            "ccharger-o4": (dmi: "icons/obj/power.dmi", state: "ccharger-o4"),
         },
         // P.A.C.M.A.N. generator: portgen0 idle, portgen1 running.
         "pacman": {
