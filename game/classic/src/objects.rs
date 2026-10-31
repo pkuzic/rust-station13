@@ -127,6 +127,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
+    if crate::chairs::is_chair(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::chairs::spawn_chair(world, spec, pos, id));
+    }
     if proto == crate::radio::INTERCOM {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::radio::spawn_intercom(world, spec, pos, id));

@@ -368,3 +368,10 @@ radio-say = [{ $frequency }] { $name } { $verb ->
     }, "{ $text }"
 radio-microphone-on = You engage the microphone.
 radio-microphone-off = You disengage the microphone.
+
+# Chairs (chairs.md). Args: $name, $target (who was in it).
+chair-buckled-self = You buckle yourself to the chair.
+chair-buckles = { $name } buckles in!
+chair-unbuckled-self = You unbuckle yourself from the chair.
+chair-unbuckles = { $name } unbuckles.
+chair-unbuckled-by = { $target } was unbuckled by { $name }!

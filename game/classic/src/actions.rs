@@ -121,7 +121,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios),
+        (mut generators, mut dispensers, mut chargers, mut jetpacks, mut radios, mut chairs),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
         crate::storage::StorageAccess,
@@ -143,6 +143,7 @@ pub fn process_actions(
             crate::cells::ChargerWork,
             crate::jetpacks::JetpackWork,
             crate::radio::RadioWork,
+            crate::chairs::ChairWork,
         ),
     ),
     mut commands: Commands,
@@ -376,6 +377,26 @@ pub fn process_actions(
                     }
                     if let Some(outcome) = radios.toggle_microphone(target) {
                         outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if chairs.contains(target) => {
+                    // Chairs (`chairs.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = chairs.use_on(mob, mob_pos.0, target, tool, &mut commands) {
+                        sounds.tool_used(tool, mob_pos.0);
+                        // Whoever is told something themselves is spared the version others see.
+                        let spared = outcome.to_mob.is_some().then_some(mob);
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), spared));
+                        }
                     }
                 }
                 Action::UseOn(target) if chargers.contains(target) => {

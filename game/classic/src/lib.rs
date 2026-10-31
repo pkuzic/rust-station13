@@ -9,6 +9,7 @@ pub mod alarms;
 pub mod atmos;
 pub mod cables;
 pub mod cells;
+pub mod chairs;
 pub mod closets;
 pub mod combat;
 pub mod dispensers;
@@ -186,6 +187,7 @@ impl Plugin for ClassicPlugin {
                     dispensers::update_dispenser_looks,
                     cells::update_cell_looks,
                     jetpacks::update_jetpack_looks,
+                    chairs::update_chairs,
                 )
                     .in_set(TickSet::Publish),
             )

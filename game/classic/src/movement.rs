@@ -97,6 +97,7 @@ pub fn move_mobs(
         Option<&Vitals>,
         Option<&crate::equipment::Equipment>,
         Option<&crate::closets::InCloset>,
+        Has<crate::chairs::Buckled>,
     )>,
     mut objects: Query<(Entity, &GridPos, Has<Dense>, Option<&mut Airlock>), Without<Mob>>,
     cards: Query<&IdCard>,
@@ -124,13 +125,17 @@ pub fn move_mobs(
     let mut order: Vec<Entity> = mobs.iter().map(|(e, ..)| e).collect();
     order.sort();
     for entity in order {
-        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals, equipment, inside)) =
+        let Ok((_, mut pos, mut mob, intent, is_player, hands, vitals, equipment, inside, buckled)) =
             mobs.get_mut(entity)
         else {
             continue;
         };
         let Some(dir) = intent.dir else { continue };
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+            continue;
+        }
+        // Buckled into a chair: click the chair to get out (`chairs.md`).
+        if buckled {
             continue;
         }
         // Inside a closet, walking pushes at the door (`closets.md`).
