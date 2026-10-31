@@ -147,3 +147,56 @@ fn people_behind_you_and_what_is_in_a_kit_are_sent_only_once_seen() {
     );
     assert_eq!(south.under_floor_received, 0);
 }
+
+/// A closet east of the only spawn point, against a wall.
+const CLOSET_MAP: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        '1': (tile: (id: "floor"), spawn: true),
+        'c': (tile: (id: "floor"), objects: ["closet"]),
+    },
+    rows: [
+        "WWWWW",
+        "W1cWW",
+        "WWWWW",
+    ],
+)"#;
+
+#[test]
+fn shut_in_a_closet_you_still_have_yourself() {
+    let port = 20_000 + ((std::process::id() + 13_331) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_map(port, CLOSET_MAP).run());
+    thread::sleep(Duration::from_millis(500));
+
+    // Open the closet, step in, and shut it from inside.
+    let bot = run_bot(
+        server,
+        vec![
+            wait(300),
+            Step::UseOn("closet".into()),
+            wait(400),
+            Step::Move(Some(Dir::East)),
+            wait(500),
+            Step::Move(None),
+            Step::Snapshot("in the open closet".into()),
+            Step::UseOn("closet".into()),
+            wait(600),
+            Step::Snapshot("shut in".into()),
+        ],
+        Duration::from_secs(4),
+    )
+    .join()
+    .unwrap();
+
+    let open = snapshot(&bot, "in the open closet");
+    let me = open.players.iter().find(|p| p.own).expect("own player");
+    assert_eq!((me.pos.x, me.pos.y), (2, 1), "stepped into the closet: {open:?}");
+    let shut = snapshot(&bot, "shut in");
+    assert!(
+        shut.players.iter().any(|p| p.own),
+        "own player still sent: {shut:?}"
+    );
+    assert!(has(shut, "closet"), "and the closet around us: {shut:?}");
+}
