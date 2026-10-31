@@ -151,6 +151,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
+| `freezer:freezer` | `icons/obj/Cryogenic2.dmi : "freezer"` | CC-BY-SA 3.0 |
+| `freezer:freezer_1` | `icons/obj/Cryogenic2.dmi : "freezer_1"` | CC-BY-SA 3.0 |
 | `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
 | `gas-filter:off-east` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `gas-filter:off-north` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |

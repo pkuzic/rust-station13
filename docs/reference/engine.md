@@ -37,6 +37,12 @@ Sources: `luna:code/modules/power/generator_type2.dm`,
 - **Lasers:** each has an id, a power (500 to start, 1–3 000) and starts off. On, it fires a beam tile by tile in its direction until something dense, a wall or a person stops it. A person in the way takes power / 400 burns on every body part each cycle. The beam glows blue.
 - **Computer:** it controls the lasers whose ids it lists. Its window shows the first one's power with ±1, ±10, ±100 and ±1000 buttons, which apply to all of them, and an Online/Offline switch. It draws 250 W.
 
+## Freezer (Luna `cold_sink/freezer`)
+
+- **Cooling:** while on, each cycle its 200 L of the loop's gas evens out with 1 000 J/K of cold at its setting. The cold never runs out: Luna's `current_temperature` is never warmed, and it draws no power.
+- **Defaults:** starts off and set to 20 °C, so it does nothing until someone sets it.
+- **Window:** on/off, the gas's temperature and pressure, and the setting with ±1, ±10, ±100 buttons, kept between −200 °C and 20 °C.
+
 ## What we build (`game/classic/src/teg.rs`, `supermatter.rs`, `machines.rs`)
 
 | Item | Ours | From Luna |
@@ -50,9 +56,10 @@ Sources: `luna:code/modules/power/generator_type2.dm`,
 | Supermatter | as above, every machine cycle: gas, damage, power from warmth and beams, the oxygen factor, heating, oxygen. It kills everyone within three tiles by destroying every body part | keep. No explosion yet (there are no explosions), so the damage only drives the warnings. No hallucinations. |
 | Core warnings | on the common channel, to everyone near a listening radio, at most once a minute | keep |
 | Lasers and beams | as above, every machine cycle; beam tiles are drawn, glow and can't be clicked | keep |
+| Freezer | as above, every machine cycle, with its window; `freezer_1` running, `freezer` off | keep |
 | Laser control computer | as above, with its window; ids from the map (`id = list(...)`) | keep. Luna's "advanced" frequency setting is left out. |
 
 ## Not yet
 
-Freezers and heat exchangers for the cold loop, the explosion, hallucinations, and filling
+Heat exchangers, the explosion, hallucinations, and filling
 the core with oxygen (Luna feeds it through the region's injectors from tanks outside it).

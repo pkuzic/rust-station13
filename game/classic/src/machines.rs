@@ -792,6 +792,13 @@ pub fn machine_bundle(
             spawn.generator_input = true;
             spawn
         }
+        "freezer" => {
+            let mut spawn = MachineSpawn::new("freezer", "freezer")
+                .member(member(DEVICE_VOLUME))
+                .dense();
+            spawn.freezer = true;
+            spawn
+        }
         "thermal-plate" => {
             let mut spawn = MachineSpawn::new("thermal-plate", "")
                 .member(member(DEVICE_VOLUME))
@@ -856,6 +863,7 @@ pub struct MachineSpawn {
     pub filter: Option<GasFilter>,
     pub generator_input: bool,
     pub thermal_plate: bool,
+    pub freezer: bool,
     pub injector: Option<Injector>,
     pub dense: bool,
     pub power: Option<crate::power::PowerUser>,
@@ -880,6 +888,7 @@ impl MachineSpawn {
             filter: None,
             generator_input: false,
             thermal_plate: false,
+            freezer: false,
             injector: None,
             dense: false,
             power: None,
@@ -972,6 +981,9 @@ impl MachineSpawn {
         }
         if self.thermal_plate {
             entity.insert(ThermalPlate);
+        }
+        if self.freezer {
+            entity.insert(crate::freezers::Freezer::default());
         }
         if let Some(f) = self.filter {
             entity.insert(f);

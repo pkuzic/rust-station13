@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod apc_panel;
 mod audio;
+mod freezer_panel;
 mod hud;
 mod laser_panel;
 mod lighting;
@@ -176,6 +177,7 @@ fn main() {
         .init_resource::<apc_panel::OpenApc>()
         .init_resource::<monitor_panel::OpenMonitor>()
         .init_resource::<laser_panel::OpenLaser>()
+        .init_resource::<freezer_panel::OpenFreezer>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
         .init_resource::<TileSprites>()
@@ -210,6 +212,7 @@ fn main() {
                     (apc_panel::receive_apc, apc_panel::show_apc).chain(),
                     (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
                     (laser_panel::receive_laser, laser_panel::show_laser).chain(),
+                    (freezer_panel::receive_freezer, freezer_panel::show_freezer).chain(),
                     (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 ),
                 glide,

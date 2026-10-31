@@ -273,6 +273,19 @@ pub struct LaserPanelView {
     pub online: bool,
 }
 
+/// An open freezer, as shown to the player using it (Luna's `freezer` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FreezerPanelView {
+    /// The freezer.
+    pub target: NetId,
+    pub on: bool,
+    /// Its gas: temperature in tenths of a kelvin, pressure in tenths of a kPa.
+    pub gas_dk: u32,
+    pub pressure_dkpa: u32,
+    /// The temperature it cools to, K.
+    pub setting: u32,
+}
+
 /// One air alarm readout: a message id taking `$value`, and whether it is out of range.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AlarmReading {

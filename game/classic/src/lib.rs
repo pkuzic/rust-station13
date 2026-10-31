@@ -22,6 +22,7 @@ pub mod firedoors;
 pub mod fires;
 pub mod flashlights;
 pub mod floors;
+pub mod freezers;
 pub mod furniture;
 pub mod generators;
 pub mod hands;
@@ -123,6 +124,7 @@ impl Plugin for ClassicPlugin {
                     alarms::process_alarm_ops,
                     apc::process_apc_ops,
                     supermatter::process_laser_ops,
+                    freezers::process_freezer_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
                     medical::resolve_treatments,
@@ -151,6 +153,7 @@ impl Plugin for ClassicPlugin {
                     machines::rebuild_networks,
                     power::rebuild_powernets,
                     generators::run_generators,
+                    freezers::run_freezers,
                     teg::run_tegs,
                     power::power_cycle,
                     cells::run_chargers,
@@ -189,12 +192,16 @@ impl Plugin for ClassicPlugin {
                 (
                     hands::sync_hands_view,
                     equipment::sync_worn_view,
-                    wires::update_panel_views,
-                    alarms::update_alarm_views,
-                    apc::update_apc_views,
-                    power_monitor::update_monitor_views,
-                    supermatter::update_laser_views,
-                    storage::update_storage_views,
+                    // Machine windows and open containers.
+                    (
+                        wires::update_panel_views,
+                        alarms::update_alarm_views,
+                        apc::update_apc_views,
+                        power_monitor::update_monitor_views,
+                        supermatter::update_laser_views,
+                        freezers::update_freezer_views,
+                        storage::update_storage_views,
+                    ),
                     machines::update_machine_looks,
                     machines::update_canister_looks,
                     power::update_power_looks,

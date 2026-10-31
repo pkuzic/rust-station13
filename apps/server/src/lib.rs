@@ -11,6 +11,7 @@ use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
+use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
@@ -26,14 +27,14 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, LaserCommand, LaserPanel,
-    MoveInput, Notice, NoticeChannel, PlaySound, Player, PowerMonitorPanel, SoundChannel, StatusUpdate,
-    StoragePanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, FreezerCommand,
+    FreezerPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PlaySound, Player,
+    PowerMonitorPanel, SoundChannel, StatusUpdate, StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, DisplayName, GridPos, LaserPanelView, MapLayer, NetId, PowerMonitorView,
-    StorageView, TileMap, WirePanelView,
+    AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GridPos, LaserPanelView, MapLayer, NetId,
+    PowerMonitorView, StorageView, TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -60,6 +61,7 @@ struct SentPanel(
     Option<ApcPanelView>,
     Option<PowerMonitorView>,
     Option<LaserPanelView>,
+    Option<FreezerPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -197,6 +199,7 @@ fn queue_actions(
         &mut PendingAlarmOps,
         &mut PendingApcOps,
         &mut PendingLaserOps,
+        &mut PendingFreezerOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId)>,
@@ -214,6 +217,7 @@ fn queue_actions(
             mut alarm_ops,
             mut apc_ops,
             mut laser_ops,
+            mut freezer_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -267,6 +271,18 @@ fn queue_actions(
                             AlarmCommand::PanicFill(on) => rs13_classic::alarms::AlarmCommand::PanicFill(on),
                         };
                         alarm_ops.0.push((alarm, command));
+                    }
+                    None
+                }
+                ActionInput::Freezer { target, command } => {
+                    if let Some(freezer) = resolve(target) {
+                        freezer_ops.0.push((
+                            freezer,
+                            match command {
+                                FreezerCommand::Toggle => FreezerOp::Toggle,
+                                FreezerCommand::Setting(delta) => FreezerOp::Setting(f64::from(delta)),
+                            },
+                        ));
                     }
                     None
                 }
@@ -393,6 +409,7 @@ fn send_panels(
         &mut MessageSender<ApcPanel>,
         &mut MessageSender<PowerMonitorPanel>,
         &mut MessageSender<LaserPanel>,
+        &mut MessageSender<FreezerPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -401,12 +418,24 @@ fn send_panels(
         &ApcPanelOut,
         &PowerMonitorOut,
         &LaserPanelOut,
+        &FreezerPanelOut,
     )>,
 ) {
-    for (controls, mut sent, mut wires, mut alarms, mut storages, mut apcs, mut monitors, mut lasers) in
-        &mut links
+    for (
+        controls,
+        mut sent,
+        mut wires,
+        mut alarms,
+        mut storages,
+        mut apcs,
+        mut monitors,
+        mut lasers,
+        mut freezers,
+    ) in &mut links
     {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser)) = panels.get(controls.0) else {
+        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer)) =
+            panels.get(controls.0)
+        else {
             continue;
         };
         if sent.2 != storage.0 {
@@ -432,6 +461,10 @@ fn send_panels(
         if sent.5 != laser.0 {
             lasers.send::<NoticeChannel>(LaserPanel(laser.0.clone()));
             sent.5 = laser.0.clone();
+        }
+        if sent.6 != freezer.0 {
+            freezers.send::<NoticeChannel>(FreezerPanel(freezer.0.clone()));
+            sent.6 = freezer.0.clone();
         }
     }
 }

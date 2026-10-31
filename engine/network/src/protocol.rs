@@ -6,9 +6,9 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, GridPos, HandsView,
-    Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PowerMonitorView, Slot,
-    StorageView, TilePos, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, FreezerPanelView,
+    GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
+    PowerMonitorView, Slot, StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -71,6 +71,11 @@ pub enum ActionInput {
         target: NetId,
         command: LaserCommand,
     },
+    /// A button on an open freezer.
+    Freezer {
+        target: NetId,
+        command: FreezerCommand,
+    },
     /// Close the open container.
     CloseStorage,
     /// Click on a tile with nothing on it to click: lay cable from a coil.
@@ -106,6 +111,15 @@ pub enum LaserCommand {
     Power(i32),
     /// Turn every laser on or off.
     Toggle,
+}
+
+/// Freezer buttons (Luna's `freezer` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FreezerCommand {
+    /// Switch it on or off.
+    Toggle,
+    /// Change the temperature it cools to by this many kelvin.
+    Setting(i32),
 }
 
 /// What a channel button sets.
@@ -161,6 +175,10 @@ pub struct PowerMonitorPanel(pub Option<PowerMonitorView>);
 /// Sent when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LaserPanel(pub Option<LaserPanelView>);
+
+/// Server → one client: the freezer it has open, or `None` to close it. Sent when it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct FreezerPanel(pub Option<FreezerPanelView>);
 
 /// Server → one client: the container it has open, or `None` to close it. Sent when it
 /// changes.
@@ -230,6 +248,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<PowerMonitorPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LaserPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<FreezerPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);
