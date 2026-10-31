@@ -85,6 +85,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `cell-charger:ccharger-o4` | `icons/obj/power.dmi : "ccharger-o4"` | CC-BY-SA 3.0 |
 | `cell-charger:ccharger0` | `icons/obj/power.dmi : "ccharger0"` | CC-BY-SA 3.0 |
 | `cell-charger:ccharger1` | `icons/obj/power.dmi : "ccharger1"` | CC-BY-SA 3.0 |
+| `chair:east` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
+| `chair:north` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
+| `chair:south` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
+| `chair:west` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `closet:closed` | `icons/obj/closet.dmi : "closed"` | CC-BY-SA 3.0 |
 | `closet:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `closet:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
@@ -94,6 +98,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `closet-tools:toolcloset` | `icons/obj/closet.dmi : "toolcloset"` | CC-BY-SA 3.0 |
 | `closet-tools:toolclosetopen` | `icons/obj/closet.dmi : "toolclosetopen"` | CC-BY-SA 3.0 |
 | `closet-tools:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
+| `comfy-chair-brown:east` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
+| `comfy-chair-brown:north` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
+| `comfy-chair-brown:south` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
+| `comfy-chair-brown:west` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `connector:` | `icons/obj/atmospherics/portables_connector.dmi : "intact"` | CC-BY-SA 3.0 |
 | `crate:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
 | `crate:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |

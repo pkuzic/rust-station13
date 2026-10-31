@@ -390,3 +390,10 @@ radio-say = [{ $frequency }] { $name } { $verb ->
     }: «{ $text }»
 radio-microphone-on = Вы включаете микрофон.
 radio-microphone-off = Вы выключаете микрофон.
+
+# Стулья (chairs.md). Аргументы: $name, $target (кто сидел).
+chair-buckled-self = Вы пристёгиваетесь к стулу.
+chair-buckles = { $name } пристёгивается!
+chair-unbuckled-self = Вы отстёгиваетесь от стула.
+chair-unbuckles = { $name } отстёгивается.
+chair-unbuckled-by = { $name } отстёгивает { $target }!

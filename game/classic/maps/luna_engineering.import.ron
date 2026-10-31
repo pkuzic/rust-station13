@@ -86,6 +86,8 @@
         (path: "/obj/machinery/power/port_gen/pacman", id: "pacman"),
         (path: "/obj/structure/dispenser/oxygen", id: "tank-dispenser"),
         (path: "/obj/machinery/cell_charger", id: "cell-charger"),
+        (path: "/obj/structure/stool/bed/chair", id: "chair", dir: true),
+        (path: "/obj/structure/stool/bed/chair/comfy/brown", id: "comfy-chair-brown", dir: true),
         (path: "/obj/item/device/radio", id: "radio"),
         (path: "/obj/item/device/radio/intercom", id: "intercom"),
         // A tracking beacon is a radio subtype but no radio; nothing to make of it yet.
