@@ -78,6 +78,13 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `carbon-dioxide-canister:can-o2` | `icons/obj/atmos.dmi : "can-o2"` | CC-BY-SA 3.0 |
 | `carbon-dioxide-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `carbon-dioxide-pressure-tank:` | `icons/obj/atmospherics/pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger-o0` | `icons/obj/power.dmi : "ccharger-o0"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger-o1` | `icons/obj/power.dmi : "ccharger-o1"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger-o2` | `icons/obj/power.dmi : "ccharge-o2"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger-o3` | `icons/obj/power.dmi : "ccharger-o3"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger-o4` | `icons/obj/power.dmi : "ccharger-o4"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger0` | `icons/obj/power.dmi : "ccharger0"` | CC-BY-SA 3.0 |
+| `cell-charger:ccharger1` | `icons/obj/power.dmi : "ccharger1"` | CC-BY-SA 3.0 |
 | `closet:closed` | `icons/obj/closet.dmi : "closed"` | CC-BY-SA 3.0 |
 | `closet:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `closet:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
@@ -141,6 +148,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hardhat-white:` | `icons/obj/clothing/hats.dmi : "hardhat0_white"` | CC-BY-SA 3.0 |
 | `hardhat-white:on` | `icons/obj/clothing/hats.dmi : "hardhat1_white"` | CC-BY-SA 3.0 |
 | `health-analyzer:` | `icons/obj/device.dmi : "health"` | CC-BY-SA 3.0 |
+| `high-power-cell:` | `icons/obj/power.dmi : "hcell"` | CC-BY-SA 3.0 |
+| `high-power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
+| `high-power-cell:cell-o2` | `icons/obj/power.dmi : "cell-o2"` | CC-BY-SA 3.0 |
 | `hud:bar-e` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-nw` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
 | `hud:bar-s` | `icons/mob/screen1.dmi : ""` | CC-BY-SA 3.0 |
@@ -330,6 +340,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `plasma-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `plasma-pressure-tank:` | `icons/obj/atmospherics/orange_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `plasma-sheet:` | `icons/obj/mining.dmi : "sheet-plasma"` | CC-BY-SA 3.0 |
+| `power-cell:` | `icons/obj/power.dmi : "cell"` | CC-BY-SA 3.0 |
+| `power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
+| `power-cell:cell-o2` | `icons/obj/power.dmi : "cell-o2"` | CC-BY-SA 3.0 |
 | `pump:off` | `icons/obj/atmospherics/pump.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `pump:on` | `icons/obj/atmospherics/pump.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `rack:` | `icons/obj/objects.dmi : "rack"` | CC-BY-SA 3.0 |

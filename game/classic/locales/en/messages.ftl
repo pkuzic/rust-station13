@@ -339,3 +339,19 @@ examine-tank-dispenser = It holds { $count } { $count ->
     [one] oxygen tank
    *[other] oxygen tanks
 }.
+
+# Power cells and cell chargers (cells.md). Args: $name, $rating, $value, $charge (-1: none).
+charger-inserted-self = You insert a cell into the charger.
+charger-inserted = { $name } inserts a cell into the charger.
+charger-removed-self = You remove the cell from the charger.
+charger-removed = { $name } removes the cell from the charger.
+charger-occupied = There is already a cell in the charger.
+charger-blinks = The cell charger blinks red as you try to insert the cell!
+charger-remove-cell-first = Remove the cell first!
+charger-attached = You attach the cell charger to the ground.
+charger-detached = You detach the cell charger from the ground.
+examine-cell = The manufacturer's label states this cell has a power rating of { $rating }. The charge meter reads { $value }%.
+examine-cell-charger = { $charge ->
+    [-1] There's no cell in the charger.
+   *[other] There's a cell in the charger. Current charge: { $charge }.
+}

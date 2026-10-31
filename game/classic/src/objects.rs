@@ -127,6 +127,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
+    if proto == crate::cells::CELL_CHARGER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cells::spawn_cell_charger(world, spec, pos, id));
+    }
     if proto == crate::dispensers::TANK_DISPENSER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::dispensers::spawn_tank_dispenser(world, spec, pos, id));
@@ -235,6 +239,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if let Some(light) = crate::flashlights::kind(proto) {
         item.insert(light);
+    }
+    if let Some(cell) = crate::cells::kind(proto) {
+        item.insert(cell);
     }
     if proto == "id-card" {
         item.insert(IdCard {
