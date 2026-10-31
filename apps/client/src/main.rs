@@ -587,9 +587,15 @@ fn update_appearance(
 
 /// Things inside something else (a held item) have no `GridPos` and are not drawn, nor
 /// are things under floor tiles.
-fn show_only_placed(mut objects: Query<(&mut Visibility, Has<GridPos>, Has<Hidden>), With<Appearance>>) {
+/// Draw what lies on the map in sight: not held items, not things under floor tiles, not
+/// what the player can't see (`lighting::Sight`).
+fn show_only_placed(
+    sight: Res<lighting::Sight>,
+    mut objects: Query<(&mut Visibility, Option<&GridPos>, Has<Hidden>), With<Appearance>>,
+) {
     for (mut visibility, placed, hidden) in &mut objects {
-        visibility.set_if_neq(if placed && !hidden {
+        let seen = placed.is_some_and(|p| !sight.unseen.contains(&p.0));
+        visibility.set_if_neq(if seen && !hidden {
             Visibility::Inherited
         } else {
             Visibility::Hidden

@@ -5,6 +5,7 @@
 //! blended smoothly between tiles and multiplied over everything on the map. F4 turns it
 //! off.
 
+use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
 use bevy::asset::{AssetPath, RenderAssetUsages, embedded_asset, embedded_path};
@@ -19,7 +20,9 @@ use bevy::render::render_resource::{
 use bevy::shader::ShaderRef;
 use bevy::sprite_render::{AlphaMode2d, Material2d, Material2dKey, Material2dPipeline, Material2dPlugin};
 use rs13_simulation::lighting::{Emitter, MapDecks};
-use rs13_world::{GridPos, Hidden, LightSource, MapLayer, Opaque, TileMap, TilePos};
+use rs13_world::{
+    Appearance, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, Slot, TileMap, TilePos, WornView,
+};
 
 use crate::{ChatInput, OwnPlayer, TILE_PX};
 
@@ -35,7 +38,8 @@ impl Plugin for LightingPlugin {
         embedded_asset!(app, "lighting.wgsl");
         app.add_plugins(Material2dPlugin::<LightMaterial>::default())
             .insert_resource(LightingOn(true))
-            .init_resource::<LightInputs>()
+            .init_resource::<LightCache>()
+            .init_resource::<Sight>()
             .add_systems(Update, (toggle_lighting, update_lighting).chain());
     }
 }
@@ -43,10 +47,6 @@ impl Plugin for LightingPlugin {
 /// Whether lighting is drawn (F4).
 #[derive(Resource)]
 struct LightingOn(bool);
-
-/// A digest of what the light was last worked out from, to skip unchanged frames.
-#[derive(Resource, Default)]
-struct LightInputs(Option<u64>);
 
 /// The darkness over the map.
 #[derive(Component)]
@@ -102,16 +102,45 @@ fn toggle_lighting(keys: Res<ButtonInput<KeyCode>>, chat: Res<ChatInput>, mut on
     }
 }
 
-/// Work out the light again when the map, a light or a door changed, and draw it.
+/// What the player can see right now (Luna's `view`): tiles out of sight are drawn black,
+/// or dim with meson scanners on, and nothing on them is drawn.
+#[derive(Resource, Default)]
+pub struct Sight {
+    /// Tiles of our deck the player can't see.
+    pub unseen: HashSet<TilePos>,
+    /// Meson scanners on: the floor plan shows through walls (Luna `SEE_TURFS`).
+    pub meson: bool,
+}
+
+/// How far the player sees: Luna's 15 × 15 view.
+const VIEW_RANGE: i32 = 7;
+/// Brightness of a tile seen only through meson scanners.
+const MESON_LIGHT: f32 = 0.22;
+
+/// The last light worked out, kept so moving about only redoes what the player sees.
+#[derive(Resource, Default)]
+struct LightCache {
+    digest: Option<u64>,
+    sight: Option<u64>,
+    width: u32,
+    height: u32,
+    z: i32,
+    levels: Vec<[f32; 3]>,
+}
+
+/// Work out the light again when the map, a light or a door changed, and what the player
+/// sees when they move; draw both.
 #[allow(clippy::too_many_arguments)]
 fn update_lighting(
     mut commands: Commands,
     on: Res<LightingOn>,
-    mut last: ResMut<LightInputs>,
+    mut cache: ResMut<LightCache>,
+    mut sight: ResMut<Sight>,
     maps: Query<Ref<MapLayer>>,
     sources: Query<(&GridPos, &LightSource), Without<Hidden>>,
     doors: Query<&GridPos, With<Opaque>>,
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, Option<&WornView>), With<OwnPlayer>>,
+    items: Query<(&NetId, &Appearance)>,
     mut overlays: Query<(Entity, &LightOverlay, &mut Visibility)>,
     mut images: ResMut<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -125,14 +154,18 @@ fn update_lighting(
         });
     }
     if !on.0 {
+        // The debug view shows everything.
+        if !sight.unseen.is_empty() {
+            sight.unseen.clear();
+        }
+        cache.sight = None;
         return;
     }
     let decks: Vec<&TileMap> = maps.iter().map(|m| &m.into_inner().0).collect();
+    let me = own.iter().next();
     // The deck we stand on, or the first one before our mob arrives.
-    let Some(map) = own
-        .iter()
-        .next()
-        .and_then(|p| decks.iter().find(|m| m.z == p.0.z))
+    let Some(map) = me
+        .and_then(|(p, _)| decks.iter().find(|m| m.z == p.0.z))
         .or_else(|| decks.iter().min_by_key(|m| m.z))
         .copied()
     else {
@@ -161,26 +194,69 @@ fn update_lighting(
     }
     opaque.hash(&mut digest);
     let digest = digest.finish();
-    if last.0 == Some(digest) && !overlays.is_empty() {
+
+    // Wearing meson scanners?
+    let meson = me
+        .and_then(|(_, worn)| worn?.get(Slot::Glasses))
+        .and_then(|id| items.iter().find(|(n, _)| **n == id))
+        .is_some_and(|(_, a)| a.sprite == "meson-glasses");
+    let mut view = std::collections::hash_map::DefaultHasher::new();
+    digest.hash(&mut view);
+    me.map(|(p, _)| p.0).hash(&mut view);
+    meson.hash(&mut view);
+    let view = view.finish();
+    if cache.digest == Some(digest) && cache.sight == Some(view) && !overlays.is_empty() {
         return;
     }
-    last.0 = Some(digest);
-
-    let field = MapDecks::new(decks.iter().copied(), opaque.iter().copied()).light(&emitters);
 
     let (width, height) = (map.width, map.height);
+    if cache.digest != Some(digest) || cache.z != map.z || cache.width != width || cache.height != height {
+        let field = MapDecks::new(decks.iter().copied(), opaque.iter().copied()).light(&emitters);
+        cache.levels = (0..height as i32)
+            .flat_map(|y| (0..width as i32).map(move |x| (x, y)))
+            .map(|(x, y)| field.level(TilePos::new(x, y, map.z)))
+            .collect();
+        cache.digest = Some(digest);
+        cache.width = width;
+        cache.height = height;
+        cache.z = map.z;
+    }
+    cache.sight = Some(view);
+
+    // Line of sight from our tile, within the view (as speech carries).
+    let mut unseen = HashSet::new();
+    if let Some((pos, _)) = me {
+        for y in 0..height as i32 {
+            for x in 0..width as i32 {
+                let tile = TilePos::new(x, y, map.z);
+                if !rs13_classic::speech::can_see(map, &opaque, pos.0, tile, VIEW_RANGE) {
+                    unseen.insert(tile);
+                }
+            }
+        }
+    }
+
     let mut data = Vec::with_capacity((width * height * 4) as usize);
     // Texture rows run from the top of the map down.
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
-            let level = field.level(TilePos::new(x, y, map.z));
+            let tile = TilePos::new(x, y, map.z);
+            let level = if !unseen.contains(&tile) {
+                cache.levels[(y as u32 * width + x as u32) as usize].map(|c| c.max(MIN_LIGHT))
+            } else if meson {
+                [MESON_LIGHT; 3]
+            } else {
+                [0.0; 3]
+            };
             for c in level {
-                data.push((c.max(MIN_LIGHT) * 255.0).round() as u8);
+                data.push((c * 255.0).round() as u8);
             }
             data.push(255);
         }
     }
+    sight.unseen = unseen;
+    sight.meson = meson;
 
     let existing = overlays
         .iter()

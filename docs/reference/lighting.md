@@ -101,3 +101,20 @@ made-up two-deck world.
     floodlights (flashlights and desk lamps do: `flashlights.md`);
   - floor lights;
   - light from a lower deck seen through open space (only the light levels are carried).
+
+## Line of sight
+
+Luna's view is BYOND's: a 15 × 15 square around the player, minus what walls and closed
+doors hide. The client draws the same (`apps/client/src/lighting.rs`, `Sight`):
+
+- **Visible:** a tile is seen when it is within 7 tiles and the straight line to it crosses
+  no opaque tile or object (the same test as speech, `speech::can_see`). Walls bordering
+  what you see are seen.
+- **Unseen tiles:** drawn black in the light texture, so the edge of sight fades softly
+  like light does, and nothing on them (items, machines, people) is drawn.
+- **Meson scanners** (Luna `SEE_TURFS`): unseen tiles show dimly, the floor plan without
+  what lies on it.
+- **F4** (lighting off) shows everything, for debugging.
+- **Not yet:** the server still sends what the player can't see, so a modified client
+  could see it. BYOND's own `view()` shadow casting differs from a straight line in a few
+  corner cases.
