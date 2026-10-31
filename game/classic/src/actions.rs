@@ -130,6 +130,7 @@ pub fn process_actions(
             mut apc_work,
             monitors,
             tegs,
+            laser_computers,
         ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
@@ -156,6 +157,7 @@ pub fn process_actions(
             crate::apc::ApcWork,
             Query<(&GridPos, &crate::power::PowerUser), With<crate::power_monitor::PowerMonitor>>,
             Query<&crate::teg::Teg>,
+            Query<(&GridPos, &crate::power::PowerUser), With<crate::supermatter::LaserComputer>>,
         ),
     ),
     mut commands: Commands,
@@ -393,6 +395,16 @@ pub fn process_actions(
                     if let Some(outcome) = radios.toggle_microphone(target) {
                         outbox.0.extend(outcome.to_mob);
                     }
+                }
+                Action::UseOn(target) if laser_computers.contains(target) => {
+                    // The laser control computer (`engine.md`).
+                    crate::supermatter::open_computer(
+                        &laser_computers,
+                        mob,
+                        mob_pos.0,
+                        target,
+                        &mut commands,
+                    );
                 }
                 Action::UseOn(target) if monitors.contains(target) => {
                     // Power monitoring computers (`power.md`).

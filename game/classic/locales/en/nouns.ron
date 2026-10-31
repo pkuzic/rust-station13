@@ -131,4 +131,8 @@
     "teg": (gender: neuter, sg: (nom: "thermo-electric generator", indef: "a thermo-electric generator"), pl: Some((nom: "thermo-electric generators"))),
     "generator-input": (gender: neuter, sg: (nom: "generator input", indef: "a generator input"), pl: Some((nom: "generator inputs"))),
     "thermal-plate": (gender: neuter, sg: (nom: "thermal transfer plate", indef: "a thermal transfer plate"), pl: Some((nom: "thermal transfer plates"))),
+    "supermatter": (gender: neuter, sg: (nom: "supermatter", indef: "a supermatter crystal"), pl: Some((nom: "supermatter crystals"))),
+    "engine-laser": (gender: neuter, sg: (nom: "zero-point laser", indef: "a zero-point laser"), pl: Some((nom: "zero-point lasers"))),
+    "laser-beam": (gender: neuter, sg: (nom: "laser beam", indef: "a laser beam"), pl: Some((nom: "laser beams"))),
+    "laser-computer": (gender: neuter, sg: (nom: "laser control computer", indef: "a laser control computer"), pl: Some((nom: "laser control computers"))),
 }

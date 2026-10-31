@@ -131,6 +131,18 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::chairs::spawn_chair(world, spec, pos, id));
     }
+    if proto == crate::supermatter::SUPERMATTER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::supermatter::spawn_supermatter(world, spec, pos, id));
+    }
+    if proto == crate::supermatter::LASER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::supermatter::spawn_laser(world, spec, pos, id));
+    }
+    if proto == crate::supermatter::LASER_COMPUTER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::supermatter::spawn_laser_computer(world, spec, pos, id));
+    }
     if proto == crate::teg::TEG {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::teg::spawn_teg(world, spec, pos, id));
@@ -363,6 +375,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 crate::apc::PendingApcOps::default(),
                 crate::apc::ApcPanelOut::default(),
                 crate::power_monitor::PowerMonitorOut::default(),
+                crate::supermatter::PendingLaserOps::default(),
+                crate::supermatter::LaserPanelOut::default(),
                 crate::alarms::AlarmPanelOut::default(),
                 crate::storage::StorageOut::default(),
             ),

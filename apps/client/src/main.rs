@@ -17,6 +17,7 @@ mod alarm_panel;
 mod apc_panel;
 mod audio;
 mod hud;
+mod laser_panel;
 mod lighting;
 mod monitor_panel;
 mod scaling;
@@ -174,6 +175,7 @@ fn main() {
         .init_resource::<alarm_panel::OpenAlarm>()
         .init_resource::<apc_panel::OpenApc>()
         .init_resource::<monitor_panel::OpenMonitor>()
+        .init_resource::<laser_panel::OpenLaser>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
         .init_resource::<TileSprites>()
@@ -201,11 +203,15 @@ fn main() {
                 (send_move_input, send_hotkeys, send_clicks),
                 receive_notices,
                 receive_status,
-                (wire_panel::receive_panel, wire_panel::show_panel).chain(),
-                (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
-                (apc_panel::receive_apc, apc_panel::show_apc).chain(),
-                (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
-                (storage_panel::receive_storage, storage_panel::show_storage).chain(),
+                // Machine windows and the open container.
+                (
+                    (wire_panel::receive_panel, wire_panel::show_panel).chain(),
+                    (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
+                    (apc_panel::receive_apc, apc_panel::show_apc).chain(),
+                    (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
+                    (laser_panel::receive_laser, laser_panel::show_laser).chain(),
+                    (storage_panel::receive_storage, storage_panel::show_storage).chain(),
+                ),
                 glide,
                 (
                     sprites::wear_layers,
@@ -445,6 +451,7 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("valve", _) => (Color::srgb(0.80, 0.30, 0.30), 12.0, 0.7),
         ("connector", _) => (Color::srgb(0.50, 0.50, 0.50), 14.0, 0.65),
         ("meter", _) => (Color::srgb(0.85, 0.85, 0.85), 10.0, 0.75),
+        ("laser-beam", _) => (Color::srgb(0.4, 0.4, 1.0), TILE_PX, 3.1),
         // Burning air, over everything but the walls' fixtures.
         ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
         // On the wall, above people.
@@ -800,7 +807,9 @@ fn send_clicks(
     // Items first, then machines, doors and tables, people, and bare pipes last.
     let target = objects
         .iter()
-        .filter(|(_, pos, a)| (pos.0.x, pos.0.y) == tile && a.sprite != "fire")
+        .filter(|(_, pos, a)| {
+            (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+        })
         .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
@@ -1078,7 +1087,9 @@ fn scripted_use(
     let tile = (me.0.x + dx, me.0.y + dy);
     let target = objects
         .iter()
-        .filter(|(_, pos, a)| (pos.0.x, pos.0.y) == tile && a.sprite != "fire")
+        .filter(|(_, pos, a)| {
+            (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+        })
         .min_by_key(|(_, _, a)| click_rank(a))
         .map(|(id, ..)| *id);
     if let Some(target) = target {
