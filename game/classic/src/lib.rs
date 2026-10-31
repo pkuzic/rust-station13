@@ -19,6 +19,7 @@ pub mod environment;
 pub mod equipment;
 pub mod firealarms;
 pub mod firedoors;
+pub mod fires;
 pub mod flashlights;
 pub mod floors;
 pub mod furniture;
@@ -88,6 +89,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<firealarms::AreaFires>()
+            .init_resource::<fires::FireSprites>()
             .init_resource::<lights::AreaLights>()
             .init_resource::<lighting::TileLight>()
             .init_resource::<closets::ClosetProtos>()
@@ -149,6 +151,7 @@ impl Plugin for ClassicPlugin {
                     meters::update_meters,
                     alarms::process_alarms,
                     firealarms::process_fire_alarms,
+                    fires::expose_flames,
                     atmos::step_atmos,
                     atmos::space_wind,
                     atmos::drift,
@@ -184,6 +187,7 @@ impl Plugin for ClassicPlugin {
                 )
                     .in_set(TickSet::Publish),
             )
+            .add_systems(FixedUpdate, fires::update_fire_sprites.in_set(TickSet::Publish))
             .add_systems(
                 FixedUpdate,
                 (

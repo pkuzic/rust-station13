@@ -59,6 +59,9 @@ pub struct Zone {
     /// Litres.
     pub volume: f64,
     pub mix: GasMix,
+    /// Plasma burnt last step, mol/s: the zone is on fire while this is above zero
+    /// (`fire.rs`).
+    pub burn_rate: f64,
 }
 
 impl Zone {
@@ -326,6 +329,33 @@ impl AtmosGrid {
         self.zones.iter().map(|z| z.mix.thermal_energy()).sum()
     }
 
+    /// A spark or flame at `temperature` K touches the air on `pos` (Luna `hotspot_expose`):
+    /// [`HOTSPOT_VOLUME`](super::fire::HOTSPOT_VOLUME) litres of it are heated to that
+    /// temperature, burn for a second, and mix back in. Returns the plasma burnt.
+    pub fn expose(&mut self, pos: TilePos, temperature: f64) -> f64 {
+        let Some(z) = self.air_zone(pos) else {
+            return 0.0;
+        };
+        let zone = &mut self.zones[z];
+        if zone.volume <= 0.0 || zone.mix.get(super::gas::Gas::Plasma) <= 0.0 {
+            return 0.0;
+        }
+        let mut sample = zone
+            .mix
+            .remove_fraction(super::fire::HOTSPOT_VOLUME / zone.volume);
+        if sample.temperature < temperature {
+            sample.temperature = temperature;
+        }
+        let burnt = sample.burn(1.0);
+        zone.mix.merge(&sample);
+        burnt
+    }
+
+    /// Whether the air on `pos` is burning.
+    pub fn burning_at(&self, pos: TilePos) -> bool {
+        self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0)
+    }
+
     /// Advance the simulation by `dt` seconds.
     pub fn step(&mut self, dt: f64) {
         if self.zones_dirty {
@@ -336,6 +366,9 @@ impl AtmosGrid {
         }
         for i in 0..self.openings.len() {
             self.flow_through(i, dt);
+        }
+        for zone in &mut self.zones {
+            zone.burn_rate = zone.mix.burn(dt) / dt;
         }
         self.update_wind();
     }
@@ -374,6 +407,7 @@ impl AtmosGrid {
                 tiles,
                 volume,
                 mix: GasMix::default(),
+                burn_rate: 0.0,
             });
         }
 
