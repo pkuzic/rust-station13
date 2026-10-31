@@ -216,6 +216,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:internal1` | `icons/mob/screen1.dmi : "internal1"` | CC-BY-SA 3.0 |
 | `hud:oxy0` | `icons/mob/screen1.dmi : "oxy0"` | CC-BY-SA 3.0 |
 | `hud:oxy1` | `icons/mob/screen1.dmi : "oxy1"` | CC-BY-SA 3.0 |
+| `hud:pull0` | `icons/mob/screen1.dmi : "pull0"` | CC-BY-SA 3.0 |
+| `hud:pull1` | `icons/mob/screen1.dmi : "pull1"` | CC-BY-SA 3.0 |
 | `hud:running` | `icons/mob/screen1.dmi : "running"` | CC-BY-SA 3.0 |
 | `hud:shoes` | `icons/mob/screen1.dmi : "shoes"` | CC-BY-SA 3.0 |
 | `hud:temp-1` | `icons/mob/screen1.dmi : "temp-1"` | CC-BY-SA 3.0 |

@@ -242,6 +242,8 @@ fn queue_actions(
             let action = match input {
                 ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
                 ActionInput::Examine(id) => resolve(id).map(Action::Examine),
+                ActionInput::Pull(id) => resolve(id).map(Action::Pull),
+                ActionInput::StopPulling => Some(Action::StopPulling),
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::CloseStorage => Some(Action::CloseStorage),
                 ActionInput::UseOnTile(tile) => Some(Action::UseOnTile(tile)),
@@ -409,10 +411,16 @@ fn send_sounds(mut links: Query<(&Controls, &mut MessageSender<PlaySound>)>, mut
 /// Tell each client its own health, state and intent whenever they change.
 fn send_status(
     mut links: Query<(&Controls, &mut SentStatus, &mut MessageSender<StatusUpdate>)>,
-    mobs: Query<(&Vitals, &CombatIntent, &Surroundings, &Lungs)>,
+    mobs: Query<(
+        &Vitals,
+        &CombatIntent,
+        &Surroundings,
+        &Lungs,
+        Has<rs13_classic::pulling::Pulling>,
+    )>,
 ) {
     for (controls, mut sent, mut sender) in &mut links {
-        let Ok((vitals, intent, around, lungs)) = mobs.get(controls.0) else {
+        let Ok((vitals, intent, around, lungs, pulling)) = mobs.get(controls.0) else {
             continue;
         };
         let status = StatusUpdate {
@@ -424,6 +432,7 @@ fn send_status(
             alerts: alerts(around, lungs),
             internals: lungs.internal.is_some(),
             body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
+            pulling,
         };
         if sent.0.as_ref() != Some(&status) {
             sender.send::<NoticeChannel>(status.clone());

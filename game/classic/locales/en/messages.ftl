@@ -118,6 +118,7 @@ hud-tip = { $what ->
         [hand-right] Right hand
         [swap] Swap hands
         [drop] Drop
+        [pull] Stop pulling
         [intent] Intent
         [move] Run / walk
         [internals] Internals

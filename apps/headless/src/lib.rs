@@ -79,7 +79,11 @@ pub type BotReport = Arc<Mutex<Option<BotResult>>>;
 
 /// Notices received so far, and the latest status.
 #[derive(Resource, Default)]
-struct Received(Vec<LocMsg>, Option<StatusUpdate>, Option<StorageView>);
+pub(crate) struct Received(
+    pub(crate) Vec<LocMsg>,
+    pub(crate) Option<StatusUpdate>,
+    Option<StorageView>,
+);
 
 #[derive(Resource)]
 struct ReportSink(BotReport);

@@ -33,6 +33,9 @@ pub enum Action {
     UseOnTile(TilePos),
     /// Turn to face a way without stepping.
     Face(Dir),
+    /// Start pulling something within a tile (Ctrl-click).
+    Pull(Entity),
+    StopPulling,
 }
 
 /// Messages from a click: one for the mob, one for everyone who can see it (needs the
@@ -101,11 +104,12 @@ pub fn process_actions(
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     electrified: Query<&crate::wires::Wiring>,
-    (mut shocks, mut visible, mut sounds, mut treatments): (
+    (mut shocks, mut visible, mut sounds, mut treatments, mut pulls): (
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
         ResMut<crate::sound::SoundEvents>,
         ResMut<crate::medical::PendingTreatments>,
+        ResMut<crate::pulling::PendingPulls>,
     ),
     (
         mut alarms,
@@ -225,6 +229,10 @@ pub fn process_actions(
                 Action::SwapHands => hands.active = hands.active.other(),
                 // Turn on the spot; a chair turns its sitter back (`movement::sync_facing`).
                 Action::Face(dir) => mob_state.facing = Some(dir),
+                Action::Pull(target) => pulls.0.push((mob, target)),
+                Action::StopPulling => {
+                    commands.entity(mob).remove::<crate::pulling::Pulling>();
+                }
                 Action::CloseStorage => {
                     commands.entity(mob).remove::<crate::storage::OpenStorage>();
                 }

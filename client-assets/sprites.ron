@@ -523,6 +523,8 @@
             "ears": (dmi: "icons/mob/screen1.dmi", state: "ears"),
             "glasses": (dmi: "icons/mob/screen1.dmi", state: "glasses"),
             "drop": (dmi: "icons/mob/screen1.dmi", state: "act_drop"),
+            "pull0": (dmi: "icons/mob/screen1.dmi", state: "pull0"),
+            "pull1": (dmi: "icons/mob/screen1.dmi", state: "pull1"),
             "help": (dmi: "icons/mob/screen1.dmi", state: "help"),
             "harm": (dmi: "icons/mob/screen1.dmi", state: "harm"),
             "running": (dmi: "icons/mob/screen1.dmi", state: "running"),

@@ -29,6 +29,7 @@ pub enum Cell {
     Hand(Hand),
     SwapHands,
     Drop,
+    Pull,
     Intent,
     MoveIntent,
     Internals,
@@ -40,7 +41,7 @@ pub enum Cell {
 }
 
 /// Luna's layout (`code/game/hud.dm` `ui_*`): cell, screen x, screen y.
-const LAYOUT: [(Cell, u8, u8); 23] = [
+const LAYOUT: [(Cell, u8, u8); 24] = [
     (Cell::Slot(Slot::Mask), 1, 2),
     (Cell::Slot(Slot::Head), 2, 2),
     (Cell::Slot(Slot::Back), 3, 2),
@@ -57,6 +58,7 @@ const LAYOUT: [(Cell, u8, u8); 23] = [
     (Cell::Slot(Slot::Belt), 3, 0),
     (Cell::SwapHands, 6, 0),
     (Cell::Drop, 7, 0),
+    (Cell::Pull, 10, 0),
     (Cell::Intent, 12, 0),
     (Cell::MoveIntent, 14, 0),
     (Cell::Internals, 16, 13),
@@ -122,6 +124,7 @@ fn cell_state(
             _ => "hand-r".into(),
         },
         Cell::Drop => "drop".into(),
+        Cell::Pull => format!("pull{}", flag(status.is_some_and(|s| s.pulling))),
         Cell::Intent => match status.map(|s| s.intent) {
             Some(Intent::Harm) => "harm".into(),
             _ => "help".into(),
@@ -310,6 +313,7 @@ fn cell_name(loc: &Loc, cell: Cell) -> String {
         Cell::Hand(Hand::Right) => "hand-right",
         Cell::SwapHands => "swap",
         Cell::Drop => "drop",
+        Cell::Pull => "pull",
         Cell::Intent => "intent",
         Cell::MoveIntent => "move",
         Cell::Internals => "internals",
@@ -367,6 +371,7 @@ fn click_cell(
         }),
         Cell::SwapHands => Some(ActionInput::SwapHands),
         Cell::Drop => Some(ActionInput::Drop),
+        Cell::Pull => Some(ActionInput::StopPulling),
         Cell::Intent => Some(ActionInput::SetIntent(
             match status.0.as_ref().map(|s| s.intent) {
                 Some(Intent::Harm) => Intent::Help,

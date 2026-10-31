@@ -4,9 +4,8 @@
 //! (default `127.0.0.1:13013`, English, a random name).
 //!
 //! Controls: arrow keys or WASD move (hold Shift to walk, Ctrl to turn on the spot); left
-//! click uses the active
-//! hand on something in reach (a held item hits people on any intent); Shift+click
-//! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
+//! click uses the active hand on something in reach (a held item hits people on any
+//! intent); Ctrl+click pulls it along; Shift+click examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
 //! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay; F4 toggles lighting.
 //!
 //! The screen is laid out like the classic BYOND client: the map with Luna's HUD on the
@@ -83,6 +82,8 @@ struct Args {
 enum UseStep {
     /// `DX,DY`: use whatever is this many tiles east and north of our player.
     Tile(i32, i32),
+    /// `pull:DX,DY`: Ctrl-click it instead, to pull it.
+    Pull(i32, i32),
     /// `swap`: swap hands.
     Swap,
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
@@ -91,13 +92,17 @@ enum UseStep {
 
 impl UseStep {
     fn parse(s: &str) -> Option<Self> {
+        let offset = |s: &str| -> Option<(i32, i32)> {
+            let (x, y) = s.split_once(',')?;
+            Some((x.trim().parse().ok()?, y.trim().parse().ok()?))
+        };
         match s {
             "swap" => Some(Self::Swap),
             "held" => Some(Self::Held),
-            _ => {
-                let (x, y) = s.split_once(',')?;
-                Some(Self::Tile(x.trim().parse().ok()?, y.trim().parse().ok()?))
-            }
+            _ => match s.strip_prefix("pull:") {
+                Some(rest) => offset(rest).map(|(x, y)| Self::Pull(x, y)),
+                None => offset(s).map(|(x, y)| Self::Tile(x, y)),
+            },
         }
     }
 }
@@ -954,8 +959,12 @@ fn send_clicks(
         }
         return;
     };
+    // Ctrl-click pulls it along (Luna `CtrlClick`).
+    let pull = keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     sender.send::<IntentChannel>(if examine {
         ActionInput::Examine(target)
+    } else if pull {
+        ActionInput::Pull(target)
     } else {
         ActionInput::UseOn(target)
     });
@@ -1210,7 +1219,7 @@ fn scripted_use(
         return;
     };
     let action = match step {
-        UseStep::Tile(dx, dy) => {
+        UseStep::Tile(dx, dy) | UseStep::Pull(dx, dy) => {
             let tile = (me.0.x + dx, me.0.y + dy);
             objects
                 .iter()
@@ -1218,7 +1227,10 @@ fn scripted_use(
                     (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
                 })
                 .min_by_key(|(_, _, a)| click_rank(a))
-                .map(|(id, ..)| ActionInput::UseOn(*id))
+                .map(|(id, ..)| match step {
+                    UseStep::Pull(..) => ActionInput::Pull(*id),
+                    _ => ActionInput::UseOn(*id),
+                })
         }
         UseStep::Swap => Some(ActionInput::SwapHands),
         UseStep::Held => match hands.active {
@@ -1291,6 +1303,7 @@ mod tests {
         assert_eq!(UseStep::parse("1,-2"), Some(UseStep::Tile(1, -2)));
         assert_eq!(UseStep::parse("swap"), Some(UseStep::Swap));
         assert_eq!(UseStep::parse("held"), Some(UseStep::Held));
+        assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
         assert_eq!(UseStep::parse("nope"), None);
     }
 }

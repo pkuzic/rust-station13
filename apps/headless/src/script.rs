@@ -6,8 +6,8 @@ use std::time::Duration;
 use bevy::prelude::*;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Player};
-use rs13_world::{Appearance, Dir, GridPos, NetId};
+use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Player, StatusUpdate};
+use rs13_world::{Appearance, Dir, GridPos, NetId, TilePos};
 
 use crate::{JoinedAt, SeenPlayer};
 
@@ -19,6 +19,8 @@ pub enum Step {
     /// Click, with the active hand, the first thing with this sprite the bot has been sent
     /// (not its own mob). Waits until there is one.
     UseOn(String),
+    /// Ctrl-click: start pulling the first thing with this sprite. Waits until there is one.
+    Pull(String),
     /// Send any other action.
     Act(ActionInput),
     Wait(Duration),
@@ -31,6 +33,10 @@ pub enum Step {
 pub struct Snapshot {
     pub label: String,
     pub players: Vec<SeenPlayer>,
+    /// Where each thing on the map the bot has been sent is, by sprite, sorted.
+    pub placed: Vec<(String, TilePos)>,
+    /// The last status the server sent.
+    pub status: Option<StatusUpdate>,
     /// The sprite of every thing the bot has been sent, sorted.
     pub sprites: Vec<String>,
 }
@@ -54,7 +60,8 @@ pub(crate) fn run_script(
         (&mut MessageSender<MoveInput>, &mut MessageSender<ActionInput>),
         (With<Client>, With<Connected>),
     >,
-    things: Query<(&NetId, &Appearance, Has<Controlled>)>,
+    things: Query<(&NetId, &Appearance, Has<Controlled>, Option<&GridPos>)>,
+    received: Res<crate::Received>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
     mut snapshots: ResMut<Snapshots>,
     mut progress: Local<Progress>,
@@ -70,18 +77,28 @@ pub(crate) fn run_script(
         return;
     };
     let started = *progress.started.get_or_insert(now);
+    let find = |sprite: &str| {
+        things
+            .iter()
+            .find(|(_, a, own, _)| !own && a.sprite == sprite)
+            .map(|(id, ..)| *id)
+    };
     let done = match step {
         Step::Move(dir) => {
             moves.send::<IntentChannel>(MoveInput { dir: *dir, run: true });
             true
         }
         Step::UseOn(sprite) => {
-            let target = things
-                .iter()
-                .find(|(_, a, own)| !own && &a.sprite == sprite)
-                .map(|(id, ..)| *id);
+            let target = find(sprite);
             if let Some(id) = target {
                 actions.send::<IntentChannel>(ActionInput::UseOn(id));
+            }
+            target.is_some()
+        }
+        Step::Pull(sprite) => {
+            let target = find(sprite);
+            if let Some(id) = target {
+                actions.send::<IntentChannel>(ActionInput::Pull(id));
             }
             target.is_some()
         }
@@ -100,11 +117,18 @@ pub(crate) fn run_script(
                 })
                 .collect();
             seen.sort();
-            let mut sprites: Vec<String> = things.iter().map(|(_, a, _)| a.sprite.clone()).collect();
+            let mut sprites: Vec<String> = things.iter().map(|(_, a, ..)| a.sprite.clone()).collect();
             sprites.sort();
+            let mut placed: Vec<(String, TilePos)> = things
+                .iter()
+                .filter_map(|(_, a, _, pos)| pos.map(|p| (a.sprite.clone(), p.0)))
+                .collect();
+            placed.sort();
             snapshots.0.push(Snapshot {
                 label: label.clone(),
                 players: seen,
+                placed,
+                status: received.1.clone(),
                 sprites,
             });
             true
