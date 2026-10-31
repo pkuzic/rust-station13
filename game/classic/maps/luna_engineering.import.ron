@@ -35,7 +35,8 @@
         // Border firedoors seal the edge on the side they face (`firedoors.md`).
         (path: "/obj/machinery/door/firedoor/border_only", id: "firedoor", dir: true),
         (path: "/obj/machinery/power/apc", id: "apc"),
-        (path: "/obj/machinery/power/smes", id: "smes"),
+        (path: "/obj/machinery/power/smes", id: "smes", vars: ["charge", "capacity", "chargelevel", "chargemode", "charging", "output", "online"]),
+        (path: "/obj/machinery/power/terminal", id: "terminal", dir: true),
         // Cables keep their ends (Luna's icon state, "0-1" by default).
         (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
         (path: "/obj/machinery/alarm", id: "air-alarm"),

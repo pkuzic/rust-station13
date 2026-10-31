@@ -6,7 +6,8 @@ mod map;
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, AtmosView, Dense, DisplayName, EnvAlert,
     FreezerPanelView, GridPos, Hand, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer,
-    MobStat, NetId, Opaque, PowerMonitorRow, PowerMonitorView, Slot, StorageView, WirePanelView, WornView,
+    MobStat, NetId, Opaque, PowerMonitorRow, PowerMonitorView, Slot, SmesPanelView, StorageView,
+    WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

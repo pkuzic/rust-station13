@@ -77,7 +77,10 @@ one cycle is 2 J.
 | Cables | Join by their ends: an end joins cables pointing back and machines on the tile it points to; a knot joins its own tile (`cables.md`) | keep; laid and cut with coils and wirecutters |
 | Network accounting | Supply this cycle is shared out this cycle; a SMES only loses what was used | Luna's one-cycle lag and `restore()` give the same totals |
 | P.A.C.M.A.N. | 5 kW while burning plasma (`generators.md`); drawn on before SMES units | keep |
-| SMES | 200 MJ (Luna's 10⁸ W-cycles), output 30 kW, starts full | values kept; charging input deferred |
+| SMES | 200 MJ (Luna's 5 × 10⁶ units at 40 J), output 30 kW and full by default; Luna's map settings (charge, capacity, input and output levels, charge mode, charging, online) are kept. Stops its output when empty, until turned on again | keep |
+| SMES terminal | the underfloor terminal on the tile next to a SMES, facing it (Luna `power/terminal`), joins the cable on its tile. While its charge mode is auto, the SMES draws up to its input level from what is left over on that network each cycle | keep; Luna's few-cycle wait before it starts charging is left out |
+| SMES window | an empty hand opens it: stored %, charging and its mode (toggle), input level, output on/off, output level (M, ±10000, ±1000, ±100, M; 0–200 kW) and output load. Lights show output, charging and charge level | keep (Luna `smes/interact`) |
+| Luna's engine room | the generators share a network with the SMES bank's terminals. Most bank units start at a tenth charge with output 0, and the station's own SMES nearly empty, so most of the station runs on its APC cells until engineers start the engine and set up the SMES units | keep |
 | APC cell | 2.5 MJ (2 500 units at 1 kJ each), starts at 95% | kept |
 | Grid pays when it has enough this cycle | | keep |
 | Cell covers any shortfall; if it can't, every channel goes off | | keep |
@@ -96,4 +99,4 @@ one cycle is 2 J.
 
 ## Not yet
 
-Solar panels, SMES charging input, APC wires, hacking and emagging. Lights draw on the lighting channel (`lights.md`).
+Solar panels, APC wires, hacking and emagging. Lights draw on the lighting channel (`lights.md`).

@@ -8,7 +8,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, FreezerPanelView,
     GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
-    PowerMonitorView, Slot, StorageView, TilePos, WirePanelView, WornView,
+    PowerMonitorView, Slot, SmesPanelView, StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -76,6 +76,11 @@ pub enum ActionInput {
         target: NetId,
         command: FreezerCommand,
     },
+    /// A button on an open SMES.
+    Smes {
+        target: NetId,
+        command: SmesCommand,
+    },
     /// Close the open container.
     CloseStorage,
     /// Click on a tile with nothing on it to click: lay cable from a coil.
@@ -120,6 +125,27 @@ pub enum FreezerCommand {
     Toggle,
     /// Change the temperature it cools to by this many kelvin.
     Setting(i32),
+}
+
+/// SMES window buttons (Luna's `smes` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SmesCommand {
+    /// Automatic charging on or off.
+    ChargeMode,
+    /// Output on or off.
+    Online,
+    /// Change the input level.
+    Input(SmesLevel),
+    /// Change the output level.
+    Output(SmesLevel),
+}
+
+/// How a SMES level button changes it: to nothing, to the most, or by an amount (W).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SmesLevel {
+    Min,
+    Max,
+    Change(i32),
 }
 
 /// What a channel button sets.
@@ -179,6 +205,10 @@ pub struct LaserPanel(pub Option<LaserPanelView>);
 /// Server → one client: the freezer it has open, or `None` to close it. Sent when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FreezerPanel(pub Option<FreezerPanelView>);
+
+/// Server → one client: the SMES it has open, or `None` to close it. Sent when it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct SmesPanel(pub Option<SmesPanelView>);
 
 /// Server → one client: the container it has open, or `None` to close it. Sent when it
 /// changes.
@@ -250,6 +280,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<LaserPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<FreezerPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<SmesPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);
