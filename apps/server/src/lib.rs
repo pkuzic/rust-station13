@@ -237,6 +237,7 @@ fn queue_actions(
                 ActionInput::CloseStorage => Some(Action::CloseStorage),
                 ActionInput::UseOnTile(tile) => Some(Action::UseOnTile(tile)),
                 ActionInput::SwapHands => Some(Action::SwapHands),
+                ActionInput::Face(dir) => Some(Action::Face(dir)),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
                 ActionInput::Equip(slot) => {
                     equipment.0.push(EquipAction::Equip(slot));

@@ -36,6 +36,8 @@ pub enum ActionInput {
     UseOn(NetId),
     Drop,
     SwapHands,
+    /// Turn to face a way without stepping (Ctrl + a direction).
+    Face(Dir),
     Examine(NetId),
     /// Say something out loud. The server cleans it up and limits its length.
     Say(String),

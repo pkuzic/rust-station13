@@ -129,3 +129,43 @@ fn a_wrench_takes_it_apart_into_a_metal_sheet() {
             .any(|(p, a)| p.0 == CHAIR_AT && a.sprite == "metal-sheet")
     );
 }
+
+#[test]
+fn people_face_the_way_they_turn_and_the_way_their_chair_does() {
+    use rs13_world::Facing;
+    let (mut app, chair_id) = setup();
+    let mob = spawn_player_mob(app.world_mut(), CHAIR_AT.step(Dir::South));
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::South)));
+
+    // Turning on the spot doesn't step.
+    app.world_mut()
+        .get_mut::<PendingActions>(mob)
+        .unwrap()
+        .0
+        .push(Action::Face(Dir::West));
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::West)));
+    assert_eq!(
+        app.world().get::<GridPos>(mob).unwrap().0,
+        CHAIR_AT.step(Dir::South)
+    );
+
+    // Walking faces the way of the step.
+    app.world_mut().get_mut::<MoveIntent>(mob).unwrap().dir = Some(Dir::North);
+    ticks(&mut app, 2);
+    app.world_mut().get_mut::<MoveIntent>(mob).unwrap().dir = None;
+    assert_eq!(app.world().get::<GridPos>(mob).unwrap().0, CHAIR_AT);
+    assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::North)));
+
+    // Buckled in, you face the way the chair does, and turning doesn't take.
+    click(&mut app, mob, chair_id);
+    assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::East)));
+    app.world_mut()
+        .get_mut::<PendingActions>(mob)
+        .unwrap()
+        .0
+        .push(Action::Face(Dir::West));
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::East)));
+}

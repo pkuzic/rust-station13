@@ -365,6 +365,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
             // What the mob is and does.
             (
                 Mob::default(),
+                rs13_world::Facing::of(rs13_world::Dir::South),
                 MoveIntent::default(),
                 Hands::default(),
                 PendingActions::default(),

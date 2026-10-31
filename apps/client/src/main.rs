@@ -3,7 +3,8 @@
 //! Usage: `rs13-client [SERVER_ADDR] [--lang en|ru] [--name "First Last"]`
 //! (default `127.0.0.1:13013`, English, a random name).
 //!
-//! Controls: arrow keys or WASD move (hold Shift to walk); left click uses the active
+//! Controls: arrow keys or WASD move (hold Shift to walk, Ctrl to turn on the spot); left
+//! click uses the active
 //! hand on something in reach (a held item hits people on any intent); Shift+click
 //! examines; Q drops; X swaps hands; 1 / 4 set help / harm intent; T opens the say line
 //! (Enter sends, Esc cancels); F3 toggles the atmos pressure overlay; F4 toggles lighting.
@@ -779,8 +780,10 @@ fn send_move_input(
     let held = |a: KeyCode, b: KeyCode| !chat.open && (keys.pressed(a) || keys.pressed(b));
     let dx = held(KeyCode::KeyD, KeyCode::ArrowRight) as i32 - held(KeyCode::KeyA, KeyCode::ArrowLeft) as i32;
     let dy = held(KeyCode::KeyW, KeyCode::ArrowUp) as i32 - held(KeyCode::KeyS, KeyCode::ArrowDown) as i32;
+    // With Ctrl held, directions turn on the spot instead (`send_hotkeys`).
+    let turning = keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
     let input = MoveInput {
-        dir: Dir::from_offset(dx, dy),
+        dir: Dir::from_offset(dx, dy).filter(|_| !turning),
         // Shift does the opposite of the move-intent button while held.
         run: walk.0 == keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]),
     };
@@ -801,6 +804,23 @@ fn send_hotkeys(
     };
     // `chat` may have just closed this frame on Enter; only a closed line takes hotkeys.
     if chat.open || chat.is_changed() {
+        return;
+    }
+    // Ctrl + a direction: turn to face it without stepping.
+    let directions = [
+        (KeyCode::KeyW, KeyCode::ArrowUp, 0, 1),
+        (KeyCode::KeyS, KeyCode::ArrowDown, 0, -1),
+        (KeyCode::KeyD, KeyCode::ArrowRight, 1, 0),
+        (KeyCode::KeyA, KeyCode::ArrowLeft, -1, 0),
+    ];
+    if keys.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
+        for (a, b, dx, dy) in directions {
+            if keys.any_just_pressed([a, b])
+                && let Some(dir) = Dir::from_offset(dx, dy)
+            {
+                sender.send::<IntentChannel>(ActionInput::Face(dir));
+            }
+        }
         return;
     }
     if keys.just_pressed(KeyCode::KeyQ) {
@@ -1043,13 +1063,12 @@ fn glide(
         &GridPos,
         &mut Transform,
         Has<Player>,
-        Option<&mut Look>,
         Option<&mut Glided>,
         Option<&rs13_world::PixelOffset>,
     )>,
 ) {
     let dt = time.delta_secs();
-    for (entity, pos, mut transform, is_player, look, glided, offset) in &mut movers {
+    for (entity, pos, mut transform, is_player, glided, offset) in &mut movers {
         // Hung on a wall: drawn shifted onto it (BYOND `pixel_x`, `pixel_y`).
         let shift = offset.map_or(Vec3::ZERO, |o| {
             Vec3::new(f32::from(o.0[0]), f32::from(o.0[1]), 0.0)
@@ -1057,22 +1076,6 @@ fn glide(
         let target = world_pos(pos.0, transform.translation.z) + shift;
         let at = glided.as_ref().map_or(transform.translation, |g| g.0);
         let offset = target - at;
-        // People face the way they are moving (DMI order: S, N, E, W).
-        if is_player
-            && let Some(mut look) = look
-            && offset.length() > 0.5
-        {
-            let facing = if offset.x.abs() > offset.y.abs() {
-                if offset.x > 0.0 { 2 } else { 3 }
-            } else if offset.y > 0.0 {
-                1
-            } else {
-                0
-            };
-            if look.facing != facing {
-                look.facing = facing;
-            }
-        }
         // Teleports and large corrections snap instead of sliding across the map.
         if !is_player || offset.length() > TILE_PX * 2.0 {
             transform.translation = target;

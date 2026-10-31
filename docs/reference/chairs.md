@@ -25,5 +25,6 @@ Chairs are a kind of bed, which is a kind of stool: anchored, not dense, and fac
 | Unbuckling someone else | an empty hand on an occupied chair, from beside it | keep |
 | Turning | an empty hand on an empty chair from beside it turns it a quarter anticlockwise | **simplified**: the verb becomes a click |
 | Wrench | a metal sheet on its tile; the sitter is freed | keep |
-| Sitter faces the chair's way; north-facing chair drawn over the sitter | none | client side, later |
+| Sitter faces the chair's way | buckled in, you face the chair's way and can't turn (`movement::sync_facing`) | keep |
+| North-facing chair drawn over the sitter | none | client side, later |
 | Beds, stools, roller beds, buckling others by dragging | none | not in the region, or need dragging |

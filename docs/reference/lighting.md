@@ -133,6 +133,8 @@ Not in Luna; it follows later SS13 servers' view cones (`apps/client/src/fov.rs`
   Items, machines and the floor still show, grayed.
 - **Neighbours:** the player's own tile and the eight around it are never hidden: you
   notice someone right next to you.
-- **Facing** is the way the player last walked, so stepping turns you.
-- **Not yet:** turning on the spot without stepping, and the server still sends the
-  people behind you.
+- **Facing** is decided by the server (BYOND `dir`): the way the player last walked or
+  tried to walk, or turned with **Ctrl + a direction** without stepping. Someone buckled
+  into a chair faces the way the chair does (Luna `buckle_mob`). Diagonal steps face
+  diagonally; four-direction sprites then show their east or west side, as BYOND does.
+- **Not yet:** the server still sends the people behind you.
