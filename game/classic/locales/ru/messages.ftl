@@ -295,3 +295,31 @@ locker-locked = { $name } запирает шкафчик.
 locker-unlocked = { $name } отпирает шкафчик.
 locker-access-denied = Доступ запрещён
 locker-locked-inside = Шкафчик заперт!
+
+# Медицина (medical.md). Аргументы: $name (кто лечит), $target, $item (id существительного), числа.
+medical-applied = { $name } применяет { NOUN($item, case: "acc") } на { $target }
+medical-applied-self = { $name } применяет { NOUN($item, case: "acc") } на себе
+analyzer-used = { $name } проверяет жизненные показатели { $target }.
+analyzer-used-self = Вы проверили жизненные показатели { $target }.
+analyzer-status = Результаты анализа { $target }: общее состояние: { $dead ->
+        [yes] мёртв
+       *[no] здоров на { $health }%
+    }
+analyzer-damage = Ключ: удушье/токсины/ожоги/травмы. Повреждения: { $oxy } - { $tox } - { $burn } - { $brute }
+analyzer-temperature = Температура тела: { $celsius }°C ({ $fahrenheit }°F)
+analyzer-localized = Повреждения по частям тела, травмы/ожоги:
+analyzer-organ = { NOUN($zone) }: { $brute } - { $burn }
+analyzer-limbs-ok = Конечности в порядке.
+analyzer-summary = { $oxy ->
+        [severe] Обнаружено тяжёлое кислородное голодание
+       *[ok] Уровень кислорода в крови в норме
+    } | { $tox ->
+        [severe] Обнаружено опасное количество токсинов
+       *[ok] Уровень токсинов в крови минимален
+    } | { $burn ->
+        [severe] Обнаружены тяжёлые ожоги
+       *[ok] Ожогов нет
+    } | { $brute ->
+        [severe] Обнаружены тяжёлые травмы
+       *[ok] Травм нет
+    }

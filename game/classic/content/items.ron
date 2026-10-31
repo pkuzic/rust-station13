@@ -60,6 +60,17 @@
     (id: "desk-lamp", force: 0.0, size: 4, conducts: true),
     (id: "desk-lamp-green", force: 0.0, size: 4, conducts: true),
 
+    // Medical (luna:code/game/objects/items/stacks/medical.dm, storage/firstaid.dm,
+    // devices/scanners.dm; `docs/reference/medical.md`). Luna's kits also carry band-aids,
+    // syringes and pills, which have no prototype yet.
+    (id: "bruise-pack", force: 0.0, size: 1, stack: 10),
+    (id: "ointment", force: 0.0, size: 1, stack: 10),
+    (id: "health-analyzer", force: 0.0, size: 1, slot: "belt", conducts: true),
+    (id: "first-aid-kit", force: 0.0, storage: (),
+        contents: ["bruise-pack", "bruise-pack", "ointment", "ointment", "health-analyzer"]),
+    (id: "first-aid-kit-fire", force: 0.0, storage: (),
+        contents: ["ointment", "ointment", "health-analyzer"]),
+
     // Containers (luna:code/game/objects/storage/toolbox.dm, belts.dm). Luna's analyzers
     // and scanners have no prototype yet and are left out. Luna's electrical
     // toolbox swaps its third coil for insulated gloves one time in ten; ours always has

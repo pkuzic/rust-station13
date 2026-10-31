@@ -123,6 +123,13 @@ impl Body {
         organ.burn += burn * scale;
     }
 
+    /// Luna's `heal_damage`: take brute and burn off one organ, never below zero.
+    pub fn heal(&mut self, zone: Zone, brute: f32, burn: f32) {
+        let organ = &mut self.organs[zone.index()];
+        organ.brute = (organ.brute - brute.max(0.0)).max(0.0);
+        organ.burn = (organ.burn - burn.max(0.0)).max(0.0);
+    }
+
     /// Spread damage evenly over every body part, as whole-body effects (pressure, cold)
     /// do in /tg/station.
     pub fn take_damage_spread(&mut self, brute: f32, burn: f32) {

@@ -100,10 +100,11 @@ pub fn process_actions(
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
     electrified: Query<&crate::wires::Wiring>,
-    (mut shocks, mut visible, mut sounds): (
+    (mut shocks, mut visible, mut sounds, mut treatments): (
         ResMut<crate::wires::PendingShocks>,
         ResMut<crate::combat::VisibleEvents>,
         ResMut<crate::sound::SoundEvents>,
+        ResMut<crate::medical::PendingTreatments>,
     ),
     (
         mut alarms,
@@ -276,6 +277,13 @@ pub fn process_actions(
                         sounds.tool_used(tool, tile);
                         outbox.0.extend(outcome.to_mob);
                     }
+                }
+                Action::UseOn(target)
+                    if people.contains(target) && tool.is_some_and(crate::medical::treats) =>
+                {
+                    // Medical packs and analyzers treat or scan instead of hitting
+                    // (`medical.md`); reach is checked when they are resolved.
+                    treatments.0.push((mob, target));
                 }
                 Action::UseOn(target) if people.contains(target) => {
                     // Reach and the outcome are worked out by `resolve_attacks`.
