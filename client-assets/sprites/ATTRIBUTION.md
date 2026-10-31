@@ -345,6 +345,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pipe:2-4` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:2-8` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:4-8` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
+| `pipe-vent:` | `icons/obj/atmospherics/pipe_vent.dmi : "intact"` | CC-BY-SA 3.0 |
 | `plasma-canister:` | `icons/obj/atmos.dmi : "orange"` | CC-BY-SA 3.0 |
 | `plasma-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
 | `plasma-canister:can-o0` | `icons/obj/atmos.dmi : "can-o0"` | CC-BY-SA 3.0 |

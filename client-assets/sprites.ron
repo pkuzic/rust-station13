@@ -659,6 +659,7 @@
             "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1", dir: 2),
             "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0", dir: 2),
         },
+        "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact", dir: 0) },
         "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
         // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).
         "air-tank": { "": (dmi: "icons/obj/atmospherics/red_pipe_tank.dmi", state: "intact", dir: 2) },
