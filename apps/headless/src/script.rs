@@ -1,0 +1,117 @@
+//! Scripted steps for a bot, so tests can drive the real game over the network: walk,
+//! click things, act, wait, and note what the bot can see at points along the way.
+
+use std::time::Duration;
+
+use bevy::prelude::*;
+use rs13_network::lightyear::prelude::client::*;
+use rs13_network::lightyear::prelude::*;
+use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Player};
+use rs13_world::{Appearance, Dir, GridPos, NetId};
+
+use crate::{JoinedAt, SeenPlayer};
+
+/// One step of a bot's script, run in order once its own player has arrived.
+#[derive(Debug, Clone)]
+pub enum Step {
+    /// Hold a direction; `None` stops.
+    Move(Option<Dir>),
+    /// Click, with the active hand, the first thing with this sprite the bot has been sent
+    /// (not its own mob). Waits until there is one.
+    UseOn(String),
+    /// Send any other action.
+    Act(ActionInput),
+    Wait(Duration),
+    /// Note what the bot can see right now, under this label.
+    Snapshot(String),
+}
+
+/// What the bot could see at a [`Step::Snapshot`].
+#[derive(Debug, Clone, Default)]
+pub struct Snapshot {
+    pub label: String,
+    pub players: Vec<SeenPlayer>,
+    /// The sprite of every thing the bot has been sent, sorted.
+    pub sprites: Vec<String>,
+}
+
+#[derive(Resource, Default)]
+pub(crate) struct Snapshots(pub Vec<Snapshot>);
+
+/// Where the bot is in its script, and when the current step started.
+#[derive(Default)]
+pub(crate) struct Progress {
+    next: usize,
+    started: Option<Duration>,
+}
+
+#[allow(clippy::too_many_arguments, clippy::type_complexity)]
+pub(crate) fn run_script(
+    time: Res<Time>,
+    config: Res<crate::BotConfig>,
+    joined: Res<JoinedAt>,
+    mut senders: Query<
+        (&mut MessageSender<MoveInput>, &mut MessageSender<ActionInput>),
+        (With<Client>, With<Connected>),
+    >,
+    things: Query<(&NetId, &Appearance, Has<Controlled>)>,
+    players: Query<(&Player, &GridPos, Has<Controlled>)>,
+    mut snapshots: ResMut<Snapshots>,
+    mut progress: Local<Progress>,
+) {
+    if joined.0.is_none() {
+        return;
+    }
+    let Ok((mut moves, mut actions)) = senders.single_mut() else {
+        return;
+    };
+    let now = time.elapsed();
+    let Some(step) = config.script.get(progress.next) else {
+        return;
+    };
+    let started = *progress.started.get_or_insert(now);
+    let done = match step {
+        Step::Move(dir) => {
+            moves.send::<IntentChannel>(MoveInput { dir: *dir, run: true });
+            true
+        }
+        Step::UseOn(sprite) => {
+            let target = things
+                .iter()
+                .find(|(_, a, own)| !own && &a.sprite == sprite)
+                .map(|(id, ..)| *id);
+            if let Some(id) = target {
+                actions.send::<IntentChannel>(ActionInput::UseOn(id));
+            }
+            target.is_some()
+        }
+        Step::Act(action) => {
+            actions.send::<IntentChannel>(action.clone());
+            true
+        }
+        Step::Wait(wait) => now >= started + *wait,
+        Step::Snapshot(label) => {
+            let mut seen: Vec<SeenPlayer> = players
+                .iter()
+                .map(|(player, pos, own)| SeenPlayer {
+                    client_id: player.client_id,
+                    pos: pos.0,
+                    own,
+                })
+                .collect();
+            seen.sort();
+            let mut sprites: Vec<String> = things.iter().map(|(_, a, _)| a.sprite.clone()).collect();
+            sprites.sort();
+            snapshots.0.push(Snapshot {
+                label: label.clone(),
+                players: seen,
+                sprites,
+            });
+            true
+        }
+    };
+    if done {
+        progress.next += 1;
+        progress.started = None;
+    }
+}

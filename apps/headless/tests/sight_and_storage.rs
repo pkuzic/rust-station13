@@ -1,0 +1,149 @@
+//! What the server sends follows what a mob can see (`docs/reference/lighting.md`): a
+//! person behind your back isn't sent until you turn round, and what is inside a first aid
+//! kit isn't sent until you open it. Driven end to end, over UDP, by scripted bots.
+
+use std::net::SocketAddr;
+use std::thread;
+use std::time::Duration;
+
+use rs13_headless::{BotConfig, BotReport, BotResult, Snapshot, Step, bot_app, unique_client_id};
+use rs13_network::protocol::ActionInput;
+use rs13_world::Dir;
+
+/// Spawn points fill from the south: the first bot to join stands at `1`, the second at
+/// `2`, three tiles north of it, with a first aid kit beside it.
+const MAP: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        '1': (tile: (id: "floor"), spawn: true),
+        '2': (tile: (id: "floor"), spawn: true),
+        'k': (tile: (id: "floor"), objects: ["first-aid-kit"]),
+    },
+    rows: [
+        "WWWWWWW",
+        "W.....W",
+        "W..2k.W",
+        "W.....W",
+        "W.....W",
+        "W..1..W",
+        "WWWWWWW",
+    ],
+)"#;
+
+const KIT: [&str; 3] = ["bruise-pack", "ointment", "health-analyzer"];
+
+fn run_bot(server: SocketAddr, script: Vec<Step>, hold: Duration) -> thread::JoinHandle<BotResult> {
+    thread::spawn(move || {
+        let report = BotReport::default();
+        let config = BotConfig {
+            server,
+            client_id: unique_client_id(),
+            dir: None,
+            hold,
+            examine: None,
+            name: None,
+            say: None,
+            script,
+        };
+        let exit = bot_app(config, report.clone()).run();
+        assert!(exit.is_success(), "bot exited with {exit:?}");
+        report.lock().unwrap().take().expect("bot produced a report")
+    })
+}
+
+fn snapshot<'a>(result: &'a BotResult, label: &str) -> &'a Snapshot {
+    result
+        .snapshots
+        .iter()
+        .find(|s| s.label == label)
+        .unwrap_or_else(|| panic!("no snapshot {label}: {:?}", result.snapshots))
+}
+
+fn wait(ms: u64) -> Step {
+    Step::Wait(Duration::from_millis(ms))
+}
+
+fn others(s: &Snapshot) -> usize {
+    s.players.iter().filter(|p| !p.own).count()
+}
+
+fn has(s: &Snapshot, sprite: &str) -> bool {
+    s.sprites.iter().any(|x| x == sprite)
+}
+
+#[test]
+fn people_behind_you_and_what_is_in_a_kit_are_sent_only_once_seen() {
+    let port = 20_000 + ((std::process::id() + 7_919) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_map(port, MAP).run());
+    thread::sleep(Duration::from_millis(500));
+
+    // The first bot stands still, facing south, south of where the second will be.
+    let south = run_bot(server, vec![], Duration::from_secs(6));
+    thread::sleep(Duration::from_millis(500));
+    // The second turns its back on the first, then round again (Ctrl + a direction in the
+    // client), then picks the kit up and opens it.
+    let viewer = run_bot(
+        server,
+        vec![
+            wait(300),
+            Step::Act(ActionInput::Face(Dir::North)),
+            wait(500),
+            Step::Snapshot("start".into()),
+            Step::Act(ActionInput::Face(Dir::South)),
+            wait(500),
+            Step::Snapshot("turned".into()),
+            Step::UseOn("first-aid-kit".into()),
+            wait(400),
+            Step::Snapshot("holding".into()),
+            // An empty hand on the kit in the other hand opens it.
+            Step::Act(ActionInput::SwapHands),
+            wait(300),
+            Step::UseOn("first-aid-kit".into()),
+            wait(700),
+            Step::Snapshot("opened".into()),
+        ],
+        Duration::from_secs(5),
+    );
+    let south = south.join().unwrap();
+    let viewer = viewer.join().unwrap();
+
+    let start = snapshot(&viewer, "start");
+    assert_eq!(
+        others(start),
+        0,
+        "the person behind our back isn't sent: {start:?}"
+    );
+    assert!(has(start, "first-aid-kit"), "{start:?}");
+    assert!(
+        !KIT.iter().any(|k| has(start, k)),
+        "the kit's contents aren't sent while shut: {start:?}"
+    );
+
+    let turned = snapshot(&viewer, "turned");
+    assert_eq!(others(turned), 1, "turned round, they are: {turned:?}");
+
+    let holding = snapshot(&viewer, "holding");
+    assert!(has(holding, "first-aid-kit"), "{holding:?}");
+    assert!(
+        !KIT.iter().any(|k| has(holding, k)),
+        "held but still shut: {holding:?}"
+    );
+
+    let opened = snapshot(&viewer, "opened");
+    for item in KIT {
+        assert!(has(opened, item), "{item} sent once open: {opened:?}");
+    }
+    let storage = viewer.storage.as_ref().expect("the kit's window was sent");
+    assert_eq!(storage.items.len(), 5, "{storage:?}");
+
+    // The first bot, facing south, had the second behind its back the whole time.
+    assert_eq!(
+        south.players.iter().filter(|p| !p.own).count(),
+        0,
+        "{:?}",
+        south.players
+    );
+    assert_eq!(south.under_floor_received, 0);
+}

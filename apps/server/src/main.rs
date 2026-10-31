@@ -1,6 +1,8 @@
 //! Dedicated server: engine plus the classic game build.
 //!
-//! Usage: `rs13-server [--port N] [--map engineering-chamber|luna-engineering]`
+//! Usage: `rs13-server [--port N] [--map engineering-chamber|luna-engineering] [--map-file PATH]`
+//!
+//! `--map-file` loads a map in the RON map format from disk, for trying things out.
 
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
@@ -21,6 +23,14 @@ fn main() -> AppExit {
                 "luna-engineering" => map = maps::LUNA_ENGINEERING,
                 _ => return usage(),
             },
+            ("--map-file", Some(path)) => match std::fs::read_to_string(&path) {
+                // Read once and kept for the life of the server.
+                Ok(text) => map = Box::leak(text.into_boxed_str()),
+                Err(e) => {
+                    eprintln!("rs13-server: can't read {path}: {e}");
+                    return AppExit::error();
+                }
+            },
             _ => return usage(),
         }
     }
@@ -30,6 +40,6 @@ fn main() -> AppExit {
 }
 
 fn usage() -> AppExit {
-    eprintln!("usage: rs13-server [--port N] [--map engineering-chamber|luna-engineering]");
+    eprintln!("usage: rs13-server [--port N] [--map engineering-chamber|luna-engineering] [--map-file PATH]");
     AppExit::error()
 }
