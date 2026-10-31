@@ -102,6 +102,11 @@ fn two_clients_move_in_one_room() {
         );
     }
 
+    // Nothing under the floor tiles was ever sent to either, not even on joining.
+    for result in [&first, &second] {
+        assert_eq!(result.under_floor_received, 0);
+    }
+
     // Both clients agree on where everyone is (both were standing still at the end).
     let positions = |r: &[SeenPlayer]| {
         let mut v: Vec<_> = r.iter().map(|p| (p.client_id, p.pos)).collect();

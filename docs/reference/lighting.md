@@ -124,8 +124,10 @@ doors hide. The client draws it as real shadows, as if sight weren't tile based
 - **Server side** (`apps/server/src/sight.rs`): each client is sent only the things on the
   map its mob can see, by the same test (`rs13_world::sight`), out to one tile past the
   view. Always sent: the player's own mob, anything not on the map (held, worn, stored),
-  closed doors and light sources (the client needs them to draw shadows and light). So a
-  modified client can't see through walls.
+  closed doors and light sources (the client needs them to draw shadows and light). Never
+  sent: anything under intact floor tiles (pipes, cables, vents), until the tile is pried
+  up. A client that has just joined gets its first pass before anything is sent to it. So
+  a modified client can't see through walls or floors.
 
 ## Field of view
 

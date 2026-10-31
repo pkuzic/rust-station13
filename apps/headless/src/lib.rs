@@ -12,7 +12,7 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
-use rs13_world::{Appearance, Dir, GridPos, NetId, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, Hidden, NetId, TilePos};
 
 /// Give up if no own player has been received after this long.
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -49,6 +49,17 @@ pub struct BotResult {
     pub notices: Vec<LocMsg>,
     /// The last status the server reported for the bot's own mob.
     pub status: Option<StatusUpdate>,
+    /// How many things under the floor (`Hidden`) ever reached the bot: the server should
+    /// send none.
+    pub under_floor_received: usize,
+}
+
+/// Things under the floor received so far.
+#[derive(Resource, Default)]
+struct UnderFloor(usize);
+
+fn count_under_floor(_: On<Add<Hidden>>, mut seen: ResMut<UnderFloor>) {
+    seen.0 += 1;
 }
 
 /// Filled in when the bot finishes. `None` if it never received its own player.
@@ -78,6 +89,8 @@ pub fn bot_app(config: BotConfig, report: BotReport) -> App {
     .insert_resource(ReportSink(report))
     .init_resource::<JoinedAt>()
     .init_resource::<Received>()
+    .init_resource::<UnderFloor>()
+    .add_observer(count_under_floor)
     .add_systems(Startup, start)
     .add_systems(
         Update,
@@ -193,6 +206,7 @@ fn finish(
     config: Res<BotConfig>,
     sink: Res<ReportSink>,
     received: Res<Received>,
+    under_floor: Res<UnderFloor>,
     mut joined: ResMut<JoinedAt>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
     mut exit: MessageWriter<AppExit>,
@@ -221,6 +235,7 @@ fn finish(
                 players: seen,
                 notices: received.0.clone(),
                 status: received.1.clone(),
+                under_floor_received: under_floor.0,
             });
             exit.write(AppExit::Success);
         }

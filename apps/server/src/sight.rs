@@ -4,10 +4,11 @@
 
 use std::collections::{HashMap, HashSet};
 
+use bevy::ecs::query::QueryFilter;
 use bevy::prelude::*;
 use rs13_classic::movement::Mob;
 use rs13_network::lightyear::prelude::*;
-use rs13_world::{Facing, GridPos, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
+use rs13_world::{Facing, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
 
 use crate::Controls;
 
@@ -35,20 +36,37 @@ pub fn out_of_sight(
 
 /// Work out what each client's mob can't see, and stop or resume sending it.
 ///
-/// Always sent: anything not on the map (held, worn or stored: the client needs its own
+/// Never sent: anything under intact floor tiles (`Hidden`).
+///
+/// Always sent otherwise: anything not on the map (held, worn or stored: the client needs its own
 /// inventory), closed doors and light sources (the client needs them to draw shadows and
 /// light around what it does see), and the client's own mob.
+///
+/// Only links Lightyear replicates to (they carry a `PriorityMap`) are handled, so every
+/// change lands. Run once a tick for everyone, and every frame, before replication sends,
+/// for links not yet handled (`F = Without<OutOfSight>`), so a client that has just joined
+/// is never sent what it can't see.
 #[allow(clippy::type_complexity)]
-pub fn update_sight(
-    mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>)>,
+pub fn update_sight<F: QueryFilter>(
+    mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
     viewers: Query<(&GridPos, Option<&Facing>)>,
     maps: Query<&MapLayer>,
-    things: Query<(Entity, Option<&GridPos>, Has<Mob>, Has<Opaque>, Has<LightSource>), With<NetId>>,
+    things: Query<
+        (
+            Entity,
+            Option<&GridPos>,
+            Has<Mob>,
+            Has<Opaque>,
+            Has<LightSource>,
+            Has<Hidden>,
+        ),
+        With<NetId>,
+    >,
     mut commands: Commands,
 ) {
     let closed: HashSet<TilePos> = things
         .iter()
-        .filter(|(_, _, _, opaque, _)| *opaque)
+        .filter(|(_, _, _, opaque, ..)| *opaque)
         .filter_map(|(_, pos, ..)| pos.map(|p| p.0))
         .collect();
     for (link, controls, out) in &mut links {
@@ -70,12 +88,14 @@ pub fn update_sight(
         };
         let hidden: HashSet<Entity> = things
             .iter()
-            .filter(|(entity, pos, person, opaque, light)| {
+            .filter(|(entity, pos, person, opaque, light, under_floor)| {
                 let Some(at) = pos else { return false };
-                *entity != controls.0
-                    && !*opaque
-                    && !*light
-                    && out_of_sight(eye, facing, at.0, *person, &mut seen)
+                // Under intact floor tiles (pipes, cables, vents): no one sees it.
+                *under_floor
+                    || (*entity != controls.0
+                        && !*opaque
+                        && !*light
+                        && out_of_sight(eye, facing, at.0, *person, &mut seen))
             })
             .map(|(entity, ..)| entity)
             .collect();
