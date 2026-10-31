@@ -6,6 +6,7 @@ use rs13_classic::ClassicPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::hands::{Hands, HeldBy};
 use rs13_classic::health::{Body, Zone};
+use rs13_classic::lighting::TileLight;
 use rs13_classic::lights::{Light, LightStatus};
 use rs13_classic::machines::MACHINE_TICKS;
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
@@ -126,6 +127,25 @@ fn a_light_is_lit_by_power_and_its_area_switch() {
     ticks(&mut app, 1);
     assert!(light(&app, fixture).on);
     assert!(app.world().get::<LightSource>(fixture).is_some());
+}
+
+#[test]
+fn the_server_knows_where_it_is_dark() {
+    let (mut app, mob) = setup();
+    let switch = find(&mut app, "light-switch");
+    let dark = |app: &App| app.world().resource::<TileLight>().is_dark(BELOW_LIGHT);
+    assert!(!dark(&app), "lit by the tube");
+    assert!(app.world().resource::<TileLight>().brightness(BELOW_LIGHT) > 0.9);
+
+    app.world_mut().get_mut::<GridPos>(mob).unwrap().0 = TilePos::new(4, 2, 0);
+    click(&mut app, mob, switch);
+    ticks(&mut app, 1);
+    assert!(dark(&app), "the only light is off");
+    assert!(app.world().resource::<TileLight>().is_dark(TilePos::new(5, 1, 0)));
+
+    click(&mut app, mob, switch);
+    ticks(&mut app, 1);
+    assert!(!dark(&app));
 }
 
 #[test]

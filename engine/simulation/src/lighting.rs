@@ -4,16 +4,27 @@
 //! what each light it can see has left after the distance to it, summed, capped by the
 //! strongest light reaching it and scaled so that [`FULL_LIGHT`] is fully lit. Distance
 //! is not rounded to whole tiles, so light fades smoothly. Light passes between decks
-//! through open floors, losing one tile of reach per deck.
+//! through open floors, losing one tile of reach per deck. A tile is dark when even its
+//! brightest colour is below [`DARK_BELOW`].
 //!
 //! Spec: `docs/reference/lighting.md` (luna:code/modules/power/UltraLight.dm).
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-use rs13_world::TilePos;
+use rs13_world::{TileMap, TilePos};
 
 /// The light level at which a tile is fully lit (Luna `ul_Steps`).
 pub const FULL_LIGHT: f32 = 7.0;
+
+/// A tile whose brightest colour is below this is dark. A tube keeps tiles out of the dark
+/// up to six and a half tiles away.
+pub const DARK_BELOW: f32 = 0.2;
+
+/// A tile with no lighting of its own, always fully lit (Luna's space area).
+pub const SPACE: &str = "space";
+
+/// A tile with no floor: light passes through it to the deck below.
+pub const OPEN_SPACE: &str = "open-space";
 
 /// Red, green and blue: strengths in tiles of reach, or light levels from 0 to 1.
 pub type Rgb = [f32; 3];
@@ -88,6 +99,17 @@ impl LightField {
         std::array::from_fn(|c| (acc.sum[c].min(acc.cap[c]) / FULL_LIGHT).clamp(0.0, 1.0))
     }
 
+    /// How bright a tile is, from 0 to 1: its brightest colour, so that a tile lit only by
+    /// a red bulb is as bright as the red light on it.
+    pub fn brightness(&self, pos: TilePos) -> f32 {
+        self.level(pos).into_iter().fold(0.0, f32::max)
+    }
+
+    /// Whether a tile is too dark to see in: its brightness is below [`DARK_BELOW`].
+    pub fn is_dark(&self, pos: TilePos) -> bool {
+        self.brightness(pos) < DARK_BELOW
+    }
+
     fn spread(&mut self, world: &impl LightWorld, emitter: Emitter, vertical: Vertical) {
         let reach = emitter.rgb.iter().copied().fold(0.0_f32, f32::max);
         if reach <= 0.0 {
@@ -131,6 +153,56 @@ impl LightField {
         for (pos, rgb, way) in next {
             self.spread(world, Emitter { pos, rgb }, way);
         }
+    }
+}
+
+/// The decks of a map and the closed doors on them, as light sees them. Server and client
+/// both light the map through this, so they agree on where it is dark.
+pub struct MapDecks<'a> {
+    decks: HashMap<i32, &'a TileMap>,
+    opaque: HashSet<TilePos>,
+}
+
+impl<'a> MapDecks<'a> {
+    /// `opaque`: where things block light besides the map's own tiles, such as closed
+    /// airlocks.
+    pub fn new(
+        decks: impl IntoIterator<Item = &'a TileMap>,
+        opaque: impl IntoIterator<Item = TilePos>,
+    ) -> Self {
+        Self {
+            decks: decks.into_iter().map(|m| (m.z, m)).collect(),
+            opaque: opaque.into_iter().collect(),
+        }
+    }
+
+    /// The light on every tile from these lights, with space fully lit.
+    pub fn light(&self, emitters: &[Emitter]) -> LightField {
+        let mut field = LightField::compute(self, emitters);
+        for deck in self.decks.values() {
+            for y in 0..deck.height as i32 {
+                for x in 0..deck.width as i32 {
+                    let pos = TilePos::new(x, y, deck.z);
+                    if deck.tile(pos).is_some_and(|t| t.id == SPACE) {
+                        field.light_fully(pos);
+                    }
+                }
+            }
+        }
+        field
+    }
+}
+
+impl LightWorld for MapDecks<'_> {
+    fn is_opaque(&self, pos: TilePos) -> bool {
+        self.decks.get(&pos.z).is_some_and(|m| m.is_opaque(pos)) || self.opaque.contains(&pos)
+    }
+
+    fn is_open_below(&self, pos: TilePos) -> bool {
+        self.decks
+            .get(&pos.z)
+            .and_then(|m| m.tile(pos))
+            .is_some_and(|t| t.id == OPEN_SPACE)
     }
 }
 
@@ -281,6 +353,54 @@ mod tests {
         let field = LightField::compute(&grid, &[tube(0, 0, 0)]);
         assert!(field.level(TilePos::new(2, 0, 1))[0] > 0.0);
         assert_eq!(field.level(TilePos::new(2, 0, 2)), [0.0; 3]);
+    }
+
+    #[test]
+    fn darkness_starts_past_six_tiles_from_a_tube() {
+        let field = LightField::compute(&Grid::default(), &[tube(0, 0, 0)]);
+        assert!(!field.is_dark(TilePos::new(6, 0, 0)));
+        assert!(field.is_dark(TilePos::new(7, 0, 0)));
+        assert!(field.is_dark(TilePos::new(30, 0, 0)), "no light at all");
+        // A red bulb lights its neighbours red, and that is light enough.
+        let red = Emitter {
+            pos: TilePos::new(0, 0, 0),
+            rgb: [5.0, 0.0, 0.0],
+        };
+        let field = LightField::compute(&Grid::default(), &[red]);
+        assert!(!field.is_dark(TilePos::new(1, 0, 0)));
+        assert!((field.brightness(TilePos::new(1, 0, 0)) - 4.0 / 7.0).abs() < 1e-5);
+    }
+
+    const ROOM: &str = r#"(
+        legend: {
+            ' ': (tile: (id: "space")),
+            '#': (tile: (id: "wall", solid: true)),
+            '.': (tile: (id: "floor")),
+        },
+        rows: [
+            "           ",
+            " ######### ",
+            " #.......# ",
+            " ######### ",
+            "           ",
+        ],
+    )"#;
+
+    #[test]
+    fn map_decks_light_space_and_respect_doors() {
+        let map = TileMap::from_ron(ROOM, 0).unwrap();
+        // The room's floor is y = 2, x = 2..=8.
+        let lamp = Emitter {
+            pos: TilePos::new(2, 2, 0),
+            rgb: [8.0; 3],
+        };
+        let open = MapDecks::new([&map], []).light(&[lamp]);
+        assert!(!open.is_dark(TilePos::new(7, 2, 0)));
+        assert!(!open.is_dark(TilePos::new(0, 0, 0)), "space is always lit");
+        // A closed door in the room shades the far end.
+        let shut = MapDecks::new([&map], [TilePos::new(4, 2, 0)]).light(&[lamp]);
+        assert!(!shut.is_dark(TilePos::new(4, 2, 0)), "the door's face is lit");
+        assert!(shut.is_dark(TilePos::new(7, 2, 0)));
     }
 
     #[test]

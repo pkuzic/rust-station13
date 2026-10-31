@@ -5,7 +5,6 @@
 //! blended smoothly between tiles and multiplied over everything on the map. F4 turns it
 //! off.
 
-use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 
 use bevy::asset::{AssetPath, RenderAssetUsages, embedded_asset, embedded_path};
@@ -19,7 +18,7 @@ use bevy::render::render_resource::{
 };
 use bevy::shader::ShaderRef;
 use bevy::sprite_render::{AlphaMode2d, Material2d, Material2dKey, Material2dPipeline, Material2dPlugin};
-use rs13_simulation::lighting::{Emitter, LightField, LightWorld};
+use rs13_simulation::lighting::{Emitter, MapDecks};
 use rs13_world::{GridPos, Hidden, LightSource, MapLayer, Opaque, TileMap, TilePos};
 
 use crate::{ChatInput, OwnPlayer, TILE_PX};
@@ -28,9 +27,6 @@ use crate::{ChatInput, OwnPlayer, TILE_PX};
 const LIGHT_Z: f32 = 20.0;
 /// The darkest a tile gets, so that people can still make out a dark room.
 const MIN_LIGHT: f32 = 0.04;
-/// A tile with no floor, which light passes through to the deck below. No map has one
-/// yet.
-pub const OPEN_SPACE: &str = "open-space";
 
 pub struct LightingPlugin;
 
@@ -100,25 +96,6 @@ impl Material2d for LightMaterial {
     }
 }
 
-/// The decks the client knows, and the closed doors on them.
-struct ClientDecks<'a> {
-    decks: HashMap<i32, &'a TileMap>,
-    opaque: &'a [TilePos],
-}
-
-impl LightWorld for ClientDecks<'_> {
-    fn is_opaque(&self, pos: TilePos) -> bool {
-        self.decks.get(&pos.z).is_some_and(|m| m.is_opaque(pos)) || self.opaque.contains(&pos)
-    }
-
-    fn is_open_below(&self, pos: TilePos) -> bool {
-        self.decks
-            .get(&pos.z)
-            .and_then(|m| m.tile(pos))
-            .is_some_and(|t| t.id == OPEN_SPACE)
-    }
-}
-
 fn toggle_lighting(keys: Res<ButtonInput<KeyCode>>, chat: Res<ChatInput>, mut on: ResMut<LightingOn>) {
     if !chat.open && keys.just_pressed(KeyCode::F4) {
         on.0 = !on.0;
@@ -150,13 +127,13 @@ fn update_lighting(
     if !on.0 {
         return;
     }
-    let decks: HashMap<i32, &TileMap> = maps.iter().map(|m| (m.0.z, &m.into_inner().0)).collect();
+    let decks: Vec<&TileMap> = maps.iter().map(|m| &m.into_inner().0).collect();
     // The deck we stand on, or the first one before our mob arrives.
     let Some(map) = own
         .iter()
         .next()
-        .and_then(|p| decks.get(&p.0.z))
-        .or_else(|| decks.values().min_by_key(|m| m.z))
+        .and_then(|p| decks.iter().find(|m| m.z == p.0.z))
+        .or_else(|| decks.iter().min_by_key(|m| m.z))
         .copied()
     else {
         return;
@@ -189,22 +166,7 @@ fn update_lighting(
     }
     last.0 = Some(digest);
 
-    let world = ClientDecks {
-        decks: decks.clone(),
-        opaque: &opaque,
-    };
-    let mut field = LightField::compute(&world, &emitters);
-    // Space has no lighting of its own: it is always lit (Luna areas without `ul_Lighting`).
-    for deck in decks.values() {
-        for y in 0..deck.height as i32 {
-            for x in 0..deck.width as i32 {
-                let pos = TilePos::new(x, y, deck.z);
-                if deck.tile(pos).is_some_and(|t| t.id == "space") {
-                    field.light_fully(pos);
-                }
-            }
-        }
-    }
+    let field = MapDecks::new(decks.iter().copied(), opaque.iter().copied()).light(&emitters);
 
     let (width, height) = (map.width, map.height);
     let mut data = Vec::with_capacity((width * height * 4) as usize);

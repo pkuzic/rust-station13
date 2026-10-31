@@ -18,6 +18,7 @@ pub mod floors;
 pub mod furniture;
 pub mod hands;
 pub mod health;
+pub mod lighting;
 pub mod lights;
 pub mod machines;
 pub mod meters;
@@ -76,6 +77,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<wires::PendingShocks>()
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<lights::AreaLights>()
+            .init_resource::<lighting::TileLight>()
             .init_resource::<closets::ClosetProtos>()
             .init_resource::<closets::PendingClosetExits>()
             .init_resource::<sound::SoundEvents>()
@@ -162,6 +164,8 @@ impl Plugin for ClassicPlugin {
                 )
                     .in_set(TickSet::Publish),
             )
+            // After the fixtures say whether they are lit: rules next tick see this light.
+            .add_systems(FixedUpdate, lighting::update_tile_light.after(TickSet::Publish))
             // Last: sounds made anywhere this tick reach their listeners.
             .add_systems(
                 FixedUpdate,
