@@ -80,6 +80,25 @@ pub fn shadow_quads(eye: Vec2, opaque: &HashSet<TilePos>) -> Vec<[Vec2; 4]> {
     let mut quads = Vec::new();
     for tile in opaque {
         let c = corners(*tile);
+        // A wall is seen only through one of its exposed faces; one that can't be seen at
+        // all is shaded whole, so walls seen edge-on show no slivers.
+        let mut seen = false;
+        for i in 0..4 {
+            let (a, b) = (c[i], c[(i + 1) % 4]);
+            let edge = b - a;
+            let normal = Vec2::new(edge.y, -edge.x).normalize();
+            let mid = (a + b) / 2.0;
+            let next = tile_at(mid + normal * (TILE_PX / 2.0), tile.z);
+            if seen || opaque.contains(&next) || normal.dot(mid - eye) >= 0.0 {
+                continue;
+            }
+            seen = [0.15, 0.5, 0.85]
+                .into_iter()
+                .any(|t| clear(eye, a + edge * t + normal, tile.z, opaque));
+        }
+        if !seen {
+            quads.push(c);
+        }
         for i in 0..4 {
             let (a, b) = (c[i], c[(i + 1) % 4]);
             // The edge's outward normal, for a counter-clockwise square.
@@ -104,6 +123,17 @@ pub fn shadow_quads(eye: Vec2, opaque: &HashSet<TilePos>) -> Vec<[Vec2; 4]> {
         }
     }
     quads
+}
+
+/// The tile a point lies in.
+fn tile_at(p: Vec2, z: i32) -> TilePos {
+    TilePos::new((p.x / TILE_PX).round() as i32, (p.y / TILE_PX).round() as i32, z)
+}
+
+/// Whether the straight line from `eye` to `p` passes through no opaque square.
+fn clear(eye: Vec2, p: Vec2, z: i32, opaque: &HashSet<TilePos>) -> bool {
+    let steps = ((p - eye).length() / 6.0).ceil().max(1.0) as i32;
+    (1..=steps).all(|i| !opaque.contains(&tile_at(eye + (p - eye) * (i as f32 / steps as f32), z)))
 }
 
 /// Whether the centre of `tile` can be seen from `eye`: the straight line between them
@@ -218,6 +248,16 @@ mod tests {
         let quads = shadow_quads(eye, &opaque);
         assert!(!quads.is_empty());
         assert!(!shades_near_face(&quads, wall));
+    }
+
+    #[test]
+    fn a_wall_hidden_behind_another_is_shaded_whole() {
+        // A wall straight behind another, seen end-on: none of its faces can be seen.
+        let (front, back) = (TilePos::new(2, 0, 0), TilePos::new(4, 0, 0));
+        let opaque = HashSet::from([front, back]);
+        let quads = shadow_quads(Vec2::ZERO, &opaque);
+        assert!(quads.contains(&corners(back)), "the hidden wall is covered");
+        assert!(!quads.contains(&corners(front)), "the near one is not");
     }
 
     #[test]
