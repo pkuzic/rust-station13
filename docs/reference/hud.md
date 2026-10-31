@@ -37,7 +37,7 @@ shimmer as the view scrolls. Smooth sampling instead blurs everything. So the cl
   pixel), so nothing shimmers while walking.
 - **Window resizing:** `k` is recomputed and the image and atlas copy are rebuilt when it
   changes.
-- **Testing:** `--size WIDTHxHEIGHT` opens the client at a given size.
+- **Testing:** `--size WIDTHxHEIGHT` opens the client at a given size. `--use DX,DY` uses whatever is that many tiles east and north of the player two seconds after joining, to get a machine window into a `--screenshot`.
 
 | Cell | Where (x, y) | Luna icon |
 |---|---|---|
