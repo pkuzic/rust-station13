@@ -198,6 +198,22 @@ pub fn move_mobs(
     }
 }
 
+/// Show each mob facing the way it last moved or turned (BYOND `dir`); someone buckled into
+/// a chair faces the way the chair does (Luna `buckle_mob`, `handle_rotation`).
+pub fn sync_facing(
+    mut mobs: Query<(&mut Mob, &mut rs13_world::Facing, Option<&crate::chairs::Buckled>)>,
+    chairs: Query<&crate::chairs::Chair>,
+) {
+    for (mut mob, mut facing, buckled) in &mut mobs {
+        if let Some(chair) = buckled.and_then(|b| chairs.get(b.0).ok())
+            && mob.facing != Some(chair.dir)
+        {
+            mob.facing = Some(chair.dir);
+        }
+        facing.set_if_neq(rs13_world::Facing::of(mob.facing.unwrap_or(Dir::South)));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

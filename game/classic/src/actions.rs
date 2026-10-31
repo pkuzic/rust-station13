@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, Hidden, Intent, MobStat, TilePos};
+use rs13_world::{Appearance, Dir, DisplayName, GridPos, Hidden, Intent, MobStat, TilePos};
 
 use crate::access::IdCard;
 use crate::combat::{CombatIntent, PendingAttacks};
@@ -31,6 +31,8 @@ pub enum Action {
     /// Click on a tile itself, where nothing on it took the click: lay cable with a coil,
     /// pry up floor tiles or put them back.
     UseOnTile(TilePos),
+    /// Turn to face a way without stepping.
+    Face(Dir),
 }
 
 /// Messages from a click: one for the mob, one for everyone who can see it (needs the
@@ -72,7 +74,7 @@ type ActingMob<'a> = (
     &'a mut Outbox,
     Option<&'a mut CombatIntent>,
     Option<&'a Vitals>,
-    &'a Mob,
+    &'a mut Mob,
 );
 
 pub fn process_actions(
@@ -172,7 +174,7 @@ pub fn process_actions(
     // Lit welding tools used on something in reach this tick, by whom and where.
     let mut welded_with: Vec<(Entity, Entity, TilePos)> = Vec::new();
 
-    for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mob_state) in &mut mobs {
+    for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mut mob_state) in &mut mobs {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
@@ -221,6 +223,8 @@ pub fn process_actions(
             }
             match action {
                 Action::SwapHands => hands.active = hands.active.other(),
+                // Turn on the spot; a chair turns its sitter back (`movement::sync_facing`).
+                Action::Face(dir) => mob_state.facing = Some(dir),
                 Action::CloseStorage => {
                     commands.entity(mob).remove::<crate::storage::OpenStorage>();
                 }

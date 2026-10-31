@@ -47,14 +47,19 @@ pub fn behind(eye: Vec2, facing: Vec2, p: Vec2) -> bool {
     to != Vec2::ZERO && to.dot(-facing) > HALF_BLIND.cos()
 }
 
-/// The way a DMI facing index points (0 south, 1 north, 2 east, 3 west).
+/// The way a DMI facing index points (0 S, 1 N, 2 E, 3 W, 4 SE, 5 SW, 6 NE, 7 NW).
 fn facing_vec(facing: u32) -> Vec2 {
-    match facing {
-        1 => Vec2::Y,
-        2 => Vec2::X,
-        3 => Vec2::NEG_X,
-        _ => Vec2::NEG_Y,
-    }
+    let (x, y) = match facing {
+        1 => (0.0, 1.0),
+        2 => (1.0, 0.0),
+        3 => (-1.0, 0.0),
+        4 => (1.0, -1.0),
+        5 => (-1.0, -1.0),
+        6 => (1.0, 1.0),
+        7 => (-1.0, 1.0),
+        _ => (0.0, -1.0),
+    };
+    Vec2::new(x, y).normalize()
 }
 
 #[derive(Component)]

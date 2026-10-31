@@ -145,6 +145,7 @@ impl Plugin for ClassicPlugin {
                     doors::update_doors,
                     movement::move_mobs,
                     closets::leave_closets,
+                    movement::sync_facing,
                 )
                     .chain()
                     .in_set(TickSet::Gameplay),

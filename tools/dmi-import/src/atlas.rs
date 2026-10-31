@@ -27,10 +27,16 @@ pub struct Anim {
 }
 
 impl Anim {
-    /// Cell for a frame and a DMI direction index; directions the state lacks fall back
-    /// to south.
+    /// Cell for a frame and a DMI direction index. A diagonal on a four-direction state
+    /// shows its east or west side, as BYOND does; other missing directions fall back to
+    /// south.
     pub fn cell(&self, frame: u32, dir: u32) -> u32 {
-        let dir = if dir < self.dirs { dir } else { 0 };
+        let dir = match dir {
+            d if d < self.dirs => d,
+            4 | 6 if self.dirs >= 4 => 2,
+            5 | 7 if self.dirs >= 4 => 3,
+            _ => 0,
+        };
         let frame = frame % self.frames.max(1);
         self.cells[(frame * self.dirs + dir) as usize]
     }
