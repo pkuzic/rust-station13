@@ -54,6 +54,8 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 | **Air vent** (on a pipe) | Lets network gas into the room toward its target (101.325 kPa): `Δp = min(target − P_room, P_pipe − P_room)`, `moles = Δp × 2500 L / (T × R)`. Click to switch on/off. |
 | **Air scrubber** (on a pipe) | Takes 120 L of the tile's air (SS13 `volume_rate`) and moves its CO₂, plasma and N₂O into the network. Click to switch on/off. |
 | **Pipe vent** (an open pipe end, Luna `pipe/vent`) | 250 L of the network's gas evens out with the zone it opens into, by volume (Luna `mingle_with_turf(loc, 250)`, which equalises with the whole turf group). In space the 250 L is lost. Always open; nothing to switch. |
+| **Gas filter** (facing a direction, Luna `trinary/filter`) | Takes gas from the pipe behind it and sends it to the pipe ahead until that reaches its target (map `target_pressure`, default 101.325 kPa), by the pump formula. The filtered gas (map `filter_type`: 0 plasma, 1 O₂, 2 N₂, 3 CO₂, 4 N₂O) goes instead to the pipe a quarter turn clockwise. Needs all three pipes and power. Luna's "Plasma Toxins Filter" is set to 5, which takes nothing out; we keep that. Click to switch on/off. |
+| **Outlet injector** (on a pipe, Luna `unary/outlet_injector`) | While on, lets out the gas that fills `volume_rate` litres (map setting, default 50) at the network's pressure into the room. No power needed. Click to switch on/off. |
 | **Connector port** (on a pipe) | A canister on it can be connected with a wrench. |
 | **Canister** | Click to open or close its release valve. While disconnected and open, it releases into the room toward 101.325 kPa, by the vent formula. Wrench it on or off a port. Canisters of one gas, and pressure tanks of one gas: `gas-tanks.md`. |
 
@@ -82,7 +84,9 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 ## Not yet
 
 - Pressure-rated pipes, leaks and bursts.
-- Gas filters and mixers, and outlet injectors. They need their map settings (filter type, target pressure, rate), which the map importer can't pass on yet.
+- Gas mixers.
+- Filters and injectors use our pump formula on the whole output network; Luna's use their own 200 L, so they move gas more slowly there.
+- Radio control of injectors (Luna's `frequency` and `id`).
 - Heat exchangers.
 - Vents in siphon mode.
 - Console UIs, and air alarm control of vent and scrubber settings.

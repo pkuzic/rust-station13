@@ -659,6 +659,21 @@
             "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1", dir: 2),
             "closed": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve0", dir: 2),
         },
+        // Gas filters: on or off, facing (dir index: south 0, north 1, east 2, west 3).
+        "gas-filter": {
+            "on-south": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_on", dir: Some(0)),
+            "on-north": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_on", dir: Some(1)),
+            "on-east": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_on", dir: Some(2)),
+            "on-west": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_on", dir: Some(3)),
+            "off-south": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(0)),
+            "off-north": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(1)),
+            "off-east": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(2)),
+            "off-west": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(3)),
+        },
+        "injector": {
+            "on": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "on", dir: 0),
+            "off": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "off", dir: 0),
+        },
         "pipe-vent": { "": (dmi: "icons/obj/atmospherics/pipe_vent.dmi", state: "intact", dir: 0) },
         "connector": { "": (dmi: "icons/obj/atmospherics/portables_connector.dmi", state: "intact", dir: 0) },
         // Pressure tanks: Luna paints each gas its own colour (carbon dioxide is plain).

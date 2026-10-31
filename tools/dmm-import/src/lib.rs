@@ -283,6 +283,7 @@ fn pool() -> impl Iterator<Item = char> {
         .chain('\u{03B1}'..='\u{03C9}')
         .chain('\u{0410}'..='\u{044F}')
         .chain('\u{00C0}'..='\u{00FF}')
+        .chain('\u{0100}'..='\u{017F}')
         .filter(|c| c.is_alphanumeric() || c.is_ascii_punctuation())
 }
 

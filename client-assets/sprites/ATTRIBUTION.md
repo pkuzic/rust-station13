@@ -143,6 +143,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
 | `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
+| `gas-filter:off-east` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |
+| `gas-filter:off-north` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |
+| `gas-filter:off-south` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |
+| `gas-filter:off-west` | `icons/obj/atmospherics/filter.dmi : "intact_off"` | CC-BY-SA 3.0 |
+| `gas-filter:on-east` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
+| `gas-filter:on-north` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
+| `gas-filter:on-south` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
+| `gas-filter:on-west` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `gas-mask:` | `icons/obj/clothing/masks.dmi : "gas_alt"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
 | `hardhat:` | `icons/obj/clothing/hats.dmi : "hardhat0_yellow"` | CC-BY-SA 3.0 |
@@ -210,6 +218,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:` | `icons/mob/human.dmi : "body_m_s"` | CC-BY-SA 3.0 |
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
+| `injector:off` | `icons/obj/atmospherics/outlet_injector.dmi : "off"` | CC-BY-SA 3.0 |
+| `injector:on` | `icons/obj/atmospherics/outlet_injector.dmi : "on"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `intercom:` | `icons/obj/radio.dmi : "intercom"` | CC-BY-SA 3.0 |
 | `jetpack:` | `icons/obj/tank.dmi : "jetpack0"` | CC-BY-SA 3.0 |

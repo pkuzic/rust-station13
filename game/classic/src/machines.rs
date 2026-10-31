@@ -50,6 +50,10 @@ pub const GAS_CANISTERS: [(&str, Gas); 5] = [
 pub const PUMP_TARGET: f64 = 300.0;
 /// Litres of room air a scrubber processes per cycle (SS13 `volume_rate`).
 pub const SCRUBBER_VOLUME_RATE: f64 = 120.0;
+/// Default output pressure of a gas filter, kPa (Luna `target_pressure`).
+pub const FILTER_TARGET: f64 = ONE_ATMOSPHERE;
+/// Default litres an outlet injector lets out per cycle (Luna `volume_rate`).
+pub const INJECTOR_VOLUME_RATE: f64 = 50.0;
 /// Litres of an open pipe end (Luna `pipe/vent` volume), and of pipe gas it mixes with
 /// the room each cycle (`mingle_with_turf(loc, 250)`).
 pub const PIPE_VENT_VOLUME: f64 = 250.0;
@@ -150,6 +154,47 @@ pub struct Scrubber;
 /// the room it opens into, or is lost to space (Luna `pipe/vent`).
 #[derive(Component, Debug, Clone, Copy)]
 pub struct PipeVent;
+
+/// A gas filter: gas from the pipe behind it goes to the pipe ahead, up to `target` kPa
+/// there, with the filtered gas taken out to the pipe on its side, a quarter turn
+/// clockwise (Luna `trinary/filter`: node1 behind, node2 the side, node3 ahead).
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub struct GasFilter {
+    pub dir: Dir,
+    /// What it takes out; `None` passes everything through.
+    pub gas: Option<Gas>,
+    pub target: f64,
+}
+
+/// Luna's `filter_type`: 0 plasma, 1 oxygen, 2 nitrogen, 3 carbon dioxide, 4 N2O. Any other
+/// value takes nothing out (Luna's "Plasma Toxins Filter" is set to 5, so it doesn't filter).
+pub fn filter_gas(filter_type: i64) -> Option<Gas> {
+    match filter_type {
+        0 => Some(Gas::Plasma),
+        1 => Some(Gas::Oxygen),
+        2 => Some(Gas::Nitrogen),
+        3 => Some(Gas::CarbonDioxide),
+        4 => Some(Gas::NitrousOxide),
+        _ => None,
+    }
+}
+
+/// BYOND `turn(dir, -90)`: a quarter turn clockwise.
+pub fn clockwise(dir: Dir) -> Dir {
+    match dir {
+        Dir::North => Dir::East,
+        Dir::East => Dir::South,
+        Dir::South => Dir::West,
+        _ => Dir::North,
+    }
+}
+
+/// An outlet injector: while on, lets `volume_rate` litres of its network's gas out into
+/// the room each cycle (Luna `unary/outlet_injector`).
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub struct Injector {
+    pub volume_rate: f64,
+}
 
 /// A port a canister can be wrenched onto.
 #[derive(Component, Debug, Clone, Copy)]
@@ -375,6 +420,10 @@ pub fn run_machines(
     scrubbers: Query<(Entity, &GridPos, &Switch, &PowerUser), With<Scrubber>>,
     mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
     pipe_vents: Query<(Entity, &GridPos), With<PipeVent>>,
+    (filters, injectors): (
+        Query<(&GridPos, &GasFilter, &Switch, &PowerUser)>,
+        Query<(Entity, &GridPos, &Injector, &Switch)>,
+    ),
 ) {
     let Some(mut atmos) = atmos else { return };
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
@@ -455,6 +504,51 @@ pub fn run_machines(
         nets.nets[id].mix.merge(&filtered);
     }
 
+    // Gas filters (Luna `trinary/filter/process`). All three pipes must be there.
+    for (pos, filter, on, power) in &filters {
+        if !on.0 || !power.powered {
+            continue;
+        }
+        let side_dir = clockwise(filter.dir);
+        let (Some(from), Some(to), Some(side)) = (
+            nets.net_toward(pos.0.step(filter.dir.opposite()), side_bits(filter.dir)),
+            nets.net_toward(pos.0.step(filter.dir), side_bits(filter.dir.opposite())),
+            nets.net_toward(pos.0.step(side_dir), side_bits(side_dir.opposite())),
+        ) else {
+            continue;
+        };
+        if from == to || from == side {
+            continue;
+        }
+        let out = &nets.nets[to];
+        let moles = moles_for(
+            filter.target - out.pressure(),
+            out.volume,
+            nets.nets[from].mix.temperature,
+        );
+        let mut moved = nets.nets[from].mix.remove_moles(moles);
+        if let Some(gas) = filter.gas {
+            let mut taken = GasMix::default();
+            taken.temperature = moved.temperature;
+            taken.set(gas, moved.get(gas));
+            moved.set(gas, 0.0);
+            nets.nets[side].mix.merge(&taken);
+        }
+        nets.nets[to].mix.merge(&moved);
+    }
+
+    // Outlet injectors (Luna `outlet_injector/process`): the gas that fills `volume_rate`
+    // litres at the network's pressure goes into the room.
+    for (entity, pos, injector, on) in &injectors {
+        let Some(&id) = nets.net_of.get(&entity).filter(|_| on.0) else {
+            continue;
+        };
+        let net = &mut nets.nets[id];
+        let moles = moles_for(net.pressure(), injector.volume_rate, net.mix.temperature);
+        let moved = net.mix.remove_moles(moles);
+        atmos.0.add_at(pos.0, &moved);
+    }
+
     // Pipe vents (Luna `mingle_with_turf`): 250 L of the network's gas evens out with the
     // room's whole zone by volume; in space it is simply lost.
     for (entity, pos) in &pipe_vents {
@@ -502,8 +596,18 @@ pub fn run_machines(
 
 /// Keep machine sprites in step with their switches. Canisters show their gauge instead.
 pub fn update_machine_looks(
-    mut machines: Query<(&Switch, &mut Appearance, Has<Valve>), (Changed<Switch>, Without<Canister>)>,
+    mut machines: Query<
+        (&Switch, &mut Appearance, Has<Valve>),
+        (Changed<Switch>, Without<Canister>, Without<GasFilter>),
+    >,
+    mut filters: Query<(&GasFilter, &Switch, &mut Appearance), (Changed<Switch>, Without<Canister>)>,
 ) {
+    for (filter, switch, mut look) in &mut filters {
+        let state = filter_look(filter, switch.0);
+        if look.state != state {
+            look.state = state;
+        }
+    }
     for (switch, mut appearance, is_valve) in &mut machines {
         let state = match (is_valve, switch.0) {
             (true, true) => "open",
@@ -515,6 +619,17 @@ pub fn update_machine_looks(
             appearance.state = state.to_owned();
         }
     }
+}
+
+/// A filter's sprite: on or off, and the way it faces ("on-north").
+pub fn filter_look(filter: &GasFilter, on: bool) -> String {
+    let facing = match filter.dir {
+        Dir::North => "north",
+        Dir::East => "east",
+        Dir::West => "west",
+        _ => "south",
+    };
+    format!("{}-{facing}", if on { "on" } else { "off" })
 }
 
 /// A canister shows its gauge light, and the connector when it is on a port (Luna
@@ -553,7 +668,13 @@ fn canister(sprite: &'static str, gas: GasMix) -> MachineSpawn {
 }
 
 /// The components a machine prototype spawns with, or `None` if `proto` is not a machine.
-pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
+pub fn machine_bundle(
+    proto: &str,
+    dir: Option<Dir>,
+    vars: &BTreeMap<String, String>,
+) -> Option<MachineSpawn> {
+    let number = |name: &str| vars.get(name).and_then(|v| v.trim().parse::<f64>().ok());
+    let on = number("on").is_some_and(|v| v != 0.0);
     let connects = connections(proto, dir);
     let member = |volume| PipeMember {
         volume,
@@ -614,6 +735,26 @@ pub fn machine_bundle(proto: &str, dir: Option<Dir>) -> Option<MachineSpawn> {
         "pipe-vent" => MachineSpawn::new("pipe-vent", "")
             .member(member(PIPE_VENT_VOLUME))
             .pipe_vent(),
+        "gas-filter" => {
+            let filter = GasFilter {
+                dir: dir.unwrap_or(Dir::South),
+                gas: filter_gas(number("filter_type").unwrap_or(0.0) as i64),
+                target: number("target_pressure").unwrap_or(FILTER_TARGET),
+            };
+            let mut spawn = MachineSpawn::new("gas-filter", "").switch(on).powered();
+            spawn.state = filter_look(&filter, on);
+            spawn.filter = Some(filter);
+            spawn
+        }
+        "injector" => {
+            let mut spawn = MachineSpawn::new("injector", if on { "on" } else { "off" })
+                .switch(on)
+                .member(device);
+            spawn.injector = Some(Injector {
+                volume_rate: number("volume_rate").unwrap_or(INJECTOR_VOLUME_RATE),
+            });
+            spawn
+        }
         "canister" => canister("canister", air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE)),
         _ => {
             if let Some(&(id, gas)) = GAS_TANKS.iter().find(|(id, _)| *id == proto) {
@@ -645,6 +786,8 @@ pub struct MachineSpawn {
     pub scrubber: bool,
     pub connector: bool,
     pub pipe_vent: bool,
+    pub filter: Option<GasFilter>,
+    pub injector: Option<Injector>,
     pub dense: bool,
     pub power: Option<crate::power::PowerUser>,
     pub alarm: bool,
@@ -665,6 +808,8 @@ impl MachineSpawn {
             scrubber: false,
             connector: false,
             pipe_vent: false,
+            filter: None,
+            injector: None,
             dense: false,
             power: None,
             alarm: false,
@@ -750,6 +895,12 @@ impl MachineSpawn {
         }
         if self.pipe_vent {
             entity.insert(PipeVent);
+        }
+        if let Some(f) = self.filter {
+            entity.insert(f);
+        }
+        if let Some(i) = self.injector {
+            entity.insert(i);
         }
         if self.dense {
             entity.insert(rs13_world::Dense);

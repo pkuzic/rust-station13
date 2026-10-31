@@ -123,4 +123,6 @@
     "chair": (gender: neuter, sg: (nom: "chair", indef: "a chair"), pl: Some((nom: "chairs"))),
     "comfy-chair-brown": (gender: neuter, sg: (nom: "comfy chair", indef: "a comfy chair"), pl: Some((nom: "comfy chairs"))),
     "pipe-vent": (gender: neuter, sg: (nom: "vent", indef: "a vent"), pl: Some((nom: "vents"))),
+    "gas-filter": (gender: neuter, sg: (nom: "gas filter", indef: "a gas filter"), pl: Some((nom: "gas filters"))),
+    "injector": (gender: neuter, sg: (nom: "air injector", indef: "an air injector"), pl: Some((nom: "air injectors"))),
 }
