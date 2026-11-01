@@ -77,6 +77,8 @@ struct Args {
     name: Option<String>,
     /// Save a screenshot here a few seconds after joining, then quit (for checking).
     screenshot: Option<String>,
+    /// Seconds after joining to take it (`--shot-after`, default 4).
+    shot_after: f32,
     /// Window size in logical pixels, as `WIDTHxHEIGHT`.
     size: Option<(f32, f32)>,
     /// For checking windows in screenshots: what to do once joined (`--use`, repeatable).
@@ -118,7 +120,7 @@ impl UseStep {
 struct ScriptedUse(VecDeque<UseStep>);
 
 #[derive(Resource)]
-struct ScreenshotPlan(Option<String>);
+struct ScreenshotPlan(Option<String>, f32);
 
 /// The name to ask for once connected.
 #[derive(Resource)]
@@ -212,7 +214,7 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
         .insert_resource(WantedName(args.name))
-        .insert_resource(ScreenshotPlan(args.screenshot))
+        .insert_resource(ScreenshotPlan(args.screenshot, args.shot_after))
         .insert_resource(ScriptedUse(args.use_at.into()))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
@@ -297,6 +299,7 @@ fn parse_args() -> Args {
         russian: false,
         name: None,
         screenshot: None,
+        shot_after: 4.0,
         size: None,
         use_at: Vec::new(),
     };
@@ -306,6 +309,11 @@ fn parse_args() -> Args {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
+            "--shot-after" => {
+                if let Some(secs) = it.next().and_then(|s| s.parse().ok()) {
+                    args.shot_after = secs;
+                }
+            }
             "--use" => args.use_at.extend(it.next().as_deref().and_then(UseStep::parse)),
             "--size" => {
                 args.size = it.next().and_then(|s| {
@@ -1277,8 +1285,8 @@ fn scripted_use(
     *next_at = Some(now + 0.5);
 }
 
-/// With `--screenshot PATH`: four seconds after our player appears, save the window to PATH;
-/// a second later, quit.
+/// With `--screenshot PATH`: four seconds (or `--shot-after`) after our player appears, save
+/// the window to PATH; a second later, quit.
 fn take_screenshot(
     mut commands: Commands,
     time: Res<Time>,
@@ -1299,7 +1307,7 @@ fn take_screenshot(
         return;
     }
     let joined = *joined_at.get_or_insert(now);
-    if now > joined + 4.0
+    if now > joined + plan.1
         && let Some(path) = plan.0.take()
     {
         commands

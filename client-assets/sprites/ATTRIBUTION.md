@@ -237,6 +237,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `human:` | `icons/mob/human.dmi : "body_m_s"` | CC-BY-SA 3.0 |
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
+| `igniter:igniter0` | `icons/obj/stationobjs.dmi : "igniter0"` | CC-BY-SA 3.0 |
+| `igniter:igniter1` | `icons/obj/stationobjs.dmi : "igniter1"` | CC-BY-SA 3.0 |
+| `ignition-switch:launcheract` | `icons/obj/objects.dmi : "launcheract"` | CC-BY-SA 3.0 |
+| `ignition-switch:launcherbtt` | `icons/obj/objects.dmi : "launcherbtt"` | CC-BY-SA 3.0 |
 | `injector:off` | `icons/obj/atmospherics/outlet_injector.dmi : "off"` | CC-BY-SA 3.0 |
 | `injector:on` | `icons/obj/atmospherics/outlet_injector.dmi : "on"` | CC-BY-SA 3.0 |
 | `insulated-gloves:` | `icons/obj/clothing/gloves.dmi : "yellow"` | CC-BY-SA 3.0 |

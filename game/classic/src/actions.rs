@@ -139,6 +139,7 @@ pub fn process_actions(
             laser_computers,
             freezers,
             smes_units,
+            mut igniters,
         ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
@@ -168,6 +169,7 @@ pub fn process_actions(
             Query<(&GridPos, &crate::power::PowerUser), With<crate::supermatter::LaserComputer>>,
             Query<&GridPos, With<crate::freezers::Freezer>>,
             Query<&GridPos, With<crate::power::Smes>>,
+            crate::igniters::IgniterWork,
         ),
     ),
     mut commands: Commands,
@@ -444,6 +446,13 @@ pub fn process_actions(
                         sounds.tool_used(tool, at);
                         outbox.0.extend(outcome.to_mob);
                     }
+                }
+                Action::UseOn(target) if igniters.contains(target) => {
+                    // Igniters and ignition switches (`igniters.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    igniters.use_on(target, now);
                 }
                 Action::UseOn(target) if chairs.contains(target) => {
                     // Chairs (`chairs.md`), within reach.
