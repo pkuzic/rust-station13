@@ -81,7 +81,11 @@ fn people_behind_you_and_what_is_in_a_kit_are_sent_only_once_seen() {
     thread::sleep(Duration::from_millis(500));
 
     // The first bot stands still, facing south, south of where the second will be.
-    let south = run_bot(server, vec![], Duration::from_secs(6));
+    let south = run_bot(
+        server,
+        vec![wait(4_500), Step::Snapshot("end".into())],
+        Duration::from_secs(6),
+    );
     thread::sleep(Duration::from_millis(500));
     // The second turns its back on the first, then round again (Ctrl + a direction in the
     // client), then picks the kit up and opens it.
@@ -140,12 +144,8 @@ fn people_behind_you_and_what_is_in_a_kit_are_sent_only_once_seen() {
     assert_eq!(storage.items.len(), 5, "{storage:?}");
 
     // The first bot, facing south, had the second behind its back the whole time.
-    assert_eq!(
-        south.players.iter().filter(|p| !p.own).count(),
-        0,
-        "{:?}",
-        south.players
-    );
+    let end = snapshot(&south, "end");
+    assert_eq!(others(end), 0, "{end:?}");
     assert_eq!(south.under_floor_received, 0);
 }
 
