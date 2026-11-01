@@ -43,6 +43,7 @@ pub mod movement;
 pub mod multiz;
 pub mod names;
 pub mod objects;
+pub mod portables;
 pub mod power;
 pub mod power_monitor;
 pub mod pulling;
@@ -217,6 +218,7 @@ impl Plugin for ClassicPlugin {
                     igniters::run_igniters,
                     sparks::run_sparks,
                     extinguishers::run_puffs,
+                    portables::run_portables,
                     disposals::run_bins,
                     disposals::run_bundles,
                     disposals::run_outlets,
@@ -263,6 +265,7 @@ impl Plugin for ClassicPlugin {
                     welding::update_welder_looks,
                     extinguishers::update_extinguisher_looks,
                     extinguishers::update_cabinet_looks,
+                    portables::update_portable_looks,
                     lights::update_light_looks,
                     lights::update_light_sources,
                     flashlights::update_flashlight_looks,

@@ -26,8 +26,6 @@
 //      1 /obj/machinery/mass_driver
 //      2 /obj/machinery/navbeacon
 //      7 /obj/machinery/portable_atmospherics/canister
-//      4 /obj/machinery/portable_atmospherics/pump
-//      4 /obj/machinery/portable_atmospherics/scrubber
 //      3 /obj/machinery/shielding/emitter/plate
 //      1 /obj/machinery/space_heater
 //      2 /obj/machinery/vending/toxins
@@ -195,20 +193,24 @@
         'М': (tile: (id: "floor"), objects: [(id: "injector", dir: West, vars: {"on": "1"})]),
         'Н': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"}), (id: "manifold", dir: South)]),
         'О': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: West, vars: {"pixel_x": "24"}), (id: "pipe", dir: NorthEast)]),
-        'П': (tile: (id: "floor"), objects: [(id: "light-small", dir: West), (id: "pipe", dir: East)]),
-        'Р': (tile: (id: "floor"), objects: [(id: "light-small", dir: East)]),
-        'С': (tile: (id: "plating"), objects: ["airlock", (id: "pipe", dir: South)]),
-        'Т': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South)]),
-        'У': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),
-        'Ф': (tile: (id: "floor"), objects: [(id: "light-small", dir: South)]),
-        'Х': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
-        'Ц': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
-        'Ч': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),
-        'Ш': (tile: (id: "plating"), objects: [(id: "vent", dir: North)]),
-        'Щ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
-        'Ъ': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "monkey"})]),
-        'Ы': (tile: (id: "plating"), objects: ["airlock"]),
-        'Ь': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "toxtest"})]),
+        'П': (tile: (id: "floor"), objects: ["portable-scrubber", (id: "light-small", dir: West), (id: "pipe", dir: East)]),
+        'Р': (tile: (id: "floor"), objects: ["portable-scrubber", (id: "pipe", dir: East)]),
+        'С': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-scrubber"]),
+        'Т': (tile: (id: "floor"), objects: [(id: "light-small", dir: East)]),
+        'У': (tile: (id: "plating"), objects: ["airlock", (id: "pipe", dir: South)]),
+        'Ф': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South)]),
+        'Х': (tile: (id: "floor"), objects: ["portable-pump", (id: "pipe", dir: East)]),
+        'Ц': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-pump"]),
+        'Ч': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),
+        'Ш': (tile: (id: "floor"), objects: [(id: "light-small", dir: South)]),
+        'Щ': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
+        'Ъ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
+        'Ы': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),
+        'Ь': (tile: (id: "plating"), objects: [(id: "vent", dir: North)]),
+        'Э': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
+        'Ю': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "monkey"})]),
+        'Я': (tile: (id: "plating"), objects: ["airlock"]),
+        'а': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "toxtest"})]),
     },
     area_legend: {
         'a': "central-hallway",
@@ -258,8 +260,8 @@
         "nXφφφφ.Β.χε.ψX.nωАБ,БВ  ",
         "nXГГГГ.ДЕ####Xan.АЖЗИВ  ",
         "nXЙЙЙЙ..КЛcМ.XoНΝА,,,В  ",
-        "ОKПccΞ.....ςРXСXnXТТТX  ",
-        "oKcccΞУФХЦ...XЧXШX     Щ",
-        "nXXXXXXXXXXЪXXЫXЬX    Щ ",
+        "ОKПРРС.....ςТXУXnXФФФX  ",
+        "oKХХХЦЧШЩЪ...XЫXЬX     Э",
+        "nXXXXXXXXXXЮXXЯXаX    Э ",
     ],
 )

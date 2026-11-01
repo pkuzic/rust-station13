@@ -75,11 +75,11 @@ pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
 
     crate::closets::take_in_loose_items(world);
 
-    // Canisters placed on a connector port start connected to its pipes.
+    // Canisters and other portables placed on a connector port start connected to its pipes.
     let mut ports = world.query_filtered::<&GridPos, With<crate::machines::Connector>>();
     let port_tiles: Vec<TilePos> = ports.iter(world).map(|p| p.0).collect();
     let mut canisters = world
-        .query_filtered::<(&GridPos, &mut crate::machines::PipeMember), With<crate::machines::Canister>>();
+        .query_filtered::<(&GridPos, &mut crate::machines::PipeMember), With<crate::machines::Portable>>();
     for (pos, mut member) in canisters.iter_mut(world) {
         member.open = port_tiles.contains(&pos.0);
     }
@@ -170,6 +170,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::firealarms::FIRE_ALARM {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
+    }
+    if crate::portables::is_portable(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::portables::spawn_portable(world, proto, pos, id));
     }
     if proto == crate::walllockers::EMERGENCY_LOCKER {
         let id = world.resource_mut::<NetIds>().alloc();

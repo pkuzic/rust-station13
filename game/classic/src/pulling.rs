@@ -8,7 +8,7 @@ use crate::chairs::Chair;
 use crate::closets::Closet;
 use crate::generators::Pacman;
 use crate::hands::Item;
-use crate::machines::{Canister, PipeMember};
+use crate::machines::{PipeMember, Portable};
 use crate::movement::{Mob, resolve_step};
 
 /// On a mob: what it is pulling (Luna `mob.pulling`).
@@ -31,7 +31,7 @@ pub struct Pullable<'w, 's> {
             Has<Closet>,
             Has<Chair>,
             Option<&'static PipeMember>,
-            Has<Canister>,
+            Has<Portable>,
             Option<&'static Pacman>,
         ),
         With<GridPos>,

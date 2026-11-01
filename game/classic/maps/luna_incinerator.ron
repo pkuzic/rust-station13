@@ -6,7 +6,6 @@
 //     12 /obj/machinery/conveyor
 //      2 /obj/machinery/conveyor_switch/oneway
 //      1 /obj/machinery/door/window/eastleft
-//      1 /obj/machinery/portable_atmospherics/pump
 //      2 /obj/machinery/shielding/emitter/plate
 //      1 /obj/machinery/space_heater
 //      1 /obj/structure/sign/deathsposal
@@ -54,7 +53,7 @@
         'n': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthEast)]),
         'o': (tile: (id: "floor"), objects: [(id: "connector", dir: West), (id: "door-button", vars: {"id": "Incernator Vent", "pixel_x": "26", "pixel_y": "6"}), (id: "ignition-switch", vars: {"id": "Incinerator", "pixel_x": "26", "pixel_y": "-4"}), (id: "light-small", dir: East)]),
         'p': (tile: (id: "plating"), objects: [(id: "disposal-pipe", dir: North, state: Some("pipe-t")), (id: "disposal-outlet", dir: South)]),
-        'q': (tile: (id: "floor"), objects: [(id: "light-small", dir: West)]),
+        'q': (tile: (id: "floor"), objects: ["portable-pump", (id: "light-small", dir: West)]),
         'r': (tile: (id: "floor"), objects: [(id: "manifold", dir: West, above_floor: true), "meter"]),
         's': (tile: (id: "floor"), spawn: true, objects: [(id: "valve", dir: East)]),
         't': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "pipe", dir: East)]),

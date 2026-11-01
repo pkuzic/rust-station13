@@ -104,6 +104,9 @@
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
+        // Portable air pumps and scrubbers (`portables.md`).
+        (path: "/obj/machinery/portable_atmospherics/pump", id: "portable-pump"),
+        (path: "/obj/machinery/portable_atmospherics/scrubber", id: "portable-scrubber"),
         (path: "/obj/item/weapon/extinguisher", id: "fire-extinguisher"),
         (path: "/obj/item/weapon/extinguisher/mini", id: "fire-extinguisher-mini"),
         (path: "/obj/structure/extinguisher_cabinet", id: "extinguisher-cabinet"),

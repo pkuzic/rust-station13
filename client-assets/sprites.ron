@@ -914,6 +914,16 @@
         "carbon-dioxide-pressure-tank": { "": (dmi: "icons/obj/atmospherics/pipe_tank.dmi", state: "intact") },
         "plasma-pressure-tank": { "": (dmi: "icons/obj/atmospherics/orange_pipe_tank.dmi", state: "intact") },
         // Canisters: one colour per gas; grey is air.
+        // Portable air pump and scrubber, on (1) or off (0); the pump's connector overlay.
+        "portable-pump": {
+            "psiphon:0": (dmi: "icons/obj/atmos.dmi", state: "psiphon:0"),
+            "psiphon:1": (dmi: "icons/obj/atmos.dmi", state: "psiphon:1"),
+            "siphon-connector": (dmi: "icons/obj/atmos.dmi", state: "siphon-connector"),
+        },
+        "portable-scrubber": {
+            "pscrubber:0": (dmi: "icons/obj/atmos.dmi", state: "pscrubber:0"),
+            "pscrubber:1": (dmi: "icons/obj/atmos.dmi", state: "pscrubber:1"),
+        },
         "canister": {
             "": (dmi: "icons/obj/atmos.dmi", state: "grey"),
             // Overlays: the gauge light, and the connector while on a port.

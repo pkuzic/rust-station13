@@ -19,6 +19,8 @@
     "meter": (gender: neuter, sg: (nom: "pressure meter", indef: "a pressure meter"), pl: Some((nom: "pressure meters"))),
     "welder": (gender: neuter, sg: (nom: "welding tool", indef: "a welding tool"), pl: Some((nom: "welding tools"))),
     "fuel-tank": (gender: neuter, sg: (nom: "fuel tank", indef: "a fuel tank"), pl: Some((nom: "fuel tanks"))),
+    "portable-pump": (gender: neuter, sg: (nom: "portable air pump", indef: "a portable air pump"), pl: Some((nom: "portable air pumps"))),
+    "portable-scrubber": (gender: neuter, sg: (nom: "portable air scrubber", indef: "a portable air scrubber"), pl: Some((nom: "portable air scrubbers"))),
     "fire-extinguisher": (gender: neuter, sg: (nom: "fire extinguisher", indef: "a fire extinguisher"), pl: Some((nom: "fire extinguishers"))),
     "fire-extinguisher-mini": (gender: neuter, sg: (nom: "fire extinguisher", indef: "a fire extinguisher"), pl: Some((nom: "fire extinguishers"))),
     "extinguisher-cabinet": (gender: neuter, sg: (nom: "extinguisher cabinet", indef: "an extinguisher cabinet"), pl: Some((nom: "extinguisher cabinets"))),
