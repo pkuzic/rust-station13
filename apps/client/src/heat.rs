@@ -1,128 +1,119 @@
-//! Heat shimmer over fires (`docs/reference/lighting.md`, Fire): a quad over each burning
-//! tile, reaching a tile above it, where `heat.wgsl` draws faint warm bands that waver and
-//! rise. Added to what is under it, so it reads as hot air over the flames.
+//! Heat haze (`docs/reference/lighting.md`, Air you can see): the air over fires and the
+//! supermatter bends what is behind it. A texture with one texel per tile says how hot each
+//! tile is; `world_view.wgsl` reads it when it puts the world on the screen, and moves
+//! each pixel of the picture a little, side to side and up and down, where the air is hot
+//! and just above it, as hot air rises. Nothing is drawn over the picture: the walls,
+//! floor and people behind the heat waver.
 
-use bevy::asset::{AssetPath, embedded_asset, embedded_path};
-use bevy::mesh::MeshVertexBufferLayoutRef;
+use bevy::asset::RenderAssetUsages;
 use bevy::prelude::*;
-use bevy::render::render_resource::{
-    AsBindGroup, BlendComponent, BlendFactor, BlendOperation, BlendState, RenderPipelineDescriptor,
-    SpecializedMeshPipelineError,
-};
-use bevy::shader::ShaderRef;
-use bevy::sprite_render::{AlphaMode2d, Material2d, Material2dKey, Material2dPipeline, Material2dPlugin};
-use rs13_world::{Appearance, GridPos};
+use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
+use rs13_world::{Appearance, GridPos, MapLayer, TilePos};
 
-use crate::TILE_PX;
+use crate::OwnPlayer;
 
-/// Over the fire (3.2), under wall lights (3.5).
-const HEAT_Z: f32 = 3.3;
-/// How far above its tile the shimmer reaches, in tiles.
-const RISE: f32 = 1.0;
+/// How hot a burning tile looks, from 0 to 1.
+pub const FIRE_HEAT: f32 = 1.0;
+/// How hot the supermatter looks.
+pub const SUPERMATTER_HEAT: f32 = 0.7;
 
-#[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
-struct HeatMaterial {
-    /// Seconds, the fire's own offset, unused, unused.
-    #[uniform(0)]
-    params: Vec4,
-}
-
-impl Material2d for HeatMaterial {
-    fn fragment_shader() -> ShaderRef {
-        ShaderRef::Path(AssetPath::from_path_buf(embedded_path!("heat.wgsl")).with_source("embedded"))
-    }
-
-    fn alpha_mode(&self) -> AlphaMode2d {
-        AlphaMode2d::Blend
-    }
-
-    fn specialize(
-        _pipeline: &Material2dPipeline,
-        descriptor: &mut RenderPipelineDescriptor,
-        _layout: &MeshVertexBufferLayoutRef,
-        _key: Material2dKey<Self>,
-    ) -> Result<(), SpecializedMeshPipelineError> {
-        let add = BlendState {
-            color: BlendComponent {
-                src_factor: BlendFactor::One,
-                dst_factor: BlendFactor::One,
-                operation: BlendOperation::Add,
-            },
-            alpha: BlendComponent::OVER,
-        };
-        if let Some(fragment) = descriptor.fragment.as_mut() {
-            for target in fragment.targets.iter_mut().flatten() {
-                target.blend = Some(add);
-            }
-        }
-        Ok(())
-    }
-}
-
-/// On a fire that has its shimmer.
-#[derive(Component)]
-struct Shimmering;
-
-/// A fire's shimmer.
-#[derive(Component)]
-struct Shimmer(Handle<HeatMaterial>);
-
+/// The heat texture `world_view.wgsl` reads: one texel per tile of our deck, top row first.
 #[derive(Resource)]
-struct ShimmerMesh(Handle<Mesh>);
+pub struct HeatMap {
+    pub image: Handle<Image>,
+    /// Width, height and deck of the map it covers.
+    pub size: (u32, u32, i32),
+    /// Hot tiles last written, to write again only when they change.
+    hot: Vec<(TilePos, u8)>,
+}
 
 pub struct HeatPlugin;
 
 impl Plugin for HeatPlugin {
     fn build(&self, app: &mut App) {
-        embedded_asset!(app, "heat.wgsl");
-        app.add_plugins(Material2dPlugin::<HeatMaterial>::default())
-            .add_systems(Startup, make_mesh)
-            .add_systems(Update, (add_shimmer, tick));
+        app.add_systems(PreStartup, make_heat_map)
+            .add_systems(Update, update_heat_map);
     }
 }
 
-/// Whether this look is burning air.
-pub fn is_fire(appearance: &Appearance) -> bool {
-    appearance.sprite == "fire"
+/// How hot this look is, if it heats the air.
+pub fn heat_of(appearance: &Appearance) -> Option<f32> {
+    match appearance.sprite.as_str() {
+        "fire" => Some(FIRE_HEAT),
+        "supermatter" => Some(SUPERMATTER_HEAT),
+        _ => None,
+    }
 }
 
-fn make_mesh(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
-    commands.insert_resource(ShimmerMesh(
-        meshes.add(Rectangle::new(TILE_PX, TILE_PX * (1.0 + RISE))),
-    ));
+fn heat_image(width: u32, height: u32, data: Vec<u8>) -> Image {
+    let mut image = Image::new(
+        Extent3d {
+            width: width.max(1),
+            height: height.max(1),
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        data,
+        TextureFormat::R8Unorm,
+        RenderAssetUsages::RENDER_WORLD | RenderAssetUsages::MAIN_WORLD,
+    );
+    image.sampler = bevy::image::ImageSampler::linear();
+    image
 }
 
-/// Give each fire a shimmer. It goes with the fire when the fire goes out.
-fn add_shimmer(
-    mut commands: Commands,
-    mesh: Res<ShimmerMesh>,
-    mut materials: ResMut<Assets<HeatMaterial>>,
-    fires: Query<(Entity, &Appearance, &GridPos), Without<Shimmering>>,
-) {
-    for (entity, appearance, pos) in &fires {
-        if !is_fire(appearance) {
+fn make_heat_map(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
+    commands.insert_resource(HeatMap {
+        image: images.add(heat_image(1, 1, vec![0])),
+        size: (1, 1, 0),
+        hot: Vec::new(),
+    });
+}
+
+/// The texels for a `width` × `height` deck with these hot tiles, top row first.
+pub fn heat_texels(width: u32, height: u32, hot: &[(TilePos, u8)]) -> Vec<u8> {
+    let mut data = vec![0; (width * height) as usize];
+    for (pos, heat) in hot {
+        let (x, y) = (pos.x, pos.y);
+        if x < 0 || y < 0 || x >= width as i32 || y >= height as i32 {
             continue;
         }
-        let seed = (pos.0.x * 7 + pos.0.y * 13) as f32 * 0.37;
-        let material = materials.add(HeatMaterial {
-            params: Vec4::new(0.0, seed, 0.0, 0.0),
-        });
-        // Placed relative to the fire: up by half the rise, over it.
-        commands.entity(entity).insert(Shimmering).with_child((
-            Shimmer(material.clone()),
-            Mesh2d(mesh.0.clone()),
-            MeshMaterial2d(material),
-            Transform::from_xyz(0.0, TILE_PX * RISE / 2.0, HEAT_Z - 3.2),
-        ));
+        let i = ((height as i32 - 1 - y) * width as i32 + x) as usize;
+        data[i] = data[i].max(*heat);
     }
+    data
 }
 
-fn tick(time: Res<Time>, shimmers: Query<&Shimmer>, mut materials: ResMut<Assets<HeatMaterial>>) {
-    for shimmer in &shimmers {
-        if let Some(mut material) = materials.get_mut(&shimmer.0) {
-            material.params.x = time.elapsed_secs();
-        }
+/// Write the heat texture again when the deck or its hot tiles change.
+fn update_heat_map(
+    mut heat: ResMut<HeatMap>,
+    mut images: ResMut<Assets<Image>>,
+    maps: Query<&MapLayer>,
+    own: Query<&GridPos, With<OwnPlayer>>,
+    things: Query<(&GridPos, &Appearance)>,
+) {
+    let deck = own.iter().next().map(|p| p.0.z);
+    let Some(map) = maps
+        .iter()
+        .find(|m| Some(m.0.z) == deck)
+        .or_else(|| maps.iter().min_by_key(|m| m.0.z))
+    else {
+        return;
+    };
+    let size = (map.0.width, map.0.height, map.0.z);
+    let mut hot: Vec<(TilePos, u8)> = things
+        .iter()
+        .filter(|(pos, _)| pos.0.z == size.2)
+        .filter_map(|(pos, look)| Some((pos.0, (heat_of(look)? * 255.0).round() as u8)))
+        .collect();
+    hot.sort();
+    if heat.size == size && heat.hot == hot {
+        return;
     }
+    if let Some(mut image) = images.get_mut(&heat.image) {
+        *image = heat_image(size.0, size.1, heat_texels(size.0, size.1, &hot));
+    }
+    heat.size = size;
+    heat.hot = hot;
 }
 
 #[cfg(test)]
@@ -130,9 +121,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn only_fire_shimmers() {
+    fn fire_and_the_supermatter_heat_the_air() {
         let look = |sprite: &str| Appearance::new(sprite, "1");
-        assert!(is_fire(&look("fire")));
-        assert!(!is_fire(&look("light")));
+        assert_eq!(heat_of(&look("fire")), Some(FIRE_HEAT));
+        assert_eq!(heat_of(&look("supermatter")), Some(SUPERMATTER_HEAT));
+        assert_eq!(heat_of(&look("light")), None);
+    }
+
+    #[test]
+    fn hot_tiles_land_on_their_texel_top_row_first() {
+        let texels = heat_texels(3, 2, &[(TilePos::new(2, 0, 0), 255), (TilePos::new(9, 9, 0), 9)]);
+        // y = 0 is the bottom row, the texture's second.
+        assert_eq!(texels, vec![0, 0, 0, 0, 0, 255]);
     }
 }

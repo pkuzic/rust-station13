@@ -20,8 +20,10 @@ use bevy::render::render_resource::{Extent3d, TextureFormat};
 use bevy::window::PrimaryWindow;
 
 use crate::WorldCamera;
+use crate::heat::HeatMap;
 use crate::hud::SCREEN_CELLS;
 use crate::sprites::SpriteAtlas;
+use crate::world_view::WorldViewMaterial;
 
 /// Sprite pixels across the square screen.
 pub const SCREEN_PX: f32 = SCREEN_CELLS * crate::TILE_PX;
@@ -82,6 +84,8 @@ fn target_image(k: u32) -> Image {
 pub fn spawn_world_view(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
+    mut materials: ResMut<Assets<WorldViewMaterial>>,
+    heat: Res<HeatMap>,
     camera: Single<Entity, With<WorldCamera>>,
 ) {
     let image = images.add(target_image(1));
@@ -90,7 +94,8 @@ pub fn spawn_world_view(
         .insert(RenderTarget::Image(image.clone().into()));
     commands.spawn((
         WorldView,
-        ImageNode::new(image.clone()),
+        // Shown through `world_view.wesl`, which bends it where the air is hot.
+        MaterialNode(materials.add(WorldViewMaterial::new(image.clone(), heat.image.clone()))),
         Node {
             position_type: PositionType::Absolute,
             left: Val::Px(0.0),
