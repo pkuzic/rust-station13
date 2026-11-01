@@ -1,6 +1,6 @@
 //! Dedicated server: engine plus the classic game build.
 //!
-//! Usage: `rs13-server [--port N] [--map engineering-chamber|luna-engineering] [--map-file PATH]`
+//! Usage: `rs13-server [--port N] [--map engineering-chamber|luna-engineering|luna-toxins|luna-incinerator] [--map-file PATH]`
 //!
 //! `--map-file` loads a map in the RON map format from disk, for trying things out.
 
@@ -21,6 +21,8 @@ fn main() -> AppExit {
             ("--map", Some(name)) => match name.as_str() {
                 "engineering-chamber" => map = maps::ENGINEERING_CHAMBER,
                 "luna-engineering" => map = maps::LUNA_ENGINEERING,
+                "luna-toxins" => map = maps::LUNA_TOXINS,
+                "luna-incinerator" => map = maps::LUNA_INCINERATOR,
                 _ => return usage(),
             },
             ("--map-file", Some(path)) => match std::fs::read_to_string(&path) {
@@ -40,6 +42,8 @@ fn main() -> AppExit {
 }
 
 fn usage() -> AppExit {
-    eprintln!("usage: rs13-server [--port N] [--map engineering-chamber|luna-engineering] [--map-file PATH]");
+    eprintln!(
+        "usage: rs13-server [--port N] [--map engineering-chamber|luna-engineering|luna-toxins|luna-incinerator] [--map-file PATH]"
+    );
     AppExit::error()
 }

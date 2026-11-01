@@ -525,6 +525,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("laser-beam", _) => (Color::srgb(0.4, 0.4, 1.0), TILE_PX, 3.1),
         // Burning air, over everything but the walls' fixtures.
         ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
+        // Blast doors stand like airlocks.
+        ("blast-door", _) => (Color::srgb(0.35, 0.35, 0.40), TILE_PX - 1.0, 2.0),
         // Flying sparks: over the fire, under the heat haze.
         ("sparks", _) => (Color::srgb(1.0, 0.9, 0.4), 8.0, 3.25),
         // A chair facing north has its back to us: drawn over its sitter and their clothes

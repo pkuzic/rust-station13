@@ -729,6 +729,20 @@
         },
         // A flying spark.
         "sparks": { "": (dmi: "icons/effects/effects.dmi", state: "sparks") },
+        // Blast door (Luna's podlock): pdoor1 shut, pdoorc0 opening, pdoor0 open, pdoorc1 closing.
+        "blast-door": {
+            "pdoor1": (dmi: "icons/obj/doors/rapid_pdoor.dmi", state: "pdoor1"),
+            "pdoorc0": (dmi: "icons/obj/doors/rapid_pdoor.dmi", state: "pdoorc0"),
+            "pdoor0": (dmi: "icons/obj/doors/rapid_pdoor.dmi", state: "pdoor0"),
+            "pdoorc1": (dmi: "icons/obj/doors/rapid_pdoor.dmi", state: "pdoorc1"),
+        },
+        // Remote door control: doorctrl0 + last toggle, doorctrl1 pressed, doorctrl-p unpowered.
+        "door-button": {
+            "doorctrl00": (dmi: "icons/obj/stationobjs.dmi", state: "doorctrl00"),
+            "doorctrl01": (dmi: "icons/obj/stationobjs.dmi", state: "doorctrl01"),
+            "doorctrl1": (dmi: "icons/obj/stationobjs.dmi", state: "doorctrl1"),
+            "doorctrl-p": (dmi: "icons/obj/stationobjs.dmi", state: "doorctrl-p"),
+        },
         // Emergency floodlight: flood[o: panel off][b: cell showing]0[1: lit].
         "floodlight": {
             "flood00": (dmi: "icons/obj/machines/floodlight.dmi", state: "flood00"),

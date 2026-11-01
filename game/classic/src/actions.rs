@@ -141,6 +141,7 @@ pub fn process_actions(
             smes_units,
             mut igniters,
             mut floodlights,
+            mut blast_doors,
         ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
@@ -172,6 +173,7 @@ pub fn process_actions(
             Query<&GridPos, With<crate::power::Smes>>,
             crate::igniters::IgniterWork,
             crate::floodlights::FloodlightWork,
+            crate::blastdoors::BlastDoorWork,
         ),
     ),
     mut commands: Commands,
@@ -447,6 +449,15 @@ pub fn process_actions(
                     if let Some(outcome) = apc_work.use_on(mob, target, tool, &mut hands, at, &mut commands) {
                         sounds.tool_used(tool, at);
                         outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if blast_doors.contains(target) => {
+                    // Blast doors and their buttons (`blast-doors.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if blast_doors.use_on(target, tool, now).is_some() {
+                        sounds.tool_used(tool, mob_pos.0);
                     }
                 }
                 Action::UseOn(target) if floodlights.contains(target) => {

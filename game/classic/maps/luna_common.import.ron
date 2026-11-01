@@ -1,0 +1,185 @@
+// Rules shared by every region imported from NSV Luna's map (rs13-dmm-import): what each
+// Luna type becomes. Each region's rules file names this one as its `base` and adds where
+// to cut, who starts there and its areas. Spec: docs/reference/map-import.md.
+(
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 0,
+    columns: (0, 0),
+    rows: (0, 0),
+
+    turfs: [
+        (path: "/turf/space", tile: (id: "space")),
+        (path: "/turf/simulated/floor", tile: (id: "floor")),
+        (path: "/turf/simulated/floor/plating", tile: (id: "plating")),
+        // The engine core's floor. It should start in vacuum; zones all start with air.
+        (path: "/turf/simulated/floor/engine", tile: (id: "plating")),
+        (path: "/turf/simulated/wall", tile: (id: "wall", solid: true)),
+        (path: "/turf/simulated/wall/r_wall", tile: (id: "r-wall", solid: true)),
+        (path: "/turf/simulated/wall/heatshield", tile: (id: "r-wall", solid: true)),
+    ],
+
+    // Windows (including Luna's one-sided panes) make a window tile, with its grille.
+    windows: ["/obj/structure/window", "/obj/structure/window_pod"],
+    window_tile: (id: "window", solid: true, opaque: false),
+    // A grille without a window is solid, but air goes through it.
+    grilles: ["/obj/structure/grille"],
+    grille_tile: Some((id: "grille", solid: true, opaque: false, airtight: false)),
+
+    objects: [
+        (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),
+        // Border firedoors seal the edge on the side they face (`firedoors.md`).
+        (path: "/obj/machinery/door/firedoor/border_only", id: "firedoor", dir: true),
+        (path: "/obj/machinery/power/apc", id: "apc"),
+        (path: "/obj/machinery/power/smes", id: "smes", vars: ["charge", "capacity", "chargelevel", "chargemode", "charging", "output", "online"]),
+        (path: "/obj/machinery/power/terminal", id: "terminal", dir: true),
+        // Cables keep their ends (Luna's icon state, "0-1" by default).
+        (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
+        (path: "/obj/machinery/alarm", id: "air-alarm"),
+        (path: "/obj/machinery/firealarm", id: "fire-alarm"),
+
+        // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
+        (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/manifold", id: "manifold", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/air", id: "air-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/oxygen", id: "oxygen-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/nitrogen", id: "nitrogen-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/carbon_dioxide", id: "carbon-dioxide-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/tank/toxins", id: "plasma-pressure-tank", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_pump", id: "vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_filter", id: "vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
+        (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
+        (path: "/obj/machinery/atmospherics/pipe/vent", id: "pipe-vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/generator_input", id: "generator-input", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/thermal_plate", id: "thermal-plate", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/cold_sink/freezer", id: "freezer", dir: true),
+        (path: "/obj/machinery/power/generator_type2", id: "teg", vars: ["transferpercent", "outputpercent"]),
+        (path: "/obj/machinery/engine/supermatter", id: "supermatter"),
+        (path: "/obj/machinery/engine/laser", id: "engine-laser", dir: true, vars: ["id"]),
+        (path: "/obj/machinery/computer/lasercon", id: "laser-computer", vars: ["id"]),
+        (path: "/obj/machinery/atmospherics/trinary/filter", id: "gas-filter", dir: true, vars: ["filter_type", "target_pressure", "on"]),
+        (path: "/obj/machinery/atmospherics/unary/outlet_injector", id: "injector", dir: true, vars: ["volume_rate", "on"]),
+        (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
+        (path: "/obj/machinery/meter", id: "meter"),
+        // Canisters. A canister on a connector port starts connected.
+        (path: "/obj/machinery/portable_atmospherics/canister/air", id: "canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/oxygen", id: "oxygen-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/nitrogen", id: "nitrogen-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/carbon_dioxide", id: "carbon-dioxide-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/toxins", id: "plasma-canister"),
+        (path: "/obj/machinery/portable_atmospherics/canister/sleeping_agent", id: "nitrous-oxide-canister"),
+
+        (path: "/obj/item/weapon/screwdriver", id: "screwdriver"),
+        (path: "/obj/item/weapon/wrench", id: "wrench"),
+        (path: "/obj/item/weapon/crowbar", id: "crowbar"),
+        (path: "/obj/item/weapon/wirecutters", id: "wirecutters"),
+        (path: "/obj/item/device/multitool", id: "multitool"),
+        (path: "/obj/item/weapon/weldingtool", id: "welder"),
+        (path: "/obj/item/device/flashlight", id: "flashlight"),
+        (path: "/obj/item/device/flashlight/pen", id: "penlight"),
+        (path: "/obj/item/device/flashlight/lantern", id: "lantern"),
+        (path: "/obj/item/device/flashlight/lamp", id: "desk-lamp"),
+        (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
+        (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
+
+        // Tables keep the look the mapper chose: an icon state and a direction.
+        (path: "/obj/structure/table", id: "table", dir: true, state: Some("table")),
+        (path: "/obj/structure/table/reinforced", id: "table-reinforced", dir: true, state: Some("reinf_table")),
+        (path: "/obj/structure/table/woodentable", id: "table-wood", dir: true, state: Some("wood_table")),
+        (path: "/obj/structure/rack", id: "rack"),
+        (path: "/obj/item/stack/sheet/metal", id: "metal-sheet"),
+        (path: "/obj/item/stack/sheet/mineral/plasma", id: "plasma-sheet"),
+        (path: "/obj/machinery/power/port_gen/pacman", id: "pacman"),
+        (path: "/obj/structure/dispenser/oxygen", id: "tank-dispenser"),
+        (path: "/obj/machinery/cell_charger", id: "cell-charger"),
+        (path: "/obj/machinery/power/monitor", id: "power-monitor"),
+        (path: "/obj/structure/stool/bed/chair", id: "chair", dir: true),
+        (path: "/obj/structure/stool/bed/chair/comfy/brown", id: "comfy-chair-brown", dir: true),
+        (path: "/obj/item/device/radio", id: "radio"),
+        (path: "/obj/item/device/radio/intercom", id: "intercom"),
+        (path: "/obj/item/device/radio/headset/headset_eng", id: "headset-eng"),
+        (path: "/obj/item/clothing/glasses/meson", id: "meson-glasses"),
+        // A tracking beacon is a radio subtype but no radio; nothing to make of it yet.
+        (path: "/obj/item/device/radio/beacon"),
+        (path: "/obj/item/weapon/tank/jetpack", id: "jetpack"),
+        (path: "/obj/item/weapon/tank/jetpack/ce", id: "jetpack-ce"),
+        (path: "/obj/item/weapon/cell", id: "power-cell"),
+        (path: "/obj/item/weapon/cell/high", id: "high-power-cell"),
+        (path: "/obj/item/clothing/gloves/yellow", id: "insulated-gloves"),
+        (path: "/obj/item/clothing/mask/breath", id: "breath-mask"),
+        (path: "/obj/item/weapon/storage/firstaid/regular", id: "first-aid-kit"),
+        (path: "/obj/item/weapon/storage/firstaid/fire", id: "first-aid-kit-fire"),
+        (path: "/obj/item/stack/medical/bruise_pack", id: "bruise-pack"),
+        (path: "/obj/item/stack/medical/ointment", id: "ointment"),
+        (path: "/obj/item/device/healthanalyzer", id: "health-analyzer"),
+
+        (path: "/obj/item/clothing/mask/gas", id: "gas-mask"),
+        (path: "/obj/item/clothing/shoes/magnetic", id: "magboots"),
+        (path: "/obj/item/clothing/gloves/black", id: "black-gloves"),
+        (path: "/obj/item/clothing/suit/fire", id: "firesuit"),
+        (path: "/obj/item/clothing/head/helmet/hardhat", id: "hardhat"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/orange", id: "hardhat-orange"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/red", id: "hardhat-red"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/white", id: "hardhat-white"),
+        (path: "/obj/item/clothing/head/helmet/hardhat/dblue", id: "hardhat-blue"),
+        (path: "/obj/item/clothing/suit/space/rig", id: "space-suit"),
+        (path: "/obj/item/clothing/head/helmet/space/rig", id: "space-helmet"),
+        (path: "/obj/item/weapon/tank/oxygen", id: "oxygen-tank"),
+
+        // Containers come with their tools inside (luna:code/game/objects/storage).
+        (path: "/obj/item/weapon/cable_coil", id: "cable-coil"),
+        (path: "/obj/item/weapon/storage/toolbox/mechanical", id: "toolbox-mechanical"),
+        (path: "/obj/item/weapon/storage/toolbox/electrical", id: "toolbox-electrical"),
+        (path: "/obj/item/weapon/storage/belt/utility", id: "utility-belt"),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded", id: "utility-belt-loaded"),
+        (path: "/obj/item/weapon/storage/belt/utility/loaded/full", id: "utility-belt-full"),
+        (path: "/obj/item/weapon/storage/box/light/tubes", id: "light-tubes-box"),
+        (path: "/obj/item/weapon/storage/box/light/bulb", id: "light-bulbs-box"),
+
+        // Lights face the wall they hang on, and keep Luna's colours (`lighting.md`).
+        (path: "/obj/machinery/light", id: "light", dir: true),
+        (path: "/obj/machinery/light/blue", id: "light-blue", dir: true),
+        (path: "/obj/machinery/light/red", id: "light-red", dir: true),
+        (path: "/obj/machinery/light/small", id: "light-small", dir: true),
+        (path: "/obj/machinery/light/small/red", id: "light-small-red", dir: true),
+        (path: "/obj/machinery/light_switch", id: "light-switch"),
+
+        // Closets, lockers and crates come with what Luna puts in them (`closets.md`). No
+        // rule for the plain closet: it would catch every other kind.
+        (path: "/obj/structure/closet/emcloset", id: "closet-emergency"),
+        (path: "/obj/structure/closet/toolcloset", id: "closet-tools"),
+        (path: "/obj/structure/closet/secure_closet/engineering_chief", id: "locker-chief-engineer"),
+        (path: "/obj/structure/closet/secure_closet/engineering_electrical", id: "locker-electrical"),
+        (path: "/obj/structure/closet/secure_closet/engineering_welding", id: "locker-welding"),
+        (path: "/obj/structure/closet/secure_closet/engineering_personal", id: "locker-engineer"),
+        (path: "/obj/structure/closet/crate", id: "crate"),
+        (path: "/obj/structure/closet/crate/internals", id: "crate-internals"),
+        (path: "/obj/structure/closet/crate/radiation", id: "crate-radiation"),
+        (path: "/obj/structure/closet/crate/rcd", id: "crate-rcd"),
+
+        // Burn chambers and incinerators (`igniters.md`, `blast-doors.md`).
+        (path: "/obj/machinery/igniter", id: "igniter", vars: ["id", "on"]),
+        (path: "/obj/machinery/sparker", id: "sparker", vars: ["id"]),
+        (path: "/obj/machinery/ignition_switch", id: "ignition-switch", vars: ["id"]),
+        (path: "/obj/machinery/door/poddoor", id: "blast-door", vars: ["id", "density"]),
+        (path: "/obj/machinery/door_control", id: "door-button", vars: ["id"]),
+        (path: "/obj/machinery/floodlight", id: "floodlight"),
+    ],
+
+    // Not worth reporting: decorations, mapping helpers, things on space tiles.
+    ignore: [
+        "/obj/effect/decal",
+        "/obj/effect/landmark/derelict",
+        "/obj/structure/lattice",
+    ],
+
+    // Luna access numbers (luna:code/game/jobs/access.dm) → our ids; as in
+    // game/classic/content/access.ron.
+    access: {
+        1: "security", 2: "brig", 3: "armory", 5: "medical", 6: "morgue", 7: "tox", 8: "tox_storage", 9: "medlab",
+        10: "engine", 11: "engine_equip", 12: "maint_tunnels", 13: "external_airlocks",
+        14: "emergency_storage", 15: "change_ids", 18: "eva", 19: "heads", 20: "captain",
+        23: "tech_storage", 24: "atmospherics", 32: "construction", 34: "cargo_bot", 36: "laboratories_doors",
+        37: "incinerator",
+    },
+)

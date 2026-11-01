@@ -27,7 +27,13 @@ fn run(map: &Path, rules_path: &Path, out: &Path) -> Result<(), String> {
     let bytes = fs::read(map).map_err(|e| format!("{}: {e}", map.display()))?;
     let dmm = Dmm::parse(&String::from_utf8_lossy(&bytes)).map_err(|e| format!("{}: {e}", map.display()))?;
     let text = fs::read_to_string(rules_path).map_err(|e| format!("{}: {e}", rules_path.display()))?;
-    let rules = Rules::from_ron(&text).map_err(|e| format!("{}: {e}", rules_path.display()))?;
+    let mut rules = Rules::from_ron(&text).map_err(|e| format!("{}: {e}", rules_path.display()))?;
+    if let Some(base) = rules.base.clone() {
+        let base_path = rules_path.parent().unwrap_or(Path::new(".")).join(base);
+        let text = fs::read_to_string(&base_path).map_err(|e| format!("{}: {e}", base_path.display()))?;
+        let base = Rules::from_ron(&text).map_err(|e| format!("{}: {e}", base_path.display()))?;
+        rules.extend_from(base);
+    }
     let imported = convert(&dmm, &rules).map_err(|e| e.to_string())?;
     // Check the result loads before writing it.
     rs13_world::TileMap::from_ron(&imported.ron, 0)

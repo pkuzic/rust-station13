@@ -1,15 +1,23 @@
 # Importing maps from Luna
 
 Tool: `tools/dmm-import` (`rs13-dmm-import`).
-Rules: `game/classic/maps/luna_engineering.import.ron`.
-Output: `game/classic/maps/luna_engineering.ron`.
-Tests: `tools/dmm-import/src/lib.rs`, `game/classic/tests/luna_map.rs`.
+Rules: `game/classic/maps/luna_common.import.ron` (what each Luna type becomes, shared) and
+one file per region: `luna_engineering.import.ron`, `luna_toxins.import.ron`,
+`luna_incinerator.import.ron`.
+Output: `game/classic/maps/luna_<region>.ron`.
+Tests: `tools/dmm-import/src/lib.rs`, `game/classic/tests/luna_map.rs`,
+`game/classic/tests/luna_rooms.rs`.
 
 ```sh
 cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
     game/classic/maps/luna_engineering.import.ron game/classic/maps/luna_engineering.ron
-cargo run -p rs13-server -- --map luna-engineering
+cargo run -p rs13-server -- --map luna-engineering   # or luna-toxins, luna-incinerator
 ```
+
+**Rules files:** a region's rules name the shared file as their `base`; its turf, window,
+object and ignore rules, areas and access numbers come first and the region's own are added
+(where both name the same area or access number, the region's win). The region gives where
+to cut, its start points and its areas.
 
 ## How it works
 
@@ -36,7 +44,10 @@ counted from 0 with the top row first.
   - A rule with `state` keeps the atom's `icon_state` (tables, whose edges the mappers set by hand), with the given default.
   - Any object with `level = 2` gets `above_floor: true`: Luna lays those pipes over the floor tiles, so they show (`floors.md`).
   - A rule can also place a container's contents loose on its tile (for containers we can't model yet).
-- **Spawns:** a landmark rule makes the tile a spawn and can place things there.
+- **Spawns:** a landmark rule makes the tile a spawn and can place things there. A rule
+  with `name` takes only landmarks of that name (Luna's job start points: `"Scientist"`).
+  The first matching rule wins. `spawn_at` adds start points by column and row, for regions
+  without landmarks.
 - **Area:** from the area table.
 
 **Output:**
@@ -85,3 +96,30 @@ counted from 0 with the top row first.
 - Luna's `req_access_txt` lists every access a door needs, but our doors open for any one. In this region every door needs a single access, so the result is the same.
 - The map stops at the region's edge. Tiles beyond it count as solid, so corridors that leave the section end in an invisible wall.
 - Open pipe ends don't leak, unlike in Luna.
+
+## The toxins lab
+
+**Region:** deck 3, columns 54–77 and rows 88–107, giving a 24 × 20 map: the toxins lab
+and its storage, the burn chamber, the science security checkpoint and the hallways
+outside.
+
+**What came across:** as engineering, and:
+- **The burn chamber:** its floor igniter and the lab's ignition switch (`toxins`), and the
+  three blast doors that vent it to space, worked by the "Chamber Vent Control" button
+  (`toxinsgasexp`; `igniters.md`, `blast-doors.md`). The chamber is its own sealed room of
+  air.
+- **Spawns:** Luna's three Scientist start points, each with a scientist's ID card (Luna's
+  Scientist access: `tox`, `tox_storage`, `maint_tunnels`, `medlab`, `laboratories_doors`).
+- **Skipped:** the toxins bomb parts (transfer valves, timers, igniter assemblies), the gas
+  mixer and air control computer, the mass driver, vending machines, disposals, monkeys,
+  the window doors (their tiles are open floor), and empty canisters.
+
+## The incinerator
+
+**Region:** deck 4, columns 39–50 and rows 111–121, giving a 12 × 11 map: disposal's
+incinerator, its control room and the burn chamber.
+
+**What came across:** its igniter and ignition switch (`Incinerator`), the shut vent and
+input chute blast doors with their buttons, its piping, canisters and injector. Luna has no
+start point here: one is set by the controls (`spawn_at`). Conveyors, disposals and the
+digital valve are skipped.

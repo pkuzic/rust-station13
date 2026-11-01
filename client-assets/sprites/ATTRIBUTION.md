@@ -29,6 +29,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
+| `blast-door:pdoor0` | `icons/obj/doors/rapid_pdoor.dmi : "pdoor0"` | CC-BY-SA 3.0 |
+| `blast-door:pdoor1` | `icons/obj/doors/rapid_pdoor.dmi : "pdoor1"` | CC-BY-SA 3.0 |
+| `blast-door:pdoorc0` | `icons/obj/doors/rapid_pdoor.dmi : "pdoorc0"` | CC-BY-SA 3.0 |
+| `blast-door:pdoorc1` | `icons/obj/doors/rapid_pdoor.dmi : "pdoorc1"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |
 | `bruise-pack:` | `icons/obj/items.dmi : "brutepack"` | CC-BY-SA 3.0 |
 | `cable:0-1` | `icons/obj/power_cond.dmi : "0-1"` | CC-BY-SA 3.0 |
@@ -121,6 +125,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:on` | `icons/obj/lighting.dmi : "lampgreen-on"` | CC-BY-SA 3.0 |
+| `door-button:doorctrl-p` | `icons/obj/stationobjs.dmi : "doorctrl-p"` | CC-BY-SA 3.0 |
+| `door-button:doorctrl00` | `icons/obj/stationobjs.dmi : "doorctrl00"` | CC-BY-SA 3.0 |
+| `door-button:doorctrl01` | `icons/obj/stationobjs.dmi : "doorctrl01"` | CC-BY-SA 3.0 |
+| `door-button:doorctrl1` | `icons/obj/stationobjs.dmi : "doorctrl1"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `fire:1` | `icons/effects/fire.dmi : "1"` | CC-BY-SA 3.0 |
