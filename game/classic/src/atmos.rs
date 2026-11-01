@@ -44,12 +44,14 @@ pub fn build(decks: &[&rs13_world::TileMap], portals: &[TilePos], edges: &[(Tile
 
 /// Tell the solver which doors and firedoors are open, then advance it one tick. An
 /// airlock or blast door lets air through only while fully open, like it lets people
-/// through.
+/// through. An open firedoor on the same edge as a window pane leaves the edge sealed:
+/// Luna's window frames often carry a firedoor too.
 pub fn step_atmos(
     atmos: Option<ResMut<StationAtmos>>,
     doors: Query<(&GridPos, &Airlock)>,
     blast_doors: Query<(&GridPos, &crate::blastdoors::BlastDoor)>,
     firedoors: Query<(&GridPos, &Firedoor)>,
+    panes: Res<crate::windows::PaneEdges>,
 ) {
     let Some(mut atmos) = atmos else { return };
     for (pos, door) in &doors {
@@ -60,7 +62,8 @@ pub fn step_atmos(
     }
     for (pos, door) in &firedoors {
         if let Some((at, dir)) = door.edge(pos.0) {
-            atmos.0.set_edge_open(at, dir, !door.closed);
+            let glazed = panes.0.contains(&(at, at.step(dir)));
+            atmos.0.set_edge_open(at, dir, !door.closed && !glazed);
         }
     }
     atmos.0.step(TICK_SECONDS);

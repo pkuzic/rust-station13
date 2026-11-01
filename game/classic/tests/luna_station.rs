@@ -170,3 +170,22 @@ fn whatever_is_flushed_down_any_bin_comes_out_of_an_outlet() {
         assert!(at.is_some_and(near_an_outlet), "a wrench ended at {at:?}");
     }
 }
+
+#[test]
+fn the_halls_keep_their_air() {
+    // A window frame with a firedoor on the same edge as a pane once opened to space when
+    // the firedoor was open, and the central hallway on deck 3 drained through it.
+    let mut app = station();
+    for _ in 0..1200 {
+        app.world_mut().run_schedule(FixedUpdate);
+    }
+    let atmos = &app.world().resource::<StationAtmos>().0;
+    for at in [
+        TilePos::new(34, 40, 1),
+        TilePos::new(64, 54, 1),
+        TilePos::new(21, 54, 1),
+    ] {
+        let kpa = atmos.pressure_at(at);
+        assert!((kpa - ONE_ATMOSPHERE).abs() < 2.0, "{at:?}: {kpa:.1} kPa");
+    }
+}
