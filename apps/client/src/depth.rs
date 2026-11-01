@@ -1,10 +1,10 @@
-//! A touch of depth (`docs/reference/lighting.md`, Depth): the floor darkens softly along
-//! the foot of every wall, as if the walls stood up out of it, without any new art.
+//! A touch of depth (`docs/reference/lighting.md`, Depth): a crisp dark line along the foot
+//! of every wall, a few sprite pixels wide, as if the walls stood up out of the floor,
+//! without any new art.
 //!
-//! One mesh per deck: along each edge between a floor tile and a wall, a strip on the floor
-//! side fading from shade at the wall to nothing two fifths of a tile out. Corners where two
-//! strips overlap come out a little darker, as they would. Drawn over the floor, under
-//! everything on it; rebuilt only when the map changes.
+//! One mesh per deck: along each edge between a floor tile and a wall, a thin strip on the
+//! floor side. Drawn over the floor, under everything on it; rebuilt only when the map
+//! changes.
 
 use bevy::asset::RenderAssetUsages;
 use bevy::mesh::{Indices, PrimitiveTopology};
@@ -15,10 +15,10 @@ use crate::TILE_PX;
 
 /// Over the floor tiles (0), under pipes and everything else (0.5 and up).
 const DEPTH_Z: f32 = 0.3;
-/// How far the shade reaches into the floor, px.
-const REACH: f32 = 0.4 * TILE_PX;
-/// How dark it is at the foot of the wall.
-const SHADE: f32 = 0.5;
+/// How far the shade reaches into the floor, px: a crisp line, a few sprite pixels.
+const REACH: f32 = 3.0;
+/// How dark the line is.
+const SHADE: f32 = 0.35;
 
 #[derive(Component)]
 struct WallShade(i32);
@@ -32,7 +32,7 @@ impl Plugin for DepthPlugin {
 }
 
 /// The strips along the foot of every wall: per strip, its four corners (two at the wall,
-/// shaded, two out on the floor, clear), in px.
+/// two out on the floor), in px.
 pub fn strips(map: &TileMap) -> Vec<[[f32; 2]; 4]> {
     let mut out = Vec::new();
     let h = TILE_PX / 2.0;
@@ -71,20 +71,14 @@ pub fn strips(map: &TileMap) -> Vec<[[f32; 2]; 4]> {
 fn mesh_of(map: &TileMap) -> Mesh {
     let strips = strips(map);
     let mut positions = Vec::with_capacity(strips.len() * 4);
-    let mut colors = Vec::with_capacity(strips.len() * 4);
     let mut indices = Vec::with_capacity(strips.len() * 6);
     for (i, s) in strips.iter().enumerate() {
-        for (k, p) in s.iter().enumerate() {
-            positions.push([p[0], p[1], 0.0]);
-            // The first two corners are at the wall.
-            colors.push([1.0, 1.0, 1.0, if k < 2 { 1.0 } else { 0.0 }]);
-        }
+        positions.extend(s.iter().map(|p| [p[0], p[1], 0.0]));
         let j = 4 * i as u32;
         indices.extend([j, j + 1, j + 2, j, j + 2, j + 3]);
     }
     Mesh::new(PrimitiveTopology::TriangleList, RenderAssetUsages::default())
         .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, positions)
-        .with_inserted_attribute(Mesh::ATTRIBUTE_COLOR, colors)
         .with_inserted_indices(Indices::U32(indices))
 }
 
@@ -128,7 +122,7 @@ mod tests {
         let s = strips(&map);
         // (1, 1) has walls north, south and west; (2, 1) north and south.
         assert_eq!(s.len(), 5);
-        // A strip starts at the wall edge and reaches a third of a tile into the floor.
+        // A strip starts at the wall edge and reaches `REACH` into the floor.
         let west = s
             .iter()
             .find(|q| q[0][0] == 0.5 * TILE_PX && q[1][0] == 0.5 * TILE_PX)
