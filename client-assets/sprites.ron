@@ -722,6 +722,16 @@
             "off-east": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(2)),
             "off-west": (dmi: "icons/obj/atmospherics/filter.dmi", state: "intact_off", dir: Some(3)),
         },
+        // Floor-mounted igniter: igniter1 sparking, igniter0 off or unpowered.
+        "igniter": {
+            "igniter0": (dmi: "icons/obj/stationobjs.dmi", state: "igniter0"),
+            "igniter1": (dmi: "icons/obj/stationobjs.dmi", state: "igniter1"),
+        },
+        // Ignition switch: launcherbtt ready, launcheract pressed.
+        "ignition-switch": {
+            "launcherbtt": (dmi: "icons/obj/objects.dmi", state: "launcherbtt"),
+            "launcheract": (dmi: "icons/obj/objects.dmi", state: "launcheract"),
+        },
         "injector": {
             "on": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "on"),
             "off": (dmi: "icons/obj/atmospherics/outlet_injector.dmi", state: "off"),

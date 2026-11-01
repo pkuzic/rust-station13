@@ -6,7 +6,7 @@ Sources: `luna:code/FEA/FEA_fire.dm` (`hotspot_expose`, `obj/fire`, `obj/hotspot
 `luna:code/FEA/FEA_gas_mixture.dm` (`react`), `luna:code/setup.dm` (constants),
 `luna:code/game/objects/items/weapons/tools.dm` (welding tool `process`).
 
-- **Ignition:** a spark or flame calls `hotspot_expose(temperature, volume)` on its tile. A lit welding tool does so every process with `SPARK_TEMP` (3 500 K), in hand or on the floor. Above `PLASMA_MINIMUM_BURN_TEMPERATURE` (250 °C), with at least 0.5 mol of plasma and of oxygen on the tile, it spawns an `obj/fire`.
+- **Ignition:** a spark or flame calls `hotspot_expose(temperature, volume)` on its tile. A lit welding tool does so every process with `SPARK_TEMP` (3 500 K), in hand or on the floor. Above `PLASMA_MINIMUM_BURN_TEMPERATURE` (250 °C), with at least 0.5 mol of plasma and of oxygen on the tile, it spawns an `obj/fire`. A floor-mounted igniter does the same at 6 000 K while it is on (`igniters.md`).
 - **The compiled fire (`obj/fire`) does not work:**
   - `burn(0.5, 0.5)` takes `round(0.5)` of each gas, which BYOND rounds down to zero, so it burns nothing and adds no heat (only a little carbon dioxide from nothing);
   - it dies unless the tile is already above 100 °C (`FIRE_MINIMUM_TEMPERATURE_TO_EXIST`), so at room temperature it goes out at once;

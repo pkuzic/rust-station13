@@ -182,6 +182,14 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::generators::spawn_pacman(world, spec, pos, id));
     }
+    if proto == crate::igniters::IGNITER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::igniters::spawn_igniter(world, spec, pos, id));
+    }
+    if proto == crate::igniters::IGNITION_SWITCH {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::igniters::spawn_ignition_switch(world, spec, pos, id));
+    }
     if proto == "firedoor" {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firedoors::spawn_firedoor(world, spec, pos, id));

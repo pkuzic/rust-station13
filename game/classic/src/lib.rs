@@ -27,6 +27,7 @@ pub mod furniture;
 pub mod generators;
 pub mod hands;
 pub mod health;
+pub mod igniters;
 pub mod jetpacks;
 pub mod lighting;
 pub mod lights;
@@ -185,6 +186,13 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
+                igniters::run_igniters
+                    .after(fires::expose_flames)
+                    .before(atmos::step_atmos)
+                    .in_set(TickSet::Simulation),
+            )
+            .add_systems(
+                FixedUpdate,
                 (
                     supermatter::fire_lasers,
                     supermatter::update_beam_power,
@@ -240,6 +248,7 @@ impl Plugin for ClassicPlugin {
                     jetpacks::update_jetpack_looks,
                     chairs::update_chairs,
                     power_monitor::update_monitor_looks,
+                    igniters::update_igniter_looks,
                 )
                     .in_set(TickSet::Publish),
             )
