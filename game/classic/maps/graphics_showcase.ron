@@ -5,7 +5,8 @@
 // - West, behind windows: a sealed room an injector slowly fills with plasma (gas
 //   overlay, thickening over the first minute).
 // - East, through the airlock: an unlit room where a second player starts, a black
-//   silhouette in the dark to the first.
+//   silhouette in the dark to the first. An emergency floodlight in its corner, off,
+//   lights it when clicked.
 // - South, behind windows: a burn chamber an injector fills with plasma. The ignition
 //   switch by the windows makes its sparker spark and turns its igniter on (fire, its glow
 //   and heat haze); press it again to turn the igniter off.
@@ -30,12 +31,13 @@
         'x': (tile: (id: "floor"), objects: [(id: "ignition-switch", vars: {"id": "chamber"})]),
         'n': (tile: (id: "floor"), objects: [(id: "igniter", vars: {"id": "chamber", "on": "0"})]),
         'z': (tile: (id: "floor"), objects: [(id: "sparker", vars: {"id": "chamber"})]),
+        'F': (tile: (id: "floor"), objects: ["floodlight"]),
     },
     rows: [
         "                      ",
         " WWWWWWWwwwwwWWWWWW   ",
         " W.l..w.l....W....W   ",
-        " W....w.h...cW....W   ",
+        " W....w.h...cW...FW   ",
         " W....w..S...d..S.W   ",
         " Wtpi.wex.ko.W....W   ",
         " WWWWWWWwwwWWWWWWWW   ",

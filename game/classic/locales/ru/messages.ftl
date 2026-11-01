@@ -548,3 +548,14 @@ sparker-disabled = { $name } отключает { NOUN($item, case: "acc") }!
 sparker-disabled-self = Вы отсоединяете { NOUN($item, case: "acc") }.
 sparker-reconnected = { $name } снова подключает { NOUN($item, case: "acc") }!
 sparker-reconnected-self = Вы восстанавливаете подключение { NOUN($item, case: "gen") }.
+
+# Аварийный прожектор (floodlights.md).
+floodlight-on = Вы включаете прожектор.
+floodlight-off = Вы выключаете прожектор.
+floodlight-cell-removed = Вы вынимаете батарею.
+floodlight-unscrewed = Вы откручиваете крышку батарейного отсека.
+floodlight-screwed = Вы прикручиваете крышку батарейного отсека.
+floodlight-panel-removed = Вы снимаете крышку батарейного отсека.
+floodlight-panel-replaced = Вы ломом ставите крышку батарейного отсека на место.
+floodlight-cell-already = Батарея уже установлена.
+floodlight-cell-inserted = Вы вставляете батарею.

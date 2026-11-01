@@ -150,6 +150,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `first-aid-kit-fire:` | `icons/obj/storage.dmi : "ointment"` | CC-BY-SA 3.0 |
 | `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
+| `floodlight:flood00` | `icons/obj/machines/floodlight.dmi : "flood00"` | CC-BY-SA 3.0 |
+| `floodlight:flood01` | `icons/obj/machines/floodlight.dmi : "flood01"` | CC-BY-SA 3.0 |
+| `floodlight:floodo00` | `icons/obj/machines/floodlight.dmi : "floodo00"` | CC-BY-SA 3.0 |
+| `floodlight:floodob00` | `icons/obj/machines/floodlight.dmi : "floodob00"` | CC-BY-SA 3.0 |
+| `floodlight:floodob01` | `icons/obj/machines/floodlight.dmi : "floodob01"` | CC-BY-SA 3.0 |
 | `floor-tile:` | `icons/obj/items.dmi : "tile"` | CC-BY-SA 3.0 |
 | `freezer:freezer` | `icons/obj/Cryogenic2.dmi : "freezer"` | CC-BY-SA 3.0 |
 | `freezer:freezer_1` | `icons/obj/Cryogenic2.dmi : "freezer_1"` | CC-BY-SA 3.0 |

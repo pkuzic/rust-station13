@@ -175,9 +175,9 @@ What gives off light of its own stays bright in the dark and glows
   - darkness hiding things other than people (items on the floor of a dark room are
     still sent and drawn, dimly);
   - red alert lighting (`isalert`, fire alarm lights);
-  - other things that give light in Luna: floodlights, hard hat and suit lamps
-    (flashlights and desk lamps do: `flashlights.md`; sparkers: `igniters.md`; screens
-    glow: Glow);
+  - other things that give light in Luna: hard hat and suit lamps (flashlights and desk
+    lamps do: `flashlights.md`; sparkers: `igniters.md`; floodlights: `floodlights.md`;
+    screens glow: Glow);
   - floor lights;
   - light from a lower deck seen through open space (only the light levels are carried).
 
