@@ -227,6 +227,11 @@ pub struct Canister {
     pub release_target: f64,
 }
 
+/// Something wheeled about that a wrench fastens onto the connector port under it:
+/// canisters, portable pumps and scrubbers.
+#[derive(Component, Debug, Clone, Copy)]
+pub struct Portable;
+
 /// One connected pipe network.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PipeNet {
@@ -962,7 +967,7 @@ impl MachineSpawn {
             entity.insert(v);
         }
         if let Some(c) = self.canister {
-            entity.insert(c);
+            entity.insert((c, Portable));
         }
         if self.valve {
             entity.insert(Valve);

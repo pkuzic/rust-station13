@@ -473,6 +473,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `plasma-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `plasma-pressure-tank:` | `icons/obj/atmospherics/orange_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `plasma-sheet:` | `icons/obj/mining.dmi : "sheet-plasma"` | CC-BY-SA 3.0 |
+| `portable-pump:psiphon:0` | `icons/obj/atmos.dmi : "psiphon:0"` | CC-BY-SA 3.0 |
+| `portable-pump:psiphon:1` | `icons/obj/atmos.dmi : "psiphon:1"` | CC-BY-SA 3.0 |
+| `portable-pump:siphon-connector` | `icons/obj/atmos.dmi : "siphon-connector"` | CC-BY-SA 3.0 |
+| `portable-scrubber:pscrubber:0` | `icons/obj/atmos.dmi : "pscrubber:0"` | CC-BY-SA 3.0 |
+| `portable-scrubber:pscrubber:1` | `icons/obj/atmos.dmi : "pscrubber:1"` | CC-BY-SA 3.0 |
 | `power-cell:` | `icons/obj/power.dmi : "cell"` | CC-BY-SA 3.0 |
 | `power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
 | `power-cell:cell-o2` | `icons/obj/power.dmi : "cell-o2"` | CC-BY-SA 3.0 |

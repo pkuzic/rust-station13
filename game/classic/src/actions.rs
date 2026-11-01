@@ -12,7 +12,7 @@ use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::{Airlock, DoorState};
 use crate::hands::{Hands, HeldBy, Item};
 use crate::health::{Body, Vitals};
-use crate::machines::{Canister, Connector, GasStore, PipeMember, PipeNets, Switch, Valve};
+use crate::machines::{Connector, GasStore, PipeMember, PipeNets, Portable, Switch, Valve};
 use crate::movement::Mob;
 use crate::power::{Channel, Smes};
 use crate::time::WorldTime;
@@ -90,7 +90,7 @@ pub fn process_actions(
             Option<&mut Airlock>,
             Option<&mut Switch>,
             Option<&mut PipeMember>,
-            Has<Canister>,
+            Has<Portable>,
             Has<Valve>,
         ),
         Without<Mob>,
@@ -759,7 +759,8 @@ pub fn process_actions(
                         *hands.slot_mut(active) = Some(target);
                         commands.entity(target).remove::<GridPos>().insert(HeldBy(mob));
                     } else if is_canister && holding(&hands, &appearances, "wrench") {
-                        // Wrench a canister on or off the port under it.
+                        // Wrench a canister, portable pump or scrubber on or off the port
+                        // under it.
                         let Some(mut member) = member else { continue };
                         if member.open || ports.iter().any(|p| p.0 == target_pos.0) {
                             member.open = !member.open;
