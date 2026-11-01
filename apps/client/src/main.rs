@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod apc_panel;
 mod audio;
+mod context_menu;
 mod depth;
 mod fov;
 mod freezer_panel;
@@ -103,6 +104,10 @@ enum UseStep {
     Floor(i32, i32),
     /// `wait:SECONDS`: pause before the next step.
     Wait(f32),
+    /// `menu:DX,DY`: open the right-click menu on that tile.
+    Menu(i32, i32),
+    /// `pick:N`: pick the open menu's `N`th choice (from 1).
+    Pick(usize),
 }
 
 impl UseStep {
@@ -118,6 +123,10 @@ impl UseStep {
             _ => {
                 if let Some(rest) = s.strip_prefix("pull:") {
                     offset(rest).map(|(x, y)| Self::Pull(x, y))
+                } else if let Some(rest) = s.strip_prefix("menu:") {
+                    offset(rest).map(|(x, y)| Self::Menu(x, y))
+                } else if let Some(rest) = s.strip_prefix("pick:") {
+                    rest.trim().parse().ok().map(Self::Pick)
                 } else if let Some(rest) = s.strip_prefix("wait:") {
                     rest.trim().parse().ok().map(Self::Wait)
                 } else if let Some(rest) = s.strip_prefix("floor:") {
@@ -238,6 +247,7 @@ fn main() {
         .init_resource::<hud::HudTip>()
         .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<alarm_panel::OpenAlarm>()
+        .init_resource::<context_menu::MenuRequest>()
         .init_resource::<apc_panel::OpenApc>()
         .init_resource::<monitor_panel::OpenMonitor>()
         .init_resource::<laser_panel::OpenLaser>()
@@ -267,7 +277,14 @@ fn main() {
                 mark_own_player,
                 send_name,
                 chat_typing,
-                (send_move_input, send_hotkeys, send_clicks),
+                (
+                    send_move_input,
+                    send_hotkeys,
+                    send_clicks,
+                    context_menu::open_menu,
+                    context_menu::close_menu,
+                )
+                    .chain(),
                 receive_notices,
                 receive_status,
                 // Machine windows and the open container.
@@ -987,8 +1004,32 @@ fn send_hotkeys(
     }
 }
 
-/// Left click: use the active hand on the topmost thing on the clicked tile.
-/// Shift+click: examine it. The server checks reach.
+/// Where the cursor is in the world, if it is over the map square.
+fn cursor_world(window: &Window, camera: &GlobalTransform) -> Option<Vec2> {
+    let cursor = window.cursor_position()?;
+    // Right of the map square is the text panel.
+    let square = window.width().min(window.height());
+    if cursor.x > square || square <= 0.0 {
+        return None;
+    }
+    // The square shows the camera's 16 cells, centred on the camera (`scaling.rs`).
+    let centre = camera.translation().truncate();
+    Some(centre + Vec2::new(cursor.x / square - 0.5, 0.5 - cursor.y / square) * scaling::SCREEN_PX)
+}
+
+/// The tile under the cursor, if it is over the map square.
+fn cursor_tile(window: &Window, camera: &GlobalTransform) -> Option<(i32, i32)> {
+    let world = cursor_world(window, camera)?;
+    Some((
+        (world.x / TILE_PX).round() as i32,
+        (world.y / TILE_PX).round() as i32,
+    ))
+}
+
+/// Left click: use the active hand on the topmost thing on the clicked tile, on our own
+/// deck. Shift+click: examine it. The server checks reach. A click that closes the
+/// right-click menu does nothing else.
+#[allow(clippy::too_many_arguments)]
 fn send_clicks(
     mouse: Res<ButtonInput<MouseButton>>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -997,28 +1038,21 @@ fn send_clicks(
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     drawn: Query<(&NetId, &Appearance, &GlobalTransform, &Sprite, &Visibility), Without<Hidden>>,
     atlas: Res<SpriteAtlas>,
-    maps: Query<&MapLayer>,
+    own: Query<&GridPos, With<OwnPlayer>>,
+    menus: Query<(), With<context_menu::ContextMenu>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     hud: Query<&bevy::picking::hover::Hovered>,
 ) {
     // A click on the HUD is not a click on the world under it.
-    if !mouse.just_pressed(MouseButton::Left) || hud.iter().any(|h| h.0) {
+    if !mouse.just_pressed(MouseButton::Left) || hud.iter().any(|h| h.0) || !menus.is_empty() {
         return;
     }
-    let Ok(mut sender) = sender.single_mut() else {
+    let (Ok(mut sender), Ok(me)) = (sender.single_mut(), own.single()) else {
         return;
     };
-    let Some(cursor) = window.cursor_position() else {
+    let Some(world) = cursor_world(&window, &camera) else {
         return;
     };
-    // Right of the map square is the text panel.
-    let square = window.width().min(window.height());
-    if cursor.x > square || square <= 0.0 {
-        return;
-    }
-    // The square shows the camera's 16 cells, centred on the camera (`scaling.rs`).
-    let centre = camera.translation().truncate();
-    let world = centre + Vec2::new(cursor.x / square - 0.5, 0.5 - cursor.y / square) * scaling::SCREEN_PX;
     let tile = (
         (world.x / TILE_PX).round() as i32,
         (world.y / TILE_PX).round() as i32,
@@ -1031,7 +1065,8 @@ fn send_clicks(
         objects
             .iter()
             .filter(|(_, pos, a)| {
-                (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
+                (pos.0.x, pos.0.y, pos.0.z) == (tile.0, tile.1, me.0.z)
+                    && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
             })
             .min_by_key(|(_, _, a)| click_rank(a))
             .map(|(id, ..)| *id)
@@ -1039,8 +1074,8 @@ fn send_clicks(
     let examine = keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
     // Nothing there: click the tile itself (to lay cable, pry up floor tiles).
     let Some(target) = target else {
-        if !examine && let Some(map) = maps.iter().next() {
-            sender.send::<IntentChannel>(ActionInput::UseOnTile(TilePos::new(tile.0, tile.1, map.0.z)));
+        if !examine {
+            sender.send::<IntentChannel>(ActionInput::UseOnTile(TilePos::new(tile.0, tile.1, me.0.z)));
         }
         return;
     };
@@ -1327,6 +1362,7 @@ fn scripted_use(
     own: Query<(&GridPos, &HandsView), With<OwnPlayer>>,
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
+    mut menu: ResMut<context_menu::MenuRequest>,
     mut next_at: Local<Option<f32>>,
 ) {
     let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
@@ -1344,14 +1380,19 @@ fn scripted_use(
         *next_at = Some(now + seconds);
         return;
     }
+    match step {
+        UseStep::Menu(dx, dy) => menu.open_at = Some((dx, dy)),
+        UseStep::Pick(n) => menu.pick = Some(n),
+        _ => {}
+    }
     let action = match step {
-        UseStep::Wait(_) => None,
+        UseStep::Wait(_) | UseStep::Menu(..) | UseStep::Pick(_) => None,
         UseStep::Tile(dx, dy) | UseStep::Pull(dx, dy) => {
             let tile = (me.0.x + dx, me.0.y + dy);
             objects
                 .iter()
                 .filter(|(_, pos, a)| {
-                    (pos.0.x, pos.0.y) == tile
+                    (pos.0.x, pos.0.y, pos.0.z) == (tile.0, tile.1, me.0.z)
                         && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
                 })
                 .min_by_key(|(_, _, a)| click_rank(a))
@@ -1444,6 +1485,8 @@ mod tests {
         assert_eq!(UseStep::parse("self"), Some(UseStep::InHand));
         assert_eq!(UseStep::parse("floor:3,0"), Some(UseStep::Floor(3, 0)));
         assert_eq!(UseStep::parse("wait:2.5"), Some(UseStep::Wait(2.5)));
+        assert_eq!(UseStep::parse("menu:0,1"), Some(UseStep::Menu(0, 1)));
+        assert_eq!(UseStep::parse("pick:2"), Some(UseStep::Pick(2)));
         assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
         assert_eq!(UseStep::parse("nope"), None);
     }

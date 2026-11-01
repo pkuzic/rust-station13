@@ -106,6 +106,9 @@ pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
     problems
 }
 
+/// How far into the wall it faces an APC is drawn, pixels (Luna `apc/New`).
+const APC_WALL_PX: i32 = 24;
+
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
@@ -119,7 +122,15 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             .and_then(|v| v.trim().parse::<i32>().ok())
             .map_or(0, |v| v.clamp(-127, 127) as i8)
     };
-    let offset = [pixel("pixel_x"), pixel("pixel_y")];
+    let mut offset = [pixel("pixel_x"), pixel("pixel_y")];
+    // An APC hangs on the wall it faces, 24 pixels over (Luna `apc/New`).
+    if offset == [0, 0]
+        && spec.id == "apc"
+        && let Some(dir) = spec.dir
+    {
+        let (dx, dy) = dir.offset();
+        offset = [(dx * APC_WALL_PX) as i8, (dy * APC_WALL_PX) as i8];
+    }
     if offset != [0, 0] {
         world.entity_mut(entity).insert(rs13_world::PixelOffset(offset));
     }
