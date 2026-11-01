@@ -85,6 +85,7 @@ pub fn space_wind(
     >,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<Item>)>,
     firedoors: Query<(&GridPos, &Firedoor), (Without<Mob>, Without<Item>)>,
+    panes: Res<crate::windows::PaneEdges>,
     equipment: Query<&crate::equipment::Equipment>,
     wearables: Query<&crate::equipment::Wearable>,
     mut commands: Commands,
@@ -101,7 +102,8 @@ pub fn space_wind(
     };
     let now = time.tick.0;
     cooldowns.0.retain(|_, until| *until > now);
-    let sealed = closed_edges(firedoors.iter());
+    let mut sealed = closed_edges(firedoors.iter());
+    sealed.extend(panes.0.iter().copied());
 
     let mob_tiles: Vec<TilePos> = movers
         .iter()

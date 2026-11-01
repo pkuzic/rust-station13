@@ -729,6 +729,13 @@
         },
         // A flying spark.
         "sparks": { "": (dmi: "icons/effects/effects.dmi", state: "sparks") },
+        // Window pane along one edge of its tile (Luna's reinforced window, a direction each).
+        "window-pane": {
+            "south": (dmi: "icons/obj/structures.dmi", state: "rwindow", dir: Some(0)),
+            "north": (dmi: "icons/obj/structures.dmi", state: "rwindow", dir: Some(1)),
+            "east": (dmi: "icons/obj/structures.dmi", state: "rwindow", dir: Some(2)),
+            "west": (dmi: "icons/obj/structures.dmi", state: "rwindow", dir: Some(3)),
+        },
         // Blast door (Luna's podlock): pdoor1 shut, pdoorc0 opening, pdoor0 open, pdoorc1 closing.
         "blast-door": {
             "pdoor1": (dmi: "icons/obj/doors/rapid_pdoor.dmi", state: "pdoor1"),

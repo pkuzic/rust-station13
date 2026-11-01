@@ -32,12 +32,11 @@ counted from 0 with the top row first.
 
 **Each tile becomes:**
 - **Tile:** from its turf, by the longest matching type-path prefix.
-- **Window:** any window on the tile makes it a window tile instead: solid, see-through,
-  airtight, drawn as a grille behind glass filling the tile.
-- **Grille:** a grille with no window on the tile makes it a grille tile: solid and
-  see-through, but air goes through it (Luna's grilles let air pass; `airtight: false`).
-  Luna's thin panes sit on a tile's edge, so a grille tile beside a pane is sealed on that
-  side in Luna but open here; tiles with a pane on them stay airtight on every side.
+- **Grille:** a grille on the tile makes it a grille tile: solid and see-through, but air
+  goes through it (Luna's grilles let air pass; `airtight: false`).
+- **Window panes:** Luna's windows are panes along one edge of their tile; each becomes a
+  `window-pane` object facing that edge, sealing it against people and air
+  (`windows.md`). A Luna window is a grille tile with its panes, sealed where Luna's is.
 - **Objects:** from the object rules, again by longest matching prefix.
   - An airlock's `req_access_txt` (Luna access numbers separated by `;`) becomes our access ids.
   - A cable's `icon_state` (`"1-2"`, with 0 for a knot) becomes its ends. Ends that lead up or down to another deck are dropped and reported.

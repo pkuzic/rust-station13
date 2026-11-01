@@ -53,6 +53,7 @@ pub mod supermatter;
 pub mod teg;
 pub mod time;
 pub mod welding;
+pub mod windows;
 pub mod wires;
 
 use bevy_app::{App, FixedUpdate, Plugin};
@@ -107,6 +108,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
+            .init_resource::<windows::PaneEdges>()
             .init_resource::<igniters::PendingSparks>()
             .init_resource::<sparks::SparkShowers>()
             .init_resource::<supermatter::Beams>()
@@ -157,6 +159,7 @@ impl Plugin for ClassicPlugin {
                     firedoors::update_firedoors,
                     doors::update_doors,
                     blastdoors::run_blast_doors,
+                    windows::update_pane_edges,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,

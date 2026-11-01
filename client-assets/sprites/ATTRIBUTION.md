@@ -658,6 +658,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `vent:on` | `icons/obj/atmospherics/vent_pump.dmi : "out"` | CC-BY-SA 3.0 |
 | `welder:` | `icons/obj/items.dmi : "welder"` | CC-BY-SA 3.0 |
 | `welder:lit` | `icons/obj/items.dmi : "welder1"` | CC-BY-SA 3.0 |
+| `window-pane:east` | `icons/obj/structures.dmi : "rwindow"` | CC-BY-SA 3.0 |
+| `window-pane:north` | `icons/obj/structures.dmi : "rwindow"` | CC-BY-SA 3.0 |
+| `window-pane:south` | `icons/obj/structures.dmi : "rwindow"` | CC-BY-SA 3.0 |
+| `window-pane:west` | `icons/obj/structures.dmi : "rwindow"` | CC-BY-SA 3.0 |
 | `wirecutters:` | `icons/obj/items.dmi : "cutters"` | CC-BY-SA 3.0 |
 | `worn:black-gloves:` | `icons/mob/hands.dmi : "bgloves_rhand"` | CC-BY-SA 3.0 |
 | `worn:black-gloves:lying` | `icons/mob/hands.dmi : "bgloves2"` | CC-BY-SA 3.0 |

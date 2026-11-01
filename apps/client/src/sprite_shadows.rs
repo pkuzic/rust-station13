@@ -58,6 +58,7 @@ pub fn casts_shadow(sprite: &str) -> bool {
             | "airlock"
             | "firedoor"
             | "blast-door"
+            | "window-pane"
             | "door-button"
             | "light"
             | "light-small"
