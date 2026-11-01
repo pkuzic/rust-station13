@@ -1,0 +1,38 @@
+// A small map that shows the client's look in one place: run
+// `rs13-server --map-file game/classic/maps/graphics_showcase.ron`.
+// - The middle room, where the first player starts: lit, with furniture casting drop
+//   shadows, and windows onto space to the north (parallax stars).
+// - West, behind windows: a sealed room an injector slowly fills with plasma (gas
+//   overlay, thickening over the first minute).
+// - East, through the airlock: an unlit room where a second player starts, a black
+//   silhouette in the dark to the first.
+// A welding tool lies in the middle room.
+(
+    legend: {
+        ' ': (tile: (id: "space")),
+        'W': (tile: (id: "wall", solid: true)),
+        'w': (tile: (id: "window", solid: true, opaque: Some(false))),
+        '.': (tile: (id: "floor")),
+        'S': (tile: (id: "floor"), spawn: true),
+        'l': (tile: (id: "floor"), objects: [(id: "light", dir: North)]),
+        'h': (tile: (id: "floor"), objects: ["chair"]),
+        'c': (tile: (id: "floor"), objects: ["closet"]),
+        'k': (tile: (id: "floor"), objects: ["table", "first-aid-kit"]),
+        'o': (tile: (id: "floor"), objects: ["oxygen-canister"]),
+        'e': (tile: (id: "floor"), objects: ["welder"]),
+        'd': (tile: (id: "floor"), objects: ["airlock"]),
+        't': (tile: (id: "floor"), objects: [(id: "plasma-pressure-tank", dir: East)]),
+        'p': (tile: (id: "floor"), objects: [(id: "pipe", dir: East, above_floor: true)]),
+        'i': (tile: (id: "floor"), objects: [(id: "injector", dir: West, vars: {"on": "1", "volume_rate": "100"})]),
+    },
+    rows: [
+        "                      ",
+        " WWWWWWWwwwwwWWWWWW   ",
+        " W.l..w.l....W....W   ",
+        " W....w.h...cW....W   ",
+        " W....w..S...d..S.W   ",
+        " Wtpi.w.e.ko.W....W   ",
+        " WWWWWWWWWWWWWWWWWW   ",
+        "                      ",
+    ],
+)
