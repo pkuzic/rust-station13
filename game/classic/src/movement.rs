@@ -57,7 +57,8 @@ pub fn step_delay_ds(run: bool) -> f32 {
 /// Where a step from `from` in `dir` ends up, or `None` if it is blocked.
 ///
 /// A blocked diagonal slides along its horizontal component, then its vertical one.
-/// `sealed` holds the edges closed firedoors block (`firedoors::closed_edges`).
+/// `sealed` holds the edges closed firedoors and window panes block
+/// (`firedoors::closed_edges`, `windows::PaneEdges`).
 pub fn resolve_step(
     map: &TileMap,
     occupied: &HashSet<TilePos>,
@@ -107,14 +108,16 @@ pub fn move_mobs(
     mut stepped: ResMut<crate::pulling::Stepped>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
-    (jetpacks, mut tanks, mut commands): (
+    (jetpacks, mut tanks, panes, mut commands): (
         Query<&crate::jetpacks::Jetpack>,
         Query<&mut crate::equipment::TankGas>,
+        Res<crate::windows::PaneEdges>,
         Commands,
     ),
 ) {
     let now = time.deciseconds();
-    let sealed = crate::firedoors::closed_edges(firedoors.iter());
+    let mut sealed = crate::firedoors::closed_edges(firedoors.iter());
+    sealed.extend(panes.0.iter().copied());
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
     occupied.extend(
         objects
