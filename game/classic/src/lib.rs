@@ -45,6 +45,7 @@ pub mod radio;
 pub mod rng;
 pub mod smes_panel;
 pub mod sound;
+pub mod sparks;
 pub mod speech;
 pub mod storage;
 pub mod supermatter;
@@ -102,6 +103,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
             .init_resource::<igniters::PendingSparks>()
+            .init_resource::<sparks::SparkShowers>()
             .init_resource::<supermatter::Beams>()
             .init_resource::<supermatter::CoreAlerts>()
             .init_resource::<lights::AreaLights>()
@@ -188,7 +190,8 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                igniters::run_igniters
+                (igniters::run_igniters, sparks::run_sparks)
+                    .chain()
                     .after(fires::expose_flames)
                     .before(atmos::step_atmos)
                     .in_set(TickSet::Simulation),

@@ -20,3 +20,7 @@ to files in `apps/client/src/audio.rs`.
 | `items/Wirecutter.ogg` | `sound/items/Wirecutter.ogg` | `wirecutter` | CC-BY-SA 3.0 |
 | `items/Welder.ogg` | `sound/items/Welder.ogg` | `welder` | CC-BY-SA 3.0 |
 | `items/Welder2.ogg` | `sound/items/Welder2.ogg` | `welder` | CC-BY-SA 3.0 |
+| `effects/sparks1.ogg` | `sound/effects/sparks1.ogg` | `sparks` | CC-BY-SA 3.0 |
+| `effects/sparks2.ogg` | `sound/effects/sparks2.ogg` | `sparks` | CC-BY-SA 3.0 |
+| `effects/sparks3.ogg` | `sound/effects/sparks3.ogg` | `sparks` | CC-BY-SA 3.0 |
+| `effects/sparks4.ogg` | `sound/effects/sparks4.ogg` | `sparks` | CC-BY-SA 3.0 |

@@ -8,6 +8,7 @@ use rs13_classic::atmos::StationAtmos;
 use rs13_classic::fires::Fire;
 use rs13_classic::igniters::{IgnitionSwitch, Sparker};
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::sparks::Spark;
 use rs13_simulation::atmos::gas::T20C;
 use rs13_simulation::atmos::{Gas, GasMix};
 use rs13_world::{Appearance, LightSource, TileMap, TilePos};
@@ -163,4 +164,17 @@ fn a_screwdriver_disconnects_a_sparker_and_puts_its_light_out() {
     app.world_mut().run_schedule(FixedUpdate);
     assert_eq!(look(&mut app), "migniter");
     assert!(app.world().get::<LightSource>(sparker).is_some());
+}
+
+#[test]
+fn a_spark_throws_two_sparks_that_fly_and_go_out() {
+    let mut app = app_with(CHAMBER_MAP, BY_SWITCH);
+    let switch = one::<IgnitionSwitch>(&mut app);
+    click(&mut app, switch);
+    app.world_mut().run_schedule(FixedUpdate);
+    let count = |app: &mut App| app.world_mut().query::<&Spark>().iter(app.world()).count();
+    assert_eq!(count(&mut app), 2, "Luna's sparker throws two");
+    // At most three hops of half a second, then two seconds: gone within four seconds.
+    seconds(&mut app, 4);
+    assert_eq!(count(&mut app), 0);
 }
