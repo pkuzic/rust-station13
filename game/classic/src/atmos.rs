@@ -34,8 +34,8 @@ pub struct WindCooldowns(HashMap<Entity, u64>);
 
 /// Build the air for a map with doors at `portals` and firedoors sealing the `edges`
 /// between a tile and its neighbour in a direction.
-pub fn build(map: &rs13_world::TileMap, portals: &[TilePos], edges: &[(TilePos, Dir)]) -> StationAtmos {
-    let mut grid = AtmosGrid::new(map, portals);
+pub fn build(decks: &[&rs13_world::TileMap], portals: &[TilePos], edges: &[(TilePos, Dir)]) -> StationAtmos {
+    let mut grid = AtmosGrid::new_decks(decks, portals);
     for (at, dir) in edges {
         grid.add_edge(*at, *dir);
     }
@@ -77,7 +77,7 @@ fn push_interval(speed: f64) -> u64 {
 pub fn space_wind(
     time: Res<WorldTime>,
     atmos: Option<Res<StationAtmos>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut cooldowns: ResMut<WindCooldowns>,
     mut movers: Query<
         (Entity, &mut GridPos, Has<Mob>),
@@ -137,7 +137,7 @@ pub fn space_wind(
             (mob_tiles.contains(&p) && !moved_mobs.iter().any(|(from, _)| *from == p))
                 || moved_mobs.iter().any(|(_, to)| *to == p)
         };
-        if map.0.is_solid(target)
+        if map.is_solid(target)
             || blocked.contains(&target)
             || crosses_closed_edge(&sealed, pos.0, target)
             || (is_mob && occupied(target))
@@ -150,7 +150,7 @@ pub fn space_wind(
         pos.0 = target;
         cooldowns.0.insert(entity, now + push_interval(wind.speed));
         // Blown out into space: keep flying.
-        if is_space(&map.0, target) {
+        if is_space(map.at(target.z), target) {
             commands.entity(entity).insert(Drift(wind.dir));
         }
     }
@@ -187,7 +187,7 @@ pub fn has_handhold(map: &TileMap, pos: TilePos) -> bool {
 /// A switched-on jetpack holds its wearer still (`jetpacks.md`).
 pub fn drift(
     time: Res<WorldTime>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut drifters: Query<(Entity, &mut GridPos, &Drift, Option<&crate::equipment::Equipment>)>,
     jetpacks: Query<&crate::jetpacks::Jetpack>,
     mut commands: Commands,
@@ -198,7 +198,7 @@ pub fn drift(
     for (entity, mut pos, drift, equipment) in &mut drifters {
         let next = pos.0.step(drift.0);
         let held_still = crate::jetpacks::worn_jetpack(equipment, &jetpacks).is_some();
-        if held_still || !is_space(&map.0, pos.0) || map.0.is_solid(next) {
+        if held_still || !is_space(map.at(pos.0.z), pos.0) || map.is_solid(next) {
             commands.entity(entity).remove::<Drift>();
             continue;
         }

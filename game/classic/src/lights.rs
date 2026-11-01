@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dir, GridPos, Hand, LightSource, MapLayer, ObjectSpec, Slot, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, Hand, LightSource, ObjectSpec, Slot, TilePos};
 
 use crate::actions::ClickOutcome;
 use crate::equipment::Equipment;
@@ -218,14 +218,13 @@ pub fn burn_chance(switches: u32) -> f32 {
 /// Turn each light on or off, and draw its power (Luna `light/update`, `power_change`
 /// and `process`).
 pub fn run_lights(
-    maps: Query<&MapLayer>,
+    maps: crate::decks::Decks,
     switches: Res<AreaLights>,
     mut rng: ResMut<GameRng>,
     mut lights: Query<(&GridPos, &mut Light, &mut PowerUser)>,
 ) {
-    let map = maps.iter().next();
     for (pos, mut light, mut power) in &mut lights {
-        let area = map.and_then(|m| m.0.area(pos.0));
+        let area = maps.area(pos.0);
         let wanted = light.status == LightStatus::Ok && power.powered && switches.is_on(area);
         if wanted != light.on {
             let mut new = *light;
@@ -251,7 +250,7 @@ pub fn run_lights(
 /// Keep fixtures and switches looking as they are (Luna `update_icon`): a switch shows
 /// `light-p` without power, else its area's setting.
 pub fn update_light_looks(
-    maps: Query<&MapLayer>,
+    maps: crate::decks::Decks,
     switches: Res<AreaLights>,
     mut lights: Query<(&Light, &mut Appearance), Changed<Light>>,
     mut panels: Query<(&GridPos, &PowerUser, &mut Appearance), (With<LightSwitch>, Without<Light>)>,
@@ -262,11 +261,10 @@ pub fn update_light_looks(
             look.state = state;
         }
     }
-    let map = maps.iter().next();
     for (pos, power, mut look) in &mut panels {
         let state = if !power.powered {
             "light-p"
-        } else if switches.is_on(map.and_then(|m| m.0.area(pos.0))) {
+        } else if switches.is_on(maps.area(pos.0)) {
             "light1"
         } else {
             "light0"
@@ -300,7 +298,7 @@ pub struct LightWork<'w, 's> {
     lights: Query<'w, 's, (&'static GridPos, &'static mut Light)>,
     switches: Query<'w, 's, &'static GridPos, (With<LightSwitch>, Without<Light>)>,
     power: Query<'w, 's, &'static PowerUser>,
-    maps: Query<'w, 's, &'static MapLayer>,
+    maps: crate::decks::Decks<'w, 's>,
     area_lights: ResMut<'w, AreaLights>,
     looks: Query<'w, 's, &'static Appearance>,
     items: Query<'w, 's, &'static Item>,
@@ -316,7 +314,7 @@ impl LightWork<'_, '_> {
     }
 
     fn area_on(&self, pos: TilePos) -> bool {
-        let area = self.maps.iter().next().and_then(|m| m.0.area(pos));
+        let area = self.maps.area(pos);
         self.area_lights.is_on(area)
     }
 
@@ -333,12 +331,7 @@ impl LightWork<'_, '_> {
     ) -> Option<ClickOutcome> {
         if let Ok(pos) = self.switches.get(target) {
             // Luna `light_switch/attack_hand`: flips its whole area, powered or not.
-            let area = self
-                .maps
-                .iter()
-                .next()
-                .and_then(|m| m.0.area(pos.0))
-                .map(str::to_owned);
+            let area = self.maps.area(pos.0).map(str::to_owned);
             if let Some(area) = area {
                 let on = self.area_lights.is_on(Some(&area));
                 self.area_lights.0.insert(area, !on);

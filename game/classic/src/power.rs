@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, HashMap, VecDeque};
 
 use bevy_ecs::prelude::*;
 use rs13_core::TICK_RATE_HZ;
-use rs13_world::{Dir, GridPos, MapLayer, TilePos};
+use rs13_world::{Dir, GridPos, TilePos};
 
 use crate::doors::Airlock;
 use crate::machines::{MACHINE_TICKS, Switch};
@@ -362,7 +362,7 @@ pub fn rebuild_powernets(
 /// SMES units discharge by what was used, and channels switch with the cells' charge.
 pub fn power_cycle(
     time: Res<WorldTime>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     nets: Res<Powernets>,
     mut areas: ResMut<AreaPower>,
     mut totals: ResMut<GridTotals>,
@@ -375,7 +375,6 @@ pub fn power_cycle(
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
         return;
     }
-    let map = &map.0;
 
     // Usage, by the power each machine was given last cycle.
     for (pos, user, switch, airlock) in &mut users {

@@ -8,8 +8,7 @@ use rs13_i18n::LocMsg;
 use rs13_simulation::atmos::Gas;
 use rs13_simulation::atmos::gas::{ONE_ATMOSPHERE, R, T0C, T20C, TILE_VOLUME};
 use rs13_world::{
-    Appearance, Dense, Dir, GridPos, LaserPanelView, LightSource, MapLayer, MobStat, NetId, ObjectSpec,
-    TilePos,
+    Appearance, Dense, Dir, GridPos, LaserPanelView, LightSource, MobStat, NetId, ObjectSpec, TilePos,
 };
 
 use crate::actions::{Outbox, in_reach};
@@ -174,7 +173,7 @@ pub fn spawn_laser_computer(world: &mut World, spec: &ObjectSpec, pos: TilePos, 
 #[allow(clippy::too_many_arguments)]
 pub fn fire_lasers(
     time: Res<WorldTime>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut beams: ResMut<Beams>,
     lasers: Query<(Entity, &GridPos, &EngineLaser)>,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<Beam>)>,
@@ -195,9 +194,10 @@ pub fn fire_lasers(
         live.insert(laser_entity);
         let mut path = Vec::new();
         let mut at = pos.0;
-        for _ in 0..map.0.width.max(map.0.height) {
+        let deck = map.at(pos.0.z);
+        for _ in 0..deck.width.max(deck.height) {
             let next = at.step(laser.dir);
-            if map.0.is_solid(next) || map.0.tile(next).is_none() || dense.contains(&next) {
+            if map.is_solid(next) || map.tile(next).is_none() || dense.contains(&next) {
                 break;
             }
             if people.contains(&next) {
@@ -359,7 +359,7 @@ pub fn broadcast_core_alerts(
     mut alerts: ResMut<CoreAlerts>,
     radios: Query<(&Radio, Option<&GridPos>, Option<&HeldBy>, Option<&WornBy>)>,
     mut listeners: Query<(Entity, &GridPos, &mut Outbox), With<Mob>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
 ) {
     if alerts.0.is_empty() {
         return;
@@ -381,7 +381,7 @@ pub fn broadcast_core_alerts(
         for (_, pos, mut outbox) in &mut listeners {
             if speakers
                 .iter()
-                .any(|(at, range)| crate::speech::can_see(&map.0, &[], *at, pos.0, *range))
+                .any(|(at, range)| crate::speech::can_see(map.at(at.z), &[], *at, pos.0, *range))
             {
                 outbox.0.push(msg.clone());
             }

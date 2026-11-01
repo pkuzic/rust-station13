@@ -404,3 +404,39 @@ fn a_burning_room_opened_to_space_takes_its_fire_cells_with_it() {
     run(&mut grid, 1.0);
     assert_eq!(grid.fire_cells().count(), 0, "they vent with the room");
 }
+
+#[test]
+fn decks_keep_their_own_air() {
+    let deck = |z: i32| {
+        TileMap::from_ron(
+            r#"(
+                legend: {
+                    ' ': (tile: (id: "space")),
+                    'W': (tile: (id: "wall", solid: true)),
+                    '.': (tile: (id: "floor")),
+                },
+                rows: [
+                    "WWWW",
+                    "W.. ",
+                    "WWWW",
+                ],
+            )"#,
+            z,
+        )
+        .unwrap()
+    };
+    let (lower, upper) = (deck(0), deck(1));
+    // The lower deck's room is open to space at its east end; the upper one's door there
+    // is shut.
+    let door = TilePos::new(3, 1, 1);
+    let mut grid = AtmosGrid::new_decks(&[&lower, &upper], &[door]);
+    let (low, high) = (TilePos::new(1, 1, 0), TilePos::new(1, 1, 1));
+    assert_ne!(grid.zone_at(low), grid.zone_at(high));
+    assert!((grid.pressure_at(high) - ONE_ATMOSPHERE).abs() < 1e-6);
+    run(&mut grid, 20.0);
+    assert!(grid.pressure_at(low) < 1.0, "the breached deck vents");
+    assert!(
+        (grid.pressure_at(high) - ONE_ATMOSPHERE).abs() < 1e-6,
+        "the other keeps its air"
+    );
+}

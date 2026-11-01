@@ -1,0 +1,16 @@
+// Rules for importing all of NSV Luna's deck 3 with rs13-dmm-import, as one deck of the
+// whole station (`--map luna-station`; Luna's deck 1 is the top, deck 4 the bottom):
+//
+//   cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm //       game/classic/maps/luna_deck3.import.ron game/classic/maps/luna_deck3.ron
+//
+// What each Luna type becomes, and who starts where, is in luna_common.import.ron.
+// Spec: docs/reference/map-import.md.
+(
+    base: "luna_common.import.ron",
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 3,
+    columns: (0, 89),
+    rows: (0, 148),
+    // Every area keeps Luna's name: /area/toxins/lab is toxins-lab.
+    auto_areas: true,
+)

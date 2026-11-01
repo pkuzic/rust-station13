@@ -285,6 +285,7 @@ fn main() {
                     update_status_line,
                     spawn_overlay,
                     update_overlay,
+                    show_own_deck,
                     take_screenshot,
                     scripted_use,
                 )
@@ -658,7 +659,11 @@ fn draw_map(
                             let z = 0.001 * (layer + 1) as f32;
                             sprites.push(
                                 commands
-                                    .spawn((image, Transform::from_translation(world_pos(pos, z))))
+                                    .spawn((
+                                        image,
+                                        Transform::from_translation(world_pos(pos, z)),
+                                        OnDeck(map.z),
+                                    ))
                                     .id(),
                             );
                         }
@@ -670,11 +675,12 @@ fn draw_map(
                     continue;
                 }
                 sprites.push(match atlas.sprite(sprite, &state, 0) {
-                    Some(image) => commands.spawn((image, transform)).id(),
+                    Some(image) => commands.spawn((image, transform, OnDeck(map.z))).id(),
                     None => commands
                         .spawn((
                             Sprite::from_color(tile_color(&tile.id), Vec2::splat(TILE_PX - 1.0)),
                             transform,
+                            OnDeck(map.z),
                         ))
                         .id(),
                 });
@@ -1087,9 +1093,38 @@ fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut 
     }
 }
 
-/// One tinted square per tile, shown with F3: the atmos debug overlay.
+/// One tinted square per tile of a deck (its `z`, the tile's index), shown with F3: the
+/// atmos debug overlay.
 #[derive(Component)]
-struct OverlayTile(usize);
+struct OverlayTile(i32, usize);
+
+/// On what is drawn for one deck (its tiles, their shading): shown only while our player
+/// is on that deck.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct OnDeck(pub i32);
+
+/// Show what belongs to our player's deck and hide the other decks.
+fn show_own_deck(
+    own: Query<&GridPos, With<OwnPlayer>>,
+    mut drawn: Query<(&OnDeck, &mut Visibility)>,
+    mut last: Local<Option<i32>>,
+    added: Query<(), Added<OnDeck>>,
+) {
+    let Some(deck) = own.iter().next().map(|p| p.0.z) else {
+        return;
+    };
+    if *last == Some(deck) && added.is_empty() {
+        return;
+    }
+    *last = Some(deck);
+    for (on, mut visibility) in &mut drawn {
+        visibility.set_if_neq(if on.0 == deck {
+            Visibility::Inherited
+        } else {
+            Visibility::Hidden
+        });
+    }
+}
 
 #[derive(Resource, Default)]
 struct OverlayOn(bool);
@@ -1100,7 +1135,7 @@ fn spawn_overlay(mut commands: Commands, maps: Query<&MapLayer, Added<MapLayer>>
             for x in 0..map.width as i32 {
                 let index = (y * map.width as i32 + x) as usize;
                 commands.spawn((
-                    OverlayTile(index),
+                    OverlayTile(map.z, index),
                     Sprite::from_color(Color::NONE, Vec2::splat(TILE_PX - 1.0)),
                     Transform::from_translation(world_pos(TilePos::new(x, y, map.z), 0.5)),
                     Visibility::Hidden,
@@ -1125,22 +1160,26 @@ fn update_overlay(
     keys: Res<ButtonInput<KeyCode>>,
     chat: Res<ChatInput>,
     mut on: ResMut<OverlayOn>,
-    views: Query<&AtmosView>,
+    views: Query<(&MapLayer, &AtmosView)>,
+    own: Query<&GridPos, With<OwnPlayer>>,
     mut tiles: Query<(&OverlayTile, &mut Sprite, &mut Visibility)>,
 ) {
     if !chat.open && keys.just_pressed(KeyCode::F3) {
         on.0 = !on.0;
     }
-    let Ok(view) = views.single() else { return };
-    for (OverlayTile(i), mut sprite, mut visibility) in &mut tiles {
-        visibility.set_if_neq(if on.0 {
+    // Our deck's air picture.
+    let deck = own.iter().next().map(|p| p.0.z);
+    let Some(view) = views.iter().find(|(m, _)| Some(m.0.z) == deck).map(|(_, v)| v) else {
+        return;
+    };
+    for (OverlayTile(z, i), mut sprite, mut visibility) in &mut tiles {
+        let on = on.0 && Some(*z) == deck;
+        visibility.set_if_neq(if on {
             Visibility::Inherited
         } else {
             Visibility::Hidden
         });
-        if on.0
-            && let Some(p) = view.pressure_dkpa.get(*i)
-        {
+        if on && let Some(p) = view.pressure_dkpa.get(*i) {
             sprite.color = pressure_color(*p);
         }
     }

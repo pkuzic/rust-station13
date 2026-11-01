@@ -262,6 +262,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `jetpack:on` | `icons/obj/tank.dmi : "jetpack1"` | CC-BY-SA 3.0 |
 | `jetpack-ce:` | `icons/obj/tank.dmi : "jetpack0_ce"` | CC-BY-SA 3.0 |
 | `jetpack-ce:on` | `icons/obj/tank.dmi : "jetpack1_ce"` | CC-BY-SA 3.0 |
+| `ladder:ladderdown` | `icons/obj/multiz.dmi : "ladderdown"` | CC-BY-SA 3.0 |
+| `ladder:ladderup` | `icons/obj/multiz.dmi : "ladderup"` | CC-BY-SA 3.0 |
 | `lantern:` | `icons/obj/lighting.dmi : "lantern"` | CC-BY-SA 3.0 |
 | `lantern:on` | `icons/obj/lighting.dmi : "lantern-on"` | CC-BY-SA 3.0 |
 | `laser-beam:east` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
@@ -437,6 +439,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `sparker:migniter-p` | `icons/obj/stationobjs.dmi : "migniter-p"` | CC-BY-SA 3.0 |
 | `sparker:migniter-spark` | `icons/obj/stationobjs.dmi : "migniter-spark"` | CC-BY-SA 3.0 |
 | `sparks:` | `icons/effects/effects.dmi : "sparks"` | CC-BY-SA 3.0 |
+| `stairs:bottom-east` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
+| `stairs:bottom-north` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
+| `stairs:bottom-south` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
+| `stairs:bottom-west` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
+| `stairs:top-east` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
+| `stairs:top-north` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
+| `stairs:top-south` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
+| `stairs:top-west` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `table:` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-east` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |

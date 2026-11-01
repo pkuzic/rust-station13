@@ -729,6 +729,22 @@
         },
         // A flying spark.
         "sparks": { "": (dmi: "icons/effects/effects.dmi", state: "sparks") },
+        // Ladder ends: down from the top end, up from the bottom.
+        "ladder": {
+            "ladderdown": (dmi: "icons/obj/multiz.dmi", state: "ladderdown"),
+            "ladderup": (dmi: "icons/obj/multiz.dmi", state: "ladderup"),
+        },
+        // Stair tiles: Luna's ramp top or bottom, facing their way.
+        "stairs": {
+            "top-south": (dmi: "icons/obj/multiz.dmi", state: "ramptop", dir: Some(0)),
+            "top-north": (dmi: "icons/obj/multiz.dmi", state: "ramptop", dir: Some(1)),
+            "top-east": (dmi: "icons/obj/multiz.dmi", state: "ramptop", dir: Some(2)),
+            "top-west": (dmi: "icons/obj/multiz.dmi", state: "ramptop", dir: Some(3)),
+            "bottom-south": (dmi: "icons/obj/multiz.dmi", state: "rampbottom", dir: Some(0)),
+            "bottom-north": (dmi: "icons/obj/multiz.dmi", state: "rampbottom", dir: Some(1)),
+            "bottom-east": (dmi: "icons/obj/multiz.dmi", state: "rampbottom", dir: Some(2)),
+            "bottom-west": (dmi: "icons/obj/multiz.dmi", state: "rampbottom", dir: Some(3)),
+        },
         // Window pane along one edge of its tile (Luna's reinforced window, a direction each).
         "window-pane": {
             "south": (dmi: "icons/obj/structures.dmi", state: "rwindow", dir: Some(0)),

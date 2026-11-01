@@ -18,7 +18,7 @@ use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
-use rs13_classic::objects::{spawn_map, spawn_player_mob};
+use rs13_classic::objects::{spawn_player_mob, spawn_station};
 use rs13_classic::power_monitor::PowerMonitorOut;
 use rs13_classic::smes_panel::{Level, PendingSmesOps, SmesOp, SmesPanelOut};
 use rs13_classic::sound::Earshot;
@@ -47,7 +47,8 @@ struct Port(u16);
 
 /// The map to load, in the RON map format.
 #[derive(Resource)]
-struct MapText(&'static str);
+/// The station's decks as map text, bottom deck first: deck `i` is at `z = i`.
+struct MapText(Vec<&'static str>);
 
 /// On a client's link entity: the mob that client controls.
 #[derive(Component)]
@@ -82,6 +83,11 @@ pub fn server_app(port: u16) -> App {
 
 /// A server listening on UDP `port` with the given map (RON map format).
 pub fn server_app_with_map(port: u16, map: &'static str) -> App {
+    server_app_with_station(port, vec![map])
+}
+
+/// A server for a station of several decks, bottom deck first.
+pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     let mut app = App::new();
     app.add_plugins((
         // Wake often enough to service the network; the game itself runs on fixed ticks.
@@ -90,7 +96,7 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
     ))
     .add_plugins((ServerNetworkPlugin, ClassicPlugin))
     .insert_resource(Port(port))
-    .insert_resource(MapText(map))
+    .insert_resource(MapText(decks))
     .add_systems(Startup, (load_map, listen))
     .add_observer(replicate_net_entities)
     .add_observer(spawn_player)
@@ -121,15 +127,22 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
 }
 
 fn load_map(world: &mut World) {
-    let text = world.resource::<MapText>().0;
-    let map = TileMap::from_ron(text, 0).expect("built-in map is valid");
-    info!(
-        width = map.width,
-        height = map.height,
-        spawns = map.spawns.len(),
-        "map loaded"
-    );
-    for proto in spawn_map(world, map) {
+    let texts = world.resource::<MapText>().0.clone();
+    let decks: Vec<TileMap> = texts
+        .iter()
+        .enumerate()
+        .map(|(z, text)| TileMap::from_ron(text, z as i32).expect("map text is valid"))
+        .collect();
+    for map in &decks {
+        info!(
+            deck = map.z,
+            width = map.width,
+            height = map.height,
+            spawns = map.spawns.len(),
+            "map loaded"
+        );
+    }
+    for proto in spawn_station(world, decks) {
         warn!(proto, "map places an unknown object; skipped");
     }
 }
@@ -156,7 +169,7 @@ fn replicate_net_entities(trigger: On<Add<NetId>>, mut commands: Commands) {
 fn spawn_player(
     trigger: On<Add<Connected>>,
     links: Query<&RemoteId, With<ClientOf>>,
-    map: Single<&MapLayer>,
+    maps: Query<&MapLayer>,
     occupied: Query<&GridPos, With<Mob>>,
     mut commands: Commands,
 ) {
@@ -165,7 +178,11 @@ fn spawn_player(
     let client_id = remote.0.to_bits();
 
     let taken: Vec<_> = occupied.iter().map(|p| p.0).collect();
-    let Some(spawn) = map.0.spawns.iter().find(|s| !taken.contains(s)).copied() else {
+    let Some(spawn) = maps
+        .iter()
+        .flat_map(|m| m.0.spawns.iter().copied())
+        .find(|s| !taken.contains(s))
+    else {
         warn!(client_id, "no free spawn point; player left without a mob");
         return;
     };

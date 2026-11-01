@@ -2,7 +2,7 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dense, Dir, GridPos, MapLayer, Opaque, TilePos};
+use rs13_world::{Appearance, Dense, Dir, GridPos, Opaque, TilePos};
 
 use crate::access::{IdCard, allowed};
 use crate::actions::Outbox;
@@ -189,7 +189,7 @@ impl Airlock {
 /// `Appearance` in step with the door state.
 pub fn update_doors(
     time: Res<WorldTime>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut doors: Query<(Entity, &GridPos, &mut Airlock, &mut Appearance, Option<&Wiring>), Without<Mob>>,
     mut occupants: Query<
         (&mut GridPos, Has<Mob>, Option<&mut Outbox>),
@@ -222,7 +222,7 @@ pub fn update_doors(
                 pushed,
             } => {
                 if !pushed && now >= push_at {
-                    push_out(door_pos.0, &map.0, &mut occupants, &dense);
+                    push_out(door_pos.0, map.at(door_pos.0.z), &mut occupants, &dense);
                     door.state = DoorState::Closing {
                         push_at,
                         done_at,

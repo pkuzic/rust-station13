@@ -2,7 +2,7 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{DisplayName, GridPos, MapLayer, MobStat, Opaque, TileMap, TilePos};
+use rs13_world::{DisplayName, GridPos, MobStat, Opaque, TileMap, TilePos};
 
 use crate::actions::Outbox;
 use crate::health::Vitals;
@@ -114,7 +114,7 @@ type RadioSets<'w, 's> = Query<
 /// microphone on pass on what they hear. Every listening radio on the frequency plays it
 /// to the mobs near it (`radio.md`).
 pub fn speak(
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut speakers: Query<
         (
             Entity,
@@ -179,7 +179,7 @@ pub fn speak(
                     radios
                         .iter()
                         .filter(|(_, _, at, _, _, intercom)| {
-                            *intercom && at.is_some_and(|p| can_see(&map.0, &opaque, pos.0, p.0, 1))
+                            *intercom && at.is_some_and(|p| can_see(map.at(pos.0.z), &opaque, pos.0, p.0, 1))
                         })
                         .map(|(e, ..)| e),
                 ),
@@ -189,7 +189,8 @@ pub fn speak(
                 radios
                     .iter()
                     .filter(|(_, radio, at, ..)| {
-                        radio.broadcasting && at.is_some_and(|p| can_see(&map.0, &opaque, pos.0, p.0, range))
+                        radio.broadcasting
+                            && at.is_some_and(|p| can_see(map.at(pos.0.z), &opaque, pos.0, p.0, range))
                     })
                     .map(|(e, ..)| e),
             );
@@ -226,7 +227,7 @@ pub fn speak(
                     continue;
                 };
                 for (listener, to) in &mob_at {
-                    if can_see(&map.0, &opaque, at, *to, radio.range)
+                    if can_see(map.at(at.z), &opaque, at, *to, radio.range)
                         && !tuned.iter().any(|(e, m)| e == listener && *m == radio_msg)
                     {
                         tuned.push((*listener, radio_msg.clone()));
@@ -240,7 +241,7 @@ pub fn speak(
             if !awake {
                 continue;
             }
-            if listener == speaker || can_see(&map.0, &opaque, from, to.0, range) {
+            if listener == speaker || can_see(map.at(from.z), &opaque, from, to.0, range) {
                 outbox.0.push(msg.clone());
             }
             for (_, radio_msg) in tuned.iter().filter(|(e, _)| *e == listener) {

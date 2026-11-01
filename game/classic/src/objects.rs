@@ -53,11 +53,20 @@ pub struct PlayerControlled;
 /// Spawn the map entity and every object it places. Returns a description of each
 /// object that could not be placed, so the caller can report them.
 pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
+    spawn_station(world, vec![map])
+}
+
+/// Spawn a station of several decks (each with its own `z`): a map entity per deck, every
+/// object they place, and one air simulation across them all.
+pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
     world.init_resource::<NetIds>();
-    let objects = map.objects.clone();
-    let layout = map.clone();
-    let id = world.resource_mut::<NetIds>().alloc();
-    world.spawn((MapLayer(map), id, rs13_world::AtmosView::default()));
+    let layouts = decks.clone();
+    let mut objects = Vec::new();
+    for map in decks {
+        objects.extend(map.objects.clone());
+        let id = world.resource_mut::<NetIds>().alloc();
+        world.spawn((MapLayer(map), id, rs13_world::AtmosView::default()));
+    }
 
     let problems = objects
         .iter()
@@ -85,7 +94,8 @@ pub fn spawn_map(world: &mut World, map: TileMap) -> Vec<String> {
     let mut firedoors = world.query::<(&GridPos, &crate::firedoors::Firedoor)>();
     let edges: Vec<(TilePos, rs13_world::Dir)> =
         firedoors.iter(world).filter_map(|(p, d)| d.edge(p.0)).collect();
-    let mut atmos = crate::atmos::build(&layout, &portals, &edges);
+    let layout_refs: Vec<&TileMap> = layouts.iter().collect();
+    let mut atmos = crate::atmos::build(&layout_refs, &portals, &edges);
     // Window panes seal theirs for good.
     let mut panes = world.query::<(&GridPos, &crate::windows::WindowPane)>();
     for (at, dir) in panes.iter(world).map(|(p, w)| w.edge(p.0)) {
@@ -193,6 +203,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::igniters::IGNITER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::igniters::spawn_igniter(world, spec, pos, id));
+    }
+    if crate::multiz::is_multiz(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::multiz::spawn_multiz(world, spec, pos, id));
     }
     if proto == crate::windows::WINDOW_PANE {
         let id = world.resource_mut::<NetIds>().alloc();

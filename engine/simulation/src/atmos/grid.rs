@@ -82,12 +82,25 @@ pub struct Wind {
     pub speed: f64,
 }
 
-/// The air of one deck.
-#[derive(Debug, Clone)]
-pub struct AtmosGrid {
+/// Where one deck's cells sit among a grid's: its size and first index.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct DeckSpan {
+    z: i32,
     width: i32,
     height: i32,
-    z: i32,
+    first: usize,
+}
+
+impl DeckSpan {
+    fn len(&self) -> usize {
+        (self.width * self.height) as usize
+    }
+}
+
+/// The air of a station: one or more decks. Zones never cross decks.
+#[derive(Debug, Clone)]
+pub struct AtmosGrid {
+    decks: Vec<DeckSpan>,
     cells: Vec<Cell>,
     portal_open: Vec<bool>,
     /// Edge barriers (firedoors) between two neighbouring tiles, by their indices (lower
@@ -109,24 +122,36 @@ impl AtmosGrid {
     /// solid but lets air through: `TileDef::is_airtight`); `portals` are door
     /// tiles (closed until told otherwise). Every zone starts with standard air.
     pub fn new(map: &TileMap, portals: &[TilePos]) -> Self {
-        let (width, height) = (map.width as i32, map.height as i32);
-        let mut cells = Vec::with_capacity((width * height) as usize);
-        for y in 0..height {
-            for x in 0..width {
-                let pos = TilePos::new(x, y, map.z);
-                let tile = map.tile(pos);
-                cells.push(match tile {
-                    Some(t) if t.id == "space" => Cell::Space,
-                    Some(t) if t.is_airtight() => Cell::Solid,
-                    Some(_) => Cell::Open,
-                    None => Cell::Solid,
-                });
+        Self::new_decks(&[map], portals)
+    }
+
+    /// Build from every deck of a station, as [`Self::new`] does for one. Decks must have
+    /// different `z`.
+    pub fn new_decks(maps: &[&TileMap], portals: &[TilePos]) -> Self {
+        let mut cells = Vec::new();
+        let mut decks = Vec::new();
+        for map in maps {
+            let (width, height) = (map.width as i32, map.height as i32);
+            decks.push(DeckSpan {
+                z: map.z,
+                width,
+                height,
+                first: cells.len(),
+            });
+            for y in 0..height {
+                for x in 0..width {
+                    let pos = TilePos::new(x, y, map.z);
+                    cells.push(match map.tile(pos) {
+                        Some(t) if t.id == "space" => Cell::Space,
+                        Some(t) if t.is_airtight() => Cell::Solid,
+                        Some(_) => Cell::Open,
+                        None => Cell::Solid,
+                    });
+                }
             }
         }
         let mut grid = AtmosGrid {
-            width,
-            height,
-            z: map.z,
+            decks,
             portal_open: vec![false; cells.len()],
             edges: BTreeMap::new(),
             zone_of: vec![None; cells.len()],
@@ -152,15 +177,21 @@ impl AtmosGrid {
     }
 
     fn index(&self, pos: TilePos) -> Option<usize> {
-        if pos.z != self.z || pos.x < 0 || pos.y < 0 || pos.x >= self.width || pos.y >= self.height {
+        let deck = self.decks.iter().find(|d| d.z == pos.z)?;
+        if pos.x < 0 || pos.y < 0 || pos.x >= deck.width || pos.y >= deck.height {
             return None;
         }
-        Some((pos.y * self.width + pos.x) as usize)
+        Some(deck.first + (pos.y * deck.width + pos.x) as usize)
     }
 
     fn pos(&self, index: usize) -> TilePos {
-        let i = index as i32;
-        TilePos::new(i % self.width, i / self.width, self.z)
+        let deck = self
+            .decks
+            .iter()
+            .find(|d| (d.first..d.first + d.len()).contains(&index))
+            .expect("an index of this grid");
+        let i = (index - deck.first) as i32;
+        TilePos::new(i % deck.width, i / deck.width, deck.z)
     }
 
     /// Outside the grid counts as solid.

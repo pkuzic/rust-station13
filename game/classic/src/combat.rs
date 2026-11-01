@@ -3,7 +3,7 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, Intent, MapLayer, MobStat, Opaque, TilePos};
+use rs13_world::{Appearance, DisplayName, GridPos, Intent, MobStat, Opaque, TilePos};
 
 use crate::actions::{Outbox, in_reach};
 use crate::hands::{Hands, Item};
@@ -92,7 +92,7 @@ pub fn resolve_attacks(
 /// Show each event to every conscious mob that can see where it happened.
 pub fn deliver_visible(
     mut visible: ResMut<VisibleEvents>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut viewers: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
 ) {
@@ -106,7 +106,7 @@ pub fn deliver_visible(
                 continue;
             }
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
-            if awake && can_see(&map.0, &opaque, at, pos.0, HEARING_RANGE) {
+            if awake && can_see(map.at(at.z), &opaque, at, pos.0, HEARING_RANGE) {
                 outbox.0.push(msg.clone());
             }
         }
