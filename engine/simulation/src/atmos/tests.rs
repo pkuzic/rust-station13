@@ -260,3 +260,36 @@ fn hot_air_cools_toward_the_walls() {
     let right = grid.zone_at(RIGHT).unwrap();
     assert!((grid.zones()[right].mix.temperature - T20C).abs() < 1e-9);
 }
+
+/// Two rooms with a grille (`g`) or a window (`w`) tile between them.
+fn rooms_split_by(tile: &str) -> AtmosGrid {
+    let map = TileMap::from_ron(
+        &format!(
+            r#"(
+                legend: {{
+                    'W': (tile: (id: "wall", solid: true)),
+                    '.': (tile: (id: "floor")),
+                    'g': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
+                    'w': (tile: (id: "window", solid: true, opaque: Some(false))),
+                }},
+                rows: [
+                    "WWWWWWW",
+                    "W..{tile}..W",
+                    "WWWWWWW",
+                ],
+            )"#
+        ),
+        0,
+    )
+    .unwrap();
+    AtmosGrid::new(&map, &[])
+}
+
+#[test]
+fn air_goes_through_a_grille_but_not_a_window() {
+    let (left, right) = (TilePos::new(1, 1, 0), TilePos::new(5, 1, 0));
+    let grille = rooms_split_by("g");
+    assert_eq!(grille.zone_at(left), grille.zone_at(right), "one room of air");
+    let window = rooms_split_by("w");
+    assert_ne!(window.zone_at(left), window.zone_at(right), "two rooms of air");
+}

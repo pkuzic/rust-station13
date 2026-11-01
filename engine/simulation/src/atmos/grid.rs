@@ -100,7 +100,8 @@ pub struct AtmosGrid {
 }
 
 impl AtmosGrid {
-    /// Build from a map. Space tiles are `space`; solid tiles are walls; `portals` are door
+    /// Build from a map. Space tiles are `space`; airtight tiles are walls (a grille is
+    /// solid but lets air through: `TileDef::is_airtight`); `portals` are door
     /// tiles (closed until told otherwise). Every zone starts with standard air.
     pub fn new(map: &TileMap, portals: &[TilePos]) -> Self {
         let (width, height) = (map.width as i32, map.height as i32);
@@ -111,7 +112,7 @@ impl AtmosGrid {
                 let tile = map.tile(pos);
                 cells.push(match tile {
                     Some(t) if t.id == "space" => Cell::Space,
-                    Some(t) if t.solid => Cell::Solid,
+                    Some(t) if t.is_airtight() => Cell::Solid,
                     Some(_) => Cell::Open,
                     None => Cell::Solid,
                 });

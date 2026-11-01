@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **24**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **25**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -21,7 +21,7 @@ sight is despawned on that client and spawned again when it comes back.
 
 | Component | On | Meaning |
 |---|---|---|
-| `MapLayer(TileMap)` | the map entity | One deck: size, tile palette, tiles, spawn points |
+| `MapLayer(TileMap)` | the map entity | One deck: size, tile palette (each tile: id, `solid`, `opaque`, `airtight`), tiles, spawn points |
 | `GridPos(TilePos)` | mobs | Tile the mob stands on |
 | `Player { client_id }` | player mobs | Netcode id of the controlling client |
 | `NetId(u64)` | everything clients see | Stable id; clients name entities by it |

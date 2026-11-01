@@ -168,14 +168,22 @@ pub struct TileDef {
     #[serde(default)]
     pub solid: bool,
     /// Whether the tile blocks sight. Defaults to `solid` (walls block both; windows
-    /// will set `opaque: Some(false)`).
+    /// set `opaque: Some(false)`).
     #[serde(default)]
     pub opaque: Option<bool>,
+    /// Whether the tile blocks air. Defaults to `solid` (walls and windows block it; a
+    /// grille, solid but full of holes, sets `airtight: Some(false)`).
+    #[serde(default)]
+    pub airtight: Option<bool>,
 }
 
 impl TileDef {
     pub fn is_opaque(&self) -> bool {
         self.opaque.unwrap_or(self.solid)
+    }
+
+    pub fn is_airtight(&self) -> bool {
+        self.airtight.unwrap_or(self.solid)
     }
 }
 
@@ -484,6 +492,7 @@ mod tests {
             id: "plating".into(),
             solid: false,
             opaque: None,
+            airtight: None,
         };
         assert!(map.set_tile(TilePos::new(2, 1, 0), plating.clone()));
         assert!(map.set_tile(TilePos::new(1, 1, 0), plating.clone()));
