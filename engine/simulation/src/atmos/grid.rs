@@ -112,6 +112,8 @@ pub struct AtmosGrid {
     wind: Vec<Option<Wind>>,
     /// Tiles on fire with air of their own, by tile index (`fire_cells.rs`).
     cells_on_fire: BTreeMap<usize, FireCell>,
+    /// Tiles with no floor (`open-space`): air passes between them and the tile below.
+    open_below: Vec<bool>,
     zones_dirty: bool,
     openings_dirty: bool,
     pub flow_scale: f64,
@@ -129,6 +131,7 @@ impl AtmosGrid {
     /// different `z`.
     pub fn new_decks(maps: &[&TileMap], portals: &[TilePos]) -> Self {
         let mut cells = Vec::new();
+        let mut open_below = Vec::new();
         let mut decks = Vec::new();
         for map in maps {
             let (width, height) = (map.width as i32, map.height as i32);
@@ -141,6 +144,7 @@ impl AtmosGrid {
             for y in 0..height {
                 for x in 0..width {
                     let pos = TilePos::new(x, y, map.z);
+                    open_below.push(map.tile(pos).is_some_and(|t| t.id == "open-space"));
                     cells.push(match map.tile(pos) {
                         Some(t) if t.id == "space" => Cell::Space,
                         Some(t) if t.is_airtight() => Cell::Solid,
@@ -160,6 +164,7 @@ impl AtmosGrid {
             openings: Vec::new(),
             wind: Vec::new(),
             cells_on_fire: BTreeMap::new(),
+            open_below,
             zones_dirty: true,
             openings_dirty: true,
             flow_scale: DEFAULT_FLOW_SCALE,
@@ -479,6 +484,20 @@ impl AtmosGrid {
                         && self.zone_of[j].is_none()
                         && self.edge(i, j).is_none()
                     {
+                        self.zone_of[j] = Some(id);
+                        queue.push_back(j);
+                    }
+                }
+                // Through a hole in this floor to the deck below, or in the ceiling above
+                // (Luna's open floor shares its zone with the tile under it).
+                let below = TilePos::new(pos.x, pos.y, pos.z - 1);
+                let above = TilePos::new(pos.x, pos.y, pos.z + 1);
+                let vertical = [
+                    self.index(below).filter(|_| self.open_below[i]),
+                    self.index(above).filter(|&k| self.open_below[k]),
+                ];
+                for j in vertical.into_iter().flatten() {
+                    if self.cells[j] == Cell::Open && self.zone_of[j].is_none() {
                         self.zone_of[j] = Some(id);
                         queue.push_back(j);
                     }

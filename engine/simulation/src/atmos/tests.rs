@@ -440,3 +440,38 @@ fn decks_keep_their_own_air() {
         "the other keeps its air"
     );
 }
+
+#[test]
+fn air_goes_down_a_hole_in_the_floor() {
+    let deck = |z: i32, hole: bool| {
+        let middle = if hole { "W.oW" } else { "W..W" };
+        TileMap::from_ron(
+            &format!(
+                r#"(
+                    legend: {{
+                        'W': (tile: (id: "wall", solid: true)),
+                        '.': (tile: (id: "floor")),
+                        'o': (tile: (id: "open-space")),
+                    }},
+                    rows: ["WWWW", "{middle}", "WWWW"],
+                )"#
+            ),
+            z,
+        )
+        .unwrap()
+    };
+    let (lower, upper) = (deck(0, false), deck(1, true));
+    let grid = AtmosGrid::new_decks(&[&lower, &upper], &[]);
+    let (down, up) = (TilePos::new(1, 1, 0), TilePos::new(1, 1, 1));
+    assert_eq!(
+        grid.zone_at(down),
+        grid.zone_at(up),
+        "one room of air through the hole"
+    );
+    let sealed = AtmosGrid::new_decks(&[&lower, &deck(1, false)], &[]);
+    assert_ne!(
+        sealed.zone_at(down),
+        sealed.zone_at(up),
+        "but not through a whole floor"
+    );
+}
