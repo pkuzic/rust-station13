@@ -7,8 +7,8 @@
 // - East, through the airlock: an unlit room where a second player starts, a black
 //   silhouette in the dark to the first.
 // - South, behind windows: a burn chamber an injector fills with plasma. The ignition
-//   switch by the windows turns its igniter on (fire, its glow and heat shimmer); press it
-//   again to turn the igniter off.
+//   switch by the windows makes its sparker spark and turns its igniter on (fire, its glow
+//   and heat haze); press it again to turn the igniter off.
 // A welding tool lies in the middle room.
 (
     legend: {
@@ -29,6 +29,7 @@
         'i': (tile: (id: "floor"), objects: [(id: "injector", dir: West, vars: {"on": "1", "volume_rate": "100"})]),
         'x': (tile: (id: "floor"), objects: [(id: "ignition-switch", vars: {"id": "chamber"})]),
         'n': (tile: (id: "floor"), objects: [(id: "igniter", vars: {"id": "chamber", "on": "0"})]),
+        'z': (tile: (id: "floor"), objects: [(id: "sparker", vars: {"id": "chamber"})]),
     },
     rows: [
         "                      ",
@@ -39,7 +40,7 @@
         " Wtpi.wex.ko.W....W   ",
         " WWWWWWWwwwWWWWWWWW   ",
         "       W.n.W          ",
-        "       W...W          ",
+        "       Wz..W          ",
         "       WtpiW          ",
         "       WWWWW          ",
         "                      ",

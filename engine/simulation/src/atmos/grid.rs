@@ -331,26 +331,32 @@ impl AtmosGrid {
         self.zones.iter().map(|z| z.mix.thermal_energy()).sum()
     }
 
-    /// A spark or flame at `temperature` K touches the air on `pos` (Luna `hotspot_expose`):
-    /// [`HOTSPOT_VOLUME`](super::fire::HOTSPOT_VOLUME) litres of it are heated to that
-    /// temperature, burn for a second, and mix back in. Returns the plasma burnt.
+    /// A spark or flame at `temperature` K touches the air on `pos` (Luna `hotspot_expose`
+    /// and `obj/fire/New`). If it is hotter than
+    /// [`PLASMA_BURN_TEMPERATURE`](super::fire::PLASMA_BURN_TEMPERATURE), the tile's share
+    /// of the air holds more than [`IGNITION_MOLES`](super::fire::IGNITION_MOLES) of plasma
+    /// and of oxygen, and the air isn't burning already, a fire starts: Luna adds the
+    /// flame's temperature to the tile's air, so here the zone warms by one tile's share of
+    /// it. Returns how much warmer the zone is, K (0 when nothing lit).
     pub fn expose(&mut self, pos: TilePos, temperature: f64) -> f64 {
+        use super::fire::{IGNITION_MOLES, PLASMA_BURN_TEMPERATURE};
+        use super::gas::Gas;
         let Some(z) = self.air_zone(pos) else {
             return 0.0;
         };
         let zone = &mut self.zones[z];
-        if zone.volume <= 0.0 || zone.mix.get(super::gas::Gas::Plasma) <= 0.0 {
+        if zone.volume <= 0.0 || zone.burn_rate > 0.0 || temperature <= PLASMA_BURN_TEMPERATURE {
             return 0.0;
         }
-        let mut sample = zone
-            .mix
-            .remove_fraction(super::fire::HOTSPOT_VOLUME / zone.volume);
-        if sample.temperature < temperature {
-            sample.temperature = temperature;
+        let share = (TILE_VOLUME / zone.volume).min(1.0);
+        if zone.mix.get(Gas::Plasma) * share <= IGNITION_MOLES
+            || zone.mix.get(Gas::Oxygen) * share <= IGNITION_MOLES
+        {
+            return 0.0;
         }
-        let burnt = sample.burn(1.0);
-        zone.mix.merge(&sample);
-        burnt
+        let rise = temperature * share;
+        zone.mix.temperature += rise;
+        rise
     }
 
     /// Air trades heat with its zone's walls, floor and ceiling for `dt` seconds: hot rooms

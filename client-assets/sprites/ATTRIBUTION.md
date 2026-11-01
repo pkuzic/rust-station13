@@ -419,6 +419,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `smes:smes-op1` | `icons/obj/power.dmi : "smes-op1"` | CC-BY-SA 3.0 |
 | `space-helmet:` | `icons/obj/clothing/hats.dmi : "space"` | CC-BY-SA 3.0 |
 | `space-suit:` | `icons/obj/clothing/suits.dmi : "space"` | CC-BY-SA 3.0 |
+| `sparker:migniter` | `icons/obj/stationobjs.dmi : "migniter"` | CC-BY-SA 3.0 |
+| `sparker:migniter-d` | `icons/obj/stationobjs.dmi : "migniter-d"` | CC-BY-SA 3.0 |
+| `sparker:migniter-p` | `icons/obj/stationobjs.dmi : "migniter-p"` | CC-BY-SA 3.0 |
+| `sparker:migniter-spark` | `icons/obj/stationobjs.dmi : "migniter-spark"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `table:` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-east` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |

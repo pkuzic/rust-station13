@@ -542,3 +542,9 @@ smes-output = Выход: { $on ->
 }
 smes-output-level = Уровень выхода:
 smes-load = Нагрузка выхода: { $load } Вт
+
+# Настенный воспламенитель (igniters.md). Аргументы: $name, $item (id существительного).
+sparker-disabled = { $name } отключает { NOUN($item, case: "acc") }!
+sparker-disabled-self = Вы отсоединяете { NOUN($item, case: "acc") }.
+sparker-reconnected = { $name } снова подключает { NOUN($item, case: "acc") }!
+sparker-reconnected-self = Вы восстанавливаете подключение { NOUN($item, case: "gen") }.

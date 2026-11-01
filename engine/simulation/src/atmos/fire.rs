@@ -18,8 +18,9 @@ pub const PLASMA_ENERGY: f64 = 3_000_000.0;
 pub const OXYGEN_FULLBURN: f64 = 10.0;
 /// Below this many moles burnt per second nothing counts as burning.
 pub const MIN_BURN: f64 = 1e-4;
-/// Litres of gas a spark or flame heats when it touches the air (Luna's hotspot volume).
-pub const HOTSPOT_VOLUME: f64 = 125.0;
+/// A spark or flame lights a tile only if its air holds more than this many moles of
+/// plasma and of oxygen (Luna `hotspot_expose`).
+pub const IGNITION_MOLES: f64 = 0.5;
 
 impl GasMix {
     /// Burn plasma for `dt` seconds (Luna `react`). Returns the moles of plasma burnt.
