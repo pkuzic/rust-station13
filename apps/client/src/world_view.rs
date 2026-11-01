@@ -1,14 +1,41 @@
 //! Putting the world image on the screen (`scaling.rs` draws it): through
-//! `world_view.wesl`, which bends the picture where the air is hot (`heat.rs`).
+//! `world_view.wesl`, which bends the picture where the air is hot (`heat.rs`) and shows
+//! how the player is (`docs/reference/hud.md`, Screen effects):
+//!
+//! - short of air, the edges of the view darken; badly hurt, they go dark red;
+//! - when hurt, the view flashes red at the edges;
+//! - unconscious, it blurs and darkens; dead, it turns grey and dark;
+//! - cold, it turns a little blue; overheating, a little warm.
+//!
+//! Each eases in and out over a fraction of a second rather than snapping.
 
 use bevy::asset::{AssetPath, embedded_asset, embedded_path};
 use bevy::prelude::*;
 use bevy::render::render_resource::AsBindGroup;
 use bevy::shader::ShaderRef;
 
+use rs13_network::protocol::StatusUpdate;
+use rs13_world::{EnvAlert, MobStat};
+
 use crate::heat::HeatMap;
 use crate::scaling::SCREEN_PX;
-use crate::{TILE_PX, WorldCamera};
+use crate::{OwnStatus, TILE_PX, WorldCamera};
+
+/// How fast the effects ease toward where they are heading, per second.
+const EASE_RATE: f32 = 4.0;
+/// How fast the red flash of being hurt fades, per second.
+const FLASH_FADE: f32 = 4.0;
+/// How dark the edges get short of air, from 0 to 1.
+const BREATHLESS: f32 = 0.6;
+/// Health below which the edges start to go dark red, and how dark at its worst.
+const HURT_FROM: f32 = 70.0;
+const HURT_MOST: f32 = 0.85;
+/// Body temperatures (K) past which the view starts to turn blue or warm, and how many
+/// degrees further it is at its strongest.
+const COLD_FROM: f32 = 300.0;
+const COLD_SPAN: f32 = 25.0;
+const HOT_FROM: f32 = 320.0;
+const HOT_SPAN: f32 = 40.0;
 
 #[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
 pub struct WorldViewMaterial {
@@ -24,6 +51,62 @@ pub struct WorldViewMaterial {
     /// Map width and height (tiles), sprite px per tile, unused.
     #[uniform(5)]
     pub map: Vec4,
+    /// Dark edges (short of air), red edges (hurt), red flash, unconscious: each 0 to 1.
+    #[uniform(6)]
+    pub effects: Vec4,
+    /// Dead, cold, overheating, unused: each 0 to 1.
+    #[uniform(7)]
+    pub more_effects: Vec4,
+}
+
+/// Where each screen effect is heading for the player's state, each from 0 to 1.
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct ScreenEffects {
+    pub breathless: f32,
+    pub hurt: f32,
+    pub flash: f32,
+    pub unconscious: f32,
+    pub dead: f32,
+    pub cold: f32,
+    pub hot: f32,
+}
+
+impl ScreenEffects {
+    /// What the player's state calls for. The flash is not here: it starts when health
+    /// drops ([`ScreenEffects::step`]).
+    pub fn target(status: &StatusUpdate) -> Self {
+        let temperature = f32::from(status.body_temperature);
+        Self {
+            breathless: if status.alerts.contains(&EnvAlert::LowOxygen) {
+                BREATHLESS
+            } else {
+                0.0
+            },
+            hurt: ((HURT_FROM - status.health as f32) / HURT_FROM).clamp(0.0, 1.0) * HURT_MOST,
+            flash: 0.0,
+            unconscious: f32::from(u8::from(status.stat == MobStat::Unconscious)),
+            dead: f32::from(u8::from(status.stat == MobStat::Dead)),
+            cold: ((COLD_FROM - temperature) / COLD_SPAN).clamp(0.0, 1.0),
+            hot: ((temperature - HOT_FROM) / HOT_SPAN).clamp(0.0, 1.0),
+        }
+    }
+
+    /// `dt` seconds on: ease toward `target`, fade the flash, and flash again if `hit`.
+    pub fn step(&mut self, target: &Self, dt: f32, hit: bool) {
+        let k = 1.0 - (-EASE_RATE * dt).exp();
+        let ease = |now: &mut f32, to: f32| *now += (to - *now) * k;
+        ease(&mut self.breathless, target.breathless);
+        ease(&mut self.hurt, target.hurt);
+        ease(&mut self.unconscious, target.unconscious);
+        ease(&mut self.dead, target.dead);
+        ease(&mut self.cold, target.cold);
+        ease(&mut self.hot, target.hot);
+        self.flash = if hit {
+            1.0
+        } else {
+            self.flash * (-FLASH_FADE * dt).exp()
+        };
+    }
 }
 
 impl WorldViewMaterial {
@@ -33,6 +116,8 @@ impl WorldViewMaterial {
             heat,
             view: Vec4::new(0.0, 0.0, 0.0, SCREEN_PX),
             map: Vec4::new(1.0, 1.0, TILE_PX, 0.0),
+            effects: Vec4::ZERO,
+            more_effects: Vec4::ZERO,
         }
     }
 }
@@ -49,13 +134,24 @@ impl Plugin for WorldViewPlugin {
     fn build(&self, app: &mut App) {
         embedded_asset!(app, "world_view.wesl");
         app.add_plugins(UiMaterialPlugin::<WorldViewMaterial>::default())
+            .init_resource::<Effects>()
             .add_systems(PostUpdate, update_view);
     }
 }
 
-/// Tell the shader where the camera is, what time it is and how big the map is.
+/// The screen effects now, and the health they were last stepped with.
+#[derive(Resource, Default)]
+struct Effects {
+    now: ScreenEffects,
+    health: Option<i32>,
+}
+
+/// Tell the shader where the camera is, what time it is, how big the map is and how the
+/// player is.
 fn update_view(
     time: Res<Time>,
+    status: Res<OwnStatus>,
+    mut effects: ResMut<Effects>,
     heat: Option<Res<HeatMap>>,
     camera: Query<&Transform, With<WorldCamera>>,
     nodes: Query<&MaterialNode<WorldViewMaterial>>,
@@ -63,6 +159,12 @@ fn update_view(
 ) {
     let Ok(camera) = camera.single() else { return };
     let size = heat.map_or((1, 1, 0), |h| h.size);
+    let target = status.0.as_ref().map(ScreenEffects::target).unwrap_or_default();
+    let health = status.0.as_ref().map(|s| s.health);
+    let hit = matches!((effects.health, health), (Some(was), Some(now)) if now < was);
+    effects.health = health;
+    effects.now.step(&target, time.delta_secs(), hit);
+    let fx = effects.now;
     for node in &nodes {
         if let Some(mut material) = materials.get_mut(&node.0) {
             material.view = Vec4::new(
@@ -72,6 +174,64 @@ fn update_view(
                 SCREEN_PX,
             );
             material.map = Vec4::new(size.0 as f32, size.1 as f32, TILE_PX, 0.0);
+            material.effects = Vec4::new(fx.breathless, fx.hurt, fx.flash, fx.unconscious);
+            material.more_effects = Vec4::new(fx.dead, fx.cold, fx.hot, 0.0);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rs13_world::Intent;
+
+    use super::*;
+
+    fn status(health: i32, stat: MobStat, alerts: Vec<EnvAlert>, kelvin: u16) -> StatusUpdate {
+        StatusUpdate {
+            health,
+            stat,
+            intent: Intent::Help,
+            pressure_dkpa: 1013,
+            alerts,
+            internals: false,
+            body_temperature: kelvin,
+            pulling: false,
+        }
+    }
+
+    #[test]
+    fn a_healthy_player_sees_the_plain_view() {
+        let fx = ScreenEffects::target(&status(100, MobStat::Conscious, vec![], 310));
+        assert_eq!(fx, ScreenEffects::default());
+    }
+
+    #[test]
+    fn the_players_state_shows_on_the_view() {
+        let fx = ScreenEffects::target(&status(35, MobStat::Unconscious, vec![EnvAlert::LowOxygen], 275));
+        assert_eq!(fx.breathless, BREATHLESS);
+        assert!((fx.hurt - 0.5 * HURT_MOST).abs() < 1e-6, "half way from 70 to 0");
+        assert_eq!(fx.unconscious, 1.0);
+        assert_eq!(fx.dead, 0.0);
+        assert_eq!(fx.cold, 1.0, "25 K below 300");
+        assert_eq!(fx.hot, 0.0);
+        let dead = ScreenEffects::target(&status(-150, MobStat::Dead, vec![], 380));
+        assert_eq!((dead.dead, dead.hurt, dead.hot), (1.0, HURT_MOST, 1.0));
+    }
+
+    #[test]
+    fn effects_ease_in_and_a_hit_flashes_then_fades() {
+        let target = ScreenEffects {
+            unconscious: 1.0,
+            ..Default::default()
+        };
+        let mut fx = ScreenEffects::default();
+        fx.step(&target, 0.1, true);
+        assert!(fx.unconscious > 0.2 && fx.unconscious < 0.5, "{}", fx.unconscious);
+        assert_eq!(fx.flash, 1.0);
+        for _ in 0..20 {
+            fx.step(&target, 0.1, false);
+        }
+        assert!(fx.unconscious > 0.99);
+        assert!(fx.flash < 0.01);
     }
 }

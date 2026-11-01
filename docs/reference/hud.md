@@ -78,6 +78,25 @@ shimmer as the view scrolls. Smooth sampling instead blurs everything. So the cl
 
 Pressure is not one of Luna's icons, so it stays as text in the stat panel.
 
+## Screen effects
+
+How the player is also shows on the view itself (`apps/client/src/world_view.rs`,
+`world_view.wesl`), from the same status the indicators use. Luna's crude versions are
+full-screen HUD overlays (blindness, the flash); here they are drawn on the map picture,
+and each eases in and out over about a quarter of a second.
+
+| State | Effect |
+|---|---|
+| Low-oxygen alert | the edges of the view darken (60 % at the corners), pulsing a little |
+| Health below 70 | the edges go dark red, more as health falls, fully at 0 |
+| Health drops | a red flash, strongest at the edges, fading in about half a second |
+| Unconscious | the view blurs (2.5 sprite px) and darkens |
+| Dead | the view turns grey and dark |
+| Body temperature below 300 K | a blue tint, strongest 25 K lower |
+| Body temperature above 320 K | a warm tint, strongest 40 K higher |
+
+The HUD and the text panel are not affected.
+
 ## Clicks
 
 | Cell | Click |
