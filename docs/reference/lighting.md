@@ -127,9 +127,12 @@ What gives off light of its own stays bright in the dark and glows
   along the foot of every wall, on the floor side, so walls seem to stand up out of the
   floor. Drawn over the floor, under everything on it.
 - **Drop shadows** (`apps/client/src/sprite_shadows.rs`): people and what stands on the
-  floor (closets, machines, chairs, tables, items) cast a soft dark copy of themselves a
-  little to the right and down, as from a light up and to the left, so they stand on the
-  floor. What lies flat (pipes, cables, vents), hangs on a wall or is light itself casts
+  floor (closets, machines, chairs, tables, items) cast a dark copy of themselves,
+  flattened to 60 % of its height and moved a few pixels right and down, so it shows as
+  a rim along the object's foot. All shadows lie in one layer, over the floor and what
+  lies flat on it, under everything that stands, so a shadow never falls over another
+  object. A person's shadow is their body's alone (overlapping shadows would darken each
+  other). What lies flat (pipes, cables, vents), hangs on a wall or is light itself casts
   none.
 - **Silhouettes:** other people standing on a tile darker than 20 % (the server's "dark")
   are drawn as black shapes, clothes and all: you can tell someone is there, not who.
