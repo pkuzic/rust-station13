@@ -138,9 +138,13 @@ fn parse_atom(text: &str) -> Option<Atom> {
     })
 }
 
-/// What to import and what each type becomes.
+/// What to import and what each type becomes. A rules file may name a `base` file whose
+/// rules it adds to (`Rules::extend_from`): the type rules shared by every region of a map.
 #[derive(Debug, Deserialize)]
 pub struct Rules {
+    /// Another rules file, relative to this one, whose rules this one adds to.
+    #[serde(default)]
+    pub base: Option<String>,
     /// Shown in the generated file's header.
     pub source: String,
     pub z: i32,
@@ -148,10 +152,13 @@ pub struct Rules {
     pub columns: (usize, usize),
     pub rows: (usize, usize),
     /// Turf type prefixes → tiles. The longest matching prefix wins.
+    #[serde(default)]
     pub turfs: Vec<TurfRule>,
     /// Any of these on a tile makes it a window tile.
+    #[serde(default)]
     pub windows: Vec<String>,
-    pub window_tile: TileDef,
+    #[serde(default)]
+    pub window_tile: Option<TileDef>,
     /// Any of these on a tile without a window makes it a grille tile: solid, but air
     /// passes. Without `grille_tile` they are skipped.
     #[serde(default)]
@@ -159,15 +166,23 @@ pub struct Rules {
     #[serde(default)]
     pub grille_tile: Option<TileDef>,
     /// Object type prefixes → our prototypes. The longest matching prefix wins.
+    #[serde(default)]
     pub objects: Vec<ObjectRule>,
-    /// Landmarks where players may appear.
+    /// Landmarks where players may appear. The first that matches wins.
+    #[serde(default)]
     pub spawns: Vec<SpawnRule>,
+    /// More start points, by column and row of the `.dmm` text, for regions without
+    /// landmarks.
+    #[serde(default)]
+    pub spawn_at: Vec<(usize, usize)>,
     /// Types skipped without being reported (decals, landmarks we don't use).
     #[serde(default)]
     pub ignore: Vec<String>,
     /// Area paths → our area ids. Other areas are left out and reported.
+    #[serde(default)]
     pub areas: BTreeMap<String, String>,
     /// Luna access numbers → our access ids.
+    #[serde(default)]
     pub access: BTreeMap<u32, String>,
 }
 
@@ -178,6 +193,31 @@ impl Rules {
             .with_default_extension(ron::extensions::Extensions::IMPLICIT_SOME)
             .from_str(text)
             .map_err(|e| ImportError::Rules(e.to_string()))
+    }
+
+    /// Add `base`'s rules under these: its type rules, ignored types, areas and access
+    /// numbers come first (these win where both name the same area or number), its window
+    /// and grille tiles are used where these have none, and its spawn rules are tried
+    /// after these.
+    pub fn extend_from(&mut self, base: Rules) {
+        fn under<T>(mine: &mut Vec<T>, mut theirs: Vec<T>) {
+            theirs.append(mine);
+            *mine = theirs;
+        }
+        under(&mut self.turfs, base.turfs);
+        under(&mut self.windows, base.windows);
+        under(&mut self.grilles, base.grilles);
+        under(&mut self.objects, base.objects);
+        under(&mut self.ignore, base.ignore);
+        self.spawns.extend(base.spawns);
+        self.window_tile = self.window_tile.take().or(base.window_tile);
+        self.grille_tile = self.grille_tile.take().or(base.grille_tile);
+        for (k, v) in base.areas {
+            self.areas.entry(k).or_insert(v);
+        }
+        for (k, v) in base.access {
+            self.access.entry(k).or_insert(v);
+        }
     }
 }
 
@@ -234,6 +274,9 @@ fn dir_name(byond: &str) -> Option<&'static str> {
 #[derive(Debug, Deserialize)]
 pub struct SpawnRule {
     pub path: String,
+    /// Only landmarks with this `name` (Luna's job start points: "Scientist").
+    #[serde(default)]
+    pub name: Option<String>,
     /// Placed on the spawn tile (a stand-in for job equipment).
     #[serde(default)]
     pub with: Vec<Placed>,
@@ -362,7 +405,12 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
                     window = true;
                 } else if rules.grilles.iter().any(|g| is_a(path, g)) {
                     grille = true;
-                } else if let Some(rule) = rules.spawns.iter().find(|s| is_a(path, &s.path)) {
+                } else if let Some(rule) = rules.spawns.iter().find(|s| {
+                    is_a(path, &s.path)
+                        && s.name
+                            .as_deref()
+                            .is_none_or(|n| atom.vars.get("name").map(|v| v.trim_matches('"')) == Some(n))
+                }) {
                     spawn = true;
                     objects.extend(rule.with.iter().map(Placed::ron));
                 } else if let Some(rule) = longest(&rules.objects, path, |o| &o.path) {
@@ -376,11 +424,12 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
             }
             let mut tile =
                 tile.ok_or_else(|| ImportError::Region(format!("no turf at column {c}, row {r}")))?;
-            if window {
-                tile = rules.window_tile.clone();
+            if let Some(window_tile) = rules.window_tile.as_ref().filter(|_| window) {
+                tile = window_tile.clone();
             } else if let Some(grille_tile) = rules.grille_tile.as_ref().filter(|_| grille) {
                 tile = grille_tile.clone();
             }
+            spawn |= rules.spawn_at.contains(&(c, r));
             let mut entry = format!("(tile: {}", tile_ron(&tile));
             if spawn {
                 entry.push_str(", spawn: true");

@@ -8,6 +8,7 @@ pub mod actions;
 pub mod alarms;
 pub mod apc;
 pub mod atmos;
+pub mod blastdoors;
 pub mod cables;
 pub mod cells;
 pub mod chairs;
@@ -75,6 +76,10 @@ pub mod maps {
     /// NSV Luna's engineering section, imported from `NSV_Luna.dmm` (see
     /// `maps/luna_engineering.import.ron`).
     pub const LUNA_ENGINEERING: &str = include_str!("../maps/luna_engineering.ron");
+    /// NSV Luna's toxins lab, with its burn chamber (`maps/luna_toxins.import.ron`).
+    pub const LUNA_TOXINS: &str = include_str!("../maps/luna_toxins.ron");
+    /// NSV Luna's incinerator (`maps/luna_incinerator.import.ron`).
+    pub const LUNA_INCINERATOR: &str = include_str!("../maps/luna_incinerator.ron");
 }
 
 /// Server-side game rules. Runs every fixed tick.
@@ -151,6 +156,7 @@ impl Plugin for ClassicPlugin {
                     alarms::apply_seals,
                     firedoors::update_firedoors,
                     doors::update_doors,
+                    blastdoors::run_blast_doors,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,

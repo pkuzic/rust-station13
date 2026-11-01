@@ -32,7 +32,6 @@
 //      3 /obj/machinery/computer/gasmon
 //      1 /obj/machinery/computer/general_alert
 //      3 /obj/machinery/disposal
-//      1 /obj/machinery/door_control/vent_control
 //      1 /obj/machinery/embedded_controller/radio/airlock_controller
 //      1 /obj/machinery/hologram_ai
 //      1 /obj/machinery/navbeacon
@@ -270,7 +269,7 @@
         'ξ': (tile: (id: "floor"), objects: ["power-monitor", (id: "cable", ends: [North])]),
         'ο': (tile: (id: "floor"), objects: [(id: "vent", dir: South), (id: "table", dir: NorthWest, state: Some("tabledir"))]),
         'π': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "toolbox-electrical"]),
-        'ρ': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "table", dir: North, state: Some("tabledir"))]),
+        'ρ': (tile: (id: "window", solid: true, opaque: Some(false)), objects: [(id: "table", dir: North, state: Some("tabledir")), (id: "door-button", vars: {"id": "963852"})]),
         'ς': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table", dir: North, state: Some("tabledir"))]),
         'σ': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "table", dir: North, state: Some("tabledir"))]),
         'τ': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "cell-charger", "high-power-cell"]),

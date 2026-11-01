@@ -43,15 +43,20 @@ pub fn build(map: &rs13_world::TileMap, portals: &[TilePos], edges: &[(TilePos, 
 }
 
 /// Tell the solver which doors and firedoors are open, then advance it one tick. An
-/// airlock lets air through only while fully open, like it lets people through.
+/// airlock or blast door lets air through only while fully open, like it lets people
+/// through.
 pub fn step_atmos(
     atmos: Option<ResMut<StationAtmos>>,
     doors: Query<(&GridPos, &Airlock)>,
+    blast_doors: Query<(&GridPos, &crate::blastdoors::BlastDoor)>,
     firedoors: Query<(&GridPos, &Firedoor)>,
 ) {
     let Some(mut atmos) = atmos else { return };
     for (pos, door) in &doors {
         atmos.0.set_portal_open(pos.0, !door.is_dense());
+    }
+    for (pos, door) in &blast_doors {
+        atmos.0.set_portal_open(pos.0, !door.blocks());
     }
     for (pos, door) in &firedoors {
         if let Some((at, dir)) = door.edge(pos.0) {

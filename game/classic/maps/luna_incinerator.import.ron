@@ -1,0 +1,22 @@
+// Rules for importing NSV Luna's incinerator (deck 4) with rs13-dmm-import:
+//
+//   cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
+//       game/classic/maps/luna_incinerator.import.ron game/classic/maps/luna_incinerator.ron
+//
+// What each Luna type becomes is in luna_common.import.ron.
+// Spec: docs/reference/map-import.md.
+(
+    base: "luna_common.import.ron",
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 4,
+    // Disposal's incinerator: its control room, the burn chamber and the vent.
+    columns: (39, 50),
+    rows: (111, 121),
+
+    // No start points here in Luna: one by the controls.
+    spawn_at: [(45, 116)],
+
+    areas: {
+        "/area/maintenance/disposal": "disposal",
+    },
+)

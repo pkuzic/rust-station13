@@ -128,6 +128,8 @@
     "igniter": (gender: neuter, sg: (nom: "floor-mounted igniter", indef: "a floor-mounted igniter"), pl: Some((nom: "floor-mounted igniters"))),
     "sparker": (gender: neuter, sg: (nom: "wall-mounted igniter", indef: "a wall-mounted igniter"), pl: Some((nom: "wall-mounted igniters"))),
     "floodlight": (gender: neuter, sg: (nom: "emergency floodlight", indef: "an emergency floodlight"), pl: Some((nom: "emergency floodlights"))),
+    "blast-door": (gender: neuter, sg: (nom: "podlock", indef: "a podlock"), pl: Some((nom: "podlocks"))),
+    "door-button": (gender: neuter, sg: (nom: "remote door control", indef: "a remote door control"), pl: Some((nom: "remote door controls"))),
     "ignition-switch": (gender: neuter, sg: (nom: "ignition switch", indef: "an ignition switch"), pl: Some((nom: "ignition switches"))),
     "headset-eng": (gender: neuter, sg: (nom: "engineering radio headset", indef: "an engineering radio headset"), pl: Some((nom: "engineering radio headsets"))),
     "meson-glasses": (gender: plural, sg: (nom: "optical meson scanner", indef: "an optical meson scanner"), pl: Some((nom: "optical meson scanners"))),

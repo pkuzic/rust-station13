@@ -1,0 +1,33 @@
+// Rules for importing NSV Luna's toxins lab (deck 3) with rs13-dmm-import:
+//
+//   cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
+//       game/classic/maps/luna_toxins.import.ron game/classic/maps/luna_toxins.ron
+//
+// What each Luna type becomes is in luna_common.import.ron.
+// Spec: docs/reference/map-import.md.
+(
+    base: "luna_common.import.ron",
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 3,
+    // The toxins lab and its storage, with the burn chamber, the security checkpoint
+    // beside them and the hallway outside.
+    columns: (54, 77),
+    rows: (88, 107),
+
+    // Luna's Scientist start points. Until jobs exist, a scientist's ID card lies on each
+    // (Luna's Scientist access, luna:code/game/jobs/access.dm).
+    spawns: [
+        (path: "/obj/effect/landmark/start", name: "Scientist", with: [
+            (id: "id-card", access: ["tox", "tox_storage", "maint_tunnels", "medlab", "laboratories_doors"]),
+        ]),
+    ],
+
+    areas: {
+        "/area/toxins/lab": "toxins-lab",
+        "/area/toxins/storage": "toxins-storage",
+        "/area/security/checkpoint2": "science-checkpoint",
+        "/area/hallway/primary/central": "central-hallway",
+        "/area/hallway/secondary/research": "research-hallway",
+        "/area/maintenance/asmaint2": "maint-aft-starboard",
+    },
+)

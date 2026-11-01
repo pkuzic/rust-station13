@@ -7,6 +7,8 @@
     (id: "medical", luna: 5),
     (id: "morgue", luna: 6),
     (id: "tox", luna: 7),
+    (id: "tox_storage", luna: 8),
+    (id: "medlab", luna: 9),
     (id: "engine", luna: 10),
     (id: "engine_equip", luna: 11),
     (id: "maint_tunnels", luna: 12),
@@ -19,4 +21,7 @@
     (id: "tech_storage", luna: 23),
     (id: "atmospherics", luna: 24),
     (id: "construction", luna: 32),
+    (id: "cargo_bot", luna: 34),
+    (id: "laboratories_doors", luna: 36),
+    (id: "incinerator", luna: 37),
 ]
