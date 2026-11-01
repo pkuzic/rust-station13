@@ -140,6 +140,7 @@ pub fn process_actions(
             freezers,
             smes_units,
             mut igniters,
+            mut floodlights,
         ),
     ): (
         Query<(&mut crate::alarms::AirAlarm, &crate::power::PowerUser)>,
@@ -170,6 +171,7 @@ pub fn process_actions(
             Query<&GridPos, With<crate::freezers::Freezer>>,
             Query<&GridPos, With<crate::power::Smes>>,
             crate::igniters::IgniterWork,
+            crate::floodlights::FloodlightWork,
         ),
     ),
     mut commands: Commands,
@@ -444,6 +446,16 @@ pub fn process_actions(
                     }
                     if let Some(outcome) = apc_work.use_on(mob, target, tool, &mut hands, at, &mut commands) {
                         sounds.tool_used(tool, at);
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if floodlights.contains(target) => {
+                    // Floodlights (`floodlights.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = floodlights.use_on(mob, target, tool, &mut hands, &mut commands) {
+                        sounds.tool_used(tool, mob_pos.0);
                         outbox.0.extend(outcome.to_mob);
                     }
                 }

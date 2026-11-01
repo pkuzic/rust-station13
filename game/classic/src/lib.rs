@@ -21,6 +21,7 @@ pub mod firealarms;
 pub mod firedoors;
 pub mod fires;
 pub mod flashlights;
+pub mod floodlights;
 pub mod floors;
 pub mod freezers;
 pub mod furniture;
@@ -250,6 +251,7 @@ impl Plugin for ClassicPlugin {
                     chairs::update_chairs,
                     power_monitor::update_monitor_looks,
                     igniters::update_igniter_looks,
+                    floodlights::run_floodlights,
                 )
                     .in_set(TickSet::Publish),
             )

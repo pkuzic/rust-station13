@@ -727,6 +727,14 @@
             "igniter0": (dmi: "icons/obj/stationobjs.dmi", state: "igniter0"),
             "igniter1": (dmi: "icons/obj/stationobjs.dmi", state: "igniter1"),
         },
+        // Emergency floodlight: flood[o: panel off][b: cell showing]0[1: lit].
+        "floodlight": {
+            "flood00": (dmi: "icons/obj/machines/floodlight.dmi", state: "flood00"),
+            "flood01": (dmi: "icons/obj/machines/floodlight.dmi", state: "flood01"),
+            "floodo00": (dmi: "icons/obj/machines/floodlight.dmi", state: "floodo00"),
+            "floodob00": (dmi: "icons/obj/machines/floodlight.dmi", state: "floodob00"),
+            "floodob01": (dmi: "icons/obj/machines/floodlight.dmi", state: "floodob01"),
+        },
         // Wall-mounted igniter: migniter ready, -p unpowered, -d disconnected, -spark sparking.
         "sparker": {
             "migniter": (dmi: "icons/obj/stationobjs.dmi", state: "migniter"),

@@ -526,3 +526,14 @@ sparker-disabled = { $name } has disabled the { NOUN($item) }!
 sparker-disabled-self = You disable the connection to the { NOUN($item) }.
 sparker-reconnected = { $name } has reconnected the { NOUN($item) }!
 sparker-reconnected-self = You fix the connection to the { NOUN($item) }.
+
+# Emergency floodlight (floodlights.md).
+floodlight-on = You turn on the light.
+floodlight-off = You turn off the light.
+floodlight-cell-removed = You remove the power cell.
+floodlight-unscrewed = You unscrew the battery panel.
+floodlight-screwed = You screw the battery panel in place.
+floodlight-panel-removed = You remove the battery panel.
+floodlight-panel-replaced = You crowbar the battery panel in place.
+floodlight-cell-already = There is a power cell already installed.
+floodlight-cell-inserted = You insert the power cell.
