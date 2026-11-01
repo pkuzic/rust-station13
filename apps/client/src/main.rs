@@ -597,6 +597,10 @@ fn click_rank(appearance: &Appearance) -> u8 {
 #[derive(Resource, Default)]
 struct TileSprites(HashMap<TilePos, (String, Vec<Entity>)>);
 
+/// The facing of Luna's window sprite that fills the whole tile (south-east; the straight
+/// facings are panes along one edge).
+const FULL_TILE_GLASS: u32 = 4;
+
 /// Draw the map's tiles when it arrives, and redraw those that change (floor tiles pried
 /// up or put back): Luna sprites, or flat squares as a fallback.
 fn draw_map(
@@ -636,10 +640,17 @@ fn draw_map(
                     ),
                 };
                 let transform = Transform::from_translation(world_pos(pos, 0.0));
-                // A window tile: grille and glass over the plating.
-                if tile.id == "window" {
-                    for (layer, part) in ["tile:grille", "tile:window"].into_iter().enumerate() {
-                        if let Some(image) = atlas.sprite(part, "", 0) {
+                // A grille over the plating, and in a window tile glass filling the tile:
+                // Luna's window sprite facing a diagonal, the same from every side (its
+                // straight facings are thin panes along one edge).
+                let parts: &[(&str, u32)] = match tile.id.as_str() {
+                    "window" => &[("tile:grille", 0), ("tile:window", FULL_TILE_GLASS)],
+                    "grille" => &[("tile:grille", 0)],
+                    _ => &[],
+                };
+                {
+                    for (layer, &(part, facing)) in parts.iter().enumerate() {
+                        if let Some(image) = atlas.sprite(part, "", facing) {
                             let z = 0.001 * (layer + 1) as f32;
                             sprites.push(
                                 commands

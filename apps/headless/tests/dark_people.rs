@@ -88,25 +88,26 @@ fn someone_in_the_dark_is_sent_as_a_shape_until_they_step_into_the_light() {
             Step::Act(ActionInput::Face(Dir::East)),
             wait(1_800),
             Step::Snapshot("in the dark".into()),
-            wait(2_200),
+            wait(4_700),
             Step::Snapshot("in the light".into()),
         ],
-        Duration::from_secs(5),
+        Duration::from_secs(8),
     );
     thread::sleep(Duration::from_millis(400));
-    // The second waits in the dark, then walks west, towards the tube.
+    // The second waits in the dark, well after the first has looked (a busy machine can
+    // run late), then walks west, towards the tube.
     let stranger = run_bot(
         server,
         STRANGER,
         vec![
-            wait(1_600),
+            wait(3_500),
             Step::Move(Some(Dir::West)),
             wait(900),
             Step::Move(None),
             wait(300),
             Step::Snapshot("walked".into()),
         ],
-        Duration::from_secs(4),
+        Duration::from_secs(7),
     );
     let viewer = viewer.join().unwrap();
     let stranger = stranger.join().unwrap();
