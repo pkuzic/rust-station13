@@ -96,3 +96,18 @@ fn every_ladder_and_stair_lands_on_the_next_deck() {
         );
     }
 }
+
+#[test]
+fn open_floor_joins_the_air_of_two_decks() {
+    let app = station();
+    let atmos = &app.world().resource::<StationAtmos>().0;
+    let spanning = atmos
+        .zones()
+        .iter()
+        .filter(|z| {
+            let decks: BTreeSet<i32> = z.tiles.iter().map(|p| p.z).collect();
+            decks.len() > 1
+        })
+        .count();
+    assert!(spanning > 0, "some room reaches down through Luna's open floor");
+}

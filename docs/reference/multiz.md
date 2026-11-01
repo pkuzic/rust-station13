@@ -16,8 +16,9 @@ A station is several decks, each a map with its own `z`, numbered bottom first (
 deck 4 is our 0, its deck 1 our 3). The server loads them together (`--map luna-station`,
 or `--map-file` given once per deck, bottom first):
 
-- **Air:** one simulation across all decks; rooms never reach across decks, so each deck
-  keeps its own air.
+- **Air:** one simulation across all decks. A room reaches across decks only through open
+  floor (`open-space`): a hole in the deck shares its air with the tile below it, as Luna's
+  open floor shares its zone. Otherwise each deck keeps its own air.
 - **Sight:** you see and are sent only your own deck.
 - **The client** draws only the deck you are on, and switches when you change deck.
 
@@ -48,6 +49,6 @@ bottom. Each deck's entry lies over the other deck's active tile.
 
 | Luna | Here |
 |---|---|
-| Air passes between decks through open floor and stairs (`CanPass` with `airflow`) | Each deck's air is its own; open floor (`open-space`) only lets light down |
+| Open floor over space would vent into it | Only sideways openings reach space; none of Luna's open floor lies over space |
 | Anything pushed into stairs goes up or down | People only |
 | Ghosts click stairs to move | No ghosts yet |
