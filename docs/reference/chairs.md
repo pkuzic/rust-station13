@@ -27,4 +27,6 @@ Chairs are a kind of bed, which is a kind of stool: anchored, not dense, and fac
 | Wrench | a metal sheet on its tile; the sitter is freed | keep |
 | Sitter faces the chair's way | buckled in, you face the chair's way and can't turn (`movement::sync_facing`) | keep |
 | North-facing chair drawn over the sitter | the client draws it above people when it faces north | keep |
-| Beds, stools, roller beds, buckling others by dragging | none | not in the region, or need dragging |
+| Stools (`stool`, `barstool`) | somewhere to sit: an empty hand does nothing, a wrench takes them apart into a metal sheet | keep |
+| Beds (`bed`) | an empty hand on the bed you stand on buckles you in lying down (`lying`); click it again to get out; they don't turn; a wrench takes them apart | keep; lying in bed doesn't stop you using your hands yet |
+| Roller beds, buckling others by dragging | none | need dragging |

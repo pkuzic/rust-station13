@@ -41,6 +41,7 @@ counted from 0 with the top row first.
   - An airlock's `req_access_txt` (Luna access numbers separated by `;`) becomes our access ids.
   - A cable's `icon_state` (`"1-2"`, with 0 for a knot) becomes its ends. Ends that lead up or down to another deck are dropped and reported.
   - A rule with `state` keeps the atom's `icon_state` (tables, whose edges the mappers set by hand), with the given default.
+  - A rule with `type_vars` supplies variables the Luna type sets itself and the map doesn't repeat, such as the wall lockers' facing and offsets per subtype; the map's own values win.
   - Any object with `level = 2` gets `above_floor: true`: Luna lays those pipes over the floor tiles, so they show (`floors.md`).
   - A rule can also place a container's contents loose on its tile (for containers we can't model yet).
 - **Spawns:** a landmark rule makes the tile a spawn and can place things there. A rule
@@ -80,7 +81,7 @@ counted from 0 with the top row first.
 - **Firedoors:** Luna's border firedoors. None of them sets a direction on Luna's map, so all keep the default and seal the south edge of their tile (`firedoors.md`).
 - **Spawns:** Luna's five Engineer start points. Each has an engineer ID card on it, as a stand-in for job equipment.
 
-**Wall-mounted devices:** Luna puts intercoms, alarms, APCs and the like on the floor tile beside a wall and shifts their sprite onto it with `pixel_x` and `pixel_y`. Every object keeps those (`vars`), and the client draws it shifted (`PixelOffset`); it still belongs to its floor tile.
+**Wall-mounted devices:** Luna puts intercoms, alarms, APCs and the like on the floor tile beside a wall and shifts their sprite onto it with `pixel_x` and `pixel_y`. Every object keeps those (`vars`), and the client draws it shifted (`PixelOffset`); it still belongs to its floor tile. APCs store only their facing: Luna works their 24-pixel offset out from it, and so do we (`objects::spawn_object`). Air alarms and fire alarms keep their facing too, for their side-on sprites.
 
 **Skipped for now** (83 types, listed in the generated file):
 - **Atmos machines without a prototype:** filters, injectors, and the engine's freezers and generator inputs. Pipes that joined them end there.

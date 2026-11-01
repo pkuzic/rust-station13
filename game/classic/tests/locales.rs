@@ -122,6 +122,10 @@ fn every_message_formats_in_both_locales() {
     args.set("charging", "yes");
     args.set("bin", "disposal-bin");
     args.set("cabinet", "extinguisher-cabinet");
+    args.set("seat", "bed");
+    args.set("first", "crowbar");
+    args.set("second", "breath-mask");
+    args.set("third", "emergency-oxygen");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

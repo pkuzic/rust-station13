@@ -69,8 +69,8 @@ fn run(root: &Path, manifest_path: &Path, out: &Path) -> Result<(), String> {
                 let path: PathBuf = root.join(&entry.dmi);
                 let bytes = fs::read(&path).map_err(|e| format!("{}: {e}", path.display()))?;
                 let dmi = Dmi::read(&bytes).map_err(|e| format!("{}: {e}", path.display()))?;
-                if dmi.icon_width != 32 || dmi.icon_height != 32 {
-                    return Err(format!("{}: only 32×32 icons are supported", entry.dmi));
+                if dmi.icon_width > 32 || dmi.icon_height > 32 {
+                    return Err(format!("{}: icons over 32×32 aren't supported", entry.dmi));
                 }
                 dmis.insert(entry.dmi.clone(), dmi);
             }
@@ -121,7 +121,9 @@ fn run(root: &Path, manifest_path: &Path, out: &Path) -> Result<(), String> {
     let mut sheet = Rgba::new(COLUMNS * 32, rows * 32);
     for (i, cell) in cells.iter().enumerate() {
         let i = i as u32;
-        sheet.blit(cell, 0, 0, 32, 32, (i % COLUMNS) * 32, (i / COLUMNS) * 32);
+        // A smaller icon sits in the cell's bottom-left corner, as BYOND draws it on a tile.
+        let (x, y) = ((i % COLUMNS) * 32, (i / COLUMNS) * 32 + (32 - cell.height));
+        sheet.blit(cell, 0, 0, cell.width, cell.height, x, y);
     }
 
     fs::create_dir_all(out).map_err(|e| e.to_string())?;

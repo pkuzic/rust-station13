@@ -27,6 +27,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:open` | `icons/obj/power.dmi : "apc2"` | CC-BY-SA 3.0 |
 | `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
+| `barstool:` | `icons/obj/objects.dmi : "barstool"` | CC-BY-SA 3.0 |
+| `bed:` | `icons/obj/objects.dmi : "bed"` | CC-BY-SA 3.0 |
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `blast-door:pdoor0` | `icons/obj/doors/rapid_pdoor.dmi : "pdoor0"` | CC-BY-SA 3.0 |
@@ -182,6 +184,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `door-button:doorctrl00` | `icons/obj/stationobjs.dmi : "doorctrl00"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl01` | `icons/obj/stationobjs.dmi : "doorctrl01"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl1` | `icons/obj/stationobjs.dmi : "doorctrl1"` | CC-BY-SA 3.0 |
+| `emergency-locker:` | `icons/obj/lockwall.dmi : "emerg"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_closed` | `icons/obj/closet.dmi : "extinguisher_closed"` | CC-BY-SA 3.0 |
@@ -508,6 +511,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `stairs:top-north` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
 | `stairs:top-south` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
 | `stairs:top-west` | `icons/obj/multiz.dmi : "ramptop"` | CC-BY-SA 3.0 |
+| `stool:` | `icons/obj/objects.dmi : "stool"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `table:` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-east` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
