@@ -133,3 +133,62 @@ fn the_air_picture_shows_plasma_on_every_tile_of_its_room() {
     assert_eq!(at(0, 0), 0, "none in the wall");
     assert!(view.n2o_dmol.iter().all(|&n| n == 0));
 }
+
+/// A 12 × 8 room, far bigger than a flame could light all at once.
+const BIG_ROOM: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+    },
+    rows: [
+        "WWWWWWWWWWWWWW",
+        "W............W",
+        "W............W",
+        "W............W",
+        "W............W",
+        "W............W",
+        "W............W",
+        "W............W",
+        "W............W",
+        "WWWWWWWWWWWWWW",
+    ],
+)"#;
+
+#[test]
+fn in_a_big_room_the_fire_starts_by_the_flame_and_spreads() {
+    let mut app = App::new();
+    app.add_plugins(ClassicPlugin);
+    let problems = spawn_map(app.world_mut(), TileMap::from_ron(BIG_ROOM, 0).unwrap());
+    assert!(problems.is_empty(), "{problems:?}");
+    app.world_mut().run_schedule(FixedUpdate);
+    let corner = TilePos::new(1, 1, 0);
+    let mut gas = GasMix::default();
+    gas.temperature = T20C;
+    gas.set(Gas::Plasma, 2.0 * 96.0);
+    app.world_mut()
+        .resource_mut::<StationAtmos>()
+        .0
+        .add_at(corner, &gas);
+    let welder = spawn_object(app.world_mut(), &ObjectSpec::new("welder"), corner).unwrap();
+    app.world_mut().get_mut::<Welder>(welder).unwrap().lit = true;
+
+    let tiles_on_fire = |app: &mut App| {
+        let mut q = app
+            .world_mut()
+            .query_filtered::<&rs13_world::GridPos, With<Fire>>();
+        q.iter(app.world()).map(|p| p.0).collect::<Vec<_>>()
+    };
+    seconds(&mut app, 3);
+    let early = tiles_on_fire(&mut app);
+    assert!(!early.is_empty(), "the flame lit its corner");
+    assert!(
+        early.iter().all(|p| p.x <= 6 && p.y <= 6),
+        "only near the flame at first: {early:?}"
+    );
+    let mut most = early.len();
+    for _ in 0..40 {
+        seconds(&mut app, 1);
+        most = most.max(tiles_on_fire(&mut app).len());
+    }
+    assert!(most > 48, "it spread over most of the room: {most} of 96 tiles");
+}

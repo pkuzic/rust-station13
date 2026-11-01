@@ -1,6 +1,6 @@
 use rs13_world::{Dir, TileMap, TilePos};
 
-use super::gas::{ONE_ATMOSPHERE, T20C};
+use super::gas::{ONE_ATMOSPHERE, T20C, TILE_VOLUME};
 use super::*;
 
 /// Two 2×2 rooms joined by door D; room R also has door E straight to space.
@@ -292,4 +292,115 @@ fn air_goes_through_a_grille_but_not_a_window() {
     assert_eq!(grille.zone_at(left), grille.zone_at(right), "one room of air");
     let window = rooms_split_by("w");
     assert_ne!(window.zone_at(left), window.zone_at(right), "two rooms of air");
+}
+
+/// A 20 × 6 room with `plasma` moles per tile spread through its air, and a sealed room of
+/// the same size east of it, behind a wall.
+fn big_rooms(plasma_per_tile: f64) -> AtmosGrid {
+    let row = format!("W{}W{}W", ".".repeat(20), ".".repeat(20));
+    let wall = "W".repeat(43);
+    let mut rows = vec![wall.clone()];
+    rows.extend(std::iter::repeat_n(row, 6));
+    rows.push(wall);
+    let rows: Vec<String> = rows.into_iter().map(|r| format!("\"{r}\"")).collect();
+    let map = TileMap::from_ron(
+        &format!(
+            r#"(
+                legend: {{
+                    'W': (tile: (id: "wall", solid: true)),
+                    '.': (tile: (id: "floor")),
+                }},
+                rows: [{}],
+            )"#,
+            rows.join(", ")
+        ),
+        0,
+    )
+    .unwrap();
+    let mut grid = AtmosGrid::new(&map, &[]);
+    for z in 0..grid.zones().len() {
+        let tiles = grid.zones()[z].tiles.len() as f64;
+        let at = grid.zones()[z].tiles[0];
+        let mut gas = GasMix {
+            temperature: T20C,
+            ..GasMix::default()
+        };
+        gas.set(Gas::Plasma, plasma_per_tile * tiles);
+        grid.add_at(at, &gas);
+    }
+    grid
+}
+
+fn burning_in(grid: &AtmosGrid, x_range: std::ops::Range<i32>) -> usize {
+    grid.burning_tiles()
+        .iter()
+        .filter(|(p, _)| x_range.contains(&p.x))
+        .count()
+}
+
+#[test]
+fn a_flame_lights_one_tile_of_a_big_room_and_the_fire_spreads_across_it() {
+    let mut grid = big_rooms(2.0);
+    let corner = TilePos::new(1, 1, 0);
+    let before = grid.total_moles();
+    assert!(grid.expose(corner, 3500.0) > 0.0, "the flame lights it");
+    assert!(
+        (grid.total_moles() - before).abs() < 1e-9,
+        "the cell's air came from its zone"
+    );
+    assert_eq!(grid.fire_cells().count(), 1);
+
+    run(&mut grid, 1.0);
+    let near = burning_in(&grid, 1..4);
+    let far = burning_in(&grid, 12..21);
+    assert!(near > 0 && far == 0, "first the corner: {near} near, {far} far");
+
+    // About two tiles a second: across the 20-tile room in well under half a minute.
+    let mut reached_far = None;
+    for second in 1..40 {
+        run(&mut grid, 1.0);
+        if burning_in(&grid, 18..21) > 0 {
+            reached_far = Some(second);
+            break;
+        }
+    }
+    let second = reached_far.expect("the fire crossed the room");
+    assert!(second >= 4, "tile by tile, not all at once: {second} s");
+    assert_eq!(burning_in(&grid, 22..42), 0, "not through the wall");
+}
+
+#[test]
+fn burnt_out_cells_go_back_into_their_zone() {
+    let mut grid = big_rooms(0.6);
+    grid.expose(TilePos::new(1, 1, 0), 3500.0);
+    run(&mut grid, 120.0);
+    assert_eq!(grid.fire_cells().count(), 0, "all settled back");
+    let zone = &grid.zones()[grid.zone_at(TilePos::new(1, 1, 0)).unwrap()];
+    assert_eq!(zone.volume, zone.tiles.len() as f64 * TILE_VOLUME);
+    assert!(grid.burning_tiles().is_empty());
+}
+
+#[test]
+fn without_enough_plasma_on_the_tile_nothing_lights() {
+    let mut grid = big_rooms(0.3);
+    assert_eq!(grid.expose(TilePos::new(1, 1, 0), 3500.0), 0.0);
+    assert_eq!(grid.fire_cells().count(), 0);
+}
+
+#[test]
+fn a_burning_room_opened_to_space_takes_its_fire_cells_with_it() {
+    // The right room of `two_rooms` has a door straight to space.
+    let (mut grid, _, outer) = two_rooms();
+    let mut gas = GasMix {
+        temperature: T20C,
+        ..GasMix::default()
+    };
+    gas.set(Gas::Plasma, 8.0);
+    grid.add_at(RIGHT, &gas);
+    assert!(grid.expose(RIGHT, 3500.0) > 0.0);
+    run(&mut grid, 0.5);
+    assert!(grid.fire_cells().count() > 0);
+    grid.set_portal_open(outer, true);
+    run(&mut grid, 1.0);
+    assert_eq!(grid.fire_cells().count(), 0, "they vent with the room");
 }

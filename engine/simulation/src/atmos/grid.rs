@@ -7,6 +7,9 @@ use rs13_world::{Dir, TileMap, TilePos};
 
 use super::gas::{Gas, GasMix, R, T_SPACE, TILE_VOLUME, VACUUM_MOLES};
 
+mod fire_cells;
+pub use fire_cells::FireCell;
+
 /// Open area of a doorway, m² (1 m × 2 m).
 pub const DOOR_AREA: f64 = 2.0;
 /// Open area of one breached tile face, m² (1 m × 2.5 m).
@@ -94,6 +97,8 @@ pub struct AtmosGrid {
     zones: Vec<Zone>,
     openings: Vec<Opening>,
     wind: Vec<Option<Wind>>,
+    /// Tiles on fire with air of their own, by tile index (`fire_cells.rs`).
+    cells_on_fire: BTreeMap<usize, FireCell>,
     zones_dirty: bool,
     openings_dirty: bool,
     pub flow_scale: f64,
@@ -129,6 +134,7 @@ impl AtmosGrid {
             zones: Vec::new(),
             openings: Vec::new(),
             wind: Vec::new(),
+            cells_on_fire: BTreeMap::new(),
             zones_dirty: true,
             openings_dirty: true,
             flow_scale: DEFAULT_FLOW_SCALE,
@@ -243,8 +249,12 @@ impl AtmosGrid {
         }
     }
 
-    /// The air one tile holds: its share of its zone. Vacuum for space and walls.
+    /// The air one tile holds: its fire cell's, or its share of its zone. Vacuum for space
+    /// and walls.
     pub fn air_at(&self, pos: TilePos) -> GasMix {
+        if let Some(cell) = self.index(pos).and_then(|i| self.cells_on_fire.get(&i)) {
+            return cell.mix;
+        }
         match self.air_zone(pos) {
             Some(z) => {
                 let zone = &self.zones[z];
@@ -259,16 +269,23 @@ impl AtmosGrid {
         self.air_at(pos).pressure(TILE_VOLUME)
     }
 
-    /// Take `moles` of gas from a tile's zone, in proportion to its composition.
+    /// Take `moles` of gas from a tile's fire cell or zone, in proportion to its composition.
     pub fn remove_at(&mut self, pos: TilePos, moles: f64) -> GasMix {
+        if let Some(cell) = self.index(pos).and_then(|i| self.cells_on_fire.get_mut(&i)) {
+            return cell.mix.remove_moles(moles);
+        }
         match self.air_zone(pos) {
             Some(z) => self.zones[z].mix.remove_moles(moles),
             None => GasMix::default(),
         }
     }
 
-    /// Release gas at a tile. Into space or a wall, it is lost.
+    /// Release gas at a tile: into its fire cell or zone. Into space or a wall, it is lost.
     pub fn add_at(&mut self, pos: TilePos, gas: &GasMix) {
+        if let Some(cell) = self.index(pos).and_then(|i| self.cells_on_fire.get_mut(&i)) {
+            cell.mix.merge(gas);
+            return;
+        }
         if let Some(z) = self.air_zone(pos) {
             self.zones[z].mix.merge(gas);
         }
@@ -322,42 +339,53 @@ impl AtmosGrid {
         self.index(pos).and_then(|i| self.wind.get(i).copied().flatten())
     }
 
-    /// Total moles in all zones (for conservation checks).
+    /// Total moles in all zones and fire cells (for conservation checks).
     pub fn total_moles(&self) -> f64 {
-        self.zones.iter().map(|z| z.mix.total_moles()).sum()
+        let cells: f64 = self.cells_on_fire.values().map(|c| c.mix.total_moles()).sum();
+        self.zones.iter().map(|z| z.mix.total_moles()).sum::<f64>() + cells
     }
 
-    /// Total thermal energy in all zones, J.
+    /// Total thermal energy in all zones and fire cells, J.
     pub fn total_energy(&self) -> f64 {
-        self.zones.iter().map(|z| z.mix.thermal_energy()).sum()
+        let cells: f64 = self.cells_on_fire.values().map(|c| c.mix.thermal_energy()).sum();
+        self.zones.iter().map(|z| z.mix.thermal_energy()).sum::<f64>() + cells
     }
 
     /// A spark or flame at `temperature` K touches the air on `pos` (Luna `hotspot_expose`
     /// and `obj/fire/New`). If it is hotter than
-    /// [`PLASMA_BURN_TEMPERATURE`](super::fire::PLASMA_BURN_TEMPERATURE), the tile's share
-    /// of the air holds more than [`IGNITION_MOLES`](super::fire::IGNITION_MOLES) of plasma
-    /// and of oxygen, and the air isn't burning already, a fire starts: Luna adds the
-    /// flame's temperature to the tile's air, so here the zone warms by one tile's share of
-    /// it. Returns how much warmer the zone is, K (0 when nothing lit).
+    /// [`PLASMA_BURN_TEMPERATURE`](super::fire::PLASMA_BURN_TEMPERATURE), the tile's air
+    /// holds more than [`IGNITION_MOLES`](super::fire::IGNITION_MOLES) of plasma and of
+    /// oxygen, and it isn't burning already, a fire starts there: the tile becomes a fire
+    /// cell (`fire_cells.rs`) and, as Luna adds the flame's temperature to the tile's air,
+    /// its air warms by `temperature`. In a zone's last tile the zone itself warms instead.
+    /// Returns how much warmer that air is, K (0 when nothing lit).
     pub fn expose(&mut self, pos: TilePos, temperature: f64) -> f64 {
-        use super::fire::{IGNITION_MOLES, PLASMA_BURN_TEMPERATURE};
-        use super::gas::Gas;
-        let Some(z) = self.air_zone(pos) else {
+        use super::fire::{MIN_BURN, PLASMA_BURN_TEMPERATURE};
+        let (Some(i), Some(z)) = (self.index(pos), self.zone_at(pos)) else {
             return 0.0;
         };
+        if temperature <= PLASMA_BURN_TEMPERATURE || self.zones[z].burn_rate > 0.0 {
+            return 0.0;
+        }
+        if let Some(cell) = self.cells_on_fire.get_mut(&i) {
+            if cell.burn_rate > MIN_BURN || !Self::can_catch(&cell.mix) {
+                return 0.0;
+            }
+            cell.mix.temperature += temperature;
+            return temperature;
+        }
+        let zone = &self.zones[z];
+        if zone.volume <= 0.0 || !Self::can_catch(&zone.mix.scaled((TILE_VOLUME / zone.volume).min(1.0))) {
+            return 0.0;
+        }
+        if let Some(cell) = self.open_cell(i, z) {
+            cell.mix.temperature += temperature;
+            return temperature;
+        }
+        // A one-tile zone: the zone is the tile.
         let zone = &mut self.zones[z];
-        if zone.volume <= 0.0 || zone.burn_rate > 0.0 || temperature <= PLASMA_BURN_TEMPERATURE {
-            return 0.0;
-        }
-        let share = (TILE_VOLUME / zone.volume).min(1.0);
-        if zone.mix.get(Gas::Plasma) * share <= IGNITION_MOLES
-            || zone.mix.get(Gas::Oxygen) * share <= IGNITION_MOLES
-        {
-            return 0.0;
-        }
-        let rise = temperature * share;
-        zone.mix.temperature += rise;
-        rise
+        zone.mix.temperature += temperature;
+        temperature
     }
 
     /// Air trades heat with its zone's walls, floor and ceiling for `dt` seconds: hot rooms
@@ -369,9 +397,11 @@ impl AtmosGrid {
         }
     }
 
-    /// Whether the air on `pos` is burning.
+    /// Whether the air on `pos` is burning: its fire cell, or its whole zone.
     pub fn burning_at(&self, pos: TilePos) -> bool {
-        self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0)
+        let cell = self.index(pos).and_then(|i| self.cells_on_fire.get(&i));
+        cell.is_some_and(|c| c.burn_rate > super::fire::MIN_BURN)
+            || self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0)
     }
 
     /// Advance the simulation by `dt` seconds.
@@ -388,12 +418,15 @@ impl AtmosGrid {
         for zone in &mut self.zones {
             zone.burn_rate = zone.mix.burn(dt) / dt;
         }
+        self.step_cells(dt);
         self.update_wind();
     }
 
     /// Flood-fill zones over open tiles, redistributing existing gas: every old zone's gas
     /// is split among the new zones in proportion to how many of its tiles each received.
     fn rebuild_zones(&mut self) {
+        // Fire cells go back into their zones first: the tiles may now belong elsewhere.
+        self.close_all_cells();
         let old_zone_of = std::mem::take(&mut self.zone_of);
         let old_zones = std::mem::take(&mut self.zones);
         self.zone_of = vec![None; self.cells.len()];
