@@ -54,11 +54,11 @@ impl FloorWork<'_, '_> {
     }
 
     pub fn bare(&self, pos: TilePos) -> bool {
-        self.map.iter().next().is_some_and(|m| bare(m, pos))
+        self.map.iter().any(|m| m.0.z == pos.z && bare(m, pos))
     }
 
     pub fn intact(&self, pos: TilePos) -> bool {
-        self.map.iter().next().is_some_and(|m| intact(m, pos))
+        self.map.iter().any(|m| m.0.z == pos.z && intact(m, pos))
     }
 
     /// Clicking a tile itself with a crowbar or floor tiles (Luna `floor/attackby`).
@@ -155,7 +155,7 @@ impl FloorWork<'_, '_> {
 /// else got there first this tick).
 fn set_floor(world: &mut World, pos: TilePos, from: &str, to: &str) -> bool {
     let mut maps = world.query::<&mut MapLayer>();
-    let Some(mut map) = maps.iter_mut(world).next() else {
+    let Some(mut map) = maps.iter_mut(world).find(|m| m.0.z == pos.z) else {
         return false;
     };
     if map.0.tile(pos).is_none_or(|t| t.id != from) {
@@ -178,8 +178,10 @@ pub fn hide_under_floors(
     things: Query<(Entity, &GridPos, Has<Hidden>), With<UnderFloor>>,
     mut commands: Commands,
 ) {
-    let Some(map) = map.iter().next() else { return };
     for (entity, pos, hidden) in &things {
+        let Some(map) = map.iter().find(|m| m.0.z == pos.0.z) else {
+            continue;
+        };
         match (covered(map, pos.0), hidden) {
             (true, false) => {
                 commands.entity(entity).insert(Hidden);

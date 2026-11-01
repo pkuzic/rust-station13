@@ -14,6 +14,7 @@ pub mod cells;
 pub mod chairs;
 pub mod closets;
 pub mod combat;
+pub mod decks;
 pub mod dispensers;
 pub mod doors;
 pub mod environment;
@@ -37,6 +38,7 @@ pub mod machines;
 pub mod medical;
 pub mod meters;
 pub mod movement;
+pub mod multiz;
 pub mod names;
 pub mod objects;
 pub mod power;
@@ -81,6 +83,14 @@ pub mod maps {
     pub const LUNA_TOXINS: &str = include_str!("../maps/luna_toxins.ron");
     /// NSV Luna's incinerator (`maps/luna_incinerator.import.ron`).
     pub const LUNA_INCINERATOR: &str = include_str!("../maps/luna_incinerator.ron");
+    /// All of NSV Luna's station, bottom deck first: Luna's decks 4, 3, 2 and 1
+    /// (`maps/luna_deck*.import.ron`), joined by its ladders and stairs.
+    pub const LUNA_STATION: [&str; 4] = [
+        include_str!("../maps/luna_deck4.ron"),
+        include_str!("../maps/luna_deck3.ron"),
+        include_str!("../maps/luna_deck2.ron"),
+        include_str!("../maps/luna_deck1.ron"),
+    ];
 }
 
 /// Server-side game rules. Runs every fixed tick.

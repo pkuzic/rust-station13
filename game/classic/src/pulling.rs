@@ -2,7 +2,7 @@
 
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
-use rs13_world::{Dense, Dir, GridPos, MapLayer, TilePos};
+use rs13_world::{Dense, Dir, GridPos, TilePos};
 
 use crate::chairs::Chair;
 use crate::closets::Closet;
@@ -86,7 +86,7 @@ pub fn start_pulls(
 /// it, if nothing blocks it. If the pulled thing was already out of reach before the step,
 /// the pull is let go instead. Something next to the puller, not diagonally, stays put.
 pub fn follow_pullers(
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut stepped: ResMut<Stepped>,
     pullers: Query<&Pulling, With<Mob>>,
     mut positions: Query<(Entity, &mut GridPos, Has<Dense>, Has<Mob>), Without<crate::firedoors::Firedoor>>,
@@ -124,7 +124,7 @@ pub fn follow_pullers(
         if is_mob {
             pos.0 = left;
         } else if let Some(dir) = Dir::from_offset((left.x - pos.0.x).signum(), (left.y - pos.0.y).signum())
-            && let Some(to) = resolve_step(&map.0, &occupied, &sealed, pos.0, dir)
+            && let Some(to) = resolve_step(map.at(pos.0.z), &occupied, &sealed, pos.0, dir)
         {
             pos.0 = to;
         }

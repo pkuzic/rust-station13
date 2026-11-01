@@ -16,7 +16,7 @@ use std::collections::{HashMap, HashSet};
 use bevy_ecs::prelude::*;
 use rs13_simulation::atmos::gas::ONE_ATMOSPHERE;
 use rs13_simulation::atmos::{AtmosGrid, Cell};
-use rs13_world::{Dir, GridPos, MapLayer, MobStat, TileMap, TilePos};
+use rs13_world::{Dir, GridPos, MobStat, TilePos};
 
 use crate::atmos::StationAtmos;
 use crate::closets::Closet;
@@ -165,7 +165,8 @@ pub trait SoundMedium {
 /// The station: walls and dense airlocks obstruct, closed edges block, and air comes from
 /// the atmos solver.
 pub struct StationMedium<'a> {
-    pub map: &'a TileMap,
+    /// Whether a tile is solid (walls), on whichever deck.
+    pub solid: &'a dyn Fn(TilePos) -> bool,
     /// Tiles with a closed (dense) airlock on them.
     pub closed_doors: &'a HashSet<TilePos>,
     pub barriers: &'a SoundBarriers,
@@ -174,7 +175,7 @@ pub struct StationMedium<'a> {
 
 impl SoundMedium for StationMedium<'_> {
     fn obstruction(&self, at: TilePos) -> u32 {
-        u32::from(self.map.is_solid(at)) + u32::from(self.closed_doors.contains(&at))
+        u32::from((self.solid)(at)) + u32::from(self.closed_doors.contains(&at))
     }
 
     fn edge_closed(&self, from: TilePos, to: TilePos) -> bool {
@@ -248,7 +249,7 @@ pub fn deliver_sounds(
     mut sounds: ResMut<SoundEvents>,
     barriers: Res<SoundBarriers>,
     atmos: Option<Res<StationAtmos>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     doors: Query<(&GridPos, &Airlock)>,
     mut listeners: Query<(Entity, &GridPos, &mut Earshot, Option<&Vitals>), With<Mob>>,
 ) {
@@ -261,7 +262,7 @@ pub fn deliver_sounds(
         .map(|(p, _)| p.0)
         .collect();
     let medium = StationMedium {
-        map: &map.0,
+        solid: &|p| map.is_solid(p),
         closed_doors: &closed_doors,
         barriers: &barriers,
         atmos: atmos.as_deref().map(|a| &a.0),

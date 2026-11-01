@@ -3,7 +3,7 @@
 
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
-use rs13_world::{ApcPanelView, GridPos, MapLayer, MobStat, NetId, ObjectSpec, TilePos};
+use rs13_world::{ApcPanelView, GridPos, MobStat, NetId, ObjectSpec, TilePos};
 
 use crate::access::{IdCard, allowed};
 use crate::actions::{ClickOutcome, in_reach};
@@ -179,7 +179,7 @@ fn mode_number(mode: ChannelMode) -> u8 {
 
 /// Keep each viewer's APC window in step with the APC; close it once out of range.
 pub fn update_apc_views(
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut viewers: Query<(
         Entity,
         &GridPos,
@@ -201,7 +201,7 @@ pub fn update_apc_views(
             }
             Some(ApcPanelView {
                 target: *id,
-                area: map.0.area(apc_pos.0).unwrap_or_default().to_owned(),
+                area: map.area(apc_pos.0).unwrap_or_default().to_owned(),
                 locked: apc.locked,
                 breaker: apc.operating,
                 external: apc.main_status,

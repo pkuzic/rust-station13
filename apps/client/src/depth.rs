@@ -98,6 +98,7 @@ fn shade_walls(
         }
         commands.spawn((
             WallShade(map.0.z),
+            crate::OnDeck(map.0.z),
             Mesh2d(meshes.add(mesh_of(&map.0))),
             MeshMaterial2d(materials.add(ColorMaterial::from(Color::srgba(0.0, 0.0, 0.0, SHADE)))),
             Transform::from_xyz(0.0, 0.0, DEPTH_Z),

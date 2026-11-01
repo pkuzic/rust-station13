@@ -122,3 +122,27 @@ incinerator, its control room and the burn chamber.
 input chute blast doors with their buttons, its piping, canisters and injector. Luna has no
 start point here: one is set by the controls (`spawn_at`). Conveyors, disposals and the
 digital valve are skipped.
+
+## The whole station
+
+**Regions:** all of decks 1–4, 90 × 149 each (`luna_deck1.import.ron` to
+`luna_deck4.import.ron`), loaded together, bottom first, as one station of four decks
+(`--map luna-station`; `multiz.md`).
+
+**What came across:** everything the shared rules know (above), and:
+- **Areas:** every area, named from its Luna path (`auto_areas`: `/area/toxins/lab` is
+  `toxins-lab`).
+- **Start points:** every job's, each with an ID card carrying Luna's access for that job
+  (`get_access`: the Captain's has all of it); Luna's "Unassigned" and other start points
+  just let players in. All of Luna's 44 access numbers have ids.
+- **Ladders and stairs** between the decks; every one lands on a matching end on the next
+  deck.
+- **Turfs:** docked shuttles' floors and walls, walls the station can't touch, and open
+  floor down to the deck below (`open-space`).
+- **Access:** doors that name their access (`access_engine`) or carry stray control
+  characters come across; Luna's `0` is no access.
+
+**Skipped for now:** disposal pipes, cameras, computers, vending machines, the AI and most
+items without a prototype, listed at the top of each deck's file. Cables that run between
+decks lose that end.
+

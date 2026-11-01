@@ -178,9 +178,13 @@ pub struct Rules {
     /// Types skipped without being reported (decals, landmarks we don't use).
     #[serde(default)]
     pub ignore: Vec<String>,
-    /// Area paths → our area ids. Other areas are left out and reported.
+    /// Area paths → our area ids. Other areas are left out and reported, unless
+    /// `auto_areas`: then each gets an id made from its path (`/area/toxins/lab` →
+    /// `toxins-lab`).
     #[serde(default)]
     pub areas: BTreeMap<String, String>,
+    #[serde(default)]
+    pub auto_areas: bool,
     /// Luna access numbers → our access ids.
     #[serde(default)]
     pub access: BTreeMap<u32, String>,
@@ -333,6 +337,8 @@ fn pool() -> impl Iterator<Item = char> {
         .chain('\u{0410}'..='\u{044F}')
         .chain('\u{00C0}'..='\u{00FF}')
         .chain('\u{0100}'..='\u{017F}')
+        // Whole decks have thousands of kinds of tile.
+        .chain('\u{4E00}'..='\u{9FFF}')
         .filter(|c| c.is_alphanumeric() || c.is_ascii_punctuation())
 }
 
@@ -385,7 +391,8 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
             for atom in atoms {
                 let path = atom.path.as_str();
                 if is_a(path, "/area") {
-                    match rules.areas.get(path) {
+                    let auto = rules.auto_areas.then(|| auto_area_id(path)).flatten();
+                    match rules.areas.get(path).or(auto.as_ref()) {
                         Some(id) => {
                             let index = area_ids.iter().position(|a| a == id).unwrap_or_else(|| {
                                 area_ids.push(id.clone());
@@ -518,6 +525,24 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
     })
 }
 
+/// An area id made from its Luna path: `/area/toxins/lab` → `toxins-lab`.
+fn auto_area_id(path: &str) -> Option<String> {
+    let rest = path.strip_prefix("/area/")?;
+    Some(rest.replace(['/', '_'], "-").to_lowercase())
+}
+
+/// One access entry of a Luna door: a number (stray control characters, which some of
+/// Luna's map entries carry, are ignored) or a constant's name (`access_engine`).
+fn access_id<'a>(entry: &str, access: &'a BTreeMap<u32, String>) -> Option<&'a String> {
+    let entry: String = entry.chars().filter(|c| !c.is_control()).collect();
+    let entry = entry.trim();
+    if let Ok(n) = entry.parse::<u32>() {
+        return access.get(&n);
+    }
+    let name = entry.strip_prefix("access_")?.to_lowercase();
+    access.values().find(|id| **id == name)
+}
+
 fn object_ron(
     id: &str,
     rule: &ObjectRule,
@@ -530,19 +555,18 @@ fn object_ron(
     if let Some(text) = rule.access_var.as_ref().and_then(|v| atom.vars.get(v)) {
         let ids: Vec<String> = text
             .split(';')
-            .filter(|n| !n.trim().is_empty())
-            .filter_map(
-                |n| match n.trim().parse::<u32>().ok().and_then(|n| access.get(&n)) {
-                    Some(id) => Some(format!("{id:?}")),
-                    None => {
-                        problems.push(format!(
-                            "column {c}, row {r}: unknown access {n:?} on {}",
-                            atom.path
-                        ));
-                        None
-                    }
-                },
-            )
+            // Luna's 0 is no access at all.
+            .filter(|n| !n.trim().is_empty() && n.trim() != "0")
+            .filter_map(|n| match access_id(n, access) {
+                Some(id) => Some(format!("{id:?}")),
+                None => {
+                    problems.push(format!(
+                        "column {c}, row {r}: unknown access {n:?} on {}",
+                        atom.path
+                    ));
+                    None
+                }
+            })
             .collect();
         if !ids.is_empty() {
             fields.push(format!("access: [{}]", ids.join(", ")));

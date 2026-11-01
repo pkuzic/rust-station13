@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
-use rs13_world::{Appearance, Dir, GridPos, MapLayer, ObjectSpec, TilePos};
+use rs13_world::{Appearance, Dir, GridPos, ObjectSpec, TilePos};
 
 use crate::actions::ClickOutcome;
 use crate::alarms::AreaSeals;
@@ -133,7 +133,7 @@ pub fn update_firedoors(
     time: Res<WorldTime>,
     seals: Res<AreaSeals>,
     fires: Res<crate::firealarms::AreaFires>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut doors: Query<(&GridPos, &mut Firedoor)>,
 ) {
     let now = time.deciseconds();
@@ -146,8 +146,8 @@ pub fn update_firedoors(
             }
             door.anim = None;
         }
-        let covered = crate::alarms::covered_by_seal(&seals, &map.0, pos.0)
-            || crate::alarms::covered_by(&fires.0, &map.0, pos.0);
+        let covered = crate::alarms::covered_by_seal(&seals, map.at(pos.0.z), pos.0)
+            || crate::alarms::covered_by(&fires.0, map.at(pos.0.z), pos.0);
         if covered != door.in_seal {
             door.in_seal = covered;
             door.pending = Some(covered);

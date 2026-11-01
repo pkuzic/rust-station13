@@ -7,7 +7,7 @@ use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
 use rs13_simulation::atmos::gas::T0C;
-use rs13_world::{Appearance, GridPos, MapLayer, ObjectSpec, TilePos};
+use rs13_world::{Appearance, GridPos, ObjectSpec, TilePos};
 
 use crate::actions::ClickOutcome;
 use crate::atmos::StationAtmos;
@@ -50,7 +50,7 @@ pub fn spawn_fire_alarm(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: 
 pub struct FireAlarmWork<'w, 's> {
     alarms: Query<'w, 's, (&'static GridPos, &'static mut FireAlarm, &'static PowerUser)>,
     fires: ResMut<'w, AreaFires>,
-    map: Single<'w, 's, &'static MapLayer>,
+    map: crate::decks::Decks<'w, 's>,
 }
 
 /// What clicking a fire alarm did: for the clicker, and for everyone who sees it.
@@ -69,7 +69,7 @@ impl FireAlarmWork<'_, '_> {
     /// the heat detector. Anything else raises it. The caller checks reach.
     pub fn use_on(&mut self, target: Entity, held: Option<&str>, name: &str) -> Option<FireAlarmOutcome> {
         let (pos, mut alarm, power) = self.alarms.get_mut(target).ok()?;
-        let area = self.map.0.area(pos.0).map(str::to_owned);
+        let area = self.map.area(pos.0).map(str::to_owned);
         if held == Some("wirecutters") {
             alarm.detecting = !alarm.detecting;
             let id = if alarm.detecting {
@@ -105,19 +105,19 @@ impl FireAlarmWork<'_, '_> {
 pub fn process_fire_alarms(
     time: Res<WorldTime>,
     atmos: Option<Res<StationAtmos>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut fires: ResMut<AreaFires>,
     mut alarms: Query<(&GridPos, &FireAlarm, &PowerUser, &mut Appearance)>,
 ) {
     let cycle = time.tick.0.is_multiple_of(MACHINE_TICKS);
     for (pos, alarm, power, mut look) in &mut alarms {
-        let area = map.0.area(pos.0);
+        let area = map.area(pos.0);
         if cycle
             && power.powered
             && alarm.detecting
             && let (Some(area), Some(atmos)) = (area, atmos.as_ref())
         {
-            let air = atmos.0.air_at(crate::alarms::sensor_tile(&map.0, pos.0));
+            let air = atmos.0.air_at(crate::alarms::sensor_tile(map.at(pos.0.z), pos.0));
             if air.temperature > DETECT_TEMPERATURE {
                 fires.0.insert(area.to_owned());
             }

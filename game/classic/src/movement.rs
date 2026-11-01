@@ -6,7 +6,7 @@
 use std::collections::HashSet;
 
 use bevy_ecs::prelude::*;
-use rs13_world::{Dense, Dir, GridPos, MapLayer, MobStat, TileMap, TilePos};
+use rs13_world::{Dense, Dir, GridPos, MobStat, TileMap, TilePos};
 
 use crate::access::IdCard;
 use crate::atmos::{has_handhold, is_space};
@@ -87,7 +87,7 @@ pub fn resolve_step(
 /// Mobs are processed in entity order so results are deterministic.
 pub fn move_mobs(
     time: Res<WorldTime>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut mobs: Query<(
         Entity,
         &mut GridPos,
@@ -108,16 +108,18 @@ pub fn move_mobs(
     mut stepped: ResMut<crate::pulling::Stepped>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
-    (jetpacks, mut tanks, panes, mut commands): (
+    (jetpacks, mut tanks, panes, stair_tiles, mut commands): (
         Query<&crate::jetpacks::Jetpack>,
         Query<&mut crate::equipment::TankGas>,
         Res<crate::windows::PaneEdges>,
+        Query<(&GridPos, &crate::multiz::Stairs), Without<Mob>>,
         Commands,
     ),
 ) {
     let now = time.deciseconds();
     let mut sealed = crate::firedoors::closed_edges(firedoors.iter());
     sealed.extend(panes.0.iter().copied());
+    let stairs: Vec<(TilePos, crate::multiz::Stairs)> = stair_tiles.iter().map(|(p, s)| (p.0, *s)).collect();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
     occupied.extend(
         objects
@@ -155,7 +157,7 @@ pub fn move_mobs(
         }
         // In open space there is nothing to walk on: only push off from something nearby,
         // or fly with a jetpack, which also stops any drift (`jetpacks.md`).
-        if is_space(&map.0, pos.0) && !has_handhold(&map.0, pos.0) {
+        if is_space(map.at(pos.0.z), pos.0) && !has_handhold(map.at(pos.0.z), pos.0) {
             let pushed = crate::jetpacks::worn_jetpack(equipment, &jetpacks)
                 .is_some_and(|pack| crate::jetpacks::thrust(pack, &mut tanks));
             if !pushed {
@@ -164,13 +166,27 @@ pub fn move_mobs(
             commands.entity(entity).remove::<crate::atmos::Drift>();
         }
         mob.facing = Some(dir);
-        if let Some(target) = resolve_step(&map.0, &occupied, &sealed, pos.0, dir) {
+        if let Some(target) = resolve_step(map.at(pos.0.z), &occupied, &sealed, pos.0, dir) {
             occupied.remove(&pos.0);
             occupied.insert(target);
             stepped.0.push((entity, pos.0));
             pos.0 = target;
             let worn = equipment.map_or(0.0, |e| crate::equipment::slowdown(e, &wearables));
             mob.next_move_ds = now + step_delay_ds(intent.run) + worn;
+            continue;
+        }
+
+        // Into stairs: up or down a deck, to the same spot (`multiz.md`).
+        if let Some(to) = crate::multiz::stairs_target(&stairs, pos.0, pos.0.step(dir))
+            && map.deck(to.z).is_some()
+            && !map.is_solid(to)
+            && !occupied.contains(&to)
+        {
+            occupied.remove(&pos.0);
+            occupied.insert(to);
+            stepped.0.push((entity, pos.0));
+            pos.0 = to;
+            mob.next_move_ds = now + step_delay_ds(intent.run);
             continue;
         }
 

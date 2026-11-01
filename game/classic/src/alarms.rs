@@ -6,9 +6,7 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_simulation::atmos::gas::{ONE_ATMOSPHERE, T0C, T20C, TILE_VOLUME};
 use rs13_simulation::atmos::{Gas, GasMix};
-use rs13_world::{
-    AlarmPanelView, AlarmReading, Appearance, Dir, GridPos, MapLayer, MobStat, NetId, TileMap, TilePos,
-};
+use rs13_world::{AlarmPanelView, AlarmReading, Appearance, Dir, GridPos, MobStat, NetId, TileMap, TilePos};
 
 use crate::actions::in_reach;
 use crate::atmos::StationAtmos;
@@ -110,7 +108,7 @@ pub fn sensor_tile(map: &TileMap, pos: TilePos) -> TilePos {
 pub fn process_alarms(
     time: Res<WorldTime>,
     atmos: Option<Res<StationAtmos>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut seals: ResMut<AreaSeals>,
     mut alarms: Query<(&GridPos, &mut AirAlarm, &PowerUser, &mut Appearance)>,
 ) {
@@ -124,8 +122,8 @@ pub fn process_alarms(
             alarm.danger_since = None;
             "alarmp"
         } else {
-            let area = map.0.area(pos.0).unwrap_or_default().to_owned();
-            let safety = assess(&atmos.0.air_at(sensor_tile(&map.0, pos.0)));
+            let area = map.area(pos.0).unwrap_or_default().to_owned();
+            let safety = assess(&atmos.0.air_at(sensor_tile(map.at(pos.0.z), pos.0)));
             if safety == Safety::Danger {
                 let since = *alarm.danger_since.get_or_insert(now);
                 if now - since >= SEAL_DELAY_TICKS {
@@ -180,12 +178,12 @@ pub fn covered_by(areas: &HashSet<String>, map: &TileMap, pos: TilePos) -> bool 
 pub fn apply_seals(
     time: Res<WorldTime>,
     seals: Res<AreaSeals>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut doors: Query<(&GridPos, &mut Airlock)>,
 ) {
     let now = time.deciseconds();
     for (pos, mut door) in &mut doors {
-        let covered = covered_by_seal(&seals, &map.0, pos.0);
+        let covered = covered_by_seal(&seals, map.at(pos.0.z), pos.0);
         if covered && !door.in_seal {
             door.in_seal = true;
             door.seal_pending = true;
@@ -225,7 +223,7 @@ pub fn apply_seals(
 
 /// Apply alarm window requests: the alarm must work and be in reach.
 pub fn process_alarm_ops(
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     mut seals: ResMut<AreaSeals>,
     mut mobs: Query<(&GridPos, &mut PendingAlarmOps, Option<&Vitals>)>,
     alarms: Query<(&GridPos, &AirAlarm, &PowerUser)>,
@@ -240,7 +238,7 @@ pub fn process_alarm_ops(
             if !awake || alarm.broken || !power.powered || !in_reach(pos.0, alarm_pos.0) {
                 continue;
             }
-            let area = map.0.area(alarm_pos.0).unwrap_or_default().to_owned();
+            let area = map.area(alarm_pos.0).unwrap_or_default().to_owned();
             match command {
                 AlarmCommand::Seal(true) => {
                     seals.0.insert(area);
@@ -250,7 +248,7 @@ pub fn process_alarm_ops(
                 }
                 AlarmCommand::PanicFill(on) => {
                     for (vent_pos, mut vent) in &mut vents {
-                        if map.0.area(vent_pos.0) == Some(area.as_str()) {
+                        if map.area(vent_pos.0) == Some(area.as_str()) {
                             vent.panic = on;
                         }
                     }
@@ -275,7 +273,7 @@ pub fn cut_alarm(alarm: &mut AirAlarm, name: &str) -> LocMsg {
 /// Keep each viewer's alarm window in step with the alarm and the room.
 pub fn update_alarm_views(
     atmos: Option<Res<StationAtmos>>,
-    map: Single<&MapLayer>,
+    map: crate::decks::Decks,
     seals: Res<AreaSeals>,
     mut viewers: Query<(
         Entity,
@@ -300,12 +298,12 @@ pub fn update_alarm_views(
             if !usable {
                 return None;
             }
-            let area = map.0.area(alarm_pos.0).unwrap_or_default().to_owned();
-            let air = atmos.0.air_at(sensor_tile(&map.0, alarm_pos.0));
+            let area = map.area(alarm_pos.0).unwrap_or_default().to_owned();
+            let air = atmos.0.air_at(sensor_tile(map.at(alarm_pos.0.z), alarm_pos.0));
             let pressure = air.pressure(TILE_VOLUME);
             let area_vents: Vec<bool> = vents
                 .iter()
-                .filter(|(p, _)| map.0.area(p.0) == Some(area.as_str()))
+                .filter(|(p, _)| map.area(p.0) == Some(area.as_str()))
                 .map(|(_, v)| v.panic)
                 .collect();
             Some(AlarmPanelView {

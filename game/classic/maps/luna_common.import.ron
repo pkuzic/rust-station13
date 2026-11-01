@@ -16,6 +16,12 @@
         (path: "/turf/simulated/wall", tile: (id: "wall", solid: true)),
         (path: "/turf/simulated/wall/r_wall", tile: (id: "r-wall", solid: true)),
         (path: "/turf/simulated/wall/heatshield", tile: (id: "r-wall", solid: true)),
+        // Shuttles docked at the station, and walls the station can't touch.
+        (path: "/turf/simulated/shuttle/floor", tile: (id: "floor")),
+        (path: "/turf/simulated/shuttle/wall", tile: (id: "r-wall", solid: true)),
+        (path: "/turf/unsimulated/wall", tile: (id: "r-wall", solid: true)),
+        // A hole in the floor down to the deck below (`multiz.md`).
+        (path: "/turf/simulated/floor/open", tile: (id: "open-space")),
     ],
 
     // A grille is solid, but air goes through it. Luna's windows are panes along the edges
@@ -165,6 +171,13 @@
         (path: "/obj/machinery/door/poddoor", id: "blast-door", vars: ["id", "density"]),
         (path: "/obj/machinery/door_control", id: "door-button", vars: ["id"]),
         (path: "/obj/machinery/floodlight", id: "floodlight"),
+
+        // Between decks (`multiz.md`): ladder ends and the four kinds of stair tile.
+        (path: "/obj/multiz/ladder", id: "ladder", vars: ["istop"]),
+        (path: "/obj/multiz/stairs/active", id: "stairs-down", dir: true),
+        (path: "/obj/multiz/stairs/active/bottom", id: "stairs-up", dir: true),
+        (path: "/obj/multiz/stairs/enter", id: "stairs-entry", dir: true),
+        (path: "/obj/multiz/stairs/enter/bottom", id: "stairs-entry-bottom", dir: true),
     ],
 
     // Not worth reporting: decorations, mapping helpers, things on space tiles.
@@ -174,13 +187,49 @@
         "/obj/structure/lattice",
     ],
 
+    // Luna's job start points. Until jobs exist, an ID card with the job's access lies on
+    // each (luna:code/game/jobs/access.dm, `get_access`); other start points just let
+    // players in.
+    spawns: [
+        (path: "/obj/effect/landmark/start", name: "Geneticist", with: [(id: "id-card", access: ["medical", "morgue", "medlab", "maint_tunnels", "laboratories_doors"])]),
+        (path: "/obj/effect/landmark/start", name: "Engineer", with: [(id: "id-card", access: ["engine", "incinerator", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks", "laboratories_doors", "maintenance_hall", "shield_generator"])]),
+        (path: "/obj/effect/landmark/start", name: "Unassigned", with: [(id: "id-card", access: ["maint_tunnels"])]),
+        (path: "/obj/effect/landmark/start", name: "Counselor", with: [(id: "id-card", access: ["morgue", "chapel_office", "crematorium", "maint_tunnels"])]),
+        (path: "/obj/effect/landmark/start", name: "Forensic Technician", with: [(id: "id-card", access: ["security", "forensics_lockers", "morgue", "maint_tunnels", "security_passthrough", "medical"])]),
+        (path: "/obj/effect/landmark/start", name: "Medical Doctor", with: [(id: "id-card", access: ["medical", "morgue", "maint_tunnels", "laboratories_doors"])]),
+        (path: "/obj/effect/landmark/start", name: "Captain", with: [(id: "id-card", access: [])]),
+        (path: "/obj/effect/landmark/start", name: "Security Officer", with: [(id: "id-card", access: ["security", "laboratories_doors", "incinerator", "brig", "maint_tunnels", "medical", "security_passthrough", "maintenance_hall", "shield_generator"])]),
+        (path: "/obj/effect/landmark/start", name: "Scientist", with: [(id: "id-card", access: ["tox", "tox_storage", "maint_tunnels", "medlab", "laboratories_doors"])]),
+        (path: "/obj/effect/landmark/start", name: "Head of Security", with: [(id: "id-card", access: ["hosoffice", "incinerator", "medical", "morgue", "tox", "tox_storage", "chemistry", "medlab", "teleporter", "heads", "tech_storage", "security", "brig", "atmospherics", "maint_tunnels", "bar", "janitor", "kitchen", "robotics", "laboratories_doors", "armory", "engine", "security_passthrough", "maintenance_hall", "shield_generator", "forensics_lockers", "hydroponics"])]),
+        (path: "/obj/effect/landmark/start", name: "Head of Personnel", with: [(id: "id-card", access: ["security", "brig", "forensics_lockers", "incinerator", "tox", "tox_storage", "chemistry", "medical", "medlab", "engine", "emergency_storage", "change_ids", "ai_upload", "eva", "heads", "all_personal_lockers", "tech_storage", "maint_tunnels", "bar", "janitor", "crematorium", "kitchen", "robotics", "cargo", "cargo_bot", "security_passthrough", "laboratories_doors", "maintenance_hall", "shield_generator", "hydroponics"])]),
+        (path: "/obj/effect/landmark/start", name: "Atmospheric Technician", with: [(id: "id-card", access: ["atmospherics", "maint_tunnels", "emergency_storage", "tech_storage", "external_airlocks", "maintenance_hall"])]),
+        (path: "/obj/effect/landmark/start", name: "Barman", with: [(id: "id-card", access: ["bar", "maint_tunnels", "kitchen"])]),
+        (path: "/obj/effect/landmark/start", name: "Chemist", with: [(id: "id-card", access: ["medical", "chemistry", "maint_tunnels", "laboratories_doors"])]),
+        (path: "/obj/effect/landmark/start", name: "Janitor", with: [(id: "id-card", access: ["janitor", "maint_tunnels", "laboratories_doors", "incinerator", "maintenance_hall"])]),
+        (path: "/obj/effect/landmark/start", name: "Clown", with: [(id: "id-card", access: ["maint_tunnels", "theater"])]),
+        (path: "/obj/effect/landmark/start", name: "Mime", with: [(id: "id-card", access: ["maint_tunnels", "theater"])]),
+        (path: "/obj/effect/landmark/start", name: "Chef", with: [(id: "id-card", access: ["kitchen", "maint_tunnels"])]),
+        (path: "/obj/effect/landmark/start", name: "Roboticist", with: [(id: "id-card", access: ["robotics", "tech_storage", "medical", "morgue", "maint_tunnels"])]),
+        (path: "/obj/effect/landmark/start", name: "Quartermaster", with: [(id: "id-card", access: ["maint_tunnels", "cargo", "cargo_bot", "mining", "teleporter"])]),
+        (path: "/obj/effect/landmark/start", name: "Cargo Technician", with: [(id: "id-card", access: ["maint_tunnels", "cargo", "cargo_bot"])]),
+        (path: "/obj/effect/landmark/start", name: "Shaft Miner", with: [(id: "id-card", access: ["maint_tunnels", "mining", "cargo", "teleporter"])]),
+        (path: "/obj/effect/landmark/start", name: "Chief Engineer", with: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks", "atmospherics", "emergency_storage", "eva", "heads", "ai_upload", "construction", "security_passthrough", "laboratories_doors", "maintenance_hall", "shield_generator"])]),
+        (path: "/obj/effect/landmark/start", name: "Research Director", with: [(id: "id-card", access: ["medical", "morgue", "medlab", "robotics", "tech_storage", "maint_tunnels", "heads", "tox", "tox_storage", "chemistry", "teleporter", "security_passthrough", "laboratories_doors", "hydroponics"])]),
+        (path: "/obj/effect/landmark/start", name: "Hydroponicist", with: [(id: "id-card", access: ["medical", "hydroponics", "maint_tunnels"])]),
+        (path: "/obj/effect/landmark/start", name: "Warden", with: [(id: "id-card", access: ["security", "laboratories_doors", "incinerator", "brig", "maint_tunnels", "medical", "security_passthrough", "maintenance_hall", "shield_generator", "armory"])]),
+        (path: "/obj/effect/landmark/start"),
+    ],
+
     // Luna access numbers (luna:code/game/jobs/access.dm) → our ids; as in
     // game/classic/content/access.ron.
     access: {
-        1: "security", 2: "brig", 3: "armory", 5: "medical", 6: "morgue", 7: "tox", 8: "tox_storage", 9: "medlab",
-        10: "engine", 11: "engine_equip", 12: "maint_tunnels", 13: "external_airlocks",
-        14: "emergency_storage", 15: "change_ids", 18: "eva", 19: "heads", 20: "captain",
-        23: "tech_storage", 24: "atmospherics", 32: "construction", 34: "cargo_bot", 36: "laboratories_doors",
-        37: "incinerator",
+        1: "security", 2: "brig", 3: "armory", 4: "forensics_lockers", 5: "medical", 6: "morgue",
+        7: "tox", 8: "tox_storage", 9: "medlab", 10: "engine", 11: "engine_equip", 12: "maint_tunnels",
+        13: "external_airlocks", 14: "emergency_storage", 15: "change_ids", 16: "ai_upload", 17: "teleporter", 18: "eva",
+        19: "heads", 20: "captain", 21: "all_personal_lockers", 22: "chapel_office", 23: "tech_storage", 24: "atmospherics",
+        25: "bar", 26: "janitor", 27: "crematorium", 28: "kitchen", 29: "robotics", 31: "cargo",
+        32: "construction", 33: "chemistry", 34: "cargo_bot", 35: "security_passthrough", 36: "laboratories_doors", 37: "incinerator",
+        38: "maintenance_hall", 39: "shield_generator", 40: "hydroponics", 41: "theater", 42: "hosoffice", 43: "mining",
+        70: "syndicate", 80: "nanotrasen",
     },
 )
