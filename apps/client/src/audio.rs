@@ -34,6 +34,9 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("screwdriver", &[ogg!("items/Screwdriver.ogg")]),
     ("wirecutter", &[ogg!("items/Wirecutter.ogg")]),
     ("welder", &[ogg!("items/Welder.ogg"), ogg!("items/Welder2.ogg")]),
+    ("disposal-flush", &[ogg!("machines/disposalflush.ogg")]),
+    ("hiss", &[ogg!("machines/hiss.ogg")]),
+    ("warning-buzzer", &[ogg!("machines/warning-buzzer.ogg")]),
     (
         "sparks",
         &[

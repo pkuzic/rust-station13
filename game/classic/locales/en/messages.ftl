@@ -537,3 +537,7 @@ floodlight-panel-removed = You remove the battery panel.
 floodlight-panel-replaced = You crowbar the battery panel in place.
 floodlight-cell-already = There is a power cell already installed.
 floodlight-cell-inserted = You insert the power cell.
+
+# Disposal unit (disposals.md). Args: $name, $item, $bin (noun ids).
+disposal-placed-self = You place the { NOUN($item) } into the { NOUN($bin) }.
+disposal-placed = { $name } places the { NOUN($item) } into the { NOUN($bin) }.

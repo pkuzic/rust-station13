@@ -16,6 +16,7 @@ pub mod closets;
 pub mod combat;
 pub mod decks;
 pub mod dispensers;
+pub mod disposals;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
@@ -209,7 +210,13 @@ impl Plugin for ClassicPlugin {
             )
             .add_systems(
                 FixedUpdate,
-                (igniters::run_igniters, sparks::run_sparks)
+                (
+                    igniters::run_igniters,
+                    sparks::run_sparks,
+                    disposals::run_bins,
+                    disposals::run_bundles,
+                    disposals::run_outlets,
+                )
                     .chain()
                     .after(fires::expose_flames)
                     .before(atmos::step_atmos)

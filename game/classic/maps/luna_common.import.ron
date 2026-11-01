@@ -172,6 +172,18 @@
         (path: "/obj/machinery/door_control", id: "door-button", vars: ["id"]),
         (path: "/obj/machinery/floodlight", id: "floodlight"),
 
+        // Disposals (`disposals.md`): bins, outlets, and pipes keeping Luna's shape (icon
+        // state) and direction.
+        (path: "/obj/machinery/disposal", id: "disposal-bin"),
+        // Delivery chutes aren't built yet.
+        (path: "/obj/machinery/disposal/deliveryChute"),
+        (path: "/obj/structure/disposaloutlet", id: "disposal-outlet", dir: true),
+        (path: "/obj/structure/disposalpipe/segment", id: "disposal-pipe", dir: true, state: Some("pipe-s")),
+        (path: "/obj/structure/disposalpipe/junction", id: "disposal-pipe", dir: true, state: Some("pipe-j1")),
+        (path: "/obj/structure/disposalpipe/trunk", id: "disposal-pipe", dir: true, state: Some("pipe-t")),
+        (path: "/obj/structure/disposalpipe/crossZ/up", id: "disposal-pipe", dir: true, state: Some("pipe-u")),
+        (path: "/obj/structure/disposalpipe/crossZ/down", id: "disposal-pipe", dir: true, state: Some("pipe-d")),
+
         // Between decks (`multiz.md`): ladder ends and the four kinds of stair tile.
         (path: "/obj/multiz/ladder", id: "ladder", vars: ["istop"]),
         (path: "/obj/multiz/stairs/active", id: "stairs-down", dir: true),

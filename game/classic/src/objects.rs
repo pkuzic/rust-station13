@@ -204,6 +204,13 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::igniters::spawn_igniter(world, spec, pos, id));
     }
+    if matches!(
+        proto,
+        crate::disposals::DISPOSAL_BIN | crate::disposals::DISPOSAL_PIPE | crate::disposals::DISPOSAL_OUTLET
+    ) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::disposals::spawn_disposal(world, spec, pos, id));
+    }
     if crate::multiz::is_multiz(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::multiz::spawn_multiz(world, spec, pos, id));

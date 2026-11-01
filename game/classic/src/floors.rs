@@ -21,7 +21,10 @@ pub struct UnderFloor;
 
 /// Whether a placed object lies under the floor tiles.
 pub fn lies_under_floor(spec: &ObjectSpec) -> bool {
-    matches!(spec.id.as_str(), "cable" | "pipe" | "manifold" | "terminal") && !spec.above_floor
+    matches!(
+        spec.id.as_str(),
+        "cable" | "pipe" | "manifold" | "terminal" | crate::disposals::DISPOSAL_PIPE
+    ) && !spec.above_floor
 }
 
 /// Bare plating: no floor tiles over it.
