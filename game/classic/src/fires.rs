@@ -55,7 +55,8 @@ pub fn expose_flames(
     }
 }
 
-/// Put fire on every tile of a burning zone, and take it off when the zone stops burning.
+/// Put fire on every burning tile (a fire cell, or any tile of a zone burning as a whole),
+/// and take it off when it stops.
 pub fn update_fire_sprites(
     time: Res<WorldTime>,
     atmos: Option<Res<StationAtmos>>,
@@ -68,17 +69,13 @@ pub fn update_fire_sprites(
     if !time.tick.0.is_multiple_of(FIRE_VIEW_TICKS) {
         return;
     }
-    let mut burning: HashMap<TilePos, &'static str> = HashMap::new();
-    for zone in atmos.0.zones() {
-        if zone.burn_rate <= 0.0 {
-            continue;
-        }
-        let per_tile = zone.burn_rate / zone.tiles.len().max(1) as f64;
-        let state = if per_tile > FIERCE { "3" } else { "2" };
-        for tile in &zone.tiles {
-            burning.insert(*tile, state);
-        }
-    }
+    // Fire cells and zones burning as a whole (`rs13_simulation::atmos::grid::fire_cells`).
+    let burning: HashMap<TilePos, &'static str> = atmos
+        .0
+        .burning_tiles()
+        .into_iter()
+        .map(|(tile, rate)| (tile, if rate > FIERCE { "3" } else { "2" }))
+        .collect();
     let gone: BTreeSet<TilePos> = sprites
         .0
         .keys()

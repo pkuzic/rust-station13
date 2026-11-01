@@ -5,7 +5,7 @@ pub mod gas;
 pub mod grid;
 
 pub use gas::{Gas, GasMix};
-pub use grid::{AtmosGrid, Cell, Opening, Side, Wind, Zone};
+pub use grid::{AtmosGrid, Cell, FireCell, Opening, Side, Wind, Zone};
 
 #[cfg(test)]
 mod tests;
