@@ -47,7 +47,7 @@ A tube lights its own tile and the next ones fully, and fades out eight tiles aw
   its corners, crosses no opaque tile: walls and closed airlocks. The opaque tile at the end
   is lit, so walls are lit on the sides that face the light and cast shadows behind them.
 - **Space** is always fully lit, as Luna's space area has no lighting of its own.
-- **The darkest** a tile is drawn is a dim blue (see Depth), so a dark room is not quite black.
+- **The darkest** a tile is drawn is dim but readable (see Depth), so a dark room is not black.
 
 ## Darkness
 
@@ -126,8 +126,15 @@ What gives off light of its own stays bright in the dark and glows
 - **Wall bases** (`apps/client/src/depth.rs`): a crisp dark line three sprite pixels wide
   along the foot of every wall, on the floor side, so walls seem to stand up out of the
   floor. Drawn over the floor, under everything on it.
-- **Darkness is cool:** the darkest a tile is drawn is a dim blue (3 %, 4 %, 7.5 %
-  light), not grey, as darkness reads.
+- **Drop shadows** (`apps/client/src/sprite_shadows.rs`): people and what stands on the
+  floor (closets, machines, chairs, tables, items) cast a soft dark copy of themselves a
+  little to the right and down, as from a light up and to the left, so they stand on the
+  floor. What lies flat (pipes, cables, vents), hangs on a wall or is light itself casts
+  none.
+- **Silhouettes:** other people standing on a tile darker than 20 % (the server's "dark")
+  are drawn as black shapes, clothes and all: you can tell someone is there, not who.
+- **Darkness is dim, not black:** the darkest a tile is drawn is dim but readable and a
+  little cool, so a dark room still shows its shape; only what is out of sight is black.
 
 ## Differences from Luna
 

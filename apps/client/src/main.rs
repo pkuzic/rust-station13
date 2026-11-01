@@ -27,6 +27,7 @@ mod monitor_panel;
 mod scaling;
 mod shadows;
 mod smes_panel;
+mod sprite_shadows;
 mod sprites;
 mod storage_panel;
 mod wire_panel;
@@ -200,6 +201,7 @@ fn main() {
             fov::FovPlugin,
             glow::GlowPlugin,
             depth::DepthPlugin,
+            sprite_shadows::SpriteShadowsPlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
