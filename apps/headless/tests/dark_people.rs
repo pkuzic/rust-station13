@@ -9,7 +9,7 @@ use std::time::Duration;
 
 use rs13_headless::{BotConfig, BotReport, BotResult, Snapshot, Step, bot_app, unique_client_id};
 use rs13_network::protocol::ActionInput;
-use rs13_world::{Dir, TilePos};
+use rs13_world::{Dir, Intent, TilePos};
 
 /// A corridor with a tube at its west end. Spawn points fill from the west: the first bot
 /// stands by the tube, in the light; the second seven tiles from it, in the dark, but in
@@ -142,4 +142,66 @@ fn someone_in_the_dark_is_sent_as_a_shape_until_they_step_into_the_light() {
     assert_eq!(others(lit), 1, "now they are sent: {lit:?}");
     assert!(lit.silhouettes.is_empty(), "and the shape is gone: {lit:?}");
     assert!(lit.names.iter().any(|n| n == STRANGER), "{:?}", lit.names);
+}
+
+/// No lights: two people side by side, both in the dark.
+const UNLIT: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        '1': (tile: (id: "floor"), spawn: true),
+        '2': (tile: (id: "floor"), spawn: true),
+    },
+    rows: [
+        "WWWWWW",
+        "W.12.W",
+        "WWWWWW",
+    ],
+)"#;
+
+#[test]
+fn hitting_a_shape_in_the_dark_hits_the_person() {
+    let port = 20_000 + ((std::process::id() + 6_007) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_map(port, UNLIT).run());
+    thread::sleep(Duration::from_millis(500));
+
+    // The first bot, set to harm, punches the only other "human" it is sent: the
+    // second bot's silhouette.
+    let attacker = run_bot(
+        server,
+        "Attacker",
+        vec![
+            Step::Act(ActionInput::Face(Dir::East)),
+            Step::Act(ActionInput::SetIntent(Intent::Harm)),
+            wait(1_200),
+            Step::Snapshot("before".into()),
+            // Five punches: each misses one time in ten.
+            Step::UseOn("human".into()),
+            wait(250),
+            Step::UseOn("human".into()),
+            wait(250),
+            Step::UseOn("human".into()),
+            wait(250),
+            Step::UseOn("human".into()),
+            wait(250),
+            Step::UseOn("human".into()),
+        ],
+        Duration::from_secs(4),
+    );
+    thread::sleep(Duration::from_millis(400));
+    let victim = run_bot(
+        server,
+        STRANGER,
+        vec![wait(2_800), Step::Snapshot("after".into())],
+        Duration::from_secs(4),
+    );
+    let attacker = attacker.join().unwrap();
+    let victim = victim.join().unwrap();
+
+    let before = snapshot(&attacker, "before");
+    assert_eq!(before.silhouettes, vec![TilePos::new(3, 1, 0)], "{before:?}");
+    assert_eq!(others(before), 0, "{before:?}");
+    let health = snapshot(&victim, "after").status.as_ref().expect("status").health;
+    assert!(health < 100, "the punches landed on the person: {health}");
 }
