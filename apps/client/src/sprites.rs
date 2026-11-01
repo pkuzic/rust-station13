@@ -40,6 +40,15 @@ pub struct Look {
 #[derive(Component, Debug, Clone, Copy)]
 pub struct Layer;
 
+/// The box around a sprite frame's visible pixels, inclusive, from its top-left corner.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Footprint {
+    pub left: u32,
+    pub right: u32,
+    pub top: u32,
+    pub bottom: u32,
+}
+
 pub fn load_atlas(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
@@ -110,6 +119,30 @@ impl SpriteAtlas {
         let width = self.source.width() as usize;
         let (px, py) = (col * tile as usize + x as usize, row * tile as usize + y as usize);
         data.get((py * width + px) * 4 + 3).is_some_and(|a| *a > 0)
+    }
+
+    /// The box around atlas cell `index`'s visible pixels, counted from its top-left corner,
+    /// or `None` if it has none.
+    pub fn footprint(&self, index: usize) -> Option<Footprint> {
+        let tile = self.atlas.tile;
+        let mut found: Option<Footprint> = None;
+        for y in 0..tile {
+            for x in 0..tile {
+                if !self.opaque_at(index, x, y) {
+                    continue;
+                }
+                let f = found.get_or_insert(Footprint {
+                    left: x,
+                    right: x,
+                    top: y,
+                    bottom: y,
+                });
+                f.left = f.left.min(x);
+                f.right = f.right.max(x);
+                f.bottom = y;
+            }
+        }
+        found
     }
 
     /// Enlarge the UI's copy of the atlas `k` times, in place.
