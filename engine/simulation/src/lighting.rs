@@ -10,6 +10,7 @@
 //! Spec: `docs/reference/lighting.md` (luna:code/modules/power/UltraLight.dm).
 
 use std::collections::{HashMap, HashSet};
+use std::sync::OnceLock;
 
 use rs13_world::{TileMap, TilePos};
 
@@ -159,8 +160,23 @@ impl LightField {
 /// The decks of a map and the closed doors on them, as light sees them. Server and client
 /// both light the map through this, so they agree on where it is dark.
 pub struct MapDecks<'a> {
-    decks: HashMap<i32, &'a TileMap>,
-    opaque: HashSet<TilePos>,
+    decks: HashMap<i32, Deck<'a>>,
+}
+
+/// One deck, with what light asks of each tile worked out once.
+struct Deck<'a> {
+    map: &'a TileMap,
+    /// Row-major: walls and closed doors.
+    opaque: Vec<bool>,
+    /// Row-major: no floor.
+    open_below: Vec<bool>,
+}
+
+impl Deck<'_> {
+    fn index(&self, pos: TilePos) -> Option<usize> {
+        let (w, h) = (self.map.width as i32, self.map.height as i32);
+        (pos.x >= 0 && pos.y >= 0 && pos.x < w && pos.y < h).then(|| (pos.y * w + pos.x) as usize)
+    }
 }
 
 impl<'a> MapDecks<'a> {
@@ -170,16 +186,37 @@ impl<'a> MapDecks<'a> {
         decks: impl IntoIterator<Item = &'a TileMap>,
         opaque: impl IntoIterator<Item = TilePos>,
     ) -> Self {
-        Self {
-            decks: decks.into_iter().map(|m| (m.z, m)).collect(),
-            opaque: opaque.into_iter().collect(),
-        }
+        let extra: HashSet<TilePos> = opaque.into_iter().collect();
+        let decks = decks
+            .into_iter()
+            .map(|map| {
+                let positions = (0..map.height as i32)
+                    .flat_map(|y| (0..map.width as i32).map(move |x| TilePos::new(x, y, map.z)));
+                let opaque = positions
+                    .clone()
+                    .map(|p| map.is_opaque(p) || extra.contains(&p))
+                    .collect();
+                let open_below = positions
+                    .map(|p| map.tile(p).is_some_and(|t| t.id == OPEN_SPACE))
+                    .collect();
+                (
+                    map.z,
+                    Deck {
+                        map,
+                        opaque,
+                        open_below,
+                    },
+                )
+            })
+            .collect();
+        Self { decks }
     }
 
     /// The light on every tile from these lights, with space fully lit.
     pub fn light(&self, emitters: &[Emitter]) -> LightField {
         let mut field = LightField::compute(self, emitters);
         for deck in self.decks.values() {
+            let deck = deck.map;
             for y in 0..deck.height as i32 {
                 for x in 0..deck.width as i32 {
                     let pos = TilePos::new(x, y, deck.z);
@@ -195,14 +232,15 @@ impl<'a> MapDecks<'a> {
 
 impl LightWorld for MapDecks<'_> {
     fn is_opaque(&self, pos: TilePos) -> bool {
-        self.decks.get(&pos.z).is_some_and(|m| m.is_opaque(pos)) || self.opaque.contains(&pos)
+        self.decks
+            .get(&pos.z)
+            .is_some_and(|d| d.index(pos).is_some_and(|i| d.opaque[i]))
     }
 
     fn is_open_below(&self, pos: TilePos) -> bool {
         self.decks
             .get(&pos.z)
-            .and_then(|m| m.tile(pos))
-            .is_some_and(|t| t.id == OPEN_SPACE)
+            .is_some_and(|d| d.index(pos).is_some_and(|i| d.open_below[i]))
     }
 }
 
@@ -221,28 +259,65 @@ pub fn can_see(world: &impl LightWorld, from: TilePos, to: TilePos) -> bool {
     if from == to {
         return true;
     }
-    AIM.iter().any(|&(ox, oy)| clear_line(world, from, to, ox, oy))
+    let (dx, dy) = (to.x - from.x, to.y - from.y);
+    let clear = |path: &[(i32, i32)]| {
+        path.iter()
+            .all(|&(x, y)| !world.is_opaque(TilePos::new(from.x + x, from.y + y, from.z)))
+    };
+    match sight_lines().get(dx, dy) {
+        Some(paths) => paths.iter().any(|p| clear(p)),
+        None => AIM.iter().any(|&(ox, oy)| clear(&line_path(dx, dy, ox, oy))),
+    }
 }
 
-fn clear_line(world: &impl LightWorld, from: TilePos, to: TilePos, ox: f32, oy: f32) -> bool {
-    let (x0, y0) = (from.x as f32, from.y as f32);
-    let (x1, y1) = (to.x as f32 + ox, to.y as f32 + oy);
-    let steps = ((x1 - x0).abs().max((y1 - y0).abs()) * 4.0).ceil() as i32;
+/// The tiles between a tile and the one `dx`, `dy` from it that the sight line aimed at
+/// (`ox`, `oy`) from the far tile's centre crosses, in order, without either end.
+fn line_path(dx: i32, dy: i32, ox: f32, oy: f32) -> Vec<(i32, i32)> {
+    let (x1, y1) = (dx as f32 + ox, dy as f32 + oy);
+    let steps = (x1.abs().max(y1.abs()) * 4.0).ceil() as i32;
+    let mut path: Vec<(i32, i32)> = Vec::new();
     for i in 1..steps {
         let t = i as f32 / steps as f32;
-        let pos = TilePos::new(
-            (x0 + (x1 - x0) * t).round() as i32,
-            (y0 + (y1 - y0) * t).round() as i32,
-            from.z,
-        );
-        if pos == from || pos == to {
+        // Halves round up, as rounding the tile's own (positive) coordinates does.
+        let p = ((x1 * t + 0.5).floor() as i32, (y1 * t + 0.5).floor() as i32);
+        if p == (0, 0) || p == (dx, dy) || path.last() == Some(&p) {
             continue;
         }
-        if world.is_opaque(pos) {
-            return false;
-        }
+        path.push(p);
     }
-    true
+    path
+}
+
+/// Sight lines out to this many tiles each way are worked out once and kept; longer ones,
+/// rarer, are traced each time.
+const LINES_RADIUS: i32 = 24;
+
+/// The sight-line paths for every offset within [`LINES_RADIUS`]: they depend only on the
+/// offset, and lighting asks for them for every lit tile of every light.
+struct SightLines(Vec<[Vec<(i32, i32)>; 5]>);
+
+impl SightLines {
+    fn get(&self, dx: i32, dy: i32) -> Option<&[Vec<(i32, i32)>; 5]> {
+        if dx.abs() > LINES_RADIUS || dy.abs() > LINES_RADIUS {
+            return None;
+        }
+        let side = 2 * LINES_RADIUS + 1;
+        self.0
+            .get(((dy + LINES_RADIUS) * side + dx + LINES_RADIUS) as usize)
+    }
+}
+
+fn sight_lines() -> &'static SightLines {
+    static LINES: OnceLock<SightLines> = OnceLock::new();
+    LINES.get_or_init(|| {
+        let r = LINES_RADIUS;
+        SightLines(
+            (-r..=r)
+                .flat_map(|dy| (-r..=r).map(move |dx| (dx, dy)))
+                .map(|(dx, dy)| AIM.map(|(ox, oy)| line_path(dx, dy, ox, oy)))
+                .collect(),
+        )
+    })
 }
 
 #[cfg(test)]
@@ -283,6 +358,42 @@ mod tests {
         assert!((near - 5.0 / 7.0).abs() < 1e-5);
         assert!((far - 2.0 / 7.0).abs() < 1e-5);
         assert_eq!(field.level(TilePos::new(8, 0, 0)), [0.0; 3]);
+    }
+
+    #[test]
+    fn kept_sight_lines_match_traced_ones_and_long_ones_still_work() {
+        // A wall two tiles from a light, off its axis: the kept paths and the traced ones
+        // agree on what it hides, and a light reaching past the kept radius still lights
+        // and shadows tiles.
+        let mut grid = Grid::default();
+        grid.walls.insert(TilePos::new(2, 1, 0));
+        let from = TilePos::new(0, 0, 0);
+        for dy in -6..=6 {
+            for dx in -6..=6 {
+                let to = TilePos::new(dx, dy, 0);
+                let traced = to == from
+                    || AIM.iter().any(|&(ox, oy)| {
+                        line_path(dx, dy, ox, oy)
+                            .iter()
+                            .all(|&(x, y)| !grid.is_opaque(TilePos::new(x, y, 0)))
+                    });
+                assert_eq!(can_see(&grid, from, to), traced, "{dx},{dy}");
+            }
+        }
+        let far = Emitter {
+            pos: from,
+            rgb: [40.0; 3],
+        };
+        let field = LightField::compute(&grid, &[far]);
+        assert!(
+            field.brightness(TilePos::new(30, 0, 0)) > 0.0,
+            "lit past the kept radius"
+        );
+        assert_eq!(
+            field.level(TilePos::new(30, 15, 0)),
+            [0.0; 3],
+            "in the wall's shadow"
+        );
     }
 
     #[test]
