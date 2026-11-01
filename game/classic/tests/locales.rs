@@ -120,6 +120,7 @@ fn every_message_formats_in_both_locales() {
     args.set("temperature", 120.5);
     args.set("pressure", 4000.0);
     args.set("charging", "yes");
+    args.set("bin", "disposal-bin");
     for (loc, src) in [(ru(), locales::RU_MESSAGES), (en(), locales::EN_MESSAGES)] {
         for id in message_ids(src) {
             let text = loc.format(id, Some(&args)).unwrap();

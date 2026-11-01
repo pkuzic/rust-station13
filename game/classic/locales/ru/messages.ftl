@@ -559,3 +559,7 @@ floodlight-panel-removed = Вы снимаете крышку батарейно
 floodlight-panel-replaced = Вы ломом ставите крышку батарейного отсека на место.
 floodlight-cell-already = Батарея уже установлена.
 floodlight-cell-inserted = Вы вставляете батарею.
+
+# Мусоропровод (disposals.md). Аргументы: $name, $item, $bin (id существительных).
+disposal-placed-self = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($bin, case: "acc") }.
+disposal-placed = { $name } кладёт { NOUN($item, case: "acc") } в { NOUN($bin, case: "acc") }.

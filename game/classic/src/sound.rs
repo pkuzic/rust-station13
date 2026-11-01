@@ -54,6 +54,9 @@ pub const SCREWDRIVER: &str = "screwdriver";
 pub const WIRECUTTER: &str = "wirecutter";
 pub const WELDER: &str = "welder";
 pub const SPARKS: &str = "sparks";
+pub const DISPOSAL_FLUSH: &str = "disposal-flush";
+pub const HISS: &str = "hiss";
+pub const WARNING_BUZZER: &str = "warning-buzzer";
 /// Every sound id the game plays.
 pub const ALL_SOUNDS: &[&str] = &[
     AIRLOCK,
@@ -66,6 +69,9 @@ pub const ALL_SOUNDS: &[&str] = &[
     WIRECUTTER,
     WELDER,
     SPARKS,
+    DISPOSAL_FLUSH,
+    HISS,
+    WARNING_BUZZER,
 ];
 
 /// A sound made at a tile this tick.

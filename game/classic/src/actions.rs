@@ -126,6 +126,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
+        mut disposals,
         (
             mut generators,
             mut dispensers,
@@ -159,6 +160,7 @@ pub fn process_actions(
         crate::firedoors::FiredoorWork,
         crate::flashlights::FlashlightWork,
         crate::firealarms::FireAlarmWork,
+        crate::disposals::DisposalWork,
         (
             crate::generators::GeneratorWork,
             crate::dispensers::DispenserWork,
@@ -451,6 +453,29 @@ pub fn process_actions(
                     if let Some(outcome) = apc_work.use_on(mob, target, tool, &mut hands, at, &mut commands) {
                         sounds.tool_used(tool, at);
                         outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if disposals.contains(target) => {
+                    // Disposal bins (`disposals.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    let held = hands
+                        .active_item()
+                        .and_then(|i| appearances.get(i).ok())
+                        .map(|(a, _)| a.sprite.clone());
+                    if let Some((outcome, seen)) =
+                        disposals.use_on(target, &mut hands, held.as_deref(), &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
+                        }
                     }
                 }
                 Action::UseOn(target) if climbing.is_ladder(target) => {

@@ -111,3 +111,62 @@ fn open_floor_joins_the_air_of_two_decks() {
         .count();
     assert!(spanning > 0, "some room reaches down through Luna's open floor");
 }
+
+#[test]
+#[allow(clippy::field_reassign_with_default)]
+fn whatever_is_flushed_down_any_bin_comes_out_of_an_outlet() {
+    use rs13_classic::disposals::{DisposalBin, DisposalOutlet, InDisposal};
+    use rs13_classic::objects::spawn_object;
+    use rs13_simulation::atmos::{Gas, GasMix};
+    use rs13_world::ObjectSpec;
+
+    let mut app = station();
+    app.world_mut().run_schedule(FixedUpdate);
+    let bins: Vec<(bevy_ecs::entity::Entity, TilePos)> = app
+        .world_mut()
+        .query::<(bevy_ecs::entity::Entity, &GridPos, &DisposalBin)>()
+        .iter(app.world())
+        .map(|(e, p, _)| (e, p.0))
+        .collect();
+    let outlets: Vec<TilePos> = app
+        .world_mut()
+        .query::<(&GridPos, &DisposalOutlet)>()
+        .iter(app.world())
+        .map(|(p, _)| p.0)
+        .collect();
+    assert!(
+        bins.len() > 50 && outlets.len() >= 5,
+        "{} bins, {} outlets",
+        bins.len(),
+        outlets.len()
+    );
+    // A wrench in every bin, pumped up and the handle engaged.
+    let mut wrenches = Vec::new();
+    for (bin, at) in &bins {
+        let wrench = spawn_object(app.world_mut(), &ObjectSpec::new("wrench"), *at).unwrap();
+        app.world_mut()
+            .entity_mut(wrench)
+            .remove::<GridPos>()
+            .insert(InDisposal);
+        let mut air = GasMix::default();
+        air.temperature = 293.0;
+        air.set(Gas::Nitrogen, 30.0);
+        let mut bin = app.world_mut().get_mut::<DisposalBin>(*bin).unwrap();
+        bin.contents.push(wrench);
+        bin.handle = true;
+        bin.air = air;
+        wrenches.push(wrench);
+    }
+    for _ in 0..120 * 20 {
+        app.world_mut().run_schedule(FixedUpdate);
+    }
+    let near_an_outlet = |p: TilePos| {
+        outlets
+            .iter()
+            .any(|o| o.z == p.z && (o.x - p.x).abs() + (o.y - p.y).abs() <= 3)
+    };
+    for wrench in wrenches {
+        let at = app.world().get::<GridPos>(wrench).map(|p| p.0);
+        assert!(at.is_some_and(near_an_outlet), "a wrench ended at {at:?}");
+    }
+}
