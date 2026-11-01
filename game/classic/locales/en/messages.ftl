@@ -520,3 +520,9 @@ smes-output = Output: { $on ->
 }
 smes-output-level = Output level:
 smes-load = Output load: { $load } W
+
+# Wall-mounted igniter (igniters.md). Args: $name, $item (noun id).
+sparker-disabled = { $name } has disabled the { NOUN($item) }!
+sparker-disabled-self = You disable the connection to the { NOUN($item) }.
+sparker-reconnected = { $name } has reconnected the { NOUN($item) }!
+sparker-reconnected-self = You fix the connection to the { NOUN($item) }.

@@ -101,6 +101,17 @@ fn fires(app: &mut App) -> usize {
     app.world_mut().query::<&Fire>().iter(app.world()).count()
 }
 
+/// The most tiles on fire at once over the next `s` seconds: the plasma burns out.
+fn most_fires(app: &mut App, s: u64) -> usize {
+    (0..s)
+        .map(|_| {
+            seconds(app, 1);
+            fires(app)
+        })
+        .max()
+        .unwrap_or(0)
+}
+
 /// The player standing by the switch presses it.
 fn press_switch(app: &mut App) {
     let mob = one::<PendingActions>(app);
@@ -132,8 +143,7 @@ fn the_switch_turns_the_igniter_on_and_the_chamber_burns() {
         "launcherbtt",
         "the switch is back up after five seconds"
     );
-    seconds(&mut app, 60);
-    assert_eq!(fires(&mut app), 9, "fire on every tile of the chamber");
+    assert_eq!(most_fires(&mut app, 60), 9, "fire on every tile of the chamber");
 }
 
 #[test]

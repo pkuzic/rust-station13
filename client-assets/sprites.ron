@@ -727,6 +727,13 @@
             "igniter0": (dmi: "icons/obj/stationobjs.dmi", state: "igniter0"),
             "igniter1": (dmi: "icons/obj/stationobjs.dmi", state: "igniter1"),
         },
+        // Wall-mounted igniter: migniter ready, -p unpowered, -d disconnected, -spark sparking.
+        "sparker": {
+            "migniter": (dmi: "icons/obj/stationobjs.dmi", state: "migniter"),
+            "migniter-p": (dmi: "icons/obj/stationobjs.dmi", state: "migniter-p"),
+            "migniter-d": (dmi: "icons/obj/stationobjs.dmi", state: "migniter-d"),
+            "migniter-spark": (dmi: "icons/obj/stationobjs.dmi", state: "migniter-spark"),
+        },
         // Ignition switch: launcherbtt ready, launcheract pressed.
         "ignition-switch": {
             "launcherbtt": (dmi: "icons/obj/objects.dmi", state: "launcherbtt"),

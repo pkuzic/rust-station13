@@ -100,6 +100,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
+            .init_resource::<igniters::PendingSparks>()
             .init_resource::<supermatter::Beams>()
             .init_resource::<supermatter::CoreAlerts>()
             .init_resource::<lights::AreaLights>()

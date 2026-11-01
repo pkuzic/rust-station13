@@ -216,15 +216,42 @@ pub enum MapError {
 /// The on-disk map text format (RON): a legend of characters and an ASCII grid.
 #[derive(Deserialize)]
 struct MapText {
+    #[serde(deserialize_with = "unique_keys")]
     legend: BTreeMap<char, LegendEntry>,
     /// Top row first, as drawn.
     rows: Vec<String>,
     /// Optional second layer, the same size as `rows`: which area each tile is in.
     /// A space character means no area.
-    #[serde(default)]
+    #[serde(default, deserialize_with = "unique_keys")]
     area_legend: BTreeMap<char, String>,
     #[serde(default)]
     area_rows: Vec<String>,
+}
+
+/// A legend, refusing a character defined twice: otherwise the later entry would silently
+/// replace the earlier one.
+fn unique_keys<'de, D, V>(deserializer: D) -> Result<BTreeMap<char, V>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    V: Deserialize<'de>,
+{
+    struct Unique<V>(std::marker::PhantomData<V>);
+    impl<'de, V: Deserialize<'de>> serde::de::Visitor<'de> for Unique<V> {
+        type Value = BTreeMap<char, V>;
+        fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            f.write_str("a map of characters, each once")
+        }
+        fn visit_map<A: serde::de::MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
+            let mut map = BTreeMap::new();
+            while let Some((key, value)) = access.next_entry::<char, V>()? {
+                if map.insert(key, value).is_some() {
+                    return Err(serde::de::Error::custom(format!("{key:?} is defined twice")));
+                }
+            }
+            Ok(map)
+        }
+    }
+    deserializer.deserialize_map(Unique(std::marker::PhantomData))
 }
 
 #[derive(Deserialize)]
@@ -500,6 +527,21 @@ mod tests {
             TileMap::from_ron(&unknown, 0),
             Err(MapError::UnknownSymbol('?'))
         ));
+    }
+
+    #[test]
+    fn rejects_a_legend_character_defined_twice() {
+        let twice = r#"(
+            legend: {
+                '.': (tile: (id: "floor")),
+                '.': (tile: (id: "wall", solid: true)),
+            },
+            rows: ["."],
+        )"#;
+        let Err(MapError::Parse(why)) = TileMap::from_ron(twice, 0) else {
+            panic!("a character defined twice is refused");
+        };
+        assert!(why.contains("defined twice"), "{why}");
     }
 
     #[test]

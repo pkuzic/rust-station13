@@ -448,11 +448,22 @@ pub fn process_actions(
                     }
                 }
                 Action::UseOn(target) if igniters.contains(target) => {
-                    // Igniters and ignition switches (`igniters.md`), within reach.
+                    // Igniters, sparkers and ignition switches (`igniters.md`), within reach.
                     if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
                         continue;
                     }
-                    igniters.use_on(target, now);
+                    if let Some(outcome) = igniters.use_on(target, tool, now) {
+                        outbox.0.extend(outcome.to_mob.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            sounds.tool_used(tool, mob_pos.0);
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
+                        }
+                    }
                 }
                 Action::UseOn(target) if chairs.contains(target) => {
                     // Chairs (`chairs.md`), within reach.

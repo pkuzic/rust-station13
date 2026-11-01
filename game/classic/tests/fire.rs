@@ -78,7 +78,13 @@ fn a_welding_flame_sets_plasma_alight_and_the_room_burns() {
     let mut app = setup(40.0);
     let oxygen = room(&app).get(Gas::Oxygen);
     light_a_welder(&mut app);
-    seconds(&mut app, 60);
+    // The most tiles alight at once: the plasma soon burns out.
+    let most = (0..60)
+        .map(|_| {
+            seconds(&mut app, 1);
+            fires(&mut app)
+        })
+        .max();
     let air = room(&app);
     assert!(
         air.temperature > 250.0 + T0C,
@@ -88,7 +94,19 @@ fn a_welding_flame_sets_plasma_alight_and_the_room_burns() {
     assert!(air.get(Gas::Plasma) < 40.0, "plasma burns");
     assert!(air.get(Gas::Oxygen) < oxygen, "oxygen is used");
     assert!(air.get(Gas::CarbonDioxide) > 0.0, "carbon dioxide is made");
-    assert_eq!(fires(&mut app), 9, "fire on every tile of the room");
+    assert_eq!(most, Some(9), "fire on every tile of the room");
+}
+
+#[test]
+fn a_flame_lights_the_room_at_once() {
+    // Luna's fire starts the moment a flame touches enough plasma (`obj/fire/New`).
+    let mut app = setup(40.0);
+    light_a_welder(&mut app);
+    seconds(&mut app, 3);
+    assert!(
+        room(&app).get(Gas::CarbonDioxide) > 0.0,
+        "burning within a machine cycle"
+    );
 }
 
 #[test]
