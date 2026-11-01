@@ -34,6 +34,7 @@ mod sprite_shadows;
 mod sprites;
 mod storage_panel;
 mod wire_panel;
+mod world_view;
 
 use std::collections::{HashMap, VecDeque};
 use std::net::SocketAddr;
@@ -209,6 +210,7 @@ fn main() {
             sprite_shadows::SpriteShadowsPlugin,
             gas::GasPlugin,
             heat::HeatPlugin,
+            world_view::WorldViewPlugin,
             space::SpacePlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))

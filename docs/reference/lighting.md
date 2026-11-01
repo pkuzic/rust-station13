@@ -132,8 +132,12 @@ What gives off light of its own stays bright in the dark and glows
   fully opaque at 10 mol, so a leak shows as a haze and a flooded room as a thick cloud.
   Drawn over people, lit by the light overlay, hidden on tiles out of sight. The server
   sends the amounts with the pressure picture (`AtmosView`), twice a second.
-- **Heat shimmer** (`apps/client/src/heat.rs`): over each burning tile, reaching a tile
-  above it, faint warm bands waver and rise, added to what is under them. Luna has none.
+- **Heat haze** (`apps/client/src/heat.rs`, `world_view.wesl`): the air over burning
+  tiles and the supermatter bends what is behind it. When the world image is put on the
+  screen, each pixel is taken from up to 1.6 sprite pixels to the side and 0.9 up or down,
+  in rising, wavering bands, as far as the air is hot: fully on a burning tile, 70 % on
+  the supermatter, fading over the tile above, as hot air rises. Walls, windows, floor
+  and people behind the heat waver; nothing is drawn over them. Luna has none.
 - **Space** (`apps/client/src/space.rs`): instead of Luna's still star tiles, three
   layers of stars, drawn on whole sprite pixels, slide past at a tenth, a quarter and a
   half of the camera's movement, so the far ones seem far, and drift slowly as the ship
