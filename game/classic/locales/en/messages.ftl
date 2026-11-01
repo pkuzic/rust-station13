@@ -371,9 +371,9 @@ radio-microphone-on = You engage the microphone.
 radio-microphone-off = You disengage the microphone.
 
 # Chairs (chairs.md). Args: $name, $target (who was in it).
-chair-buckled-self = You buckle yourself to the chair.
+chair-buckled-self = You buckle yourself to the { NOUN($seat) }.
 chair-buckles = { $name } buckles in!
-chair-unbuckled-self = You unbuckle yourself from the chair.
+chair-unbuckled-self = You unbuckle yourself from the { NOUN($seat) }.
 chair-unbuckles = { $name } unbuckles.
 chair-unbuckled-by = { $target } was unbuckled by { $name }!
 
@@ -563,3 +563,10 @@ menu-thing = { NOUN($item) }
 menu-examine = Examine
 menu-use = Use
 menu-pull = Pull
+
+# Emergency wall lockers (walllockers.md). Args: $first, $second, $third, $item (noun ids).
+walllocker-empty = It's empty...
+walllocker-dispensed-1 = Dispensed a { NOUN($first) }.
+walllocker-dispensed-2 = Dispensed a { NOUN($first) } and { NOUN($second) }.
+walllocker-dispensed-3 = Dispensed a { NOUN($first) }, { NOUN($second) } and { NOUN($third) }.
+walllocker-put-back = You put the { NOUN($item) } back in the locker.

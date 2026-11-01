@@ -169,3 +169,49 @@ fn people_face_the_way_they_turn_and_the_way_their_chair_does() {
     ticks(&mut app, 1);
     assert_eq!(app.world().get::<Facing>(mob), Some(&Facing::of(Dir::East)));
 }
+
+#[test]
+fn a_bed_buckles_you_in_lying_down_and_a_stool_is_just_a_seat() {
+    let (mut app, _) = setup();
+    let bed_at = TilePos::new(1, 1, 0);
+    let stool_at = TilePos::new(3, 1, 0);
+    let bed = spawn_object(app.world_mut(), &ObjectSpec::new("bed"), bed_at).unwrap();
+    let stool = spawn_object(app.world_mut(), &ObjectSpec::new("stool"), stool_at).unwrap();
+    let mob = spawn_player_mob(app.world_mut(), bed_at);
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<Appearance>(bed).unwrap().state, "");
+
+    // Into the bed: buckled in and drawn lying down.
+    let said = click(&mut app, mob, bed);
+    assert!(said.contains(&"chair-buckled-self".to_owned()), "{said:?}");
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<Buckled>(mob), Some(&Buckled(bed)));
+    assert_eq!(app.world().get::<Appearance>(mob).unwrap().state, "lying");
+
+    // Out again: standing.
+    let said = click(&mut app, mob, bed);
+    assert!(said.contains(&"chair-unbuckled-self".to_owned()), "{said:?}");
+    ticks(&mut app, 1);
+    assert!(app.world().get::<Buckled>(mob).is_none());
+    assert_eq!(app.world().get::<Appearance>(mob).unwrap().state, "");
+
+    // A bed doesn't turn from beside it.
+    let beside = spawn_player_mob(app.world_mut(), TilePos::new(2, 1, 0));
+    click(&mut app, beside, bed);
+    assert_eq!(chair(&app, bed).dir, Dir::South);
+
+    // A stool doesn't buckle anyone in; a wrench takes it apart.
+    let sitter = spawn_player_mob(app.world_mut(), stool_at);
+    assert!(click(&mut app, sitter, stool).is_empty());
+    assert!(app.world().get::<Buckled>(sitter).is_none());
+    let wrench = spawn_object(app.world_mut(), &ObjectSpec::new("wrench"), stool_at).unwrap();
+    click(&mut app, sitter, wrench);
+    click(&mut app, sitter, stool);
+    assert!(app.world().get_entity(stool).is_err(), "taken apart");
+    let mut sheets = app.world_mut().query::<(&Appearance, &GridPos)>();
+    assert!(
+        sheets
+            .iter(app.world())
+            .any(|(a, p)| a.sprite == "metal-sheet" && p.0 == stool_at)
+    );
+}

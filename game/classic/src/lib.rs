@@ -56,6 +56,7 @@ pub mod storage;
 pub mod supermatter;
 pub mod teg;
 pub mod time;
+pub mod walllockers;
 pub mod welding;
 pub mod windows;
 pub mod wires;

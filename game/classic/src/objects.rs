@@ -171,7 +171,11 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
-    if crate::chairs::is_chair(proto) {
+    if proto == crate::walllockers::EMERGENCY_LOCKER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return crate::walllockers::spawn_locker(world, pos, id);
+    }
+    if crate::chairs::seat(proto).is_some() {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::chairs::spawn_chair(world, spec, pos, id));
     }

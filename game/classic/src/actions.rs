@@ -126,7 +126,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut disposals, mut extinguishers),
+        (mut disposals, mut extinguishers, mut walllockers),
         (
             mut generators,
             mut dispensers,
@@ -163,6 +163,7 @@ pub fn process_actions(
         (
             crate::disposals::DisposalWork,
             crate::extinguishers::ExtinguisherWork,
+            crate::walllockers::WallLockerWork,
         ),
         (
             crate::generators::GeneratorWork,
@@ -577,6 +578,15 @@ pub fn process_actions(
                                 .unwrap_or_default();
                             visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
                         }
+                    }
+                }
+                Action::UseOn(target) if walllockers.contains(target) => {
+                    // Emergency wall lockers (`walllockers.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = walllockers.use_on(target, &mut hands, tool, &mut commands) {
+                        outbox.0.extend(outcome.to_mob);
                     }
                 }
                 Action::UseOn(target) if chairs.contains(target) => {

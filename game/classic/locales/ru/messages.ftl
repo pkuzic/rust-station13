@@ -393,9 +393,9 @@ radio-microphone-on = Вы включаете микрофон.
 radio-microphone-off = Вы выключаете микрофон.
 
 # Стулья (chairs.md). Аргументы: $name, $target (кто сидел).
-chair-buckled-self = Вы пристёгиваетесь к стулу.
+chair-buckled-self = Вы пристёгиваетесь к { NOUN($seat, case: "dat") }.
 chair-buckles = { $name } пристёгивается!
-chair-unbuckled-self = Вы отстёгиваетесь от стула.
+chair-unbuckled-self = Вы отстёгиваетесь от { NOUN($seat, case: "gen") }.
 chair-unbuckles = { $name } отстёгивается.
 chair-unbuckled-by = { $name } отстёгивает { $target }!
 
@@ -587,3 +587,10 @@ menu-thing = { NOUN($item) }
 menu-examine = Осмотреть
 menu-use = Использовать
 menu-pull = Тянуть
+
+# Аварийные настенные шкафчики (walllockers.md). Аргументы: $first, $second, $third, $item (id существительных).
+walllocker-empty = Пусто...
+walllocker-dispensed-1 = Выдано: { NOUN($first) }.
+walllocker-dispensed-2 = Выдано: { NOUN($first) } и { NOUN($second) }.
+walllocker-dispensed-3 = Выдано: { NOUN($first) }, { NOUN($second) } и { NOUN($third) }.
+walllocker-put-back = Вы кладёте { NOUN($item, case: "acc") } обратно в шкафчик.

@@ -45,6 +45,19 @@
         (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
         (path: "/obj/machinery/alarm", id: "air-alarm", dir: true),
         (path: "/obj/machinery/firealarm", id: "fire-alarm", dir: true),
+        // Emergency wall lockers hang where their subtype puts them (`walllockers.md`).
+        (path: "/obj/machinery/walllocker/emerglocker/north", id: "emergency-locker", dir: true,
+            type_vars: {"dir": "2", "pixel_y": "32"}),
+        (path: "/obj/machinery/walllocker/emerglocker/south", id: "emergency-locker", dir: true,
+            type_vars: {"dir": "1", "pixel_y": "-32"}),
+        (path: "/obj/machinery/walllocker/emerglocker/east", id: "emergency-locker", dir: true,
+            type_vars: {"dir": "4", "pixel_x": "32"}),
+        (path: "/obj/machinery/walllocker/emerglocker/west", id: "emergency-locker", dir: true,
+            type_vars: {"dir": "8", "pixel_x": "-32"}),
+        // Stools and beds (`chairs.md`).
+        (path: "/obj/structure/stool", id: "stool"),
+        (path: "/obj/structure/stool/barstool", id: "barstool"),
+        (path: "/obj/structure/stool/bed", id: "bed"),
 
         // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
         (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),

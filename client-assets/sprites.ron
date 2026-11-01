@@ -465,6 +465,12 @@
             "east": (dmi: "icons/obj/objects.dmi", state: "chair", dir: Some(2)),
             "west": (dmi: "icons/obj/objects.dmi", state: "chair", dir: Some(3)),
         },
+        // Stools and beds: one look each.
+        "stool": { "": (dmi: "icons/obj/objects.dmi", state: "stool") },
+        "barstool": { "": (dmi: "icons/obj/objects.dmi", state: "barstool") },
+        "bed": { "": (dmi: "icons/obj/objects.dmi", state: "bed") },
+        // Emergency wall locker, facing the room.
+        "emergency-locker": { "": (dmi: "icons/obj/lockwall.dmi", state: "emerg") },
         "comfy-chair-brown": {
             "south": (dmi: "icons/obj/objects.dmi", state: "comfychair_brown", dir: Some(0)),
             "north": (dmi: "icons/obj/objects.dmi", state: "comfychair_brown", dir: Some(1)),

@@ -258,6 +258,10 @@ pub struct ObjectRule {
     /// Map variables to keep as the object's settings (`vars`), when the map sets them.
     #[serde(default)]
     pub vars: Vec<String>,
+    /// Variables the type itself sets, which the map doesn't repeat (Luna's wall lockers
+    /// set their `dir` and pixel offsets in each subtype). The map's own values win.
+    #[serde(default)]
+    pub type_vars: BTreeMap<String, String>,
 }
 
 /// BYOND direction numbers → our direction names.
@@ -572,8 +576,9 @@ fn object_ron(
             fields.push(format!("access: [{}]", ids.join(", ")));
         }
     }
+    let var = |name: &str| atom.vars.get(name).or_else(|| rule.type_vars.get(name));
     if rule.dir {
-        let byond = atom.vars.get("dir").map_or("2", String::as_str);
+        let byond = var("dir").map_or("2", String::as_str);
         match dir_name(byond) {
             Some(name) => fields.push(format!("dir: {name}")),
             None => problems.push(format!("column {c}, row {r}: odd dir {byond:?} on {}", atom.path)),
@@ -609,8 +614,7 @@ fn object_ron(
     }
     // Every object keeps its pixel offset: it is how maps hang devices on walls.
     let offsets = ["pixel_x", "pixel_y"].into_iter().filter(|name| {
-        atom.vars
-            .get(*name)
+        var(name)
             .and_then(|v| v.trim().parse::<i32>().ok())
             .is_some_and(|v| v != 0)
     });
@@ -619,11 +623,7 @@ fn object_ron(
         .iter()
         .map(String::as_str)
         .chain(offsets)
-        .filter_map(|name| {
-            atom.vars
-                .get(name)
-                .map(|value| format!("{name:?}: {:?}", value.trim()))
-        })
+        .filter_map(|name| var(name).map(|value| format!("{name:?}: {:?}", value.trim())))
         .collect();
     if !kept.is_empty() {
         fields.push(format!("vars: {{{}}}", kept.join(", ")));
