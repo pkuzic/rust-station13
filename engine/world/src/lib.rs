@@ -7,8 +7,8 @@ pub mod sight;
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, AtmosView, Dense, DisplayName, EnvAlert, Facing,
     FreezerPanelView, GridPos, Hand, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer,
-    MobStat, NetId, Opaque, PixelOffset, PowerMonitorRow, PowerMonitorView, Slot, SmesPanelView, StorageView,
-    WirePanelView, WornView,
+    MobStat, NetId, Opaque, PixelOffset, PowerMonitorRow, PowerMonitorView, Silhouette, Slot, SmesPanelView,
+    StorageView, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

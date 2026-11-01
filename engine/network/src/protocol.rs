@@ -8,8 +8,8 @@ use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, Facing,
     FreezerPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat,
-    NetId, Opaque, PixelOffset, PowerMonitorView, Slot, SmesPanelView, StorageView, TilePos, WirePanelView,
-    WornView,
+    NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos,
+    WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -309,5 +309,6 @@ impl Plugin for ProtocolPlugin {
         app.component::<AtmosView>().replicate();
         app.component::<LightSource>().replicate();
         app.component::<Opaque>().replicate();
+        app.component::<Silhouette>().replicate();
     }
 }

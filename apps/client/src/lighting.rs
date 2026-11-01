@@ -39,7 +39,6 @@ impl Plugin for LightingPlugin {
         app.add_plugins(Material2dPlugin::<LightMaterial>::default())
             .insert_resource(LightingOn(true))
             .init_resource::<LightCache>()
-            .init_resource::<LightLevels>()
             .add_systems(
                 Update,
                 (toggle_lighting, update_lighting, present_light)
@@ -108,30 +107,6 @@ impl Material2d for LightMaterial {
 fn toggle_lighting(keys: Res<ButtonInput<KeyCode>>, chat: Res<ChatInput>, mut on: ResMut<LightingOn>) {
     if !chat.open && keys.just_pressed(KeyCode::F4) {
         on.0 = !on.0;
-    }
-}
-
-/// How bright each tile of our deck is (its brightest colour, 0 to 1), for what else
-/// depends on the dark (silhouettes, `sprite_shadows.rs`).
-#[derive(Resource, Default)]
-pub struct LightLevels {
-    width: u32,
-    height: u32,
-    z: i32,
-    levels: Vec<f32>,
-}
-
-impl LightLevels {
-    /// How bright `tile` is; `None` off our deck or before the light is worked out.
-    pub fn brightness(&self, tile: TilePos) -> Option<f32> {
-        let inside = tile.z == self.z
-            && (0..self.width as i32).contains(&tile.x)
-            && (0..self.height as i32).contains(&tile.y);
-        inside.then(|| {
-            self.levels
-                .get((tile.y as u32 * self.width + tile.x as u32) as usize)
-                .copied()
-        })?
     }
 }
 
@@ -302,7 +277,6 @@ fn update_lighting(
     mut commands: Commands,
     on: Res<LightingOn>,
     mut cache: ResMut<LightCache>,
-    mut light_levels: ResMut<LightLevels>,
     sight: Res<Sight>,
     maps: Query<Ref<MapLayer>>,
     sources: Query<(&GridPos, &LightSource, Option<&rs13_world::Appearance>), Without<Hidden>>,
@@ -400,16 +374,6 @@ fn update_lighting(
         cache.width = width;
         cache.height = height;
         cache.z = map.z;
-        *light_levels = LightLevels {
-            width,
-            height,
-            z: map.z,
-            levels: cache
-                .levels
-                .iter()
-                .map(|l| l.iter().copied().fold(0.0, f32::max))
-                .collect(),
-        };
     }
 
     let level = |x: i32, y: i32| {

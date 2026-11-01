@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **23**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **24**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -32,6 +32,7 @@ sight is despawned on that client and spawned again when it comes back.
 | `AtmosView { pressure_dkpa, plasma_dmol, n2o_dmol }` | the map entity | Pressure of every tile, 0.1 kPa, for the F3 debug overlay, and its plasma and sleeping gas, 0.1 mol (saturating at 25.5), for the gas overlays; twice a second |
 | `LightSource([u8; 3])` | lit light fixtures and flashlights on the floor; people carrying lit flashlights (summed) | Red, green and blue strength in tiles of reach; clients compute the light on each tile from these (`docs/reference/lighting.md`) |
 | `Opaque` | closed airlocks | Blocks sight and light through its tile |
+| `Silhouette` | stand-ins for people in the dark, with `GridPos`, `Facing` and `Appearance` only | Drawn black; the person themselves isn't sent to anyone else while they stand in the dark (`docs/reference/lighting.md`, Silhouettes) |
 
 An item in a hand has no `GridPos`; removing the component replicates, and clients
 stop drawing it on the map. The map changes when floor tiles are pried up or put back, and

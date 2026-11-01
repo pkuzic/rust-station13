@@ -64,8 +64,9 @@ fn wait(ms: u64) -> Step {
     Step::Wait(Duration::from_millis(ms))
 }
 
+/// Other people sent: the map has no lights, so they come as silhouettes (`dark_people.rs`).
 fn others(s: &Snapshot) -> usize {
-    s.players.iter().filter(|p| !p.own).count()
+    s.players.iter().filter(|p| !p.own).count() + s.silhouettes.len()
 }
 
 fn has(s: &Snapshot, sprite: &str) -> bool {
