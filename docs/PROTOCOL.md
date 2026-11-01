@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **22**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **23**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
@@ -29,7 +29,7 @@ sight is despawned on that client and spawned again when it comes back.
 | `Hidden` | pipes and cables under floor tiles | Not drawn and not clickable (BYOND `invisibility`) |
 | `HandsView { left, right, active }` | mobs | Held items as `NetId`s and the active hand |
 | `DisplayName(String)` | people | Character name (English only) |
-| `AtmosView { pressure_dkpa }` | the map entity | Pressure of every tile, 0.1 kPa, twice a second, for the F3 debug overlay |
+| `AtmosView { pressure_dkpa, plasma_dmol, n2o_dmol }` | the map entity | Pressure of every tile, 0.1 kPa, for the F3 debug overlay, and its plasma and sleeping gas, 0.1 mol (saturating at 25.5), for the gas overlays; twice a second |
 | `LightSource([u8; 3])` | lit light fixtures and flashlights on the floor; people carrying lit flashlights (summed) | Red, green and blue strength in tiles of reach; clients compute the light on each tile from these (`docs/reference/lighting.md`) |
 | `Opaque` | closed airlocks | Blocks sight and light through its tile |
 

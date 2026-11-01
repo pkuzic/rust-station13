@@ -4,7 +4,10 @@
 //! player it can see and exits.
 //!
 //! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
-//! [--name NAME] [--say TEXT]`
+//! [--name NAME] [--say TEXT] [--use SPRITE]... [--wait SECONDS]...`
+//!
+//! `--use` and `--wait` make a script, run in order: `--use` clicks the first thing with
+//! that sprite (picking it up, or using it once in hand), `--wait` pauses.
 //!
 //! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
 //! line per notice received, `notice <message id>`.
@@ -15,7 +18,7 @@ use std::time::Duration;
 
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
-use rs13_headless::{BotConfig, BotReport, bot_app, unique_client_id};
+use rs13_headless::{BotConfig, BotReport, Step, bot_app, unique_client_id};
 use rs13_world::Dir;
 
 fn main() -> AppExit {
@@ -65,6 +68,10 @@ fn parse_args() -> Result<BotConfig, String> {
             "--examine" => config.examine = Some(value),
             "--name" => config.name = Some(value),
             "--say" => config.say = Some(value),
+            "--use" => config.script.push(Step::UseOn(value)),
+            "--wait" => config.script.push(Step::Wait(Duration::from_secs_f32(
+                value.parse().map_err(|e| format!("--wait: {e}"))?,
+            ))),
             "--seconds" => {
                 config.hold = Duration::from_secs_f32(value.parse().map_err(|e| format!("--seconds: {e}"))?)
             }

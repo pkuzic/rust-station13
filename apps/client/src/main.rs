@@ -19,7 +19,9 @@ mod audio;
 mod depth;
 mod fov;
 mod freezer_panel;
+mod gas;
 mod glow;
+mod heat;
 mod hud;
 mod laser_panel;
 mod lighting;
@@ -27,6 +29,7 @@ mod monitor_panel;
 mod scaling;
 mod shadows;
 mod smes_panel;
+mod space;
 mod sprite_shadows;
 mod sprites;
 mod storage_panel;
@@ -202,6 +205,9 @@ fn main() {
             glow::GlowPlugin,
             depth::DepthPlugin,
             sprite_shadows::SpriteShadowsPlugin,
+            gas::GasPlugin,
+            heat::HeatPlugin,
+            space::SpacePlugin,
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(ServerAddr(args.server))
@@ -632,6 +638,11 @@ fn draw_map(
                             );
                         }
                     }
+                }
+                // Space is drawn under the map by `space.rs`; its tiles draw nothing.
+                if tile.id == "space" {
+                    drawn.0.insert(pos, (tile.id.clone(), Vec::new()));
+                    continue;
                 }
                 sprites.push(match atlas.sprite(sprite, &state, 0) {
                     Some(image) => commands.spawn((image, transform)).id(),

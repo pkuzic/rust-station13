@@ -21,6 +21,10 @@ use crate::sprites::{Look, OverlayPart, SpriteAtlas};
 const GLOW_Z: f32 = 20.2;
 /// How far past full white glowing pixels are drawn: what the bloom spreads.
 const GLOW_BOOST: f32 = 1.6;
+/// The same for what glows whole (fire): less, and partly see-through, so its colours
+/// stay orange and its flames keep their shape instead of washing out to yellow.
+const WHOLE_BOOST: f32 = 1.15;
+const WHOLE_ALPHA: f32 = 0.7;
 
 /// Which pixels of a sprite give off light.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -216,7 +220,10 @@ fn add_glows(
             return;
         };
         let mut copy = Sprite::from_atlas_image(image(kind), texture);
-        copy.color = Color::LinearRgba(LinearRgba::rgb(GLOW_BOOST, GLOW_BOOST, GLOW_BOOST));
+        copy.color = Color::LinearRgba(match kind {
+            GlowKind::Whole => LinearRgba::new(WHOLE_BOOST, WHOLE_BOOST, WHOLE_BOOST, WHOLE_ALPHA),
+            _ => LinearRgba::rgb(GLOW_BOOST, GLOW_BOOST, GLOW_BOOST),
+        });
         copy.flip_x = sprite.flip_x;
         commands
             .entity(entity)
