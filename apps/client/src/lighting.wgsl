@@ -1,11 +1,15 @@
-// Soft tile lighting (`docs/reference/lighting.md`). The texture holds one texel per
-// tile; between tile centres the light is blended with smoothstep weights, so light
-// fades smoothly with no creases. The pipeline multiplies the result over the map.
+// Tile lighting (`docs/reference/lighting.md`). The texture holds one texel per tile. Each
+// tile shows its own light flat across most of its area, blending with its neighbour only
+// in a narrow band at the edge, so light and shadow read tile by tile without hard seams.
+// The pipeline multiplies the result over the map.
 // Alpha says whether a tile is in sight: only those are blended, so light from a tile the
 // player can't see (the room behind a wall) never bleeds into what they can. Darkness
 // out of sight is drawn by the black squares of `shadows.rs`.
 
 @group(2) @binding(0) var light_texture: texture_2d<f32>;
+
+// How wide the blend between two tiles is, as a share of a tile.
+const EDGE: f32 = 0.25;
 
 struct FragmentInput {
     @location(2) uv: vec2<f32>,
@@ -17,6 +21,9 @@ fn fragment(in: FragmentInput) -> @location(0) vec4<f32> {
     let p = in.uv * vec2<f32>(size) - 0.5;
     let base = floor(p);
     var f = p - base;
+    // Flat across most of each tile; blended only in a narrow band at tile edges, so
+    // shadows read as darker tiles, not a wash.
+    f = clamp((f - 0.5) / EDGE + 0.5, vec2<f32>(0.0), vec2<f32>(1.0));
     f = f * f * (3.0 - 2.0 * f);
     let top = size - vec2<i32>(1, 1);
     let i0 = clamp(vec2<i32>(base), vec2<i32>(0, 0), top);

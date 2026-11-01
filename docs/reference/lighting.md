@@ -82,15 +82,21 @@ made-up two-deck world.
   replicates, with the same engine code as the server (`MapDecks`), per tile as above.
 - **When:** the client works it out again only when the map, a light or a closed door
   changes, and redraws it when what the player sees changes.
-- **How it is drawn:** a texture with one texel per tile of the deck you stand on. Between
-  tile centres the light is blended with smoothstep weights, so it fades smoothly with no
-  creases, but only between tiles the player sees: light from a room behind a wall never
+- **How it is drawn:** a texture with one texel per tile of the deck you stand on. Each
+  tile shows its own light flat across most of its area and blends with its neighbour only
+  in a narrow band at the edge (a quarter of a tile), so light and shadow read tile by tile,
+  and only between tiles the player sees: light from a room behind a wall never
   shows on this side of it. It is multiplied over everything on the map, coloured light
   included. The HUD and the text panel are not darkened.
 - **Walls and closed doors** show the light of the floor in front of the faces that turn
   towards you: the brightest of the open tiles beside them that you see. Light from a room
   behind a wall, or on a window beside a door, never shows on the face you see. A room's
   corner, with no face to see, takes the light at its corner.
+- **Changes fade:** when a light goes on or off, a door opens or the player moves, the
+  drawn light eases to the new levels over about a third of a second instead of snapping.
+- **Fire flickers:** the light of a burning tile wavers between three quarters and full
+  strength, each tile in its own rhythm. Fires are worked out afresh every frame; the rest
+  of the light only when it changes.
 - **F4** turns lighting off and on.
 
 ## Glow
@@ -117,10 +123,9 @@ What gives off light of its own stays bright in the dark and glows
 
 ## Depth
 
-- **Wall bases** (`apps/client/src/depth.rs`): the floor darkens softly along the foot of
-  every wall, half shade at the wall fading to nothing two fifths of a tile out, so walls
-  seem to stand up out of the floor. Corners, where two strips meet, come out a little
-  darker. Drawn over the floor, under everything on it.
+- **Wall bases** (`apps/client/src/depth.rs`): a crisp dark line three sprite pixels wide
+  along the foot of every wall, on the floor side, so walls seem to stand up out of the
+  floor. Drawn over the floor, under everything on it.
 - **Darkness is cool:** the darkest a tile is drawn is a dim blue (3 %, 4 %, 7.5 %
   light), not grey, as darkness reads.
 

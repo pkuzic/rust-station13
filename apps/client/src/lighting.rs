@@ -41,7 +41,9 @@ impl Plugin for LightingPlugin {
             .init_resource::<LightCache>()
             .add_systems(
                 Update,
-                (toggle_lighting, update_lighting).chain().in_set(DrawLight),
+                (toggle_lighting, update_lighting, present_light)
+                    .chain()
+                    .in_set(DrawLight),
             );
     }
 }
@@ -116,6 +118,123 @@ struct LightCache {
     height: u32,
     z: i32,
     levels: Vec<[f32; 3]>,
+    /// Per texel, top row first: the light to show, and whether the tile is in sight.
+    target: Vec<([f32; 3], bool)>,
+    /// The light shown now, easing towards `target` (and the fires).
+    shown: Vec<[f32; 3]>,
+    /// Fires on our deck, whose light flickers.
+    fires: Vec<Emitter>,
+    opaque: Vec<TilePos>,
+}
+
+/// How fast shown light eases to a change, per second: about a third of a second to settle.
+const FADE_RATE: f32 = 10.0;
+
+/// The texture's bytes: light per texel (no darker than `MIN_LIGHT`), and in alpha whether
+/// the tile gives light to the picture (`lighting.wgsl`).
+fn texture_data(texels: impl Iterator<Item = ([f32; 3], bool)>) -> Vec<u8> {
+    let mut data = Vec::new();
+    for (light, in_sight) in texels {
+        for (c, min) in light.into_iter().zip(MIN_LIGHT) {
+            data.push((c.max(min) * 255.0).round() as u8);
+        }
+        data.push(if in_sight { 255 } else { 0 });
+    }
+    data
+}
+
+/// How strongly a fire burns this moment, from 0.75 to 1: two quick waves, offset per tile
+/// so fires don't flicker in step.
+pub fn flicker(seconds: f32, pos: TilePos) -> f32 {
+    let phase = (pos.x.wrapping_mul(73) ^ pos.y.wrapping_mul(151)) as f32 * 0.37;
+    let wave = 0.5 * (seconds * 11.0 + phase).sin() + 0.5 * (seconds * 17.3 + 2.0 * phase).sin();
+    0.875 + 0.125 * wave
+}
+
+/// Every frame: ease the shown light towards what it should be, with the fires' light
+/// flickering on top, and upload it when it changed.
+fn present_light(
+    time: Res<Time>,
+    on: Res<LightingOn>,
+    mut cache: ResMut<LightCache>,
+    maps: Query<&MapLayer>,
+    overlays: Query<&LightOverlay>,
+    mut images: ResMut<Assets<Image>>,
+) {
+    let (width, height) = (cache.width, cache.height);
+    let n = (width * height) as usize;
+    if !on.0 || cache.target.len() != n {
+        return;
+    }
+    let Some(overlay) = overlays.iter().find(|o| o.width == width && o.height == height) else {
+        return;
+    };
+    // The fires' light this frame.
+    let mut fire = vec![[0.0_f32; 3]; n];
+    if let Some(map) = maps.iter().find(|m| m.0.z == cache.z)
+        && !cache.fires.is_empty()
+    {
+        let now = time.elapsed_secs();
+        let lit: Vec<Emitter> = cache
+            .fires
+            .iter()
+            .map(|e| Emitter {
+                pos: e.pos,
+                rgb: e.rgb.map(|c| c * flicker(now, e.pos)),
+            })
+            .collect();
+        let field = MapDecks::new([&map.0], cache.opaque.iter().copied()).light(&lit);
+        for y in 0..height as i32 {
+            for x in 0..width as i32 {
+                let pos = TilePos::new(x, y, cache.z);
+                if map
+                    .0
+                    .tile(pos)
+                    .is_some_and(|t| t.id == rs13_simulation::lighting::SPACE)
+                {
+                    continue;
+                }
+                fire[((height as i32 - 1 - y) * width as i32 + x) as usize] = field.level(pos);
+            }
+        }
+    }
+    let desired: Vec<[f32; 3]> = cache
+        .target
+        .iter()
+        .zip(&fire)
+        .map(|((light, _), f)| std::array::from_fn(|c| (light[c] + f[c]).min(1.0)))
+        .collect();
+    let step = 1.0 - (-time.delta_secs() * FADE_RATE).exp();
+    let mut changed = cache.shown.len() != n;
+    if changed {
+        cache.shown = desired;
+    } else {
+        for (shown, want) in cache.shown.iter_mut().zip(&desired) {
+            for c in 0..3 {
+                let gap = want[c] - shown[c];
+                if gap.abs() > 1.0 / 512.0 {
+                    shown[c] += gap * step;
+                    changed = true;
+                } else if gap != 0.0 {
+                    shown[c] = want[c];
+                    changed = true;
+                }
+            }
+        }
+    }
+    if !changed {
+        return;
+    }
+    let data = texture_data(
+        cache
+            .shown
+            .iter()
+            .zip(&cache.target)
+            .map(|(light, (_, in_sight))| (*light, *in_sight)),
+    );
+    if let Some(mut image) = images.get_mut(&overlay.image) {
+        image.data = Some(data);
+    }
 }
 
 /// The light to draw on a wall or closed door: the light just outside its faces on the
@@ -160,7 +279,7 @@ fn update_lighting(
     mut cache: ResMut<LightCache>,
     sight: Res<Sight>,
     maps: Query<Ref<MapLayer>>,
-    sources: Query<(&GridPos, &LightSource), Without<Hidden>>,
+    sources: Query<(&GridPos, &LightSource, Option<&rs13_world::Appearance>), Without<Hidden>>,
     (screens, glow): (
         Query<(&GridPos, &crate::sprites::Look), (Without<LightSource>, Without<Hidden>)>,
         Option<Res<crate::glow::GlowAtlas>>,
@@ -193,13 +312,24 @@ fn update_lighting(
         return;
     };
 
-    let mut emitters: Vec<Emitter> = sources
+    // Fires flicker, so their light is added afresh every frame (`present_light`).
+    let (fires, steady): (Vec<_>, Vec<_>) = sources
         .iter()
-        .map(|(pos, LightSource(rgb))| Emitter {
-            pos: pos.0,
-            rgb: rgb.map(f32::from),
+        .map(|(pos, LightSource(rgb), look)| {
+            let emitter = Emitter {
+                pos: pos.0,
+                rgb: rgb.map(f32::from),
+            };
+            (emitter, look.is_some_and(|a| a.sprite == "fire"))
         })
+        .partition(|(_, fire)| *fire);
+    let mut fires: Vec<Emitter> = fires
+        .into_iter()
+        .map(|(e, _)| e)
+        .filter(|e| e.pos.z == map.z)
         .collect();
+    fires.sort_by_key(|e| e.pos);
+    let mut emitters: Vec<Emitter> = steady.into_iter().map(|(e, _)| e).collect();
     // Glowing screens cast a faint light of their own colour (`glow.rs`).
     if let Some(glow) = &glow {
         emitters.extend(screens.iter().filter_map(|(pos, look)| {
@@ -223,6 +353,10 @@ fn update_lighting(
         e.rgb.map(f32::to_bits).hash(&mut digest);
     }
     opaque.hash(&mut digest);
+    for e in &fires {
+        e.pos.hash(&mut digest);
+        e.rgb.map(f32::to_bits).hash(&mut digest);
+    }
     let digest = digest.finish();
     let relit = cache.digest != Some(digest);
     if !relit && !sight.is_changed() && !overlays.is_empty() {
@@ -254,14 +388,14 @@ fn update_lighting(
     let inside = |p: TilePos| (0..width as i32).contains(&p.x) && (0..height as i32).contains(&p.y);
     let seen = |p: TilePos| inside(p) && sight.sees(p);
     let eye = me.map(|p| [p.x as f32, p.y as f32]);
-    let mut data = Vec::with_capacity((width * height * 4) as usize);
+    let mut target = Vec::with_capacity((width * height) as usize);
     // Texture rows run from the top of the map down.
     for row in 0..height as i32 {
         let y = height as i32 - 1 - row;
         for x in 0..width as i32 {
             let tile = TilePos::new(x, y, map.z);
             // Walls and closed doors show the light on the side the player sees.
-            let (light, in_sight) = if blocks(tile) {
+            target.push(if blocks(tile) {
                 let at_point = |p: [f32; 2]| level(p[0].round() as i32, p[1].round() as i32);
                 match wall_light(tile, eye, at_point, blocks, seen) {
                     Some(light) => (light, true),
@@ -269,26 +403,21 @@ fn update_lighting(
                 }
             } else {
                 (level(x, y), seen(tile))
-            };
-            for (c, min) in light.into_iter().zip(MIN_LIGHT) {
-                let c = c.max(min);
-                data.push((c * 255.0).round() as u8);
-            }
-            // Alpha: whether this tile gives light to the picture (`lighting.wgsl`).
-            data.push(if in_sight { 255 } else { 0 });
+            });
         }
     }
+    cache.target = target;
+    cache.fires = fires;
+    cache.opaque = opaque;
 
     let existing = overlays
         .iter()
-        .find(|(_, o, _)| o.width == width && o.height == height)
-        .map(|(_, o, _)| o.image.clone());
-    if let Some(handle) = existing
-        && let Some(mut image) = images.get_mut(&handle)
-    {
-        image.data = Some(data);
+        .any(|(_, o, _)| o.width == width && o.height == height);
+    if existing {
         return;
     }
+    let data = texture_data(cache.target.iter().map(|(light, in_sight)| (*light, *in_sight)));
+    cache.shown.clear();
     for (entity, ..) in &overlays {
         commands.entity(entity).despawn();
     }
@@ -323,6 +452,93 @@ fn update_lighting(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fire_flickers_between_three_quarters_and_full() {
+        let pos = TilePos::new(3, 4, 0);
+        let samples: Vec<f32> = (0..200).map(|i| flicker(i as f32 * 0.05, pos)).collect();
+        assert!(samples.iter().all(|f| (0.75..=1.0).contains(f)));
+        let (lo, hi) = samples
+            .iter()
+            .fold((1.0_f32, 0.0_f32), |(lo, hi), f| (lo.min(*f), hi.max(*f)));
+        assert!(hi - lo > 0.1, "it visibly flickers: {lo}..{hi}");
+        assert_ne!(
+            flicker(1.0, pos),
+            flicker(1.0, TilePos::new(4, 4, 0)),
+            "not in step"
+        );
+    }
+
+    /// A 3 × 1 deck with an overlay, ready for `present_light`.
+    fn presenting(target: [f32; 3], fires: Vec<Emitter>) -> App {
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins).init_resource::<Assets<Image>>();
+        let map = TileMap::from_ron(r#"(legend: { '.': (tile: (id: "floor")) }, rows: ["..."])"#, 0).unwrap();
+        app.world_mut().spawn(MapLayer(map));
+        let image = app
+            .world_mut()
+            .resource_mut::<Assets<Image>>()
+            .add(Image::default());
+        app.world_mut().spawn(LightOverlay {
+            width: 3,
+            height: 1,
+            image,
+        });
+        app.insert_resource(LightingOn(true)).insert_resource(LightCache {
+            width: 3,
+            height: 1,
+            target: vec![(target, true); 3],
+            fires,
+            ..default()
+        });
+        app.add_systems(Update, present_light);
+        app
+    }
+
+    fn shown(app: &App) -> Vec<[f32; 3]> {
+        app.world().resource::<LightCache>().shown.clone()
+    }
+
+    #[test]
+    fn a_change_of_light_fades_in_rather_than_snapping() {
+        let mut app = presenting([1.0; 3], vec![]);
+        app.update();
+        assert_eq!(shown(&app)[0], [1.0; 3]);
+        // The light goes out: a frame later it is on its way down, not there yet.
+        app.world_mut().resource_mut::<LightCache>().target = vec![([0.0; 3], true); 3];
+        std::thread::sleep(std::time::Duration::from_millis(20));
+        app.update();
+        let now = shown(&app)[0][0];
+        assert!(now > 0.05 && now < 0.95, "fading: {now}");
+        for _ in 0..40 {
+            std::thread::sleep(std::time::Duration::from_millis(20));
+            app.update();
+        }
+        assert!(shown(&app)[0][0] < 0.01, "settled");
+    }
+
+    #[test]
+    fn a_fire_lights_its_tile_and_its_light_wavers() {
+        let fire = Emitter {
+            pos: TilePos::new(1, 0, 0),
+            rgb: [4.0, 2.0, 1.0],
+        };
+        let mut app = presenting([0.0; 3], vec![fire]);
+        let mut reds = Vec::new();
+        for _ in 0..12 {
+            std::thread::sleep(std::time::Duration::from_millis(30));
+            app.update();
+            reds.push(shown(&app)[1][0]);
+        }
+        assert!(
+            reds.iter().all(|r| *r > 0.2),
+            "the fire lights its tile: {reds:?}"
+        );
+        let (lo, hi) = reds
+            .iter()
+            .fold((1.0_f32, 0.0_f32), |(lo, hi), r| (lo.min(*r), hi.max(*r)));
+        assert!(hi - lo > 0.01, "and wavers: {reds:?}");
+    }
 
     #[test]
     fn walls_show_the_light_on_the_side_you_see() {
