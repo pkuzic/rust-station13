@@ -62,6 +62,7 @@ pub fn casts_shadow(sprite: &str) -> bool {
             | "light-switch"
             | "ignition-switch"
             | "sparker"
+            | "sparks"
             | "igniter"
             | "apc"
             | "air-alarm"

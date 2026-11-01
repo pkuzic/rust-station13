@@ -53,6 +53,7 @@ pub const CROWBAR: &str = "crowbar";
 pub const SCREWDRIVER: &str = "screwdriver";
 pub const WIRECUTTER: &str = "wirecutter";
 pub const WELDER: &str = "welder";
+pub const SPARKS: &str = "sparks";
 /// Every sound id the game plays.
 pub const ALL_SOUNDS: &[&str] = &[
     AIRLOCK,
@@ -64,6 +65,7 @@ pub const ALL_SOUNDS: &[&str] = &[
     SCREWDRIVER,
     WIRECUTTER,
     WELDER,
+    SPARKS,
 ];
 
 /// A sound made at a tile this tick.

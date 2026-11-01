@@ -525,6 +525,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("laser-beam", _) => (Color::srgb(0.4, 0.4, 1.0), TILE_PX, 3.1),
         // Burning air, over everything but the walls' fixtures.
         ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
+        // Flying sparks: over the fire, under the heat haze.
+        ("sparks", _) => (Color::srgb(1.0, 0.9, 0.4), 8.0, 3.25),
         // A chair facing north has its back to us: drawn over its sitter and their clothes
         // (Luna `handle_rotation`, `FLY_LAYER`).
         (chair, "north") if rs13_classic::chairs::is_chair(chair) => {
@@ -558,7 +560,7 @@ fn pick_sprite(
     drawn
         .iter()
         .filter(|(_, a, _, _, v)| {
-            **v != Visibility::Hidden && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+            **v != Visibility::Hidden && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
         })
         .filter_map(|(id, _, at, sprite, _)| {
             let centre = at.translation();
@@ -1000,7 +1002,7 @@ fn send_clicks(
         objects
             .iter()
             .filter(|(_, pos, a)| {
-                (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+                (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
             })
             .min_by_key(|(_, _, a)| click_rank(a))
             .map(|(id, ..)| *id)
@@ -1281,7 +1283,8 @@ fn scripted_use(
             objects
                 .iter()
                 .filter(|(_, pos, a)| {
-                    (pos.0.x, pos.0.y) == tile && !matches!(a.sprite.as_str(), "fire" | "laser-beam")
+                    (pos.0.x, pos.0.y) == tile
+                        && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
                 })
                 .min_by_key(|(_, _, a)| click_rank(a))
                 .map(|(id, ..)| match step {

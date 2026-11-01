@@ -34,6 +34,15 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("screwdriver", &[ogg!("items/Screwdriver.ogg")]),
     ("wirecutter", &[ogg!("items/Wirecutter.ogg")]),
     ("welder", &[ogg!("items/Welder.ogg"), ogg!("items/Welder2.ogg")]),
+    (
+        "sparks",
+        &[
+            ogg!("effects/sparks1.ogg"),
+            ogg!("effects/sparks2.ogg"),
+            ogg!("effects/sparks3.ogg"),
+            ogg!("effects/sparks4.ogg"),
+        ],
+    ),
 ];
 
 pub struct SoundPlugin;

@@ -28,6 +28,8 @@ pub const SWITCH_COOLDOWN_DS: f32 = 50.0;
 pub const SPARKER_COOLDOWN_DS: f32 = 50.0;
 /// How long a sparker shows its spark, ds.
 pub const SPARK_SHOWN_DS: f32 = 5.0;
+/// Sparks a sparker throws each time it sparks (`sparks.rs`).
+pub const SPARKS_THROWN: u8 = 2;
 /// The faint light of a powered, connected sparker (Luna `ul_SetLuminosity(2)`).
 pub const SPARKER_LIGHT: [u8; 3] = [2, 2, 2];
 
@@ -160,6 +162,7 @@ pub struct IgniterWork<'w, 's> {
         (Without<Igniter>, Without<Sparker>),
     >,
     sparks: ResMut<'w, PendingSparks>,
+    showers: ResMut<'w, crate::sparks::SparkShowers>,
 }
 
 impl IgniterWork<'_, '_> {
@@ -210,6 +213,8 @@ impl IgniterWork<'_, '_> {
             if sparker.id == id && power.powered && !sparker.disabled && ready {
                 sparker.last_spark = Some(now_ds);
                 self.sparks.0.push(pos.0);
+                // Luna `spark_spread.set_up(2, 1, src)`: two sparks, straight lines.
+                self.showers.0.push((pos.0, SPARKS_THROWN));
             }
         }
         for (mut igniter, _) in &mut self.igniters {

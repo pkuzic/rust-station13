@@ -30,7 +30,8 @@ Code: `game/classic/src/igniters.rs`. Tests: `game/classic/tests/igniters.rs`,
   `ul_SetLuminosity(2)`).
 - **Sparking:** told to by its switch, a powered, connected sparker that hasn't sparked in
   the last 5 s throws one 6 000 K spark on its tile, which lights plasma there at once
-  (`fire.md`), and shows `migniter-spark` for half a second.
+  (`fire.md`), shows `migniter-spark` for half a second, and throws two sparks (Sparks,
+  below).
 - **Screwdriver:** undoes or redoes its connection; disconnected, it neither sparks nor
   glows. The user is told "You disable the connection to the wall-mounted igniter." /
   "You fix the connection to the wall-mounted igniter.", and everyone else who sees it
@@ -47,10 +48,18 @@ Code: `game/classic/src/igniters.rs`. Tests: `game/classic/tests/igniters.rs`,
   (`launcherbtt`). Presses while it is down, or without power, do nothing. Nobody is told
   anything.
 
+## Sparks
+
+Luna's `spark_spread` (`effect_system.dm`), in `game/classic/src/sparks.rs`. A shower of
+sparks makes Luna's `sparks` sound (one of four) and sends each spark (`effects.dmi`
+`sparks`) one to three tiles in a straight line, north, east, south or west at random,
+half a second a hop; a wall stops it. Where a spark appears, at every hop and where it
+goes out, it touches the air at 1 000 K (Luna `hotspot_expose(1000, 100)`), which lights
+plasma there (`fire.md`). It goes out two seconds after its last hop.
+
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
 | A spark lights the tile's air (`obj/fire/New` warms it by 6 000 K) | The zone warms by that tile's share (`fire.md`, Ignition) |
-| A sparker also throws a shower of spark effects | Only its sprite shows the spark |
 | Switching uses 50 W (igniter) and 5 W (switch) once | No power is drawn |

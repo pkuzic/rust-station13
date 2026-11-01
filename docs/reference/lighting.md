@@ -106,7 +106,7 @@ What gives off light of its own stays bright in the dark and glows
 
 | What | Which pixels glow |
 |---|---|
-| Fire, laser beams, the supermatter | all of it |
+| Fire, laser beams, the supermatter, sparks | all of it |
 | Screens and status lights: APCs, SMES units, air and fire alarms, power monitors, the laser computer, cell chargers, the TEG, freezers, engine lasers, meters, P.A.C.M.A.N. generators, light switches, intercoms | the bright, strongly coloured ones (indicator greens, reds, blues; not grey metal) |
 | Lamps: tubes, bulbs, desk lamps, flashlights, lanterns | the bright ones, while lit |
 | Overlays on those (a SMES's charge lights) | the bright ones |

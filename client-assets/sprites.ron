@@ -727,6 +727,8 @@
             "igniter0": (dmi: "icons/obj/stationobjs.dmi", state: "igniter0"),
             "igniter1": (dmi: "icons/obj/stationobjs.dmi", state: "igniter1"),
         },
+        // A flying spark.
+        "sparks": { "": (dmi: "icons/effects/effects.dmi", state: "sparks") },
         // Emergency floodlight: flood[o: panel off][b: cell showing]0[1: lit].
         "floodlight": {
             "flood00": (dmi: "icons/obj/machines/floodlight.dmi", state: "flood00"),

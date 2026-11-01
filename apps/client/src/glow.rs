@@ -29,7 +29,7 @@ const WHOLE_ALPHA: f32 = 0.7;
 /// Which pixels of a sprite give off light.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum GlowKind {
-    /// All of it: fire, a laser beam, the supermatter.
+    /// All of it: fire, a laser beam, the supermatter, sparks.
     Whole,
     /// Its bright, saturated pixels: a screen, status lights.
     Screen,
@@ -40,7 +40,7 @@ pub enum GlowKind {
 /// What glows, by sprite id.
 pub fn glow_kind(sprite: &str) -> Option<GlowKind> {
     Some(match sprite {
-        "fire" | "laser-beam" | "supermatter" => GlowKind::Whole,
+        "fire" | "laser-beam" | "supermatter" | "sparks" => GlowKind::Whole,
         "light" | "light-small" | "desk-lamp" | "desk-lamp-green" | "flashlight" | "penlight" | "lantern" => {
             GlowKind::Lamp
         }
