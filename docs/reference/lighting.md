@@ -120,6 +120,24 @@ What gives off light of its own stays bright in the dark and glows
   the server's darkness for game rules counts only the lights Luna gives light to.
 - Colours are kept exactly as drawn (no tone mapping); only what is brighter than white
   blooms.
+- **Fire** glows less than screens and lamps, and partly see-through, so its flames stay
+  orange and keep their shape instead of washing out to yellow.
+
+## Air you can see
+
+- **Gas** (`apps/client/src/gas.rs`): plasma and sleeping gas are drawn over the tiles
+  that hold enough of them, with Luna's animated `tile_effects.dmi` overlays: plasma
+  above 0.5 mol on a tile (Luna `MOLES_PLASMA_VISIBLE`), sleeping gas above 1 mol. Luna
+  draws them on or off; here the overlay is faint just above that amount and thickens to
+  fully opaque at 10 mol, so a leak shows as a haze and a flooded room as a thick cloud.
+  Drawn over people, lit by the light overlay, hidden on tiles out of sight. The server
+  sends the amounts with the pressure picture (`AtmosView`), twice a second.
+- **Heat shimmer** (`apps/client/src/heat.rs`): over each burning tile, reaching a tile
+  above it, faint warm bands waver and rise, added to what is under them. Luna has none.
+- **Space** (`apps/client/src/space.rs`): instead of Luna's still star tiles, three
+  layers of stars, drawn on whole sprite pixels, slide past at a tenth, a quarter and a
+  half of the camera's movement, so the far ones seem far, and drift slowly as the ship
+  travels. A few stars are blue or warm, the brightest bloom a little, and all twinkle.
 
 ## Depth
 

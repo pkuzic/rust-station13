@@ -34,7 +34,9 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
   before handing back. Tools for that:
   - `apps/headless`: bots over UDP against a real server, with a `script` of steps (walk,
     click a sprite, any action, wait, snapshot what was received); see
-    `apps/headless/tests/sight_and_storage.rs`.
+    `apps/headless/tests/sight_and_storage.rs`. From the command line, `rs13-headless
+    --use SPRITE --wait SECONDS …` runs a short script (pick up and use things) to set a
+    scene up for a client screenshot, such as lighting a fire.
   - `rs13-server --map-file PATH`: a small map of your own for the case at hand.
   - `rs13-client --size 1400x900 --use DX,DY|pull:DX,DY|swap|held … --screenshot PATH`: clicks and
     keys a player would do, then a screenshot to look at.

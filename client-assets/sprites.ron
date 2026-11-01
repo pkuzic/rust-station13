@@ -462,6 +462,11 @@
             "2": (dmi: "icons/effects/fire.dmi", state: "2"),
             "3": (dmi: "icons/effects/fire.dmi", state: "3"),
         },
+        // Gas you can see, drawn over its tiles (Luna `tile_effects.dmi`).
+        "gas": {
+            "plasma": (dmi: "icons/effects/tile_effects.dmi", state: "plasma"),
+            "sleeping-agent": (dmi: "icons/effects/tile_effects.dmi", state: "sleeping_agent"),
+        },
         // Power monitoring computer: lit, or dark without power.
         "power-monitor": {
             "power": (dmi: "icons/obj/computer.dmi", state: "power"),

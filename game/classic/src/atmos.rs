@@ -5,7 +5,8 @@ use std::collections::HashMap;
 
 use bevy_ecs::prelude::*;
 use rs13_core::TICK_RATE_HZ;
-use rs13_simulation::atmos::AtmosGrid;
+use rs13_simulation::atmos::gas::TILE_VOLUME;
+use rs13_simulation::atmos::{AtmosGrid, Gas};
 use rs13_world::{AtmosView, Dense, Dir, GridPos, MapLayer, TileMap, TilePos};
 
 use crate::doors::Airlock;
@@ -201,7 +202,12 @@ pub fn drift(
 /// How often the debug overlay is refreshed, in ticks (twice a second).
 pub const VIEW_TICKS: u64 = 10;
 
-/// Refresh the per-tile pressure picture on the map entity, for the debug overlay.
+/// Moles as tenths of a mole in a byte, saturating at 25.5 mol.
+fn dmol(moles: f64) -> u8 {
+    (moles * 10.0).round().clamp(0.0, 255.0) as u8
+}
+
+/// Refresh the per-tile air picture on the map entity, for the debug and gas overlays.
 pub fn publish_atmos_view(
     time: Res<WorldTime>,
     atmos: Option<Res<StationAtmos>>,
@@ -213,15 +219,24 @@ pub fn publish_atmos_view(
     }
     for (map, mut view) in &mut maps {
         let m = &map.0;
-        let mut pressures = Vec::with_capacity((m.width * m.height) as usize);
+        let tiles = (m.width * m.height) as usize;
+        let mut next = AtmosView {
+            pressure_dkpa: Vec::with_capacity(tiles),
+            plasma_dmol: Vec::with_capacity(tiles),
+            n2o_dmol: Vec::with_capacity(tiles),
+        };
         for y in 0..m.height as i32 {
             for x in 0..m.width as i32 {
-                let p = atmos.0.pressure_at(TilePos::new(x, y, m.z));
-                pressures.push((p * 10.0).round().clamp(0.0, f64::from(u16::MAX)) as u16);
+                let air = atmos.0.air_at(TilePos::new(x, y, m.z));
+                let p = air.pressure(TILE_VOLUME);
+                next.pressure_dkpa
+                    .push((p * 10.0).round().clamp(0.0, f64::from(u16::MAX)) as u16);
+                next.plasma_dmol.push(dmol(air.get(Gas::Plasma)));
+                next.n2o_dmol.push(dmol(air.get(Gas::NitrousOxide)));
             }
         }
-        if view.pressure_dkpa != pressures {
-            view.pressure_dkpa = pressures;
+        if *view != next {
+            *view = next;
         }
     }
 }

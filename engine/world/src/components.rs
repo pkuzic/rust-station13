@@ -128,11 +128,14 @@ pub enum EnvAlert {
     Hot,
 }
 
-/// Pressure of every tile of the deck in tenths of a kPa, row-major like the map. For
-/// the atmos debug overlay.
+/// The air of every tile of the deck, row-major like the map: pressure in tenths of a kPa,
+/// for the atmos debug overlay, and the gases you can see (plasma and sleeping gas) in
+/// tenths of a mole, saturating at 25.5 mol, for the gas overlays.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct AtmosView {
     pub pressure_dkpa: Vec<u16>,
+    pub plasma_dmol: Vec<u8>,
+    pub n2o_dmol: Vec<u8>,
 }
 
 /// Which hand is in use.

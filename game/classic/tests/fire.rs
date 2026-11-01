@@ -9,7 +9,7 @@ use rs13_classic::objects::{spawn_map, spawn_object};
 use rs13_classic::welding::Welder;
 use rs13_simulation::atmos::gas::{T0C, T20C};
 use rs13_simulation::atmos::{Gas, GasMix};
-use rs13_world::{ObjectSpec, TileMap, TilePos};
+use rs13_world::{AtmosView, ObjectSpec, TileMap, TilePos};
 
 /// A closed room of 3 × 3 tiles.
 const MAP: &str = r#"(
@@ -99,4 +99,19 @@ fn without_plasma_a_flame_does_nothing() {
     let air = room(&app);
     assert!((air.temperature - T20C).abs() < 1.0, "{} K", air.temperature);
     assert_eq!(fires(&mut app), 0);
+}
+
+#[test]
+fn the_air_picture_shows_plasma_on_every_tile_of_its_room() {
+    // 40 mol over 9 tiles: about 4.4 mol a tile, plenty to see.
+    let mut app = setup(40.0);
+    seconds(&mut app, 1);
+    let mut q = app.world_mut().query::<&AtmosView>();
+    let view = q.single(app.world()).unwrap();
+    let width = 5;
+    let at = |x: usize, y: usize| view.plasma_dmol[y * width + x];
+    assert!((40..=50).contains(&at(2, 2)), "{} tenths of a mole", at(2, 2));
+    assert_eq!(at(1, 1), at(3, 3), "the room's air is one");
+    assert_eq!(at(0, 0), 0, "none in the wall");
+    assert!(view.n2o_dmol.iter().all(|&n| n == 0));
 }
