@@ -323,6 +323,11 @@ fn parse_args() -> Args {
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
         match arg.as_str() {
+            "--server" => {
+                if let Some(addr) = it.next().and_then(|s| s.parse().ok()) {
+                    args.server = addr;
+                }
+            }
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
@@ -522,6 +527,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("metal-sheet", _) => (Color::srgb(0.80, 0.80, 0.82), 14.0, 1.0),
         ("id-card", _) => (Color::srgb(0.30, 0.80, 0.85), 12.0, 1.0),
         ("pipe", _) => (Color::srgb(0.35, 0.40, 0.55), 8.0, 0.6),
+        // Under cables and gas pipes (Luna: disposal pipes 2.3, gas pipes 2.4).
+        ("disposal-pipe", _) => (Color::srgb(0.45, 0.45, 0.45), 10.0, 0.5),
         ("cable", _) => (Color::srgb(0.85, 0.20, 0.20), 5.0, 0.55),
         ("smes", _) => (Color::srgb(0.85, 0.80, 0.30), TILE_PX - 4.0, 1.5),
         ("apc", "off") => (Color::srgb(0.30, 0.30, 0.30), 18.0, 1.6),

@@ -20,7 +20,8 @@ the tile's north edge. A window in a wall is usually a grille with panes on its 
   diagonal step is refused only when both ways round it are blocked. They can stand on its
   tile.
 - **Air:** can't cross its edge either; the edge is a sealed barrier between zones
-  (`AtmosGrid::add_edge`, never opened).
+  (`AtmosGrid::add_edge`, never opened). Many of Luna's window frames carry a firedoor on
+  the same edge; the pane keeps it sealed while the firedoor is open.
 - **Sight and light:** pass through.
 - **Sprite:** Luna's reinforced window (`rwindow`) facing its edge.
 
