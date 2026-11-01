@@ -581,3 +581,9 @@ examine-water-tank = В нём { $count } { $count ->
         [few] единицы
        *[many] единиц
     } воды.
+
+# Меню правой кнопки. Аргументы: $item (id существительного).
+menu-thing = { NOUN($item) }
+menu-examine = Осмотреть
+menu-use = Использовать
+menu-pull = Тянуть

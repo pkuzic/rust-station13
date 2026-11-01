@@ -109,3 +109,15 @@ The HUD and the text panel are not affected.
 | Internals | Turn internals on or off (also E) |
 
 Hovering over a cell shows its name, and what is in it, in the stat panel. A click on the HUD never reaches the map underneath.
+
+## Right-click menu
+
+BYOND's context menu: right-clicking a tile of the map lists everything on it, on your own
+deck, topmost first, each with **Examine**, **Use** (as a left click with the active hand)
+and **Pull** (as Ctrl-click); yourself with Examine only. Picking one does it; a left click
+elsewhere or Escape closes the menu without doing anything else. Code:
+`apps/client/src/context_menu.rs`.
+
+| Luna | Here |
+|---|---|
+| Each thing's own verbs (for example a closet's Toggle, a tank's Set Internals) | Examine, Use and Pull for everything |

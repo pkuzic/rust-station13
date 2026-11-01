@@ -36,13 +36,15 @@
         (path: "/obj/structure/window_pod", id: "window-pane", dir: true),
         // Border firedoors seal the edge on the side they face (`firedoors.md`).
         (path: "/obj/machinery/door/firedoor/border_only", id: "firedoor", dir: true),
-        (path: "/obj/machinery/power/apc", id: "apc"),
+        // Wall fixtures face the room: the facing picks their side-on sprite, and an APC is
+        // hung 24 pixels toward the wall it faces (`objects::spawn_object`).
+        (path: "/obj/machinery/power/apc", id: "apc", dir: true),
         (path: "/obj/machinery/power/smes", id: "smes", vars: ["charge", "capacity", "chargelevel", "chargemode", "charging", "output", "online"]),
         (path: "/obj/machinery/power/terminal", id: "terminal", dir: true),
         // Cables keep their ends (Luna's icon state, "0-1" by default).
         (path: "/obj/cabling/power", id: "cable", ends_from_state: "0-1"),
-        (path: "/obj/machinery/alarm", id: "air-alarm"),
-        (path: "/obj/machinery/firealarm", id: "fire-alarm"),
+        (path: "/obj/machinery/alarm", id: "air-alarm", dir: true),
+        (path: "/obj/machinery/firealarm", id: "fire-alarm", dir: true),
 
         // Atmos piping. Pieces keep Luna's direction, which decides the sides they join on.
         (path: "/obj/machinery/atmospherics/pipe/simple", id: "pipe", dir: true),

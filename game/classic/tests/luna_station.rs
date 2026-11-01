@@ -189,3 +189,31 @@ fn the_halls_keep_their_air() {
         assert!((kpa - ONE_ATMOSPHERE).abs() < 2.0, "{at:?}: {kpa:.1} kPa");
     }
 }
+
+#[test]
+fn wall_fixtures_hang_on_their_walls() {
+    // Luna's APCs are drawn 24 pixels toward the wall they face, worked out from their
+    // facing (`apc/New`); air alarms face the room, for their side-on sprites.
+    let mut app = station();
+    let mut q = app.world_mut().query::<(
+        &rs13_world::Appearance,
+        Option<&rs13_world::PixelOffset>,
+        Option<&rs13_world::Facing>,
+    )>();
+    let (mut apcs, mut alarms) = (0, 0);
+    for (look, offset, facing) in q.iter(app.world()) {
+        match look.sprite.as_str() {
+            "apc" => {
+                apcs += 1;
+                let offset = offset.map(|o| o.0).unwrap_or_default();
+                assert!(offset.contains(&24) || offset.contains(&-24), "APC at {offset:?}");
+            }
+            "air-alarm" => {
+                alarms += 1;
+                assert!(facing.is_some() && offset.is_some(), "air alarm off its wall");
+            }
+            _ => {}
+        }
+    }
+    assert!(apcs > 90 && alarms > 70, "{apcs} APCs, {alarms} air alarms");
+}

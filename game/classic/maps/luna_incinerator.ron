@@ -49,7 +49,7 @@
         'i': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_x": "27"})]),
         'j': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "Disposal Input", "density": "1"})]),
         'k': (tile: (id: "r-wall", solid: true), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),
-        'l': (tile: (id: "floor"), objects: ["apc", (id: "cable", ends: [East])]),
+        'l': (tile: (id: "floor"), objects: [(id: "apc", dir: West), (id: "cable", ends: [East])]),
         'm': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, West])]),
         'n': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthEast)]),
         'o': (tile: (id: "floor"), objects: [(id: "connector", dir: West), (id: "door-button", vars: {"id": "Incernator Vent", "pixel_x": "26", "pixel_y": "6"}), (id: "ignition-switch", vars: {"id": "Incinerator", "pixel_x": "26", "pixel_y": "-4"}), (id: "light-small", dir: East)]),

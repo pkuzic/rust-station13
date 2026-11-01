@@ -557,3 +557,9 @@ examine-water-tank = It contains { $count } { $count ->
         [one] unit
        *[other] units
     } of water.
+
+# Right-click menu. Args: $item (noun id).
+menu-thing = { NOUN($item) }
+menu-examine = Examine
+menu-use = Use
+menu-pull = Pull
