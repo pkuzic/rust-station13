@@ -10,7 +10,7 @@
 //
 // Luna's contents without a prototype here yet are left out: backpacks, jumpsuits, shoes,
 // hard hats, welding helmets, industrial welding tools, meson glasses, gas masks, PDAs,
-// headsets, flashes, flashlights, T-ray scanners, emergency toolboxes, first-aid kits,
+// headsets, flashes, flashlights, T-ray scanners, first-aid kits,
 // air tanks, radiation suits and the RCD.
 [
     (id: "closet", closed: "closed", open: "open"),
@@ -20,6 +20,10 @@
         (id: "emergency-oxygen"), (id: "breath-mask"),
         (id: "emergency-oxygen"), (id: "breath-mask"),
         (id: "emergency-oxygen"), (id: "breath-mask"),
+    ]),
+    (id: "closet-fire", closed: "firecloset", open: "fireclosetopen", contents: [
+        (id: "toolbox-emergency"), (id: "toolbox-emergency"),
+        (id: "fire-extinguisher"), (id: "fire-extinguisher"),
     ]),
     (id: "closet-tools", closed: "toolcloset", open: "toolclosetopen", contents: [
         (id: "insulated-gloves", chance: 10.0),

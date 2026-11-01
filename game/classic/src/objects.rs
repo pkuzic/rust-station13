@@ -247,6 +247,13 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::lights::spawn_light(world, spec, pos, id));
     }
+    if matches!(
+        proto,
+        crate::extinguishers::CABINET | crate::extinguishers::WATER_TANK
+    ) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return crate::extinguishers::spawn_fixture(world, spec, pos, id);
+    }
     if crate::furniture::is_furniture(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::furniture::spawn_furniture(world, spec, pos, id));
@@ -336,6 +343,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if proto == crate::welding::WELDER {
         item.insert(crate::welding::Welder::default());
+    }
+    if let Some(ext) = crate::extinguishers::kind(proto) {
+        item.insert(ext);
     }
     if let Some(light) = crate::flashlights::kind(proto) {
         item.insert(light);

@@ -126,7 +126,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        mut disposals,
+        (mut disposals, mut extinguishers),
         (
             mut generators,
             mut dispensers,
@@ -160,7 +160,10 @@ pub fn process_actions(
         crate::firedoors::FiredoorWork,
         crate::flashlights::FlashlightWork,
         crate::firealarms::FireAlarmWork,
-        crate::disposals::DisposalWork,
+        (
+            crate::disposals::DisposalWork,
+            crate::extinguishers::ExtinguisherWork,
+        ),
         (
             crate::generators::GeneratorWork,
             crate::dispensers::DispenserWork,
@@ -292,6 +295,9 @@ pub fn process_actions(
                         if let Some(more) = cable.floors.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = extinguishers.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Some(more) = welding.examine(target) {
                             outbox.0.push(more);
                         }
@@ -327,6 +333,53 @@ pub fn process_actions(
                     }
                     Err(_) => {}
                 },
+                Action::UseOnTile(tile) if extinguishers.takes_click(hands.active_item(), None, false) => {
+                    // A fire extinguisher sprays at any range on its deck (`extinguishers.md`).
+                    if tile.z != mob_pos.0.z {
+                        continue;
+                    }
+                    if let Some(item) = hands.active_item()
+                        && let Some(outcome) = extinguishers.use_on(item, None, false, mob_pos.0, tile, now)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target)
+                    if hands.active_item() != Some(target)
+                        && extinguishers.takes_click(
+                            hands.active_item(),
+                            Some(target),
+                            places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)),
+                        )
+                        && !(extinguishers.is_cabinet(target)
+                            && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))) =>
+                {
+                    // A fire extinguisher refills at a water tank in reach, and with its
+                    // safety off sprays at whatever is clicked, at any range on its deck
+                    // (`extinguishers.md`).
+                    let Ok(at) = places.get(target).map(|p| p.0) else {
+                        continue;
+                    };
+                    if at.z != mob_pos.0.z {
+                        continue;
+                    }
+                    let near = in_reach(mob_pos.0, at);
+                    if let Some(item) = hands.active_item()
+                        && let Some(outcome) =
+                            extinguishers.use_on(item, Some(target), near, mob_pos.0, at, now)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
+                Action::UseOn(target) if extinguishers.is_cabinet(target) => {
+                    // Extinguisher cabinets (`extinguishers.md`), within reach.
+                    if !places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                        continue;
+                    }
+                    if let Some(outcome) = extinguishers.use_cabinet(mob, target, &mut hands, &mut commands) {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
                 Action::UseOnTile(tile) => {
                     // Cable coils (`cables.md`), then crowbars and floor tiles (`floors.md`).
                     let outcome = cable
@@ -358,7 +411,8 @@ pub fn process_actions(
                             || furniture.uses_self(target)
                             || flashlights.contains(target)
                             || jetpacks.contains(target)
-                            || radios.contains(target)) =>
+                            || radios.contains(target)
+                            || extinguishers.is_extinguisher(target)) =>
                 {
                     // The item in the active hand used on itself (Luna `attack_self`): a
                     // welding tool lights or goes out, rack parts become a rack, a
@@ -368,6 +422,7 @@ pub fn process_actions(
                         .or_else(|| flashlights.use_self(target))
                         .or_else(|| jetpacks.use_self(target))
                         .or_else(|| radios.toggle_microphone(target))
+                        .or_else(|| extinguishers.use_self(target))
                     {
                         outbox.0.extend(outcome.to_mob);
                     }

@@ -21,6 +21,9 @@ pub const DISCHARGE_COEFFICIENT: f64 = 0.6;
 pub const DEFAULT_FLOW_SCALE: f64 = 0.05;
 /// Openings with a smaller pressure difference are skipped (sleeping regions).
 pub const MIN_PRESSURE_DELTA: f64 = 0.001;
+/// The coldest water leaves burning air, K: Luna allows 0, and the cosmic background is
+/// the floor everywhere else here.
+pub const DOUSED_FLOOR: f64 = T_SPACE;
 
 /// What a tile is, for air.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -424,6 +427,35 @@ impl AtmosGrid {
         temperature
     }
 
+    /// Water on `pos` (Luna's water reagent on a hotspot): if the air there is burning, it
+    /// drops to max(min(T − 2000, T / 2), [`DOUSED_FLOOR`]) K and stops burning. A tile of
+    /// a zone burning as a whole becomes a fire cell first, so only that tile is cooled; in
+    /// a zone's last tile the zone itself is. Returns whether a fire was put out.
+    pub fn douse(&mut self, pos: TilePos) -> bool {
+        fn cooled(t: f64) -> f64 {
+            (t - 2000.0).min(t / 2.0).max(DOUSED_FLOOR)
+        }
+        if !self.burning_at(pos) {
+            return false;
+        }
+        let (Some(i), Some(z)) = (self.index(pos), self.zone_at(pos)) else {
+            return false;
+        };
+        if !self.cells_on_fire.contains_key(&i) {
+            self.open_cell(i, z);
+        }
+        if let Some(cell) = self.cells_on_fire.get_mut(&i) {
+            cell.mix.temperature = cooled(cell.mix.temperature);
+            cell.burn_rate = 0.0;
+            cell.burning_for = 0.0;
+            return true;
+        }
+        let zone = &mut self.zones[z];
+        zone.mix.temperature = cooled(zone.mix.temperature);
+        zone.burn_rate = 0.0;
+        true
+    }
+
     /// Air trades heat with its zone's walls, floor and ceiling for `dt` seconds: hot rooms
     /// cool, cold ones warm, toward [`WALL_TEMPERATURE`]. Kept apart from [`Self::step`] so the
     /// flow itself conserves energy exactly.
@@ -433,11 +465,12 @@ impl AtmosGrid {
         }
     }
 
-    /// Whether the air on `pos` is burning: its fire cell, or its whole zone.
+    /// Whether the air on `pos` is burning: its fire cell if it is one, else its whole zone.
     pub fn burning_at(&self, pos: TilePos) -> bool {
-        let cell = self.index(pos).and_then(|i| self.cells_on_fire.get(&i));
-        cell.is_some_and(|c| c.burn_rate > super::fire::MIN_BURN)
-            || self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0)
+        match self.index(pos).and_then(|i| self.cells_on_fire.get(&i)) {
+            Some(cell) => cell.burn_rate > super::fire::MIN_BURN,
+            None => self.zone_at(pos).is_some_and(|z| self.zones[z].burn_rate > 0.0),
+        }
     }
 
     /// Advance the simulation by `dt` seconds.

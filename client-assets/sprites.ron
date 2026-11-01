@@ -415,6 +415,22 @@
             "meter3_6": (dmi: "icons/obj/meter.dmi", state: "meter3_6"),
         },
         "fuel-tank": { "": (dmi: "icons/obj/objects.dmi", state: "weldtank") },
+        "water-tank": { "": (dmi: "icons/obj/objects.dmi", state: "watertank") },
+        // Fire extinguishers: "on" with the safety off.
+        "fire-extinguisher": {
+            "": (dmi: "icons/obj/items.dmi", state: "fire_extinguisher0"),
+            "on": (dmi: "icons/obj/items.dmi", state: "fire_extinguisher1"),
+        },
+        "fire-extinguisher-mini": {
+            "": (dmi: "icons/obj/items.dmi", state: "miniFE0"),
+            "on": (dmi: "icons/obj/items.dmi", state: "miniFE1"),
+        },
+        "extinguisher-cabinet": {
+            "extinguisher_closed": (dmi: "icons/obj/closet.dmi", state: "extinguisher_closed"),
+            "extinguisher_full": (dmi: "icons/obj/closet.dmi", state: "extinguisher_full"),
+            "extinguisher_mini": (dmi: "icons/obj/closet.dmi", state: "extinguisher_mini"),
+            "extinguisher_empty": (dmi: "icons/obj/closet.dmi", state: "extinguisher_empty"),
+        },
         // Cable coil: three loops, or a piece of two or one length.
         "cable-coil": {
             "": (dmi: "icons/obj/Coils.dmi", state: "redcoil3"),
@@ -428,6 +444,7 @@
         "health-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "health") },
         "toolbox-mechanical": { "": (dmi: "icons/obj/storage.dmi", state: "blue") },
         "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
+        "toolbox-emergency": { "": (dmi: "icons/obj/storage.dmi", state: "red") },
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         // Power cells: the meter overlay is cell-o1 part full, cell-o2 full.
@@ -729,6 +746,7 @@
         },
         // A flying spark.
         "sparks": { "": (dmi: "icons/effects/effects.dmi", state: "sparks") },
+        "water-puff": { "": (dmi: "icons/effects/effects.dmi", state: "extinguish") },
         // Disposals: pipes by shape and facing, the bin and its overlays, outlets.
         "disposal-pipe": {
             "pipe-s-south": (dmi: "icons/obj/pipes/disposal.dmi", state: "pipe-s", dir: Some(0)),
@@ -1015,6 +1033,11 @@
         "closet-emergency": {
             "emergency": (dmi: "icons/obj/closet.dmi", state: "emergency"),
             "emergencyopen": (dmi: "icons/obj/closet.dmi", state: "emergencyopen"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "closet-fire": {
+            "firecloset": (dmi: "icons/obj/closet.dmi", state: "firecloset"),
+            "fireclosetopen": (dmi: "icons/obj/closet.dmi", state: "fireclosetopen"),
             "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
         },
         "closet-tools": {
