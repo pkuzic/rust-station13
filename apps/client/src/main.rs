@@ -97,6 +97,12 @@ enum UseStep {
     Swap,
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
+    /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
+    InHand,
+    /// `floor:DX,DY`: click the floor of that tile, whatever is on it.
+    Floor(i32, i32),
+    /// `wait:SECONDS`: pause before the next step.
+    Wait(f32),
 }
 
 impl UseStep {
@@ -108,10 +114,18 @@ impl UseStep {
         match s {
             "swap" => Some(Self::Swap),
             "held" => Some(Self::Held),
-            _ => match s.strip_prefix("pull:") {
-                Some(rest) => offset(rest).map(|(x, y)| Self::Pull(x, y)),
-                None => offset(s).map(|(x, y)| Self::Tile(x, y)),
-            },
+            "self" => Some(Self::InHand),
+            _ => {
+                if let Some(rest) = s.strip_prefix("pull:") {
+                    offset(rest).map(|(x, y)| Self::Pull(x, y))
+                } else if let Some(rest) = s.strip_prefix("wait:") {
+                    rest.trim().parse().ok().map(Self::Wait)
+                } else if let Some(rest) = s.strip_prefix("floor:") {
+                    offset(rest).map(|(x, y)| Self::Floor(x, y))
+                } else {
+                    offset(s).map(|(x, y)| Self::Tile(x, y))
+                }
+            }
         }
     }
 }
@@ -1318,7 +1332,13 @@ fn scripted_use(
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
+    if let UseStep::Wait(seconds) = step {
+        plan.0.pop_front();
+        *next_at = Some(now + seconds);
+        return;
+    }
     let action = match step {
+        UseStep::Wait(_) => None,
         UseStep::Tile(dx, dy) | UseStep::Pull(dx, dy) => {
             let tile = (me.0.x + dx, me.0.y + dy);
             objects
@@ -1339,6 +1359,16 @@ fn scripted_use(
             Hand::Left => hands.right,
         }
         .map(ActionInput::UseOn),
+        UseStep::InHand => match hands.active {
+            Hand::Left => hands.left,
+            Hand::Right => hands.right,
+        }
+        .map(ActionInput::UseOn),
+        UseStep::Floor(dx, dy) => Some(ActionInput::UseOnTile(TilePos::new(
+            me.0.x + dx,
+            me.0.y + dy,
+            me.0.z,
+        ))),
     };
     if let Some(action) = action {
         sender.send::<IntentChannel>(action);
@@ -1404,6 +1434,9 @@ mod tests {
         assert_eq!(UseStep::parse("1,-2"), Some(UseStep::Tile(1, -2)));
         assert_eq!(UseStep::parse("swap"), Some(UseStep::Swap));
         assert_eq!(UseStep::parse("held"), Some(UseStep::Held));
+        assert_eq!(UseStep::parse("self"), Some(UseStep::InHand));
+        assert_eq!(UseStep::parse("floor:3,0"), Some(UseStep::Floor(3, 0)));
+        assert_eq!(UseStep::parse("wait:2.5"), Some(UseStep::Wait(2.5)));
         assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
         assert_eq!(UseStep::parse("nope"), None);
     }

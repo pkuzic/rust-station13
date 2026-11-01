@@ -88,6 +88,10 @@
         (path: "/obj/item/device/flashlight/lamp", id: "desk-lamp"),
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
+        (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
+        (path: "/obj/item/weapon/extinguisher", id: "fire-extinguisher"),
+        (path: "/obj/item/weapon/extinguisher/mini", id: "fire-extinguisher-mini"),
+        (path: "/obj/structure/extinguisher_cabinet", id: "extinguisher-cabinet"),
 
         // Tables keep the look the mapper chose: an icon state and a direction.
         (path: "/obj/structure/table", id: "table", dir: true, state: Some("table")),
@@ -155,6 +159,7 @@
         // rule for the plain closet: it would catch every other kind.
         (path: "/obj/structure/closet/emcloset", id: "closet-emergency"),
         (path: "/obj/structure/closet/toolcloset", id: "closet-tools"),
+        (path: "/obj/structure/closet/firecloset", id: "closet-fire"),
         (path: "/obj/structure/closet/secure_closet/engineering_chief", id: "locker-chief-engineer"),
         (path: "/obj/structure/closet/secure_closet/engineering_electrical", id: "locker-electrical"),
         (path: "/obj/structure/closet/secure_closet/engineering_welding", id: "locker-welding"),

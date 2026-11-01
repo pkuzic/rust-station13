@@ -4,10 +4,11 @@
 //! player it can see and exits.
 //!
 //! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
-//! [--name NAME] [--say TEXT] [--use SPRITE]... [--wait SECONDS]...`
+//! [--name NAME] [--say TEXT] [--use SPRITE]... [--use-held] [--wait SECONDS]...`
 //!
 //! `--use` and `--wait` make a script, run in order: `--use` clicks the first thing with
-//! that sprite (picking it up, or using it once in hand), `--wait` pauses.
+//! that sprite on the map (picking it up), `--use-held` clicks the item in the active hand
+//! (lighting a welding tool), `--wait` pauses.
 //!
 //! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
 //! line per notice received, `notice <message id>`.
@@ -61,6 +62,10 @@ fn parse_args() -> Result<BotConfig, String> {
     };
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
+        if arg == "--use-held" {
+            config.script.push(Step::UseHeld);
+            continue;
+        }
         let value = args.next().ok_or_else(|| format!("{arg} needs a value"))?;
         match arg.as_str() {
             "--server" => config.server = value.parse().map_err(|e| format!("--server: {e}"))?,

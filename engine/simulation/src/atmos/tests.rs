@@ -370,6 +370,16 @@ fn a_flame_lights_one_tile_of_a_big_room_and_the_fire_spreads_across_it() {
 }
 
 #[test]
+fn a_fire_lit_in_the_middle_of_a_room_spreads_too() {
+    // Four sides lose heat to the room, not two as in a corner; Luna's flame warming each
+    // tile it spreads to keeps it going.
+    let mut grid = big_rooms(2.0);
+    grid.expose(TilePos::new(10, 3, 0), 3500.0);
+    run(&mut grid, 10.0);
+    assert!(burning_in(&grid, 0..21) > 20, "{}", burning_in(&grid, 0..21));
+}
+
+#[test]
 fn burnt_out_cells_go_back_into_their_zone() {
     let mut grid = big_rooms(0.6);
     grid.expose(TilePos::new(1, 1, 0), 3500.0);
@@ -378,6 +388,44 @@ fn burnt_out_cells_go_back_into_their_zone() {
     let zone = &grid.zones()[grid.zone_at(TilePos::new(1, 1, 0)).unwrap()];
     assert_eq!(zone.volume, zone.tiles.len() as f64 * TILE_VOLUME);
     assert!(grid.burning_tiles().is_empty());
+}
+
+#[test]
+fn water_on_a_burning_tile_puts_it_out() {
+    let mut grid = big_rooms(2.0);
+    let corner = TilePos::new(1, 1, 0);
+    assert!(!grid.douse(corner), "nothing burning yet");
+    grid.expose(corner, 3500.0);
+    run(&mut grid, 0.2);
+    assert!(grid.burning_at(corner));
+    let before = grid.total_moles();
+    // Luna's water halves air this hot: a second puff takes it the rest of the way.
+    assert!(grid.douse(corner));
+    assert!(!grid.burning_at(corner));
+    assert!(grid.air_at(corner).temperature < 2500.0, "halved");
+    assert!((grid.total_moles() - before).abs() < 1e-9, "no gas lost");
+    run(&mut grid, 0.05);
+    grid.douse(corner);
+    assert!(grid.air_at(corner).temperature < 10.0, "then frozen");
+    run(&mut grid, 0.05);
+    assert!(burning_in(&grid, 0..21) == 0, "it does not relight at once");
+}
+
+#[test]
+fn water_cools_one_tile_of_a_zone_burning_as_a_whole() {
+    let mut grid = big_rooms(2.0);
+    let at = TilePos::new(5, 3, 0);
+    let z = grid.zone_at(at).unwrap();
+    // Light the zone as a whole: heat all of it past ignition.
+    let mut all = grid.remove_at(at, grid.zones()[z].mix.total_moles());
+    all.temperature = 1500.0;
+    grid.add_at(at, &all);
+    run(&mut grid, 0.05);
+    assert!(grid.zones()[z].burn_rate > 0.0, "the room burns as a whole");
+    assert!(grid.douse(at));
+    assert_eq!(grid.fire_cells().count(), 1, "the tile became a cell");
+    assert!(!grid.burning_at(at));
+    assert!(grid.burning_at(TilePos::new(15, 3, 0)), "the rest still burns");
 }
 
 #[test]

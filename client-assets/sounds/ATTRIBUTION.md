@@ -27,3 +27,5 @@ to files in `apps/client/src/audio.rs`.
 | `machines/disposalflush.ogg` | `sound/machines/disposalflush.ogg` | `disposal-flush` | CC-BY-SA 3.0 |
 | `machines/hiss.ogg` | `sound/machines/hiss.ogg` | `hiss` | CC-BY-SA 3.0 |
 | `machines/warning-buzzer.ogg` | `sound/machines/warning-buzzer.ogg` | `warning-buzzer` | CC-BY-SA 3.0 |
+| `effects/extinguish.ogg` | `sound/effects/extinguish.ogg` | `extinguish` | CC-BY-SA 3.0 |
+| `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |

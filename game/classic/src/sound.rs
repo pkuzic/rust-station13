@@ -57,6 +57,8 @@ pub const SPARKS: &str = "sparks";
 pub const DISPOSAL_FLUSH: &str = "disposal-flush";
 pub const HISS: &str = "hiss";
 pub const WARNING_BUZZER: &str = "warning-buzzer";
+pub const EXTINGUISH: &str = "extinguish";
+pub const REFILL: &str = "refill";
 /// Every sound id the game plays.
 pub const ALL_SOUNDS: &[&str] = &[
     AIRLOCK,
@@ -72,6 +74,8 @@ pub const ALL_SOUNDS: &[&str] = &[
     DISPOSAL_FLUSH,
     HISS,
     WARNING_BUZZER,
+    EXTINGUISH,
+    REFILL,
 ];
 
 /// A sound made at a tile this tick.

@@ -563,3 +563,21 @@ floodlight-cell-inserted = Вы вставляете батарею.
 # Мусоропровод (disposals.md). Аргументы: $name, $item, $bin (id существительных).
 disposal-placed-self = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($bin, case: "acc") }.
 disposal-placed = { $name } кладёт { NOUN($item, case: "acc") } в { NOUN($bin, case: "acc") }.
+
+# Огнетушители (extinguishers.md). Аргументы: $count; $item, $cabinet (id существительных).
+extinguisher-safety-on = Предохранитель включён.
+extinguisher-safety-off = Предохранитель снят.
+extinguisher-empty = Огнетушитель пуст.
+extinguisher-refilled = Огнетушитель заправлен.
+extinguisher-taken = Вы достаёте { NOUN($item, case: "acc") } из { NOUN($cabinet, case: "gen") }.
+extinguisher-placed = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($cabinet, case: "acc") }.
+examine-extinguisher = В нём осталось { $count } { $count ->
+        [one] единица
+        [few] единицы
+       *[many] единиц
+    } воды!
+examine-water-tank = В нём { $count } { $count ->
+        [one] единица
+        [few] единицы
+       *[many] единиц
+    } воды.

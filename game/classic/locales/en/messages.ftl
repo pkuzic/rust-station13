@@ -541,3 +541,19 @@ floodlight-cell-inserted = You insert the power cell.
 # Disposal unit (disposals.md). Args: $name, $item, $bin (noun ids).
 disposal-placed-self = You place the { NOUN($item) } into the { NOUN($bin) }.
 disposal-placed = { $name } places the { NOUN($item) } into the { NOUN($bin) }.
+
+# Fire extinguishers (extinguishers.md). Args: $count; $item, $cabinet (noun ids).
+extinguisher-safety-on = The safety is on.
+extinguisher-safety-off = The safety is off.
+extinguisher-empty = The fire extinguisher is empty.
+extinguisher-refilled = The fire extinguisher is now refilled.
+extinguisher-taken = You take the { NOUN($item) } from the { NOUN($cabinet) }.
+extinguisher-placed = You place the { NOUN($item) } in the { NOUN($cabinet) }.
+examine-extinguisher = It contains { $count } { $count ->
+        [one] unit
+       *[other] units
+    } of water left!
+examine-water-tank = It contains { $count } { $count ->
+        [one] unit
+       *[other] units
+    } of water.

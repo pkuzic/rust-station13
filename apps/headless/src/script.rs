@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Player, StatusUpdate};
-use rs13_world::{Appearance, Dir, DisplayName, GridPos, NetId, Silhouette, TilePos};
+use rs13_world::{Appearance, Dir, DisplayName, GridPos, Hand, HandsView, NetId, Silhouette, TilePos};
 
 use crate::{JoinedAt, SeenPlayer};
 
@@ -21,6 +21,10 @@ pub enum Step {
     UseOn(String),
     /// Ctrl-click: start pulling the first thing with this sprite. Waits until there is one.
     Pull(String),
+    /// Click the item in the active hand (Luna `attack_self`: light a welding tool, flip
+    /// an extinguisher's safety). Held items aren't sent as things on the map, so `UseOn`
+    /// can't find them. Waits until the hand holds something.
+    UseHeld,
     /// Send any other action.
     Act(ActionInput),
     Wait(Duration),
@@ -67,7 +71,11 @@ pub(crate) fn run_script(
     things: Query<(&NetId, &Appearance, Has<Controlled>, Option<&GridPos>)>,
     received: Res<crate::Received>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
-    (shapes, names): (Query<&GridPos, With<Silhouette>>, Query<&DisplayName>),
+    (shapes, names, hands): (
+        Query<&GridPos, With<Silhouette>>,
+        Query<&DisplayName>,
+        Query<&HandsView, With<Controlled>>,
+    ),
     mut snapshots: ResMut<Snapshots>,
     mut progress: Local<Progress>,
 ) {
@@ -106,6 +114,16 @@ pub(crate) fn run_script(
                 actions.send::<IntentChannel>(ActionInput::Pull(id));
             }
             target.is_some()
+        }
+        Step::UseHeld => {
+            let held = hands.single().ok().and_then(|h| match h.active {
+                Hand::Left => h.left,
+                Hand::Right => h.right,
+            });
+            if let Some(id) = held {
+                actions.send::<IntentChannel>(ActionInput::UseOn(id));
+            }
+            held.is_some()
         }
         Step::Act(action) => {
             actions.send::<IntentChannel>(action.clone());

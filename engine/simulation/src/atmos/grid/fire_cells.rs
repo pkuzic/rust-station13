@@ -8,7 +8,8 @@
 //!   each neighbouring cell and with its zone through each side that faces the zone's
 //!   tiles, never across walls, closed doors or panes.
 //! - A burning cell lights every neighbouring tile of open floor whose air has enough
-//!   plasma and oxygen, once it has burnt for [`SPREAD_AFTER`].
+//!   plasma and oxygen, once it has burnt for [`SPREAD_AFTER`]; that tile's air warms by
+//!   [`SPREAD_HEAT`], as Luna's new flame warms its tile.
 //! - A cell that has stopped burning and come near its zone's temperature goes back into
 //!   the zone, and so does every cell of a zone venting to space: the rush of air out of
 //!   the room takes the tile's air with it.
@@ -19,13 +20,16 @@ use rs13_world::{Dir, TilePos};
 
 use super::{AtmosGrid, Cell};
 use crate::atmos::fire::{IGNITION_MOLES, MIN_BURN, PLASMA_BURN_TEMPERATURE};
-use crate::atmos::gas::{Gas, GasMix, TILE_VOLUME};
+use crate::atmos::gas::{Gas, GasMix, T0C, TILE_VOLUME};
 
 /// How fast neighbouring cells, or a cell and the zone beside it, even out their gas and
 /// heat, per second and per side they share.
 pub const CELL_MIXING: f64 = 0.4;
 /// How long a cell burns before it lights its neighbours, s.
 pub const SPREAD_AFTER: f64 = 0.5;
+/// How much a tile the fire spreads to warms, K: Luna's new `obj/fire` adds its
+/// `FIRE_MINIMUM_TEMPERATURE_TO_EXIST` (100 °C) to the tile's air.
+pub const SPREAD_HEAT: f64 = T0C + 100.0;
 /// A cell goes back into its zone once it has not burnt for this long, s, and is within
 /// [`SETTLE_DELTA`] of the zone's temperature (or has not burnt for [`SETTLE_MAX`]).
 pub const SETTLE_AFTER: f64 = 2.0;
@@ -174,7 +178,9 @@ impl AtmosGrid {
             }
         }
         for (j, z) in lit {
-            self.open_cell(j, z);
+            if let Some(cell) = self.open_cell(j, z) {
+                cell.mix.temperature += SPREAD_HEAT;
+            }
         }
 
         // Settle the ones that are done.

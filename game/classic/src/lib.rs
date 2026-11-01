@@ -20,6 +20,7 @@ pub mod disposals;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
+pub mod extinguishers;
 pub mod firealarms;
 pub mod firedoors;
 pub mod fires;
@@ -122,6 +123,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<windows::PaneEdges>()
             .init_resource::<igniters::PendingSparks>()
             .init_resource::<sparks::SparkShowers>()
+            .init_resource::<extinguishers::PendingSprays>()
             .init_resource::<supermatter::Beams>()
             .init_resource::<supermatter::CoreAlerts>()
             .init_resource::<lights::AreaLights>()
@@ -213,6 +215,7 @@ impl Plugin for ClassicPlugin {
                 (
                     igniters::run_igniters,
                     sparks::run_sparks,
+                    extinguishers::run_puffs,
                     disposals::run_bins,
                     disposals::run_bundles,
                     disposals::run_outlets,
@@ -257,6 +260,8 @@ impl Plugin for ClassicPlugin {
                     cables::update_cable_looks,
                     floors::hide_under_floors,
                     welding::update_welder_looks,
+                    extinguishers::update_extinguisher_looks,
+                    extinguishers::update_cabinet_looks,
                     lights::update_light_looks,
                     lights::update_light_sources,
                     flashlights::update_flashlight_looks,
