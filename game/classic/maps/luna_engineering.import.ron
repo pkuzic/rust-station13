@@ -26,9 +26,12 @@
         (path: "/turf/simulated/wall/heatshield", tile: (id: "r-wall", solid: true)),
     ],
 
-    // Grilles and windows (including Luna's one-sided panes) make a window tile.
-    windows: ["/obj/structure/grille", "/obj/structure/window", "/obj/structure/window_pod"],
+    // Windows (including Luna's one-sided panes) make a window tile, with its grille.
+    windows: ["/obj/structure/window", "/obj/structure/window_pod"],
     window_tile: (id: "window", solid: true, opaque: false),
+    // A grille without a window is solid, but air goes through it.
+    grilles: ["/obj/structure/grille"],
+    grille_tile: Some((id: "grille", solid: true, opaque: false, airtight: false)),
 
     objects: [
         (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),

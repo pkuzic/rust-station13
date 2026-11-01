@@ -167,6 +167,7 @@ fn set_floor(world: &mut World, pos: TilePos, from: &str, to: &str) -> bool {
             id: to.to_owned(),
             solid: false,
             opaque: None,
+            airtight: None,
         },
     )
 }

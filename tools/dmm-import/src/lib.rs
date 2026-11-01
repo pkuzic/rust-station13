@@ -152,6 +152,12 @@ pub struct Rules {
     /// Any of these on a tile makes it a window tile.
     pub windows: Vec<String>,
     pub window_tile: TileDef,
+    /// Any of these on a tile without a window makes it a grille tile: solid, but air
+    /// passes. Without `grille_tile` they are skipped.
+    #[serde(default)]
+    pub grilles: Vec<String>,
+    #[serde(default)]
+    pub grille_tile: Option<TileDef>,
     /// Object type prefixes → our prototypes. The longest matching prefix wins.
     pub objects: Vec<ObjectRule>,
     /// Landmarks where players may appear.
@@ -295,6 +301,9 @@ fn tile_ron(tile: &TileDef) -> String {
     if let Some(opaque) = tile.opaque {
         let _ = write!(s, ", opaque: Some({opaque})");
     }
+    if let Some(airtight) = tile.airtight {
+        let _ = write!(s, ", airtight: Some({airtight})");
+    }
     s.push(')');
     s
 }
@@ -326,6 +335,7 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
             })?;
             let mut tile: Option<TileDef> = None;
             let mut window = false;
+            let mut grille = false;
             let mut spawn = false;
             let mut objects: Vec<String> = Vec::new();
             let mut area = None;
@@ -350,6 +360,8 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
                     }
                 } else if rules.windows.iter().any(|w| is_a(path, w)) {
                     window = true;
+                } else if rules.grilles.iter().any(|g| is_a(path, g)) {
+                    grille = true;
                 } else if let Some(rule) = rules.spawns.iter().find(|s| is_a(path, &s.path)) {
                     spawn = true;
                     objects.extend(rule.with.iter().map(Placed::ron));
@@ -366,6 +378,8 @@ pub fn convert(dmm: &Dmm, rules: &Rules) -> Result<Imported, ImportError> {
                 tile.ok_or_else(|| ImportError::Region(format!("no turf at column {c}, row {r}")))?;
             if window {
                 tile = rules.window_tile.clone();
+            } else if let Some(grille_tile) = rules.grille_tile.as_ref().filter(|_| grille) {
+                tile = grille_tile.clone();
             }
             let mut entry = format!("(tile: {}", tile_ron(&tile));
             if spawn {
@@ -584,8 +598,10 @@ aaabaaaa
                     (path: "/turf/simulated/wall", tile: (id: "wall", solid: true)),
                     (path: "/turf/simulated/wall/r_wall", tile: (id: "r-wall", solid: true)),
                 ],
-                windows: ["/obj/structure/window", "/obj/structure/grille"],
+                windows: ["/obj/structure/window"],
                 window_tile: (id: "window", solid: true, opaque: Some(false)),
+                grilles: ["/obj/structure/grille"],
+                grille_tile: Some((id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
                 objects: [
                     (path: "/obj/machinery/door/airlock", id: "airlock", access_var: Some("req_access_txt")),
                     (path: "/obj/item/weapon/wrench", id: "wrench"),
