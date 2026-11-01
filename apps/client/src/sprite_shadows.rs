@@ -1,7 +1,9 @@
 //! Depth for what stands on the floor (`docs/reference/lighting.md`, Depth):
 //!
-//! - **Drop shadows:** people and objects cast a soft dark copy of themselves a little to
-//!   one side on the floor, so they stand on it instead of floating over it.
+//! - **Drop shadows:** people and objects cast a flattened dark copy of themselves on the
+//!   floor at their foot, so they stand on it instead of floating over it. All shadows lie
+//!   in one layer, just over the floor and what lies flat on it and under everything that
+//!   stands, so a shadow never falls over another object.
 //! - **Silhouettes:** someone standing in the dark is seen as a black shape: you can tell
 //!   someone is there, not who.
 
@@ -9,14 +11,20 @@ use bevy::prelude::*;
 use rs13_network::protocol::Player;
 use rs13_world::{Appearance, GridPos, PixelOffset};
 
-use crate::OwnPlayer;
 use crate::lighting::LightLevels;
 use crate::sprites::{Layer, Look};
+use crate::{OwnPlayer, TILE_PX};
 
-/// Where a drop shadow falls, px: to the right and a touch down, as from a light up and to
-/// the left.
-const SHADOW_OFFSET: Vec2 = Vec2::new(6.0, -3.0);
-const SHADOW_COLOUR: Color = Color::srgba(0.0, 0.0, 0.0, 0.5);
+/// How much of its height a shadow keeps: flattened onto the floor, as from a light high
+/// above.
+const SQUASH: f32 = 0.6;
+/// Where a shadow's foot sits from its object's, px: to the right and down, so it shows
+/// as a dark rim on the floor along the object's foot.
+const SHADOW_OFFSET: Vec2 = Vec2::new(5.0, -3.0);
+const SHADOW_COLOUR: Color = Color::srgba(0.0, 0.0, 0.0, 0.45);
+/// The layer every shadow lies on: over pipes and cables (up to 0.75), under tables and
+/// closets (0.9) and everything that stands.
+const SHADOW_Z: f32 = 0.8;
 /// People on a tile darker than this are silhouettes (the same as the server's "dark").
 const SILHOUETTE_BELOW: f32 = rs13_simulation::lighting::DARK_BELOW;
 
@@ -76,30 +84,32 @@ impl Plugin for SpriteShadowsPlugin {
     }
 }
 
-/// Give each sprite that stands on the floor, and each piece of clothing on a person, a
-/// drop shadow.
+/// The shadow's place under its object, which stands at `object_z`.
+fn shadow_transform(object_z: f32) -> Transform {
+    let foot = -(1.0 - SQUASH) * TILE_PX / 2.0;
+    Transform::from_xyz(SHADOW_OFFSET.x, foot + SHADOW_OFFSET.y, SHADOW_Z - object_z)
+        .with_scale(Vec3::new(1.0, SQUASH, 1.0))
+}
+
+/// Give each sprite that stands on the floor a drop shadow. A person's shadow is their
+/// body's: what they wear barely changes its flattened shape, and overlapping shadows
+/// would darken each other.
 #[allow(clippy::type_complexity)]
 fn add_shadows(
     mut commands: Commands,
     things: Query<
-        (Entity, &Sprite, Option<&Appearance>, Option<&ChildOf>, Has<Layer>),
+        (Entity, &Sprite, &Appearance, &Transform),
         (
             With<Look>,
             Without<Shadowed>,
             Without<PixelOffset>,
             Without<DropShadow>,
+            Without<Layer>,
         ),
     >,
-    parents: Query<&Appearance>,
 ) {
-    for (entity, sprite, appearance, parent, layer) in &things {
-        // A piece of clothing follows its wearer; anything else goes by its own sprite.
-        let look = match (appearance, layer) {
-            (Some(a), _) => Some(a),
-            (None, true) => parent.and_then(|p| parents.get(p.parent()).ok()),
-            _ => None,
-        };
-        if !look.is_some_and(|a| casts_shadow(&a.sprite)) {
+    for (entity, sprite, appearance, transform) in &things {
+        if !casts_shadow(&appearance.sprite) {
             continue;
         }
         let Some(texture) = sprite.texture_atlas.clone() else {
@@ -110,21 +120,26 @@ fn add_shadows(
         shadow.flip_x = sprite.flip_x;
         commands.entity(entity).insert(Shadowed).with_child((
             shadow,
-            Transform::from_translation(SHADOW_OFFSET.extend(-0.05)),
+            shadow_transform(transform.translation.z),
             DropShadow,
         ));
     }
 }
 
-/// Keep each drop shadow on its sprite's current frame.
+/// Keep each drop shadow on its sprite's current frame, and on the shadow layer when its
+/// object changes layer (a chair turned to face north).
 fn follow(
-    sources: Query<&Sprite, Without<DropShadow>>,
-    mut shadows: Query<(&ChildOf, &mut Sprite), With<DropShadow>>,
+    sources: Query<(&Sprite, &Transform), Without<DropShadow>>,
+    mut shadows: Query<(&ChildOf, &mut Sprite, &mut Transform), With<DropShadow>>,
 ) {
-    for (parent, mut shadow) in &mut shadows {
-        let Ok(source) = sources.get(parent.parent()) else {
+    for (parent, mut shadow, mut place) in &mut shadows {
+        let Ok((source, object)) = sources.get(parent.parent()) else {
             continue;
         };
+        let z = SHADOW_Z - object.translation.z;
+        if place.translation.z != z {
+            place.translation.z = z;
+        }
         if let (Some(from), Some(to)) = (source.texture_atlas.as_ref(), shadow.texture_atlas.as_mut())
             && to.index != from.index
         {
@@ -174,5 +189,17 @@ mod tests {
         assert!(!casts_shadow("pipe"));
         assert!(!casts_shadow("air-alarm"), "hangs on the wall");
         assert!(!casts_shadow("fire"), "is light");
+    }
+
+    #[test]
+    fn shadows_lie_on_one_layer_at_the_foot() {
+        // Whatever layer its object stands on, the shadow ends up on the shadow layer,
+        // flattened, with its foot at the object's foot.
+        for object_z in [0.9, 1.0, 3.0, 3.15] {
+            let t = shadow_transform(object_z);
+            assert!((object_z + t.translation.z - SHADOW_Z).abs() < 1e-6);
+            let foot = t.translation.y - t.scale.y * TILE_PX / 2.0;
+            assert!((foot - (-TILE_PX / 2.0 + SHADOW_OFFSET.y)).abs() < 1e-4);
+        }
     }
 }
