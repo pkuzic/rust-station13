@@ -157,8 +157,12 @@ What gives off light of its own stays bright in the dark and glows
   that stands, so a shadow never falls over another object. A person's shadow is their
   body's alone. Frames under 14 px tall (small things lying on the floor), what lies
   flat (pipes, cables, vents), what hangs on a wall and light itself have none.
-- **Silhouettes:** other people standing on a tile darker than 20 % (the server's "dark")
-  are drawn as black shapes, clothes and all: you can tell someone is there, not who.
+- **Silhouettes** (`apps/server/src/silhouettes.rs`): someone standing on a tile darker
+  than 20 % (the server's "dark") is sent to everyone else as a stand-in, a `Silhouette`
+  with only their place, facing and body pose: never their name, clothes or what they
+  hold, so even a modified client can tell someone is there, not who. Clients draw it as
+  a black shape. Clicking it (to hit, help or pull) acts on the person; examining it tells
+  nothing. In the light, they are sent in full again. You always see yourself.
 - **Darkness is dim, not black:** the darkest a tile is drawn is dim but readable and a
   little cool, so a dark room still shows its shape; only what is out of sight is black.
 
@@ -168,8 +172,8 @@ What gives off light of its own stays bright in the dark and glows
   across tiles.
 - **Light across decks:** Luna has no light between decks.
 - **Not implemented:**
-  - darkness hiding things from players (the server knows where it is dark, but no rule
-    uses it yet);
+  - darkness hiding things other than people (items on the floor of a dark room are
+    still sent and drawn, dimly);
   - red alert lighting (`isalert`, fire alarm lights);
   - other things that give light in Luna: lit welding tools, igniters, floodlights
     (flashlights and desk lamps do: `flashlights.md`; screens glow: Glow);

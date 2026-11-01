@@ -8,17 +8,15 @@
 //!   layer, just over the floor and what lies flat on it and under everything that stands,
 //!   so a shadow never falls over another object.
 //! - **Silhouettes:** someone standing in the dark is seen as a black shape: you can tell
-//!   someone is there, not who.
+//!   someone is there, not who. The server sends only the shape.
 
 use bevy::asset::RenderAssetUsages;
 use bevy::prelude::*;
 use bevy::render::render_resource::{Extent3d, TextureDimension, TextureFormat};
-use rs13_network::protocol::Player;
-use rs13_world::{Appearance, GridPos, PixelOffset};
+use rs13_world::{Appearance, PixelOffset, Silhouette};
 
-use crate::lighting::LightLevels;
+use crate::TILE_PX;
 use crate::sprites::{Footprint, Layer, Look, SpriteAtlas};
-use crate::{OwnPlayer, TILE_PX};
 
 /// How dark a shadow is at its middle.
 const SHADOW_ALPHA: f32 = 0.6;
@@ -39,8 +37,6 @@ const TUCK_PX: f32 = 1.0;
 /// The shadow image's size, px; it is stretched to each object.
 const BLOB_W: u32 = 64;
 const BLOB_H: u32 = 16;
-/// People on a tile darker than this are silhouettes (the same as the server's "dark").
-const SILHOUETTE_BELOW: f32 = rs13_simulation::lighting::DARK_BELOW;
 
 /// What may cast a contact shadow: not what lies flat on the floor, hangs on a wall, or is
 /// light itself. Frames too short to be standing are left out as well (`STANDING_PX`).
@@ -236,28 +232,12 @@ fn follow(
     }
 }
 
-/// Other people standing in the dark are drawn black, clothes and all.
-#[allow(clippy::type_complexity)]
-fn silhouettes(
-    levels: Res<LightLevels>,
-    mut people: Query<
-        (&GridPos, &mut Sprite, Option<&Children>),
-        (With<Player>, Without<OwnPlayer>, Without<Layer>),
-    >,
-    mut layers: Query<&mut Sprite, (With<Layer>, Without<Player>)>,
-) {
-    for (pos, mut sprite, children) in &mut people {
-        let dark = levels.brightness(pos.0).is_some_and(|b| b < SILHOUETTE_BELOW);
-        let colour = if dark { Color::BLACK } else { Color::WHITE };
-        if sprite.color != colour {
-            sprite.color = colour;
-        }
-        for child in children.into_iter().flatten() {
-            if let Ok(mut layer) = layers.get_mut(*child)
-                && layer.color != colour
-            {
-                layer.color = colour;
-            }
+/// Other people standing in the dark come from the server as silhouettes, with nothing
+/// about who they are (`apps/server/src/silhouettes.rs`): drawn black.
+fn silhouettes(mut shapes: Query<&mut Sprite, With<Silhouette>>) {
+    for mut sprite in &mut shapes {
+        if sprite.color != Color::BLACK {
+            sprite.color = Color::BLACK;
         }
     }
 }

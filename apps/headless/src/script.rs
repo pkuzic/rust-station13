@@ -7,7 +7,7 @@ use bevy::prelude::*;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Player, StatusUpdate};
-use rs13_world::{Appearance, Dir, GridPos, NetId, TilePos};
+use rs13_world::{Appearance, Dir, DisplayName, GridPos, NetId, Silhouette, TilePos};
 
 use crate::{JoinedAt, SeenPlayer};
 
@@ -39,6 +39,10 @@ pub struct Snapshot {
     pub status: Option<StatusUpdate>,
     /// The sprite of every thing the bot has been sent, sorted.
     pub sprites: Vec<String>,
+    /// Where each silhouette (someone in the dark) the bot has been sent stands, sorted.
+    pub silhouettes: Vec<TilePos>,
+    /// Every name the bot has been sent, sorted.
+    pub names: Vec<String>,
 }
 
 #[derive(Resource, Default)]
@@ -63,6 +67,7 @@ pub(crate) fn run_script(
     things: Query<(&NetId, &Appearance, Has<Controlled>, Option<&GridPos>)>,
     received: Res<crate::Received>,
     players: Query<(&Player, &GridPos, Has<Controlled>)>,
+    (shapes, names): (Query<&GridPos, With<Silhouette>>, Query<&DisplayName>),
     mut snapshots: ResMut<Snapshots>,
     mut progress: Local<Progress>,
 ) {
@@ -124,12 +129,18 @@ pub(crate) fn run_script(
                 .filter_map(|(_, a, _, pos)| pos.map(|p| (a.sprite.clone(), p.0)))
                 .collect();
             placed.sort();
+            let mut silhouettes: Vec<TilePos> = shapes.iter().map(|p| p.0).collect();
+            silhouettes.sort();
+            let mut names: Vec<String> = names.iter().map(|n| n.0.clone()).collect();
+            names.sort();
             snapshots.0.push(Snapshot {
                 label: label.clone(),
                 players: seen,
                 placed,
                 status: received.1.clone(),
                 sprites,
+                silhouettes,
+                names,
             });
             true
         }

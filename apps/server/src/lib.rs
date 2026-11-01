@@ -1,6 +1,7 @@
 //! The dedicated server as a library, so tests can run it in-process.
 
 mod sight;
+mod silhouettes;
 
 use std::time::Duration;
 
@@ -108,7 +109,10 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
     )
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
     // for a client that has just joined, before anything is sent to it.
-    .add_systems(FixedPostUpdate, sight::update_sight::<()>)
+    .add_systems(
+        FixedPostUpdate,
+        (silhouettes::update_silhouettes, sight::update_sight::<()>).chain(),
+    )
     .add_systems(
         PostUpdate,
         sight::update_sight::<Without<sight::OutOfSight>>.before(ReplicationSystems::Send),
@@ -215,10 +219,14 @@ fn queue_actions(
         &mut PendingSmesOps,
         Has<NameChosen>,
     )>,
-    ids: Query<(Entity, &NetId)>,
+    ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
     mut commands: Commands,
 ) {
-    let resolve = |id: NetId| ids.iter().find(|(_, n)| **n == id).map(|(e, _)| e);
+    // Clicking someone's stand-in in the dark acts on them (`silhouettes.rs`); examining
+    // it tells nothing, as there is nothing to see.
+    let find = |id: NetId| ids.iter().find(|(_, n, _)| **n == id);
+    let resolve = |id: NetId| find(id).map(|(e, _, shade)| shade.map_or(e, |s| s.0));
+    let examined = |id: NetId| find(id).filter(|(_, _, shade)| shade.is_none()).map(|(e, ..)| e);
     for (controls, mut receiver) in &mut links {
         let Ok((
             mut pending,
@@ -241,7 +249,7 @@ fn queue_actions(
         for input in receiver.receive() {
             let action = match input {
                 ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
-                ActionInput::Examine(id) => resolve(id).map(Action::Examine),
+                ActionInput::Examine(id) => examined(id).map(Action::Examine),
                 ActionInput::Pull(id) => resolve(id).map(Action::Pull),
                 ActionInput::StopPulling => Some(Action::StopPulling),
                 ActionInput::Drop => Some(Action::Drop),

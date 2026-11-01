@@ -763,11 +763,13 @@ fn show_only_placed(
             Has<Hidden>,
             Has<Player>,
             Has<OwnPlayer>,
+            Has<rs13_world::Silhouette>,
         ),
         With<Appearance>,
     >,
 ) {
-    for (mut visibility, placed, hidden, person, own) in &mut objects {
+    for (mut visibility, placed, hidden, player, own, shape) in &mut objects {
+        let person = player || shape;
         let seen = placed.is_some_and(|p| sight.sees(p.0) && !(person && !own && fov.hides(p.0)));
         visibility.set_if_neq(if seen && !hidden {
             Visibility::Inherited
@@ -1159,12 +1161,15 @@ fn glide(
         &GridPos,
         &mut Transform,
         Has<Player>,
+        Has<rs13_world::Silhouette>,
         Option<&mut Glided>,
         Option<&rs13_world::PixelOffset>,
     )>,
 ) {
     let dt = time.delta_secs();
-    for (entity, pos, mut transform, is_player, glided, offset) in &mut movers {
+    for (entity, pos, mut transform, player, shape, glided, offset) in &mut movers {
+        // Someone in the dark glides like anyone else (`sprite_shadows.rs`, Silhouettes).
+        let is_player = player || shape;
         // Hung on a wall: drawn shifted onto it (BYOND `pixel_x`, `pixel_y`).
         let shift = offset.map_or(Vec3::ZERO, |o| {
             Vec3::new(f32::from(o.0[0]), f32::from(o.0[1]), 0.0)

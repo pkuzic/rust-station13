@@ -15,6 +15,7 @@ use rs13_network::lightyear::prelude::*;
 use rs13_world::{Facing, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
 
 use crate::Controls;
+use crate::silhouettes::{Shade, Shaded};
 
 /// How far out things are still sent, in tiles: one past the view, so whoever walks in
 /// is already there to slide into sight.
@@ -101,6 +102,7 @@ pub fn update_sight<F: QueryFilter>(
             Has<Opaque>,
             Has<LightSource>,
             Has<Hidden>,
+            (Option<&Shade>, Has<Shaded>),
         ),
         With<NetId>,
     >,
@@ -164,15 +166,24 @@ pub fn update_sight<F: QueryFilter>(
         };
         let placed_hidden: HashSet<Entity> = things
             .iter()
-            .filter(|(entity, pos, person, opaque, light, under_floor)| {
-                let Some(at) = pos else { return false };
-                // Our own mob is always sent, even shut in a closet (which hides it from
-                // everyone else). Under intact floor tiles (pipes, cables, vents): no one
-                // sees it.
-                *entity != me
-                    && (*under_floor
-                        || (!*opaque && !*light && out_of_sight(eye, facing, at.0, *person, &mut seen)))
-            })
+            .filter(
+                |(entity, pos, person, opaque, light, under_floor, (shade, shaded))| {
+                    let Some(at) = pos else { return false };
+                    // Our own mob is always sent, even shut in a closet (which hides it from
+                    // everyone else). Under intact floor tiles (pipes, cables, vents): no one
+                    // sees it. Someone else in the dark is sent as their stand-in only, and
+                    // our own stand-in never to us (`silhouettes.rs`).
+                    if *entity == me {
+                        return false;
+                    }
+                    if *shaded || shade.is_some_and(|s| s.0 == me) {
+                        return true;
+                    }
+                    let person = *person || shade.is_some();
+                    *under_floor
+                        || (!*opaque && !*light && out_of_sight(eye, facing, at.0, person, &mut seen))
+                },
+            )
             .map(|(entity, ..)| entity)
             .collect();
         let hidden: HashSet<Entity> = things

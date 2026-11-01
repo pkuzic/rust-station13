@@ -86,6 +86,12 @@ pub struct Hidden;
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dense;
 
+/// A person standing in the dark, as the server sends them to everyone else: where they
+/// are, which way they face and their body's pose, but not who they are, what they wear
+/// or hold. Drawn as a black shape. Clicking it acts on the person.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Silhouette;
+
 /// Blocks sight through its tile while present (BYOND `opacity`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Opaque;
