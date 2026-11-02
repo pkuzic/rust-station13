@@ -59,6 +59,7 @@ pub mod power_monitor;
 pub mod pulling;
 pub mod radio;
 pub mod rng;
+pub mod shields;
 pub mod smes_panel;
 pub mod smoking;
 pub mod sound;
@@ -125,6 +126,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<access::AccessIds>()
             .init_resource::<rng::GameRng>()
             .init_resource::<ghosts::Departures>()
+            .init_resource::<shields::ShieldNetwork>()
             .init_resource::<combat::PendingAttacks>()
             .init_resource::<medical::PendingTreatments>()
             .init_resource::<combat::VisibleEvents>()
@@ -347,6 +349,7 @@ impl Plugin for ClassicPlugin {
             .add_systems(
                 FixedUpdate,
                 (
+                    shields::run_shields,
                     ghosts::leave_dead_bodies,
                     ghosts::move_ghosts,
                     ghosts::run_ghost_actions,

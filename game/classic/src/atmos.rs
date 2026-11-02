@@ -53,6 +53,7 @@ pub fn step_atmos(
     firedoors: Query<(&GridPos, &Firedoor)>,
     windoors: Query<(&GridPos, &crate::windoors::Windoor)>,
     barriers: crate::windoors::EdgeBarriers,
+    field: Query<(&GridPos, &crate::shields::ShieldTile, Has<rs13_world::Dense>)>,
 ) {
     let Some(mut atmos) = atmos else { return };
     for (pos, door) in &doors {
@@ -64,10 +65,22 @@ pub fn step_atmos(
     // An edge is open only if nothing on it is shut: a firedoor, a pane or a window door.
     let mut closed = closed_edges(firedoors.iter());
     closed.extend(barriers.iter());
+    // The raised shield field seals the hull (`shields.md`).
+    for (pos, tile, _) in field.iter().filter(|(_, _, up)| *up) {
+        for dir in &tile.edges {
+            closed.insert((pos.0, pos.0.step(*dir)));
+            closed.insert((pos.0.step(*dir), pos.0));
+        }
+    }
     let edges = firedoors
         .iter()
         .filter_map(|(pos, door)| door.edge(pos.0))
-        .chain(windoors.iter().map(|(pos, door)| door.edge(pos.0)));
+        .chain(windoors.iter().map(|(pos, door)| door.edge(pos.0)))
+        .chain(
+            field
+                .iter()
+                .flat_map(|(pos, tile, _)| tile.edges.iter().map(|dir| (pos.0, *dir))),
+        );
     for (at, dir) in edges {
         atmos
             .0

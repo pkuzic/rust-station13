@@ -285,6 +285,11 @@
         (path: "/obj/machinery/sparker", id: "sparker", vars: ["id"]),
         (path: "/obj/machinery/ignition_switch", id: "ignition-switch", vars: ["id"]),
         (path: "/obj/machinery/door/poddoor", id: "blast-door", vars: ["id", "density"]),
+        // The shield generator (`shields.md`).
+        (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
+        (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),
+        (path: "/obj/machinery/shielding/energyconverter", id: "shield-converter"),
+        (path: "/obj/machinery/shieldsbutton", id: "shields-button"),
         (path: "/obj/machinery/door_control", id: "door-button", vars: ["id"]),
         (path: "/obj/machinery/floodlight", id: "floodlight"),
 

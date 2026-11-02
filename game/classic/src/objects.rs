@@ -86,6 +86,9 @@ pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
     world.init_resource::<crate::machines::PipeNets>();
     world.resource_mut::<crate::machines::PipeNets>().dirty = true;
 
+    // The shield field, and the edges it seals while up.
+    let field_edges = crate::shields::lay_field(world, &layouts);
+
     // Air: every door tile (airlocks, blast doors) is a portal between zones, and every
     // firedoor and window pane seals an edge.
     let mut doors =
@@ -96,6 +99,9 @@ pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
         firedoors.iter(world).filter_map(|(p, d)| d.edge(p.0)).collect();
     let layout_refs: Vec<&TileMap> = layouts.iter().collect();
     let mut atmos = crate::atmos::build(&layout_refs, &portals, &edges);
+    for (at, dir) in field_edges {
+        atmos.0.add_edge(at, dir);
+    }
     // Window panes seal theirs for good.
     let mut panes = world.query::<(&GridPos, &crate::windows::WindowPane)>();
     for (at, dir) in panes.iter(world).map(|(p, w)| w.edge(p.0)) {
@@ -173,6 +179,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         if let Some(closet) = crate::closets::spawn_closet(world, spec, pos, id) {
             return closet;
         }
+    }
+    if crate::shields::is_shield_part(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::shields::spawn_shield_part(world, proto, pos, id));
     }
     if proto == crate::morgue::CREMATORIUM {
         let id = world.resource_mut::<NetIds>().alloc();

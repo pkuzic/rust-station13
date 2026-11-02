@@ -1490,6 +1490,43 @@
             "crema0": (dmi: "icons/obj/stationobjs.dmi", state: "crema0"),
         },
         "crematorium-tray": { "cremat": (dmi: "icons/obj/stationobjs.dmi", state: "cremat") },
+        // The shield generator: plates, capacitors with charge lights, converters with rate lights.
+        "shield-plate": {
+            "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
+            "plate-p": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate-p"),
+        },
+        "shield-capacitor": {
+            "cap": (dmi: "icons/obj/machines/shieldgen.dmi", state: "cap"),
+            "cap-o": (dmi: "icons/obj/machines/shieldgen.dmi", state: "cap-o"),
+            "c0": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c0"),
+            "c1": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c1"),
+            "c2": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c2"),
+            "c3": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c3"),
+            "c4": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c4"),
+            "c5": (dmi: "icons/obj/machines/shieldgen.dmi", state: "c5"),
+        },
+        "shield-converter": {
+            "econ": (dmi: "icons/obj/machines/shieldgen.dmi", state: "econ"),
+            "econ-p": (dmi: "icons/obj/machines/shieldgen.dmi", state: "econ-p"),
+            "o0": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o0"),
+            "o1": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o1"),
+            "o2": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o2"),
+            "o3": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o3"),
+            "o4": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o4"),
+            "o5": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o5"),
+            "o6": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o6"),
+            "o7": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o7"),
+            "o8": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o8"),
+            "o9": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o9"),
+            "o10": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o10"),
+            "o11": (dmi: "icons/obj/machines/shieldgen.dmi", state: "o11"),
+        },
+        "shield": {
+            "shieldsparkles0": (dmi: "icons/effects/effects.dmi", state: "shieldsparkles0"),
+        },
+        "shields-button": {
+            "access_button_standby": (dmi: "icons/obj/airlock_machines.dmi", state: "access_button_standby"),
+        },
         "crematorium-igniter": { "crema_switch": (dmi: "icons/obj/power.dmi", state: "crema_switch") },
         "urn": { "": (dmi: "icons/obj/items.dmi", state: "urn") },
         // Coffins and the personal, brig and security lockers.
