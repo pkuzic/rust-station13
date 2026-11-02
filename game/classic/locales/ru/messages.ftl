@@ -111,6 +111,7 @@ arcade-button-attack = Атаковать
 arcade-button-heal = Лечиться
 arcade-button-recharge = Восстановить силы
 arcade-button-new = Новая игра
+airlock-cycling = Шлюз начинает цикл.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

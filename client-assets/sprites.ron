@@ -1523,6 +1523,15 @@
         "toy-ripley": { "": (dmi: "icons/obj/toy.dmi", state: "ripleytoy") },
         "toy-gygax": { "": (dmi: "icons/obj/toy.dmi", state: "gygaxtoy") },
         "toy-durand": { "": (dmi: "icons/obj/toy.dmi", state: "durandprize") },
+        "airlock-console": {
+            "airlock_control_standby": (dmi: "icons/obj/airlock_machines.dmi", state: "airlock_control_standby"),
+            "airlock_control_process": (dmi: "icons/obj/airlock_machines.dmi", state: "airlock_control_process"),
+        },
+        "access-console": {
+            "access_control_standby": (dmi: "icons/obj/airlock_machines.dmi", state: "access_control_standby"),
+            "access_control_process": (dmi: "icons/obj/airlock_machines.dmi", state: "access_control_process"),
+        },
+        "access-button": { "access_button_standby": (dmi: "icons/obj/airlock_machines.dmi", state: "access_button_standby") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

@@ -124,6 +124,27 @@ const APC_WALL_PX: i32 = 24;
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
+    // Tagged for an airlock console (`airlock-control.md`).
+    let tag = |name: &str| {
+        spec.vars
+            .get(name)
+            .map(|v| v.trim().trim_matches('"').to_owned())
+            .filter(|v| !v.is_empty())
+    };
+    if spec.id == "airlock"
+        && let Some(tag) = tag("id_tag")
+    {
+        world
+            .entity_mut(entity)
+            .insert(crate::airlock_control::DoorTag(tag));
+    }
+    if spec.id == "vent"
+        && let Some(tag) = tag("id")
+    {
+        world
+            .entity_mut(entity)
+            .insert(crate::airlock_control::PumpTag(tag));
+    }
     if crate::floors::lies_under_floor(spec) {
         world.entity_mut(entity).insert(crate::floors::UnderFloor);
     }
@@ -179,6 +200,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         if let Some(closet) = crate::closets::spawn_closet(world, spec, pos, id) {
             return closet;
         }
+    }
+    if crate::airlock_control::is_airlock_control(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::airlock_control::spawn_part(world, spec, pos, id));
     }
     if proto == crate::arcade::ARCADE {
         let id = world.resource_mut::<NetIds>().alloc();
