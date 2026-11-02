@@ -588,6 +588,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("pipe", _) => (Color::srgb(0.35, 0.40, 0.55), 8.0, 0.6),
         // Under cables and gas pipes (Luna: disposal pipes 2.3, gas pipes 2.4).
         ("disposal-pipe", _) => (Color::srgb(0.45, 0.45, 0.45), 10.0, 0.5),
+        // On the floor, under what it carries.
+        ("conveyor", _) => (Color::srgb(0.40, 0.40, 0.40), TILE_PX - 2.0, 0.6),
         ("cable", _) => (Color::srgb(0.85, 0.20, 0.20), 5.0, 0.55),
         ("smes", _) => (Color::srgb(0.85, 0.80, 0.30), TILE_PX - 4.0, 1.5),
         ("apc", "off") => (Color::srgb(0.30, 0.30, 0.30), 18.0, 1.6),
@@ -684,8 +686,8 @@ fn click_rank(appearance: &Appearance) -> u8 {
         "firedoor" if appearance.state.starts_with("door0") => 5,
         "firedoor" => 1,
         "pipe" | "cable" => 4,
-        "pump" | "vent" | "scrubber" | "valve" | "connector" | "meter" | "smes" | "apc" | "light"
-        | "light-small" | "light-switch" => 1,
+        "conveyor" | "pump" | "vent" | "scrubber" | "valve" | "connector" | "meter" | "smes" | "apc"
+        | "light" | "light-small" | "light-switch" => 1,
         machine if is_pipe_tank(machine) || is_canister(machine) => 1,
         _ => 0,
     }

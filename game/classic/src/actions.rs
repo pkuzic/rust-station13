@@ -137,7 +137,15 @@ pub fn process_actions(
             mut food,
             mut smoking,
             inventory,
-            (consoles, mut cameras, mut paperwork, mut windoors, mut filing, mut linen),
+            (
+                consoles,
+                mut cameras,
+                mut paperwork,
+                mut windoors,
+                mut filing,
+                mut linen,
+                (mut belt_switches, belts, pulling),
+            ),
         ),
         (
             mut generators,
@@ -188,6 +196,11 @@ pub fn process_actions(
                 Query<&mut crate::windoors::Windoor>,
                 crate::filing::FilingWork,
                 crate::bedsheets::LinenWork,
+                (
+                    Query<&mut crate::conveyors::ConveyorSwitch>,
+                    Query<(), With<crate::conveyors::Conveyor>>,
+                    Query<&crate::pulling::Pulling>,
+                ),
             ),
         ),
         (
@@ -521,6 +534,34 @@ pub fn process_actions(
                     {
                         outbox.0.extend(outcome.to_mob);
                         outbox.0.extend(outcome.seen);
+                    }
+                }
+                Action::UseOn(target)
+                    if (belts.contains(target) || belt_switches.contains(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Conveyor belts and switches (`conveyors.md`).
+                    let at = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    let active_hand = hands.active;
+                    if belt_switches.contains(target) {
+                        if hands.active_item().is_none() {
+                            crate::conveyors::throw_switch(target, &mut belt_switches);
+                        }
+                    } else if let Some(item) = hands.slot_mut(active_hand).take() {
+                        // Luna `conveyor/attackby`: the item is put down on the belt.
+                        commands.entity(item).remove::<HeldBy>().insert(GridPos(at));
+                    } else if let Ok(pulled) = pulling.get(mob)
+                        && let Ok(from) = places.get(pulled.0)
+                    {
+                        // Luna `conveyor/attack_hand`: what you pull is put on the belt, and
+                        // you let go.
+                        let step = TilePos::new(
+                            from.0.x + (at.x - from.0.x).signum(),
+                            from.0.y + (at.y - from.0.y).signum(),
+                            from.0.z,
+                        );
+                        commands.entity(pulled.0).insert(GridPos(step));
+                        commands.entity(mob).remove::<crate::pulling::Pulling>();
                     }
                 }
                 Action::UseOn(target) if people.contains(target) && food.is_food(hands.active_item()) => {

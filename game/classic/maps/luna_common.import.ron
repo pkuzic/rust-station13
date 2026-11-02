@@ -150,6 +150,13 @@
         (path: "/obj/structure/filingcabinet/chestdrawer", id: "chest-drawer"),
         // Linen bins and bedsheets (`bedsheets.md`).
         (path: "/obj/structure/bedsheetbin", id: "linen-bin"),
+        // Conveyor belts and their switches, joined by id (`conveyors.md`).
+        (path: "/obj/machinery/conveyor", id: "conveyor", dir: true, vars: ["id"]),
+        (path: "/obj/machinery/conveyor/centcom_auto", id: "conveyor", dir: true, vars: ["id", "is_on"],
+            type_vars: {"is_on": "1"}),
+        (path: "/obj/machinery/conveyor_switch", id: "conveyor-switch", vars: ["id"]),
+        (path: "/obj/machinery/conveyor_switch/oneway", id: "conveyor-switch", vars: ["id", "oneway"],
+            type_vars: {"oneway": "1"}),
         (path: "/obj/item/weapon/bedsheet", id: "bedsheet"),
         (path: "/obj/item/weapon/bedsheet/blue", id: "bedsheet-blue"),
         (path: "/obj/item/weapon/bedsheet/brown", id: "bedsheet-brown"),
