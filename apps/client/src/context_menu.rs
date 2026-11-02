@@ -147,14 +147,24 @@ pub fn open_menu(
             },
             ChildOf(row),
         ));
-        let mut choices = vec![("menu-examine", ActionInput::Examine(*id))];
+        let mut choices = vec![("menu-examine".to_owned(), ActionInput::Examine(*id))];
         if !own {
-            choices.push(("menu-use", ActionInput::UseOn(*id)));
-            choices.push(("menu-pull", ActionInput::Pull(*id)));
+            choices.push(("menu-use".to_owned(), ActionInput::UseOn(*id)));
+            choices.push(("menu-pull".to_owned(), ActionInput::Pull(*id)));
+            // Its own verbs (`rs13_classic::verbs`).
+            for verb in rs13_classic::verbs::verbs_for(&appearance.sprite) {
+                choices.push((
+                    format!("verb-{verb}"),
+                    ActionInput::Verb {
+                        target: *id,
+                        verb: verb.to_owned(),
+                    },
+                ));
+            }
         }
         for (label, action) in choices {
             index += 1;
-            choice(&mut commands, row, text(label), MenuChoice { index, action });
+            choice(&mut commands, row, text(&label), MenuChoice { index, action });
         }
     }
 }

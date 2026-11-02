@@ -61,6 +61,7 @@ pub mod supermatter;
 pub mod teg;
 pub mod time;
 pub mod vending;
+pub mod verbs;
 pub mod walllockers;
 pub mod welding;
 pub mod windows;

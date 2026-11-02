@@ -114,10 +114,20 @@ Hovering over a cell shows its name, and what is in it, in the stat panel. A cli
 
 BYOND's context menu: right-clicking a tile of the map lists everything on it, on your own
 deck, topmost first, each with **Examine**, **Use** (as a left click with the active hand)
-and **Pull** (as Ctrl-click); yourself with Examine only. Picking one does it; a left click
+and **Pull** (as Ctrl-click), then its own verbs; yourself with Examine only. The verbs
+(`game/classic/src/verbs.rs`), checked and done by the server:
+
+| Verb | On | Does (Luna) |
+|---|---|---|
+| **Toggle Open** | closets, lockers, crates, within a tile | what an empty hand does, whatever you hold (`verb_toggleopen`) |
+| **Toggle Lock** | secure lockers, from beside them, shut | locks or unlocks with its access (`verb_togglelock`) |
+| **Rotate Chair** | chairs, within a tile | a quarter turn anticlockwise, sitter and all (`chair/rotate`) |
+| **Toggle Light** | flashlights and lamps you carry | switches it (`flashlight/verb/toggle`) |
+| **Toggle Jetpack** | jetpacks you carry | switches it (`jetpack/verb/toggle`) |
+ Picking one does it; a left click
 elsewhere or Escape closes the menu without doing anything else. Code:
 `apps/client/src/context_menu.rs`.
 
 | Luna | Here |
 |---|---|
-| Each thing's own verbs (for example a closet's Toggle, a tank's Set Internals) | Examine, Use and Pull for everything |
+| Every verb of every object (an item's Move to Top, the jetpack's stabiliser, reading an ID card, a window's Rotate) | The verbs above |

@@ -108,6 +108,17 @@ impl ChairWork<'_, '_> {
         self.chairs.contains(target)
     }
 
+    /// Luna `chair/rotate`: a quarter turn anticlockwise, sitter and all. `None` for
+    /// anything but a chair. The caller checks reach.
+    pub fn rotate(&mut self, target: Entity) -> Option<ClickOutcome> {
+        let (_, mut chair, _) = self.chairs.get_mut(target).ok()?;
+        if chair.seat != Seat::Chair {
+            return None;
+        }
+        chair.dir = quarter_turn(chair.dir);
+        Some(ClickOutcome::default())
+    }
+
     /// Luna's chair and bed: an empty hand unbuckles whoever is in it (`attack_hand`), or
     /// buckles in a mob standing on it (dragging yourself onto it, in Luna), lying down in
     /// a bed, or, from beside it, turns an empty chair (the "Rotate Chair" verb). A stool

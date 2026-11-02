@@ -659,3 +659,10 @@ cigarette-lit-lighter = After some fiddling, { $name } manages to light their { 
 cigarette-lit = { $name } lights their { NOUN($item) } with their { NOUN($tool) }.
 cigarette-out = Your { NOUN($item) } goes out.
 cigarette-trodden = { $name } calmly drops and treads on the lit { NOUN($item) }, putting it out instantly.
+
+# Object verbs in the right-click menu (verbs.rs).
+verb-toggle-open = Toggle Open
+verb-toggle-lock = Toggle Lock
+verb-rotate-chair = Rotate Chair
+verb-toggle-light = Toggle Light
+verb-toggle-jetpack = Toggle Jetpack

@@ -276,6 +276,8 @@ fn queue_actions(
                 ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
                 ActionInput::Examine(id) => examined(id).map(Action::Examine),
                 ActionInput::Pull(id) => resolve(id).map(Action::Pull),
+                ActionInput::Verb { target, verb } => rs13_classic::verbs::named(&verb)
+                    .and_then(|verb| resolve(target).map(|t| Action::Verb(t, verb))),
                 ActionInput::StopPulling => Some(Action::StopPulling),
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::CloseStorage => Some(Action::CloseStorage),
