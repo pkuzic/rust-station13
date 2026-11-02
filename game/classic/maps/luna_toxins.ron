@@ -24,7 +24,6 @@
 //      2 /obj/machinery/navbeacon
 //      7 /obj/machinery/portable_atmospherics/canister
 //      3 /obj/machinery/shielding/emitter/plate
-//      1 /obj/machinery/space_heater
 //      2 /obj/machinery/vending/toxins
 //      2 /obj/structure/closet/bombcloset
 //      2 /obj/structure/closet/l3closet/sci
@@ -202,7 +201,7 @@
         'Ь': (tile: (id: "floor"), objects: ["portable-pump", (id: "pipe", dir: East)]),
         'Э': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-pump"]),
         'Ю': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),
-        'Я': (tile: (id: "floor"), objects: [(id: "light-small", dir: South)]),
+        'Я': (tile: (id: "floor"), objects: ["space-heater", (id: "light-small", dir: South)]),
         'а': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
         'б': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
         'в': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),

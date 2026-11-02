@@ -746,3 +746,38 @@ examine-linen-bin = { $count ->
         [few] В корзине { $count } простыни.
        *[many] В корзине { $count } простыней.
     }
+
+# Обогреватели (space-heaters.md). Аргументы: $name; $on, $open (yes, no); $cell (yes, no,
+# meter); $value.
+heater-hatch-closed = Чтобы вставить батарею, откройте крышку.
+heater-has-cell = Внутри уже есть батарея.
+heater-cell-in = Вы вставляете батарею в обогреватель.
+heater-cell-in-seen = { $name } вставляет батарею в обогреватель.
+heater-cell-out = Вы вынимаете батарею из обогревателя.
+heater-cell-out-seen = { $name } вынимает батарею из обогревателя.
+heater-hatch-opened = Вы открываете крышку обогревателя.
+heater-hatch-opened-seen = { $name } открывает крышку обогревателя.
+heater-hatch-shut = Вы закрываете крышку обогревателя.
+heater-hatch-shut-seen = { $name } закрывает крышку обогревателя.
+heater-switched-on = Вы включаете обогреватель.
+heater-switched-on-seen = { $name } включает обогреватель.
+heater-switched-off = Вы выключаете обогреватель.
+heater-switched-off-seen = { $name } выключает обогреватель.
+examine-heater = Обогреватель { $on ->
+        [yes] включён
+       *[no] выключен
+    }, крышка { $open ->
+        [yes] открыта
+       *[no] закрыта
+    }. { $cell ->
+        [yes] Батарея на месте.
+        [no] Батареи нет.
+       *[meter] Индикатор заряда показывает { $value }%.
+    }
+heater-title = Панель управления обогревателем
+heater-cell = Батарея:
+heater-cell-installed = Установлена
+heater-cell-removed = Снята
+heater-level = Заряд: { $value }%
+heater-set = Температура:
+heater-degrees = { $value }°C

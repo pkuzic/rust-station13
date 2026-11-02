@@ -19,6 +19,7 @@ use rs13_classic::filing::{PendingPicks, PickListOut};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::health::Vitals;
+use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
@@ -37,16 +38,16 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, CameraPanel,
-    ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, LaserCommand,
-    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
-    PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
-    VendingPanel, WirePanel,
+    ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand,
+    HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel,
+    PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
+    StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, GridPos, LaserPanelView, MapLayer, NetId, PaperView, PickListView, PowerMonitorView,
-    SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
+    GasPanelView, GridPos, HeaterPanelView, LaserPanelView, MapLayer, NetId, PaperView, PickListView,
+    PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -81,6 +82,7 @@ struct SentPanel(
     Option<CameraPanelView>,
     Option<ClipboardView>,
     Option<PickListView>,
+    Option<HeaterPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -253,6 +255,7 @@ fn queue_actions(
             &mut PendingCameraOps,
             &mut PendingPaperOps,
             &mut PendingPicks,
+            &mut PendingHeaterOps,
         ),
         Has<NameChosen>,
     )>,
@@ -278,7 +281,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks),
+            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks, mut heater_ops),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -368,6 +371,19 @@ fn queue_actions(
                 ActionInput::LabelPaper { target, label } => {
                     if let Some(sheet) = resolve(target) {
                         paper_ops.0.push(PaperOp::Label(sheet, label));
+                    }
+                    None
+                }
+                ActionInput::Heater { target, command } => {
+                    if let Some(heater) = resolve(target) {
+                        heater_ops.0.push((
+                            heater,
+                            match command {
+                                HeaterCommand::Cell => HeaterOp::Cell,
+                                HeaterCommand::Warmer(true) => HeaterOp::Setting(1),
+                                HeaterCommand::Warmer(false) => HeaterOp::Setting(-1),
+                            },
+                        ));
                     }
                     None
                 }
@@ -586,7 +602,8 @@ fn send_panels(
         &mut MessageSender<VendingPanel>,
         &mut MessageSender<CameraPanel>,
         &mut MessageSender<ClipboardPanel>,
-        &mut MessageSender<PickListPanel>,
+        // Nested: a query's data holds at most 15 parts.
+        (&mut MessageSender<PickListPanel>, &mut MessageSender<HeaterPanel>),
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -602,6 +619,7 @@ fn send_panels(
         &CameraPanelOut,
         &ClipboardOut,
         &PickListOut,
+        &HeaterPanelOut,
     )>,
 ) {
     for (
@@ -619,7 +637,7 @@ fn send_panels(
         mut vendings,
         mut camera_panels,
         mut clipboard_panels,
-        mut pick_panels,
+        (mut pick_panels, mut heater_panels),
     ) in &mut links
     {
         let Ok((
@@ -636,6 +654,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
+            heater,
         )) = panels.get(controls.0)
         else {
             continue;
@@ -691,6 +710,10 @@ fn send_panels(
         if sent.12 != pick_list.0 {
             pick_panels.send::<NoticeChannel>(PickListPanel(pick_list.0.clone()));
             sent.12 = pick_list.0.clone();
+        }
+        if sent.13 != heater.0 {
+            heater_panels.send::<NoticeChannel>(HeaterPanel(heater.0.clone()));
+            sent.13 = heater.0.clone();
         }
     }
 }

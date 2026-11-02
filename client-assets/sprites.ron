@@ -1452,5 +1452,11 @@
             "switch-fwd": (dmi: "icons/obj/recycling.dmi", state: "switch-fwd"),
             "switch-rev": (dmi: "icons/obj/recycling.dmi", state: "switch-rev"),
         },
+        // Space heaters: off, on, or with the hatch open.
+        "space-heater": {
+            "sheater0": (dmi: "icons/obj/atmos.dmi", state: "sheater0"),
+            "sheater1": (dmi: "icons/obj/atmos.dmi", state: "sheater1"),
+            "sheater-open": (dmi: "icons/obj/atmos.dmi", state: "sheater-open"),
+        },
     },
 )

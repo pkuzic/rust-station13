@@ -390,6 +390,18 @@ pub struct ClipboardView {
     pub papers: Vec<String>,
 }
 
+/// An open space heater's window, as shown to the player (Luna's `spaceheater` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct HeaterPanelView {
+    /// The heater.
+    pub target: NetId,
+    pub has_cell: bool,
+    /// Its cell's charge, %.
+    pub charge_percent: u8,
+    /// The temperature it heats to, °C.
+    pub setting: i16,
+}
+
 /// A window listing things to pick one from, such as the sheets in a filing cabinet
 /// (Luna's `filingcabinet` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

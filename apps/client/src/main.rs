@@ -25,6 +25,7 @@ mod gas;
 mod gas_panel;
 mod glow;
 mod heat;
+mod heater_panel;
 mod hud;
 mod laser_panel;
 mod lighting;
@@ -286,6 +287,7 @@ fn main() {
         .init_resource::<vending_panel::OpenVending>()
         .init_resource::<camera_panel::OpenCameras>()
         .init_resource::<pick_panel::OpenPickList>()
+        .init_resource::<heater_panel::OpenHeater>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
         .init_resource::<smes_panel::OpenSmes>()
@@ -335,6 +337,7 @@ fn main() {
                     (vending_panel::receive_vending, vending_panel::show_vending).chain(),
                     (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
                     (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
+                    (heater_panel::receive_heater, heater_panel::show_heater).chain(),
                     (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                     (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),

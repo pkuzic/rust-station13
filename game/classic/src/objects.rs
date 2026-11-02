@@ -174,6 +174,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::heaters::SPACE_HEATER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::heaters::spawn_heater(world, spec, pos, id));
+    }
     if proto == crate::conveyors::CONVEYOR {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::conveyors::spawn_conveyor(world, spec, pos, id));
@@ -543,6 +547,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                         crate::paperwork::ClipboardOut::default(),
                         crate::filing::PendingPicks::default(),
                         crate::filing::PickListOut::default(),
+                        crate::heaters::PendingHeaterOps::default(),
+                        crate::heaters::HeaterPanelOut::default(),
                     ),
                     crate::smes_panel::PendingSmesOps::default(),
                     crate::smes_panel::SmesPanelOut::default(),
