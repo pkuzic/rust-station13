@@ -7,6 +7,7 @@ pub mod access;
 pub mod actions;
 pub mod alarms;
 pub mod apc;
+pub mod arcade;
 pub mod atmos;
 pub mod bedsheets;
 pub mod blastdoors;
@@ -354,6 +355,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    arcade::run_arcades,
+                    arcade::update_arcade_views,
                     microwaves::run_microwaves,
                     monkeys::run_monkeys,
                     flashes::run_flashers,

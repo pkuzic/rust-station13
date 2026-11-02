@@ -392,6 +392,24 @@ pub struct ClipboardView {
     pub papers: Vec<String>,
 }
 
+/// An open arcade machine's window, as shown to the player (Luna's `arcade` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ArcadePanelView {
+    /// The machine.
+    pub target: NetId,
+    /// Who the villain is: its title and name, as selectors in the locale.
+    pub title: String,
+    pub villain: String,
+    /// What just happened: a message id, and its numbers.
+    pub message: String,
+    pub value: i32,
+    pub cost: i32,
+    pub player_hp: i32,
+    pub player_mp: i32,
+    pub enemy_hp: i32,
+    pub game_over: bool,
+}
+
 /// An open space heater's window, as shown to the player (Luna's `spaceheater` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HeaterPanelView {

@@ -27,6 +27,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:open` | `icons/obj/power.dmi : "apc2"` | CC-BY-SA 3.0 |
 | `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
+| `arcade:arcade` | `icons/obj/computer.dmi : "arcade"` | CC-BY-SA 3.0 |
 | `barstool:` | `icons/obj/objects.dmi : "barstool"` | CC-BY-SA 3.0 |
 | `bed:` | `icons/obj/objects.dmi : "bed"` | CC-BY-SA 3.0 |
 | `bedsheet:` | `icons/obj/items.dmi : "sheet"` | CC-BY-SA 3.0 |
@@ -1007,6 +1008,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `toolbox-electrical:` | `icons/obj/storage.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `toolbox-emergency:` | `icons/obj/storage.dmi : "red"` | CC-BY-SA 3.0 |
 | `toolbox-mechanical:` | `icons/obj/storage.dmi : "blue"` | CC-BY-SA 3.0 |
+| `toy-durand:` | `icons/obj/toy.dmi : "durandprize"` | CC-BY-SA 3.0 |
+| `toy-gygax:` | `icons/obj/toy.dmi : "gygaxtoy"` | CC-BY-SA 3.0 |
+| `toy-ripley:` | `icons/obj/toy.dmi : "ripleytoy"` | CC-BY-SA 3.0 |
 | `trash-candy:` | `icons/obj/janitor.dmi : "candy"` | CC-BY-SA 3.0 |
 | `trash-cheesie:` | `icons/obj/janitor.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |
 | `trash-chips:` | `icons/obj/janitor.dmi : "chips"` | CC-BY-SA 3.0 |

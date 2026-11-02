@@ -11,6 +11,7 @@ use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
+use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
@@ -38,17 +39,17 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, CameraPanel,
-    ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand,
-    HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel,
-    PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
-    StoragePanel, VendingPanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
+    ArcadePanel, CameraPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand,
+    GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
+    PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel,
+    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId,
-    PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, TilePos,
+    AlarmPanelView, ApcPanelView, ArcadePanelView, CameraPanelView, ClipboardView, DisplayName,
+    FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer,
+    MobStat, NetId, PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, TilePos,
     VendingPanelView, WirePanelView,
 };
 
@@ -95,6 +96,7 @@ struct SentPanel(
     Option<ClipboardView>,
     Option<PickListView>,
     Option<HeaterPanelView>,
+    Option<ArcadePanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -351,6 +353,7 @@ fn queue_actions(
                 &mut PendingPaperOps,
                 &mut PendingPicks,
                 &mut PendingHeaterOps,
+                &mut PendingArcadeOps,
             ),
             Has<NameChosen>,
         ),
@@ -379,7 +382,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks, mut heater_ops),
+            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks, mut heater_ops, mut arcade_ops),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -493,6 +496,20 @@ fn queue_actions(
                 ActionInput::LabelPaper { target, label } => {
                     if let Some(sheet) = resolve(target) {
                         paper_ops.0.push(PaperOp::Label(sheet, label));
+                    }
+                    None
+                }
+                ActionInput::Arcade { target, command } => {
+                    if let Some(machine) = resolve(target) {
+                        arcade_ops.0.push((
+                            machine,
+                            match command {
+                                ArcadeCommand::Attack => ArcadeOp::Attack,
+                                ArcadeCommand::Heal => ArcadeOp::Heal,
+                                ArcadeCommand::Recharge => ArcadeOp::Recharge,
+                                ArcadeCommand::NewGame => ArcadeOp::NewGame,
+                            },
+                        ));
                     }
                     None
                 }
@@ -746,7 +763,11 @@ fn send_panels(
         &mut MessageSender<CameraPanel>,
         &mut MessageSender<ClipboardPanel>,
         // Nested: a query's data holds at most 15 parts.
-        (&mut MessageSender<PickListPanel>, &mut MessageSender<HeaterPanel>),
+        (
+            &mut MessageSender<PickListPanel>,
+            &mut MessageSender<HeaterPanel>,
+            &mut MessageSender<ArcadePanel>,
+        ),
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -762,7 +783,7 @@ fn send_panels(
         &CameraPanelOut,
         &ClipboardOut,
         &PickListOut,
-        &HeaterPanelOut,
+        (&HeaterPanelOut, &ArcadePanelOut),
     )>,
 ) {
     for (
@@ -780,7 +801,7 @@ fn send_panels(
         mut vendings,
         mut camera_panels,
         mut clipboard_panels,
-        (mut pick_panels, mut heater_panels),
+        (mut pick_panels, mut heater_panels, mut arcade_panels),
     ) in &mut links
     {
         let Ok((
@@ -797,7 +818,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            heater,
+            (heater, arcade),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -857,6 +878,10 @@ fn send_panels(
         if sent.13 != heater.0 {
             heater_panels.send::<NoticeChannel>(HeaterPanel(heater.0.clone()));
             sent.13 = heater.0.clone();
+        }
+        if sent.14 != arcade.0 {
+            arcade_panels.send::<NoticeChannel>(ArcadePanel(arcade.0.clone()));
+            sent.14 = arcade.0.clone();
         }
     }
 }
