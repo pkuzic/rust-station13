@@ -82,6 +82,7 @@ fn every_message_formats_in_both_locales() {
     args.set("count", 2);
     args.set("name", "John Smith");
     args.set("verb", "ask");
+    args.set("act", "scratch");
     args.set("text", "Hello?");
     args.set("attacker", "Alice Abbott");
     args.set("victim", "Bob Barnes");
