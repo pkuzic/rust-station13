@@ -5,7 +5,6 @@
 // Skipped (no prototype yet):
 //     12 /obj/machinery/conveyor
 //      2 /obj/machinery/conveyor_switch/oneway
-//      1 /obj/machinery/door/window/eastleft
 //      2 /obj/machinery/shielding/emitter/plate
 //      1 /obj/machinery/space_heater
 //      1 /obj/structure/sign/deathsposal
@@ -26,7 +25,7 @@
         'I': (tile: (id: "floor"), objects: [(id: "manifold", dir: North, above_floor: true)]),
         'J': (tile: (id: "floor"), objects: [(id: "manifold", dir: South, above_floor: true), "meter"]),
         'K': (tile: (id: "floor"), objects: [(id: "manifold", dir: North, above_floor: true), (id: "window-pane", dir: West), (id: "window-pane", dir: North)]),
-        'L': (tile: (id: "floor"), objects: [(id: "window-pane", dir: East), (id: "pipe", dir: SouthWest, above_floor: true)]),
+        'L': (tile: (id: "floor"), objects: [(id: "window-pane", dir: East), (id: "windoor", access: ["janitor"], dir: North, vars: {"base_state": "left", "icon_state": "left"}), (id: "pipe", dir: SouthWest, above_floor: true)]),
         'M': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East)]),
         'N': (tile: (id: "floor"), objects: [(id: "connector", dir: North), "oxygen-canister"]),
         'O': (tile: (id: "floor"), objects: ["wrench", (id: "light-small", dir: South)]),

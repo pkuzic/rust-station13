@@ -67,6 +67,7 @@ pub mod vending;
 pub mod verbs;
 pub mod walllockers;
 pub mod welding;
+pub mod windoors;
 pub mod windows;
 pub mod wires;
 
@@ -131,6 +132,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
             .init_resource::<windows::PaneEdges>()
+            .init_resource::<windoors::WindoorEdges>()
             .init_resource::<igniters::PendingSparks>()
             .init_resource::<sparks::SparkShowers>()
             .init_resource::<extinguishers::PendingSprays>()
@@ -187,6 +189,8 @@ impl Plugin for ClassicPlugin {
                     doors::update_doors,
                     blastdoors::run_blast_doors,
                     windows::update_pane_edges,
+                    windoors::bump_windoors,
+                    windoors::run_windoors,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,

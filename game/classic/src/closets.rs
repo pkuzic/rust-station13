@@ -323,7 +323,7 @@ impl ClosetWork<'_, '_> {
     }
 
     /// Luna `allowed`: the card in the active hand, else the one in the ID slot.
-    fn card_of(&self, mob: Entity, hands: &Hands) -> Option<&IdCard> {
+    pub(crate) fn card_of(&self, mob: Entity, hands: &Hands) -> Option<&IdCard> {
         hands
             .active_item()
             .and_then(|e| self.cards.get(e).ok())

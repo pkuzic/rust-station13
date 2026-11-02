@@ -91,11 +91,11 @@ pub fn follow_pullers(
     pullers: Query<&Pulling, With<Mob>>,
     mut positions: Query<(Entity, &mut GridPos, Has<Dense>, Has<Mob>), Without<crate::firedoors::Firedoor>>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
-    panes: Res<crate::windows::PaneEdges>,
+    panes: crate::windoors::EdgeBarriers<'_>,
     mut commands: Commands,
 ) {
     let mut sealed = crate::firedoors::closed_edges(firedoors.iter());
-    sealed.extend(panes.0.iter().copied());
+    sealed.extend(panes.iter());
     for (puller, left) in stepped.0.drain(..) {
         let Ok(pulling) = pullers.get(puller) else {
             continue;
