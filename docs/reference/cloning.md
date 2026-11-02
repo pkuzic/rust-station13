@@ -18,7 +18,7 @@ body is lost.
 3. **Pod** (`clone-pod`): the player goes straight into the new body, which starts with 60 to 90 brute
    damage spread over it, 30 of toxin and 40 of oxygen damage, unconscious and without clothes. Every
    2 seconds it heals, drawing 65 kW. A power cut makes it wait. Once health reaches 80, which takes
-   about two minutes, the pod lets them out, under the same name.
+   about two and a half minutes, the pod lets them out, under the same name.
 
 The record is used up by cloning. A ghost who has started over as a new character can't be cloned,
 and the old body stays where it was.
