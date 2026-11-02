@@ -29,6 +29,20 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
 | `barstool:` | `icons/obj/objects.dmi : "barstool"` | CC-BY-SA 3.0 |
 | `bed:` | `icons/obj/objects.dmi : "bed"` | CC-BY-SA 3.0 |
+| `bedsheet:` | `icons/obj/items.dmi : "sheet"` | CC-BY-SA 3.0 |
+| `bedsheet:spread` | `icons/obj/items.dmi : "sheet"` | CC-BY-SA 3.0 |
+| `bedsheet-blue:` | `icons/obj/items.dmi : "sheetblue"` | CC-BY-SA 3.0 |
+| `bedsheet-blue:spread` | `icons/obj/items.dmi : "sheetblue"` | CC-BY-SA 3.0 |
+| `bedsheet-brown:` | `icons/obj/items.dmi : "sheetbrown"` | CC-BY-SA 3.0 |
+| `bedsheet-brown:spread` | `icons/obj/items.dmi : "sheetbrown"` | CC-BY-SA 3.0 |
+| `bedsheet-captain:` | `icons/obj/items.dmi : "sheetcaptain"` | CC-BY-SA 3.0 |
+| `bedsheet-captain:spread` | `icons/obj/items.dmi : "sheetcaptain"` | CC-BY-SA 3.0 |
+| `bedsheet-hop:` | `icons/obj/items.dmi : "sheethop"` | CC-BY-SA 3.0 |
+| `bedsheet-hop:spread` | `icons/obj/items.dmi : "sheethop"` | CC-BY-SA 3.0 |
+| `bedsheet-medical:` | `icons/obj/items.dmi : "sheetmedical"` | CC-BY-SA 3.0 |
+| `bedsheet-medical:spread` | `icons/obj/items.dmi : "sheetmedical"` | CC-BY-SA 3.0 |
+| `bedsheet-rd:` | `icons/obj/items.dmi : "sheetrd"` | CC-BY-SA 3.0 |
+| `bedsheet-rd:spread` | `icons/obj/items.dmi : "sheetrd"` | CC-BY-SA 3.0 |
 | `beef-jerky:` | `icons/obj/food.dmi : "sosjerky"` | CC-BY-SA 3.0 |
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
@@ -133,6 +147,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `carbon-dioxide-canister:can-o2` | `icons/obj/atmos.dmi : "can-o2"` | CC-BY-SA 3.0 |
 | `carbon-dioxide-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `carbon-dioxide-pressure-tank:` | `icons/obj/atmospherics/pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
+| `caution:` | `icons/obj/janitor.dmi : "caution"` | CC-BY-SA 3.0 |
 | `cell-charger:ccharger-o0` | `icons/obj/power.dmi : "ccharger-o0"` | CC-BY-SA 3.0 |
 | `cell-charger:ccharger-o1` | `icons/obj/power.dmi : "ccharger-o1"` | CC-BY-SA 3.0 |
 | `cell-charger:ccharger-o2` | `icons/obj/power.dmi : "ccharge-o2"` | CC-BY-SA 3.0 |
@@ -145,6 +160,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `chair:south` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `chair:west` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `cheesie-honkers:` | `icons/obj/food.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |
+| `chest-drawer:chestdrawer` | `icons/obj/bureaucracy.dmi : "chestdrawer"` | CC-BY-SA 3.0 |
+| `chest-drawer:chestdrawer-open` | `icons/obj/bureaucracy.dmi : "chestdrawer-open"` | CC-BY-SA 3.0 |
 | `chips:` | `icons/obj/food.dmi : "chips"` | CC-BY-SA 3.0 |
 | `cigarette:` | `icons/obj/clothing/masks.dmi : "cigoff"` | CC-BY-SA 3.0 |
 | `cigarette:lit` | `icons/obj/clothing/masks.dmi : "cigon"` | CC-BY-SA 3.0 |
@@ -255,6 +272,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `extinguisher-cabinet:extinguisher_empty` | `icons/obj/closet.dmi : "extinguisher_empty"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_full` | `icons/obj/closet.dmi : "extinguisher_full"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_mini` | `icons/obj/closet.dmi : "extinguisher_mini"` | CC-BY-SA 3.0 |
+| `filing-cabinet:tallcabinet` | `icons/obj/bureaucracy.dmi : "tallcabinet"` | CC-BY-SA 3.0 |
+| `filing-cabinet:tallcabinet-open` | `icons/obj/bureaucracy.dmi : "tallcabinet-open"` | CC-BY-SA 3.0 |
 | `fire:1` | `icons/effects/fire.dmi : "1"` | CC-BY-SA 3.0 |
 | `fire:2` | `icons/effects/fire.dmi : "2"` | CC-BY-SA 3.0 |
 | `fire:3` | `icons/effects/fire.dmi : "3"` | CC-BY-SA 3.0 |
@@ -460,6 +479,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `lighter:r-on` | `icons/obj/items.dmi : "lighter-r-on"` | CC-BY-SA 3.0 |
 | `lighter:y` | `icons/obj/items.dmi : "lighter-y"` | CC-BY-SA 3.0 |
 | `lighter:y-on` | `icons/obj/items.dmi : "lighter-y-on"` | CC-BY-SA 3.0 |
+| `linen-bin:linenbin-empty` | `icons/obj/structures.dmi : "linenbin-empty"` | CC-BY-SA 3.0 |
+| `linen-bin:linenbin-full` | `icons/obj/structures.dmi : "linenbin-full"` | CC-BY-SA 3.0 |
+| `linen-bin:linenbin-half` | `icons/obj/structures.dmi : "linenbin-half"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:securece` | `icons/obj/closet.dmi : "securece"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:securece1` | `icons/obj/closet.dmi : "securece1"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:secureceopen` | `icons/obj/closet.dmi : "secureceopen"` | CC-BY-SA 3.0 |

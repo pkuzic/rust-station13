@@ -1375,5 +1375,49 @@
             "rightsecuredeny-east": (dmi: "icons/obj/doors/windoor.dmi", state: "rightsecuredeny", dir: Some(2)),
             "rightsecuredeny-west": (dmi: "icons/obj/doors/windoor.dmi", state: "rightsecuredeny", dir: Some(3)),
         },
+        // Filing cabinets and chest drawers, a drawer open for a moment after use.
+        "filing-cabinet": {
+            "tallcabinet": (dmi: "icons/obj/bureaucracy.dmi", state: "tallcabinet"),
+            "tallcabinet-open": (dmi: "icons/obj/bureaucracy.dmi", state: "tallcabinet-open"),
+        },
+        "chest-drawer": {
+            "chestdrawer": (dmi: "icons/obj/bureaucracy.dmi", state: "chestdrawer"),
+            "chestdrawer-open": (dmi: "icons/obj/bureaucracy.dmi", state: "chestdrawer-open"),
+        },
+        "linen-bin": {
+            "linenbin-full": (dmi: "icons/obj/structures.dmi", state: "linenbin-full"),
+            "linenbin-half": (dmi: "icons/obj/structures.dmi", state: "linenbin-half"),
+            "linenbin-empty": (dmi: "icons/obj/structures.dmi", state: "linenbin-empty"),
+        },
+        // Bedsheets: folded, or spread over what lies under them (the same picture, drawn on top).
+        "bedsheet": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheet"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheet"),
+        },
+        "bedsheet-blue": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheetblue"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheetblue"),
+        },
+        "bedsheet-brown": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheetbrown"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheetbrown"),
+        },
+        "bedsheet-captain": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheetcaptain"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheetcaptain"),
+        },
+        "bedsheet-hop": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheethop"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheethop"),
+        },
+        "bedsheet-medical": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheetmedical"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheetmedical"),
+        },
+        "bedsheet-rd": {
+            "": (dmi: "icons/obj/items.dmi", state: "sheetrd"),
+            "spread": (dmi: "icons/obj/items.dmi", state: "sheetrd"),
+        },
+        "caution": { "": (dmi: "icons/obj/janitor.dmi", state: "caution") },
     },
 )

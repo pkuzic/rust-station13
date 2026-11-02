@@ -390,6 +390,18 @@ pub struct ClipboardView {
     pub papers: Vec<String>,
 }
 
+/// A window listing things to pick one from, such as the sheets in a filing cabinet
+/// (Luna's `filingcabinet` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PickListView {
+    /// What holds them.
+    pub target: NetId,
+    /// Its noun id, for the window's title.
+    pub title: String,
+    /// Each thing's name, in the order listed.
+    pub rows: Vec<String>,
+}
+
 /// One product line of a vending machine.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct VendingRow {

@@ -145,6 +145,19 @@
         // Paperwork (`paperwork.md`) and status displays (`status-displays.md`).
         (path: "/obj/item/weapon/paper_bin", id: "paper-bin"),
         (path: "/obj/item/weapon/paper", id: "paper", vars: ["name", "info"]),
+        // Filing cabinets take the sheets on their tile (`filing-cabinets.md`).
+        (path: "/obj/structure/filingcabinet", id: "filing-cabinet"),
+        (path: "/obj/structure/filingcabinet/chestdrawer", id: "chest-drawer"),
+        // Linen bins and bedsheets (`bedsheets.md`).
+        (path: "/obj/structure/bedsheetbin", id: "linen-bin"),
+        (path: "/obj/item/weapon/bedsheet", id: "bedsheet"),
+        (path: "/obj/item/weapon/bedsheet/blue", id: "bedsheet-blue"),
+        (path: "/obj/item/weapon/bedsheet/brown", id: "bedsheet-brown"),
+        (path: "/obj/item/weapon/bedsheet/captain", id: "bedsheet-captain"),
+        (path: "/obj/item/weapon/bedsheet/hop", id: "bedsheet-hop"),
+        (path: "/obj/item/weapon/bedsheet/medical", id: "bedsheet-medical"),
+        (path: "/obj/item/weapon/bedsheet/rd", id: "bedsheet-rd"),
+        (path: "/obj/item/weapon/caution", id: "caution"),
         (path: "/obj/item/weapon/pen", id: "pen"),
         (path: "/obj/item/weapon/pen/blue", id: "pen-blue"),
         (path: "/obj/item/weapon/pen/red", id: "pen-red"),

@@ -30,6 +30,7 @@ mod laser_panel;
 mod lighting;
 mod monitor_panel;
 mod paper_panel;
+mod pick_panel;
 mod scaling;
 mod shadows;
 mod smes_panel;
@@ -114,6 +115,8 @@ enum UseStep {
     Pick(usize),
     /// `camera:N`: on an open security console, watch its `N`th camera (from 0).
     Camera(u16),
+    /// `take:N`: in an open list window (a filing cabinet's), take its `N`th line (from 0).
+    Take(u16),
 }
 
 impl UseStep {
@@ -133,6 +136,8 @@ impl UseStep {
                     offset(rest).map(|(x, y)| Self::Menu(x, y))
                 } else if let Some(rest) = s.strip_prefix("camera:") {
                     rest.trim().parse().ok().map(Self::Camera)
+                } else if let Some(rest) = s.strip_prefix("take:") {
+                    rest.trim().parse().ok().map(Self::Take)
                 } else if let Some(rest) = s.strip_prefix("pick:") {
                     rest.trim().parse().ok().map(Self::Pick)
                 } else if let Some(rest) = s.strip_prefix("wait:") {
@@ -280,6 +285,7 @@ fn main() {
         .init_resource::<gas_panel::OpenGas>()
         .init_resource::<vending_panel::OpenVending>()
         .init_resource::<camera_panel::OpenCameras>()
+        .init_resource::<pick_panel::OpenPickList>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
         .init_resource::<smes_panel::OpenSmes>()
@@ -328,6 +334,7 @@ fn main() {
                     (gas_panel::receive_gas, gas_panel::show_gas).chain(),
                     (vending_panel::receive_vending, vending_panel::show_vending).chain(),
                     (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
+                    (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
                     (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                     (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),
@@ -619,6 +626,14 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         // Over the airlock it shares a tile with.
         ("firedoor", state) if state.starts_with("door0") => (Color::srgb(0.85, 0.30, 0.20), 6.0, 2.1),
         ("firedoor", _) => (Color::srgb(0.85, 0.30, 0.20), TILE_PX - 2.0, 2.1),
+        // A bedsheet spread over whoever lies under it (Luna `layer = 5`); folded, over the
+        // bed it is on and under people (`layer = 4`).
+        (sheet, rs13_classic::bedsheets::SPREAD) if rs13_classic::bedsheets::is_bedsheet(sheet) => {
+            (Color::srgb(0.90, 0.90, 0.90), TILE_PX - 4.0, 3.12)
+        }
+        (sheet, _) if rs13_classic::bedsheets::is_bedsheet(sheet) => {
+            (Color::srgb(0.90, 0.90, 0.90), 14.0, 1.1)
+        }
         // Under what is put on them.
         (closet, _) if rs13_classic::closets::is_closet(closet) => {
             (Color::srgb(0.45, 0.50, 0.55), TILE_PX - 2.0, 0.9)
@@ -1442,6 +1457,7 @@ fn scripted_use(
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
+    lists: Res<pick_panel::OpenPickList>,
     mut next_at: Local<Option<f32>>,
 ) {
     let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
@@ -1466,6 +1482,10 @@ fn scripted_use(
     }
     let action = match step {
         UseStep::Wait(_) | UseStep::Menu(..) | UseStep::Pick(_) => None,
+        UseStep::Take(line) => lists.0.as_ref().map(|view| ActionInput::Pick {
+            target: view.target,
+            line,
+        }),
         UseStep::Camera(line) => consoles.0.as_ref().map(|view| ActionInput::Camera {
             target: view.target,
             line: Some(line),
@@ -1571,6 +1591,7 @@ mod tests {
         assert_eq!(UseStep::parse("menu:0,1"), Some(UseStep::Menu(0, 1)));
         assert_eq!(UseStep::parse("pick:2"), Some(UseStep::Pick(2)));
         assert_eq!(UseStep::parse("camera:1"), Some(UseStep::Camera(1)));
+        assert_eq!(UseStep::parse("take:0"), Some(UseStep::Take(0)));
         assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
         assert_eq!(UseStep::parse("nope"), None);
     }

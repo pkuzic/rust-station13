@@ -158,4 +158,14 @@
     (id: "pen-blue", force: 0.0, size: 1, slot: "belt"),
     (id: "pen-red", force: 0.0, size: 1, slot: "belt"),
     (id: "clipboard", force: 0.0, size: 2, slot: "belt"),
+    // Bedsheets (Luna `bedsheet` and its colours, `bedsheets.md`).
+    (id: "bedsheet", force: 0.0, size: 1),
+    (id: "bedsheet-blue", force: 0.0, size: 1),
+    (id: "bedsheet-brown", force: 0.0, size: 1),
+    (id: "bedsheet-captain", force: 0.0, size: 1),
+    (id: "bedsheet-hop", force: 0.0, size: 1),
+    (id: "bedsheet-medical", force: 0.0, size: 1),
+    (id: "bedsheet-rd", force: 0.0, size: 1),
+    // Luna `weapon/caution`: "Caution! Wet Floor!".
+    (id: "caution", force: 1.0, size: 3),
 ]

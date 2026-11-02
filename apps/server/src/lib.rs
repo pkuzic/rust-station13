@@ -15,6 +15,7 @@ use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
+use rs13_classic::filing::{PendingPicks, PickListOut};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::health::Vitals;
@@ -37,14 +38,15 @@ use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, CameraPanel,
     ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, LaserCommand,
-    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PlaySound, Player, PowerMonitorPanel,
-    SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
+    PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
+    VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, GridPos, LaserPanelView, MapLayer, NetId, PaperView, PowerMonitorView, SmesPanelView,
-    StorageView, TileMap, VendingPanelView, WirePanelView,
+    GasPanelView, GridPos, LaserPanelView, MapLayer, NetId, PaperView, PickListView, PowerMonitorView,
+    SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -78,6 +80,7 @@ struct SentPanel(
     Option<VendingPanelView>,
     Option<CameraPanelView>,
     Option<ClipboardView>,
+    Option<PickListView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -245,7 +248,12 @@ fn queue_actions(
         &mut PendingFreezerOps,
         &mut PendingSmesOps,
         &mut PendingGasOps,
-        (&mut PendingVendOps, &mut PendingCameraOps, &mut PendingPaperOps),
+        (
+            &mut PendingVendOps,
+            &mut PendingCameraOps,
+            &mut PendingPaperOps,
+            &mut PendingPicks,
+        ),
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
@@ -270,7 +278,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            (mut vend_ops, mut camera_ops, mut paper_ops),
+            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -360,6 +368,12 @@ fn queue_actions(
                 ActionInput::LabelPaper { target, label } => {
                     if let Some(sheet) = resolve(target) {
                         paper_ops.0.push(PaperOp::Label(sheet, label));
+                    }
+                    None
+                }
+                ActionInput::Pick { target, line } => {
+                    if let Some(holder) = resolve(target) {
+                        picks.0.push((holder, usize::from(line)));
                     }
                     None
                 }
@@ -572,6 +586,7 @@ fn send_panels(
         &mut MessageSender<VendingPanel>,
         &mut MessageSender<CameraPanel>,
         &mut MessageSender<ClipboardPanel>,
+        &mut MessageSender<PickListPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -586,6 +601,7 @@ fn send_panels(
         &VendingPanelOut,
         &CameraPanelOut,
         &ClipboardOut,
+        &PickListOut,
     )>,
 ) {
     for (
@@ -603,6 +619,7 @@ fn send_panels(
         mut vendings,
         mut camera_panels,
         mut clipboard_panels,
+        mut pick_panels,
     ) in &mut links
     {
         let Ok((
@@ -618,6 +635,7 @@ fn send_panels(
             vending,
             camera,
             clipboard,
+            pick_list,
         )) = panels.get(controls.0)
         else {
             continue;
@@ -669,6 +687,10 @@ fn send_panels(
         if sent.11 != clipboard.0 {
             clipboard_panels.send::<NoticeChannel>(ClipboardPanel(clipboard.0.clone()));
             sent.11 = clipboard.0.clone();
+        }
+        if sent.12 != pick_list.0 {
+            pick_panels.send::<NoticeChannel>(PickListPanel(pick_list.0.clone()));
+            sent.12 = pick_list.0.clone();
         }
     }
 }

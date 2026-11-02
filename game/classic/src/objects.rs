@@ -174,6 +174,14 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if crate::filing::is_cabinet(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::filing::spawn_cabinet(world, proto, pos, id));
+    }
+    if proto == crate::bedsheets::LINEN_BIN {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::bedsheets::spawn_linen_bin(world, pos, id));
+    }
     if proto == crate::firealarms::FIRE_ALARM {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
@@ -372,6 +380,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     crate::food::spawn_food(&mut item, proto);
     crate::smoking::spawn_smokable(&mut item, proto, roll);
     crate::paperwork::spawn_paperwork(&mut item, spec);
+    crate::bedsheets::spawn_bedsheet(&mut item, spec);
     if let Some(slot) = def.slot.as_deref().and_then(Slot::parse) {
         item.insert(Wearable {
             slot,
@@ -524,6 +533,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                         crate::paperwork::PendingPaperOps::default(),
                         crate::paperwork::PaperOut::default(),
                         crate::paperwork::ClipboardOut::default(),
+                        crate::filing::PendingPicks::default(),
+                        crate::filing::PickListOut::default(),
                     ),
                     crate::smes_panel::PendingSmesOps::default(),
                     crate::smes_panel::SmesPanelOut::default(),
