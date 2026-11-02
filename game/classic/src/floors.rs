@@ -23,7 +23,7 @@ pub struct UnderFloor;
 pub fn lies_under_floor(spec: &ObjectSpec) -> bool {
     matches!(
         spec.id.as_str(),
-        "cable" | "pipe" | "manifold" | "terminal" | crate::disposals::DISPOSAL_PIPE
+        "cable" | "pipe" | "manifold" | "terminal" | crate::disposals::DISPOSAL_PIPE | crate::shields::PLATE
     ) && !spec.above_floor
 }
 

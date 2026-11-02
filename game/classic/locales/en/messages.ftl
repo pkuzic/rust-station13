@@ -49,6 +49,15 @@ punch-missed = { $attacker } has attempted to punch { $victim }!
 hud-health = Health: { $value }
 hud-health-crit = Health: CRITICAL
 hud-health-dead = You are dead
+shields-raised = You raise the station's shields.
+shields-lowered = You lower the station's shields.
+shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
+shield-converter-mode = You set the converter { $mode ->
+    [manual] to manual
+    [auto] to automatic
+   *[off] off
+}.
+shield-capacitor-charge = It's { $value }% charged.
 hud-health-ghost = You are a ghost. Press R to start over as a new character
 ghost-left-body = You leave your body behind. The living can't see or hear you now.
 respawn-no-room = Every start point is taken. Try again in a moment.

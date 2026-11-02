@@ -144,7 +144,16 @@ pub fn process_actions(
                 mut windoors,
                 mut filing,
                 mut linen,
-                (mut belt_switches, belts, pulling, mut heaters, morgues, trays, crema_switches),
+                (
+                    mut belt_switches,
+                    belts,
+                    pulling,
+                    mut heaters,
+                    morgues,
+                    trays,
+                    crema_switches,
+                    shield_parts,
+                ),
             ),
         ),
         (
@@ -204,6 +213,14 @@ pub fn process_actions(
                     Query<(), With<crate::morgue::Morgue>>,
                     Query<&crate::morgue::MorgueTray>,
                     Query<(), With<crate::morgue::Igniter>>,
+                    Query<
+                        (),
+                        Or<(
+                            With<crate::shields::ShieldsButton>,
+                            With<crate::shields::ShieldConverter>,
+                            With<crate::shields::ShieldCapacitor>,
+                        )>,
+                    >,
                 ),
             ),
         ),
@@ -366,6 +383,15 @@ pub fn process_actions(
                                     .arg("lighting", mode(Channel::Lighting))
                                     .arg("environment", mode(Channel::Environment)),
                             );
+                        }
+                        if shield_parts.contains(target) {
+                            commands.queue(move |world: &mut World| {
+                                if let Some(more) = crate::shields::examine(world, target)
+                                    && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                                {
+                                    outbox.0.push(more);
+                                }
+                            });
                         }
                         if let Some(more) = cable.examine(target) {
                             outbox.0.push(more);
@@ -596,6 +622,13 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if shield_parts.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // The shield generator's button and converters (`shields.md`).
+                    commands.queue(move |world: &mut World| crate::shields::click(world, mob, target));
                 }
                 Action::UseOn(target)
                     if crema_switches.contains(target)
