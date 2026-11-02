@@ -36,6 +36,20 @@
         (id: "flashlight"),
     ]),
 
+    // Luna `closet/coffin`.
+    (id: "closet-coffin", closed: "coffin", open: "coffin_open"),
+
+    // Secure lockers (secure/personal.dm, secure/security.dm). Luna's personal locker also
+    // opens for the first card swiped on it; ours only for its access (cards carry no names
+    // yet). Its backpack and headset, the brig locker's orange jumpsuit and shoes, and the
+    // security locker's gear have no prototypes yet.
+    (id: "locker-personal", closed: "secure", open: "secureopen", locked: Some("secure1"),
+        access: ["all_personal_lockers"]),
+    (id: "locker-brig", closed: "secure", open: "secureopen", locked: Some("secure1"),
+        access: ["security"]),
+    (id: "locker-security", closed: "sec", open: "secopen", locked: Some("sec1"),
+        access: ["security"]),
+
     // Secure lockers (secure/engineering.dm).
     (id: "locker-chief-engineer", closed: "securece", open: "secureceopen", locked: Some("securece1"),
         access: ["heads"], contents: [

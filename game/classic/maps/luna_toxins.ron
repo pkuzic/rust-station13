@@ -29,7 +29,6 @@
 //      2 /obj/structure/closet/l3closet/sci
 //      1 /obj/structure/closet/secure_closet/animal
 //      2 /obj/structure/closet/secure_closet/scientist
-//      1 /obj/structure/closet/secure_closet/security/science
 //      1 /obj/structure/closet/wardrobe/toxins_white
 //      1 /obj/structure/dispenser
 //      1 /obj/structure/sign/fire
@@ -98,7 +97,7 @@
         'c': (tile: (id: "floor"), objects: [(id: "pipe", dir: East)]),
         'd': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "chair", dir: North)]),
         'e': (tile: (id: "floor"), objects: [(id: "manifold", dir: South)]),
-        'f': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "light", dir: East)]),
+        'f': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "light", dir: East), "locker-security"]),
         'g': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: NorthWest)]),
         'h': (tile: (id: "floor"), objects: [(id: "light", dir: West), (id: "pipe", dir: South)]),
         'i': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),

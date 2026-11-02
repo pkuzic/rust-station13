@@ -168,4 +168,6 @@
     (id: "bedsheet-rd", force: 0.0, size: 1),
     // Luna `weapon/caution`: "Caution! Wet Floor!".
     (id: "caution", force: 1.0, size: 3),
+    // Luna `stack/sheet/glass`: up to 50 (building windows from it isn't built yet).
+    (id: "glass-sheet", force: 5.0, stack: 50),
 ]

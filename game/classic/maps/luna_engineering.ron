@@ -6,7 +6,6 @@
 //      1 /obj/effect/landmark/disk_spawn
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      3 /obj/item/device/flash
-//      2 /obj/item/stack/sheet/glass
 //      2 /obj/item/stack/sheet/plasteel
 //      2 /obj/item/stack/sheet/rglass
 //      1 /obj/item/weapon/cartridge/engineering
@@ -251,7 +250,7 @@
         'ľ': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthWest, above_floor: true)]),
         'Ŀ': (tile: (id: "floor"), objects: [(id: "nitrogen-pressure-tank", dir: East)]),
         'ŀ': (tile: (id: "space"), objects: [(id: "pipe", dir: SouthEast)]),
-        'Ł': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("tabledir")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "pipe", dir: East)]),
+        'Ł': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("tabledir")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "glass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"}), (id: "glass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"}), (id: "pipe", dir: East)]),
         'ł': (tile: (id: "floor"), objects: [(id: "light", dir: South), (id: "camera", dir: North, vars: {"c_tag": "Power Core Southwest", "network": "Luna"}), (id: "cable", ends: [North, South]), (id: "pipe", dir: East)]),
         'Ń': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: South), (id: "pipe", dir: NorthWest)]),
         'ń': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),

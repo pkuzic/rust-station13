@@ -1465,5 +1465,30 @@
             "morgue0": (dmi: "icons/obj/stationobjs.dmi", state: "morgue0"),
         },
         "morgue-tray": { "morguet": (dmi: "icons/obj/stationobjs.dmi", state: "morguet") },
+        // Coffins and the personal, brig and security lockers.
+        "closet-coffin": {
+            "coffin": (dmi: "icons/obj/closet.dmi", state: "coffin"),
+            "coffin_open": (dmi: "icons/obj/closet.dmi", state: "coffin_open"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-personal": {
+            "secure": (dmi: "icons/obj/closet.dmi", state: "secure"),
+            "secureopen": (dmi: "icons/obj/closet.dmi", state: "secureopen"),
+            "secure1": (dmi: "icons/obj/closet.dmi", state: "secure1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-brig": {
+            "secure": (dmi: "icons/obj/closet.dmi", state: "secure"),
+            "secureopen": (dmi: "icons/obj/closet.dmi", state: "secureopen"),
+            "secure1": (dmi: "icons/obj/closet.dmi", state: "secure1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "locker-security": {
+            "sec": (dmi: "icons/obj/closet.dmi", state: "sec"),
+            "secopen": (dmi: "icons/obj/closet.dmi", state: "secopen"),
+            "sec1": (dmi: "icons/obj/closet.dmi", state: "sec1"),
+            "welded": (dmi: "icons/obj/closet.dmi", state: "welded"),
+        },
+        "glass-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-glass") },
     },
 )
