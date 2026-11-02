@@ -36,6 +36,7 @@ pub mod freezers;
 pub mod furniture;
 pub mod gas_panel;
 pub mod generators;
+pub mod ghosts;
 pub mod hands;
 pub mod health;
 pub mod heaters;
@@ -123,6 +124,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<objects::ItemProtos>()
             .init_resource::<access::AccessIds>()
             .init_resource::<rng::GameRng>()
+            .init_resource::<ghosts::Departures>()
             .init_resource::<combat::PendingAttacks>()
             .init_resource::<medical::PendingTreatments>()
             .init_resource::<combat::VisibleEvents>()
@@ -341,6 +343,18 @@ impl Plugin for ClassicPlugin {
                     floodlights::run_floodlights,
                 )
                     .in_set(TickSet::Publish),
+            )
+            .add_systems(
+                FixedUpdate,
+                (
+                    ghosts::leave_dead_bodies,
+                    ghosts::move_ghosts,
+                    ghosts::run_ghost_actions,
+                    ghosts::ghost_speech,
+                )
+                    .chain()
+                    .before(sound::deliver_sounds)
+                    .after(TickSet::Publish),
             )
             // After the fixtures say whether they are lit: rules next tick see this light.
             .add_systems(FixedUpdate, lighting::update_tile_light.after(TickSet::Publish))

@@ -10,7 +10,7 @@ use crate::hands::{Hands, Item};
 use crate::health::{Body, Vitals, Zone, ran_zone};
 use crate::movement::Mob;
 use crate::rng::GameRng;
-use crate::speech::{HEARING_RANGE, can_see};
+use crate::speech::{HEARING_RANGE, can_see, within_range};
 
 /// The intent a mob acts with (Luna `a_intent`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -93,7 +93,16 @@ pub fn resolve_attacks(
 pub fn deliver_visible(
     mut visible: ResMut<VisibleEvents>,
     map: crate::decks::Decks,
-    mut viewers: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
+    mut viewers: Query<
+        (
+            Entity,
+            &GridPos,
+            &mut Outbox,
+            Option<&Vitals>,
+            Has<rs13_world::Ghost>,
+        ),
+        Or<(With<Mob>, With<rs13_world::Ghost>)>,
+    >,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
 ) {
     if visible.0.is_empty() {
@@ -101,12 +110,17 @@ pub fn deliver_visible(
     }
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
     for (at, msg, except) in visible.0.drain(..) {
-        for (viewer, pos, mut outbox, vitals) in &mut viewers {
+        for (viewer, pos, mut outbox, vitals, ghost) in &mut viewers {
             if except == Some(viewer) {
                 continue;
             }
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
-            if awake && can_see(map.at(at.z), &opaque, at, pos.0, HEARING_RANGE) {
+            let seen = if ghost {
+                within_range(at, pos.0, HEARING_RANGE)
+            } else {
+                can_see(map.at(at.z), &opaque, at, pos.0, HEARING_RANGE)
+            };
+            if awake && seen {
                 outbox.0.push(msg.clone());
             }
         }

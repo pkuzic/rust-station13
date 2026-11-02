@@ -49,6 +49,13 @@ punch-missed = { $attacker } has attempted to punch { $victim }!
 hud-health = Health: { $value }
 hud-health-crit = Health: CRITICAL
 hud-health-dead = You are dead
+hud-health-ghost = You are a ghost
+ghost-left-body = You leave your body behind. The living can't see or hear you now.
+ghost-say = [DEAD] { $name } { $verb ->
+    [ask] asks
+    [exclaim] exclaims
+   *[say] says
+}, "{ $text }"
 hud-intent = Intent: { $intent ->
         [harm] harm
        *[help] help

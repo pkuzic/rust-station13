@@ -40,11 +40,16 @@ pub fn speech_verb(text: &str) -> &'static str {
     }
 }
 
+/// Same deck and no more than `range` tiles away along either axis.
+pub fn within_range(from: TilePos, to: TilePos, range: i32) -> bool {
+    from.z == to.z && (from.x - to.x).abs() <= range && (from.y - to.y).abs() <= range
+}
+
 /// Whether `to` can be seen from `from`: same deck, within `range`, and the straight
 /// line between them crosses no opaque tile, nor squeezes diagonally between two that meet
 /// at a corner. The end points themselves never block.
 pub fn can_see(map: &TileMap, opaque: &[TilePos], from: TilePos, to: TilePos, range: i32) -> bool {
-    if from.z != to.z || (from.x - to.x).abs() > range || (from.y - to.y).abs() > range {
+    if !within_range(from, to, range) {
         return false;
     }
     let blocks = |p: TilePos| map.is_opaque(p) || opaque.contains(&p);
@@ -127,7 +132,16 @@ pub fn speak(
         ),
         With<Mob>,
     >,
-    mut listeners: Query<(Entity, &GridPos, &mut Outbox, Option<&Vitals>), With<Mob>>,
+    mut listeners: Query<
+        (
+            Entity,
+            &GridPos,
+            &mut Outbox,
+            Option<&Vitals>,
+            Has<rs13_world::Ghost>,
+        ),
+        Or<(With<Mob>, With<rs13_world::Ghost>)>,
+    >,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
     radios: RadioSets,
 ) {
@@ -236,12 +250,18 @@ pub fn speak(
             }
         }
         tuned.sort_by_key(|(e, _)| *e);
-        for (listener, to, mut outbox, vitals) in &mut listeners {
+        for (listener, to, mut outbox, vitals, ghost) in &mut listeners {
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
             if !awake {
                 continue;
             }
-            if listener == speaker || can_see(map.at(from.z), &opaque, from, to.0, range) {
+            // Ghosts see through walls, and hear through them too.
+            let heard = if ghost {
+                within_range(from, to.0, range)
+            } else {
+                can_see(map.at(from.z), &opaque, from, to.0, range)
+            };
+            if listener == speaker || heard {
                 outbox.0.push(msg.clone());
             }
             for (_, radio_msg) in tuned.iter().filter(|(e, _)| *e == listener) {

@@ -7,10 +7,10 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, ClipboardView, Dir,
-    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, HeaterPanelView,
-    Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView,
-    PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView,
-    WirePanelView, WornView,
+    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
+    HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
+    PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView,
+    TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -436,6 +436,7 @@ impl Plugin for ProtocolPlugin {
         app.component::<Hidden>().replicate();
         app.component::<HandsView>().replicate();
         app.component::<WornView>().replicate();
+        app.component::<Ghost>().replicate();
         app.component::<DisplayName>().replicate();
         app.component::<AtmosView>().replicate();
         app.component::<LightSource>().replicate();

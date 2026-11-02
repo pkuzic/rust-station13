@@ -70,4 +70,6 @@ It lands with 90% probability: "X has punched Y!", or "...in face!" for the head
 
 Knockouts and knockdowns, stuns and weakening, armour and helmets, breathing and
 suffocation in crit, healing, burns, toxins, wounds, bleeding, broken and lost limbs, pain,
-disarm and grab intents, the zone selector, examine showing injuries, ghosts after death.
+disarm and grab intents, the zone selector, examine showing injuries.
+
+After death the player walks on as a ghost (`ghosts.md`).

@@ -4,6 +4,7 @@
 use bevy::asset::RenderAssetUsages;
 use bevy::image::{CompressedImageFormats, ImageSampler, ImageType};
 use bevy::prelude::*;
+use bevy::render::render_resource::{Extent3d, TextureDimension};
 use rs13_dmi_import::atlas::Atlas;
 use rs13_world::{Appearance, GridPos, NetId, Slot, TileMap, TilePos, WornView};
 
@@ -145,6 +146,45 @@ impl SpriteAtlas {
         found
     }
 
+    /// One picture of these sprites' first frames, each over the last.
+    pub fn flattened(&self, sprites: &[&str], state: &str, facing: u32) -> Option<Image> {
+        let tile = self.atlas.tile as usize;
+        let data = self.source.data.as_ref()?;
+        let (width, columns) = (self.source.width() as usize, self.atlas.columns.max(1) as usize);
+        let mut flat = vec![0u8; tile * tile * 4];
+        for sprite in sprites {
+            let Some(anim) = self.atlas.get(sprite, state) else {
+                continue;
+            };
+            let index = anim.cell(0, facing) as usize;
+            let (col, row) = (index % columns, index / columns);
+            for y in 0..tile {
+                for x in 0..tile {
+                    let from = ((row * tile + y) * width + col * tile + x) * 4;
+                    let Some(over) = data.get(from..from + 4) else {
+                        continue;
+                    };
+                    let to = (y * tile + x) * 4;
+                    let blended = alpha_over(flat[to..to + 4].try_into().ok()?, over.try_into().ok()?);
+                    flat[to..to + 4].copy_from_slice(&blended);
+                }
+            }
+        }
+        let mut image = Image::new(
+            Extent3d {
+                width: self.atlas.tile,
+                height: self.atlas.tile,
+                depth_or_array_layers: 1,
+            },
+            TextureDimension::D2,
+            flat,
+            self.source.texture_descriptor.format,
+            RenderAssetUsages::default(),
+        );
+        image.sampler = ImageSampler::nearest();
+        Some(image)
+    }
+
     /// Enlarge the UI's copy of the atlas `k` times, in place.
     pub fn enlarge_ui(&self, k: u32, images: &mut Assets<Image>, layouts: &mut Assets<TextureAtlasLayout>) {
         if let (Some(enlarged), Some(mut image)) = (
@@ -176,6 +216,20 @@ impl SpriteAtlas {
             },
         ))
     }
+}
+
+/// A straight-alpha pixel painted over another.
+fn alpha_over(under: [u8; 4], over: [u8; 4]) -> [u8; 4] {
+    let (a_over, a_under) = (f32::from(over[3]) / 255.0, f32::from(under[3]) / 255.0);
+    let alpha = a_over + a_under * (1.0 - a_over);
+    if alpha <= 0.0 {
+        return [0; 4];
+    }
+    let channel = |i: usize| {
+        let value = (f32::from(over[i]) * a_over + f32::from(under[i]) * a_under * (1.0 - a_over)) / alpha;
+        value.round() as u8
+    };
+    [channel(0), channel(1), channel(2), (alpha * 255.0).round() as u8]
 }
 
 /// Atlas state for an object's server-side appearance. Overlays after `+` (as in
@@ -391,16 +445,31 @@ const DRAW_ORDER: [Slot; 11] = [
 pub fn wear_layers(
     mut commands: Commands,
     atlas: Option<Res<SpriteAtlas>>,
-    people: Query<(Entity, &WornView, &Look, Option<&Dressed>, Option<&Children>), Without<Layer>>,
+    people: Query<
+        (
+            Entity,
+            &WornView,
+            &Look,
+            Option<&Dressed>,
+            Option<&Children>,
+            Option<&rs13_world::Ghost>,
+        ),
+        Without<Layer>,
+    >,
     items: Query<(&NetId, &Appearance)>,
     layers: Query<(), With<Layer>>,
 ) {
     let Some(atlas) = atlas else { return };
-    for (person, worn, look, dressed, children) in &people {
+    for (person, worn, look, dressed, children, ghost) in &people {
         let keys: Vec<String> = DRAW_ORDER
             .into_iter()
-            .filter_map(|slot| worn.get(slot))
-            .filter_map(|id| items.iter().find(|(n, _)| **n == id).map(|(_, a)| a))
+            .filter_map(|slot| match ghost {
+                // What the body wore when they died.
+                Some(ghost) => ghost.worn.iter().find(|(s, _)| *s == slot).map(|(_, a)| a),
+                None => worn
+                    .get(slot)
+                    .and_then(|id| items.iter().find(|(n, _)| **n == id).map(|(_, a)| a)),
+            })
             // An item in a state of its own (a lit hard hat) is drawn as
             // "worn:<sprite>-<state>" when there is one.
             .map(|a| {
@@ -423,7 +492,9 @@ pub fn wear_layers(
             }
         }
         let mut e = commands.entity(person);
-        for (i, key) in keys.iter().enumerate() {
+        // A ghost is drawn flat (`draw_ghosts`).
+        let layered = if ghost.is_some() { &[][..] } else { &keys[..] };
+        for (i, key) in layered.iter().enumerate() {
             if let Some(image) = atlas.sprite(key, &look.state, look.facing) {
                 e.with_child((
                     image,
@@ -440,6 +511,47 @@ pub fn wear_layers(
             }
         }
         e.insert(Dressed(keys));
+    }
+}
+
+/// How much of a ghost shows, clothes and all (`ghosts.md`).
+pub const GHOST_ALPHA: f32 = 0.5;
+
+/// On a ghost: what its flat image shows.
+#[derive(Component, Debug, PartialEq)]
+pub struct GhostImage {
+    keys: Vec<String>,
+    facing: u32,
+}
+
+/// Draw ghosts see-through, as one flat picture of the body and what it wore, so the body
+/// doesn't show through the clothes.
+pub fn draw_ghosts(
+    mut commands: Commands,
+    atlas: Option<Res<SpriteAtlas>>,
+    mut images: ResMut<Assets<Image>>,
+    mut ghosts: Query<
+        (Entity, &Look, &Dressed, &mut Sprite, Option<&GhostImage>),
+        (With<rs13_world::Ghost>, Without<Layer>),
+    >,
+) {
+    let Some(atlas) = atlas else { return };
+    for (ghost, look, dressed, mut sprite, drawn) in &mut ghosts {
+        let wanted = GhostImage {
+            keys: dressed.0.clone(),
+            facing: look.facing,
+        };
+        if drawn == Some(&wanted) {
+            continue;
+        }
+        let mut keys = vec![look.sprite.as_str()];
+        keys.extend(dressed.0.iter().map(String::as_str));
+        let Some(flat) = atlas.flattened(&keys, &look.state, look.facing) else {
+            continue;
+        };
+        *sprite = Sprite::from_image(images.add(flat));
+        sprite.color.set_alpha(GHOST_ALPHA);
+        commands.entity(ghost).insert(wanted);
     }
 }
 

@@ -169,7 +169,7 @@ pub fn update_vitals(mut mobs: Query<(&Body, &mut Vitals, &mut Appearance, Has<c
             MobStat::Conscious if resting => "lying",
             MobStat::Conscious => "",
             MobStat::Unconscious => "unconscious",
-            MobStat::Dead => "dead",
+            MobStat::Dead | MobStat::Ghost => "dead",
         };
         if appearance.state != state {
             appearance.state = state.to_owned();

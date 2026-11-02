@@ -18,6 +18,7 @@ use rs13_classic::equipment::{EquipAction, PendingEquipment};
 use rs13_classic::filing::{PendingPicks, PickListOut};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
+use rs13_classic::ghosts::Departures;
 use rs13_classic::health::Vitals;
 use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
 use rs13_classic::movement::{Mob, MoveIntent};
@@ -46,8 +47,9 @@ use rs13_network::protocol::{
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, GridPos, HeaterPanelView, LaserPanelView, MapLayer, NetId, PaperView, PickListView,
-    PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
+    GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId,
+    PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView,
+    WirePanelView,
 };
 
 #[derive(Resource)]
@@ -57,6 +59,9 @@ struct Port(u16);
 #[derive(Resource)]
 /// The station's decks as map text, bottom deck first: deck `i` is at `z = i`.
 struct MapText(Vec<&'static str>);
+
+/// What a ghost's status says its body temperature is: neither hot nor cold on the screen.
+const GHOST_BODY_TEMPERATURE: u16 = 310;
 
 /// On a client's link entity: the mob that client controls.
 #[derive(Component)]
@@ -132,7 +137,13 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     // for a client that has just joined, before anything is sent to it.
     .add_systems(
         FixedPostUpdate,
-        (silhouettes::update_silhouettes, sight::update_sight::<()>).chain(),
+        (
+            follow_to_ghosts,
+            ApplyDeferred,
+            silhouettes::update_silhouettes,
+            sight::update_sight::<()>,
+        )
+            .chain(),
     )
     .add_systems(
         PostUpdate,
@@ -218,6 +229,34 @@ fn spawn_player(
     });
 }
 
+/// A player who has left their body goes on controlling their ghost (`ghosts.md`); a body
+/// no player was in leaves no ghost.
+fn follow_to_ghosts(
+    mut departures: ResMut<Departures>,
+    mut links: Query<(Entity, &mut Controls)>,
+    players: Query<&Player>,
+    mut commands: Commands,
+) {
+    for (body, ghost) in departures.0.drain(..) {
+        let Some((link, mut controls)) = links.iter_mut().find(|(_, c)| c.0 == body) else {
+            commands.entity(ghost).despawn();
+            continue;
+        };
+        controls.0 = ghost;
+        if let Ok(player) = players.get(body) {
+            commands.entity(ghost).insert((
+                player.clone(),
+                ControlledBy {
+                    owner: link,
+                    lifetime: Lifetime::SessionBased,
+                },
+            ));
+        }
+        // The body stays when they disconnect, and is nobody's now.
+        commands.entity(body).try_remove::<(Player, ControlledBy)>();
+    }
+}
+
 /// Copy the latest movement request from each client onto its mob.
 fn apply_move_inputs(
     mut links: Query<(&Controls, &mut MessageReceiver<MoveInput>)>,
@@ -237,29 +276,33 @@ fn apply_move_inputs(
 /// Turn client actions into game actions for the next tick, resolving `NetId`s.
 fn queue_actions(
     mut links: Query<(&Controls, &mut MessageReceiver<ActionInput>)>,
-    mut mobs: Query<(
-        &mut PendingActions,
-        &mut PendingSpeech,
-        &mut DisplayName,
-        &mut Outbox,
-        &mut PendingEquipment,
-        &mut PendingWires,
-        &mut PendingAlarmOps,
-        &mut PendingApcOps,
-        &mut PendingLaserOps,
-        &mut PendingFreezerOps,
-        &mut PendingSmesOps,
-        &mut PendingGasOps,
+    mut mobs: Query<
         (
-            &mut PendingVendOps,
-            &mut PendingCameraOps,
-            &mut PendingPaperOps,
-            &mut PendingPicks,
-            &mut PendingHeaterOps,
+            &mut PendingActions,
+            &mut PendingSpeech,
+            &mut DisplayName,
+            &mut Outbox,
+            &mut PendingEquipment,
+            &mut PendingWires,
+            &mut PendingAlarmOps,
+            &mut PendingApcOps,
+            &mut PendingLaserOps,
+            &mut PendingFreezerOps,
+            &mut PendingSmesOps,
+            &mut PendingGasOps,
+            (
+                &mut PendingVendOps,
+                &mut PendingCameraOps,
+                &mut PendingPaperOps,
+                &mut PendingPicks,
+                &mut PendingHeaterOps,
+            ),
+            Has<NameChosen>,
         ),
-        Has<NameChosen>,
-    )>,
+        Without<Ghost>,
+    >,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
+    mut ghosts: Query<(&mut PendingActions, &mut PendingSpeech), With<Ghost>>,
     mut commands: Commands,
 ) {
     // Clicking someone's stand-in in the dark acts on them (`silhouettes.rs`); examining
@@ -285,7 +328,24 @@ fn queue_actions(
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
-            receiver.receive().for_each(drop);
+            // A ghost can only talk among the dead and click on things (`ghosts.md`).
+            let ghost = ghosts.get_mut(controls.0);
+            let Ok((mut pending, mut speech)) = ghost else {
+                receiver.receive().for_each(drop);
+                continue;
+            };
+            for input in receiver.receive() {
+                let action = match input {
+                    ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
+                    ActionInput::Examine(id) => examined(id).map(Action::Examine),
+                    ActionInput::Say(text) => {
+                        speech.0.push(text);
+                        None
+                    }
+                    _ => None,
+                };
+                pending.0.extend(action);
+            }
             continue;
         };
         for input in receiver.receive() {
@@ -539,21 +599,36 @@ fn send_status(
         &Lungs,
         Has<rs13_classic::pulling::Pulling>,
     )>,
+    ghosts: Query<(), With<Ghost>>,
 ) {
     for (controls, mut sent, mut sender) in &mut links {
-        let Ok((vitals, intent, around, lungs, pulling)) = mobs.get(controls.0) else {
-            continue;
-        };
-        let status = StatusUpdate {
-            // Luna shows health as a whole number.
-            health: vitals.health.round() as i32,
-            stat: vitals.stat,
-            intent: intent.0,
-            pressure_dkpa: (around.pressure * 10.0).round().max(0.0) as u32,
-            alerts: alerts(around, lungs),
-            internals: lungs.internal.is_some(),
-            body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
-            pulling,
+        let status = if ghosts.contains(controls.0) {
+            // Nothing can hurt a ghost, and no air or warmth matters to it.
+            StatusUpdate {
+                health: 100,
+                stat: MobStat::Ghost,
+                intent: Intent::Help,
+                pressure_dkpa: 0,
+                alerts: Vec::new(),
+                internals: false,
+                body_temperature: GHOST_BODY_TEMPERATURE,
+                pulling: false,
+            }
+        } else {
+            let Ok((vitals, intent, around, lungs, pulling)) = mobs.get(controls.0) else {
+                continue;
+            };
+            StatusUpdate {
+                // Luna shows health as a whole number.
+                health: vitals.health.round() as i32,
+                stat: vitals.stat,
+                intent: intent.0,
+                pressure_dkpa: (around.pressure * 10.0).round().max(0.0) as u32,
+                alerts: alerts(around, lungs),
+                internals: lungs.internal.is_some(),
+                body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
+                pulling,
+            }
         };
         if sent.0.as_ref() != Some(&status) {
             sender.send::<NoticeChannel>(status.clone());

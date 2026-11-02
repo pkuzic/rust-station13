@@ -12,7 +12,7 @@ use rs13_classic::hands::HeldBy;
 use rs13_classic::movement::Mob;
 use rs13_classic::storage::{InStorage, OpenStorage};
 use rs13_network::lightyear::prelude::*;
-use rs13_world::{Facing, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
+use rs13_world::{Facing, Ghost, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
 
 use crate::Controls;
 use crate::silhouettes::{Shade, Shaded};
@@ -93,7 +93,7 @@ pub fn held_out_of_sight(
 #[allow(clippy::type_complexity)]
 pub fn update_sight<F: QueryFilter>(
     mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
-    viewers: Query<(Option<&Facing>, Option<&OpenStorage>)>,
+    viewers: Query<(Option<&Facing>, Option<&OpenStorage>, Has<Ghost>)>,
     cameras: Query<&rs13_world::CameraView>,
     maps: Query<&MapLayer>,
     things: Query<
@@ -104,7 +104,7 @@ pub fn update_sight<F: QueryFilter>(
             Has<Opaque>,
             Has<LightSource>,
             Has<Hidden>,
-            (Option<&Shade>, Has<Shaded>),
+            (Option<&Shade>, Has<Shaded>, Has<Ghost>),
         ),
         With<NetId>,
     >,
@@ -142,7 +142,7 @@ pub fn update_sight<F: QueryFilter>(
     let place = |entity: Entity| things.get(entity).ok().and_then(|(_, pos, ..)| pos.map(|p| p.0));
     for (link, controls, out) in &mut links {
         let me = controls.0;
-        let Ok((facing, open)) = viewers.get(me) else {
+        let Ok((facing, open, is_ghost)) = viewers.get(me) else {
             continue;
         };
         // Watching a camera, you see from it, all the way round (`cameras.rs`); shut in a
@@ -175,7 +175,7 @@ pub fn update_sight<F: QueryFilter>(
         let placed_hidden: HashSet<Entity> = things
             .iter()
             .filter(
-                |(entity, pos, person, opaque, light, under_floor, (shade, shaded))| {
+                |(entity, pos, person, opaque, light, under_floor, (shade, shaded, ghost))| {
                     let Some(at) = pos else { return false };
                     // Our own mob is always sent, even shut in a closet (which hides it from
                     // everyone else). Under intact floor tiles (pipes, cables, vents): no one
@@ -183,6 +183,17 @@ pub fn update_sight<F: QueryFilter>(
                     // our own stand-in never to us (`silhouettes.rs`).
                     if *entity == me {
                         return false;
+                    }
+                    // Ghosts are for ghosts; who sees through walls and the dark sees the
+                    // person themselves, all round (`ghosts.md`).
+                    if is_ghost {
+                        let mut clear = |_: TilePos| true;
+                        return *under_floor
+                            || shade.is_some()
+                            || out_of_sight(eye, None, at.0, false, &mut clear);
+                    }
+                    if *ghost {
+                        return true;
                     }
                     if *shaded || shade.is_some_and(|s| s.0 == me) {
                         return true;

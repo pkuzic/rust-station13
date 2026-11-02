@@ -335,6 +335,8 @@ pub fn finish_cremation(world: &mut World, drawer: Entity) {
                 burn_up(world, item);
             }
         }
+        // Someone burnt alive has no body left to die in.
+        crate::ghosts::leave_body(world, thing);
         if let Ok(urn) = crate::objects::spawn_object(world, &ObjectSpec::new(URN), at) {
             world.entity_mut(urn).remove::<GridPos>().insert(InCloset(drawer));
             left.push(urn);
