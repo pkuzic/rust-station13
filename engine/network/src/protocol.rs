@@ -35,6 +35,8 @@ pub struct MoveInput {
 pub enum ActionInput {
     /// Click with the active hand.
     UseOn(NetId),
+    /// A ghost starts over as a new character (Luna `abandon_mob`).
+    Respawn,
     Drop,
     SwapHands,
     /// Turn to face a way without stepping (Ctrl + a direction).
