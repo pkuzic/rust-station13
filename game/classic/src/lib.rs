@@ -16,6 +16,7 @@ pub mod cables;
 pub mod cameras;
 pub mod cells;
 pub mod chairs;
+pub mod cloning;
 pub mod closets;
 pub mod combat;
 pub mod conveyors;
@@ -132,6 +133,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<access::AccessIds>()
             .init_resource::<rng::GameRng>()
             .init_resource::<ghosts::Departures>()
+            .init_resource::<cloning::CloneRecords>()
+            .init_resource::<cloning::Arrivals>()
             .init_resource::<shields::ShieldNetwork>()
             .init_resource::<combat::PendingAttacks>()
             .init_resource::<medical::PendingTreatments>()
@@ -356,6 +359,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    cloning::run_cloning,
                     airlock_control::run_consoles,
                     arcade::run_arcades,
                     arcade::update_arcade_views,

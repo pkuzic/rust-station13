@@ -213,6 +213,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `clipboard:clipboard_over` | `icons/obj/bureaucracy.dmi : "clipboard_over"` | CC-BY-SA 3.0 |
 | `clipboard:clipboard_pen` | `icons/obj/bureaucracy.dmi : "clipboard_pen"` | CC-BY-SA 3.0 |
 | `clipboard:paper` | `icons/obj/bureaucracy.dmi : "paper"` | CC-BY-SA 3.0 |
+| `clone-pod:pod_0` | `icons/obj/cloning.dmi : "pod_0"` | CC-BY-SA 3.0 |
+| `clone-pod:pod_1` | `icons/obj/cloning.dmi : "pod_1"` | CC-BY-SA 3.0 |
+| `cloning-console:dna` | `icons/obj/computer.dmi : "dna"` | CC-BY-SA 3.0 |
 | `closet:closed` | `icons/obj/closet.dmi : "closed"` | CC-BY-SA 3.0 |
 | `closet:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `closet:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
@@ -334,6 +337,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `disposal-pipe:pipe-y-north` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
 | `disposal-pipe:pipe-y-south` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
 | `disposal-pipe:pipe-y-west` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
+| `dna-scanner:scanner_0` | `icons/obj/Cryogenic2.dmi : "scanner_0"` | CC-BY-SA 3.0 |
+| `dna-scanner:scanner_1` | `icons/obj/Cryogenic2.dmi : "scanner_1"` | CC-BY-SA 3.0 |
 | `donk-pocket:` | `icons/obj/food.dmi : "donkpocket"` | CC-BY-SA 3.0 |
 | `donk-pockets:` | `icons/obj/storage.dmi : "donk_kit"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl-p` | `icons/obj/stationobjs.dmi : "doorctrl-p"` | CC-BY-SA 3.0 |

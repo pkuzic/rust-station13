@@ -201,6 +201,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if crate::cloning::is_cloning_part(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cloning::spawn_part(world, proto, pos, id));
+    }
     if crate::airlock_control::is_airlock_control(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::airlock_control::spawn_part(world, spec, pos, id));
@@ -560,7 +564,7 @@ pub fn spawn_player_mob(world: &mut World, pos: TilePos) -> Entity {
     mob
 }
 
-fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
+pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
     world
         .spawn((
             // What others see.

@@ -408,6 +408,10 @@
         (path: "/obj/item/clothing/under/waiter", id: "waiter-outfit"),
         (path: "/obj/item/clothing/suit/space", id: "space-suit"),
         (path: "/obj/item/clothing/head/helmet/space", id: "space-helmet"),
+        // Cloning (`cloning.md`).
+        (path: "/obj/machinery/dna_scannernew", id: "dna-scanner"),
+        (path: "/obj/machinery/computer/cloning", id: "cloning-console"),
+        (path: "/obj/machinery/clonepod", id: "clone-pod"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

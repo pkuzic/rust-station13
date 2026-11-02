@@ -158,6 +158,7 @@ pub fn process_actions(
                     microwaves,
                     arcades,
                     airlock_parts,
+                    (scanners, cloning_consoles),
                 ),
             ),
         ),
@@ -237,6 +238,10 @@ pub fn process_actions(
                             With<crate::airlock_control::AirlockConsole>,
                         )>,
                     >,
+                    (
+                        Query<(), With<crate::cloning::DnaScanner>>,
+                        Query<(), With<crate::cloning::CloningConsole>>,
+                    ),
                 ),
             ),
         ),
@@ -669,6 +674,20 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if (scanners.contains(target) || cloning_consoles.contains(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Cloning (`cloning.md`).
+                    let scanner = scanners.contains(target);
+                    commands.queue(move |world: &mut World| {
+                        if scanner {
+                            crate::cloning::click_scanner(world, mob, target);
+                        } else {
+                            crate::cloning::click_console(world, mob, target);
+                        }
+                    });
                 }
                 Action::UseOn(target)
                     if airlock_parts.contains(target)

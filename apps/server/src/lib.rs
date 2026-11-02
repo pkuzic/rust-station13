@@ -13,6 +13,7 @@ use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
 use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
+use rs13_classic::cloning::Arrivals;
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
@@ -150,6 +151,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
         FixedPostUpdate,
         (
             follow_to_ghosts,
+            follow_to_clones,
             ApplyDeferred,
             silhouettes::update_silhouettes,
             sight::update_sight::<()>,
@@ -310,6 +312,31 @@ fn follow_to_ghosts(
         }
         // The body stays when they disconnect, and is nobody's now.
         commands.entity(body).try_remove::<(Player, ControlledBy)>();
+    }
+}
+
+/// A ghost being cloned goes on as the new body in the pod (`cloning.md`).
+fn follow_to_clones(
+    mut arrivals: ResMut<Arrivals>,
+    mut links: Query<(Entity, &mut Controls)>,
+    players: Query<&Player>,
+    mut commands: Commands,
+) {
+    for (ghost, body) in arrivals.0.drain(..) {
+        if let Some((link, mut controls)) = links.iter_mut().find(|(_, c)| c.0 == ghost) {
+            controls.0 = body;
+            if let Ok(player) = players.get(ghost) {
+                commands.entity(body).insert((
+                    player.clone(),
+                    ControlledBy {
+                        owner: link,
+                        lifetime: Lifetime::SessionBased,
+                    },
+                    NameChosen,
+                ));
+            }
+        }
+        commands.entity(ghost).try_despawn();
     }
 }
 

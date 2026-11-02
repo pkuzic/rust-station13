@@ -23,6 +23,10 @@ pub struct GhostSteps {
     next_move_ds: f32,
 }
 
+/// On a ghost: the body it left, which may be gone by now.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GhostOf(pub Entity);
+
 /// On a body its player has left: their ghost.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct LeftBody(pub Entity);
@@ -66,6 +70,7 @@ pub fn leave_body(world: &mut World, body: Entity) -> Option<Entity> {
                 WornView::default(),
             ),
             (
+                GhostOf(body),
                 GhostSteps::default(),
                 MoveIntent::default(),
                 PendingSpeech::default(),
