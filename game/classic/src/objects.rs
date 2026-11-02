@@ -180,6 +180,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::navbeacons::NAVBEACON {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::navbeacons::spawn_navbeacon(world, spec, pos, id));
+    }
     if crate::shields::is_shield_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::shields::spawn_shield_part(world, proto, pos, id));

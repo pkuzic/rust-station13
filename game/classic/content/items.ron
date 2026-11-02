@@ -172,4 +172,5 @@
     (id: "glass-sheet", force: 5.0, stack: 50),
     // Luna `weapon/urn`: what a crematorium leaves of someone.
     (id: "urn", force: 0.0, size: 3),
+    (id: "circuit-board", force: 0.0, size: 2),
 ]

@@ -19,7 +19,6 @@
 //      1 /obj/machinery/driver_button
 //      1 /obj/machinery/embedded_controller/radio/airlock_controller
 //      1 /obj/machinery/mass_driver
-//      2 /obj/machinery/navbeacon
 //      7 /obj/machinery/portable_atmospherics/canister
 //      2 /obj/machinery/vending/toxins
 //      2 /obj/structure/closet/bombcloset
@@ -33,7 +32,7 @@
 (
     legend: {
         ' ': (tile: (id: "space")),
-        '!': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: West, state: Some("pipe-c")), (id: "cable", ends: [East, West])]),
+        '!': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: West, state: Some("pipe-c")), (id: "navbeacon", vars: {"location": "ResearchSouth", "codes_txt": "patrol;next_patrol=Atmospherics"}), (id: "cable", ends: [East, West])]),
         '#': (tile: (id: "wall", solid: true)),
         '$': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "firedoor", dir: South), (id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "cable", ends: [North]), (id: "cable", ends: [West])]),
         '%': (tile: (id: "floor"), objects: [(id: "pipe", dir: NorthEast)]),
@@ -57,7 +56,7 @@
         ':': (tile: (id: "plating"), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),
         ';': (tile: (id: "plating"), objects: [(id: "ladder", vars: {"istop": "0"})]),
         '<': (tile: (id: "plating"), objects: [(id: "pipe", dir: NorthEast), (id: "apc", dir: South), (id: "cable", ends: [North])]),
-        '>': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "firedoor", dir: South), (id: "windoor", access: ["cargo_bot"], dir: North, vars: {"base_state": "right", "icon_state": "right"}), (id: "cable", ends: [North, South])]),
+        '>': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "firedoor", dir: South), (id: "windoor", access: ["cargo_bot"], dir: North, vars: {"base_state": "right", "icon_state": "right"}), (id: "navbeacon", vars: {"location": "Plasma Research", "codes_txt": "delivery;dir=2", "freq": "1337"}), (id: "cable", ends: [North, South])]),
         '?': (tile: (id: "floor"), objects: [(id: "manifold", dir: North)]),
         '@': (tile: (id: "floor"), objects: [(id: "scrubber", dir: West)]),
         'A': (tile: (id: "floor"), objects: [(id: "light", dir: South)]),
