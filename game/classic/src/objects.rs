@@ -180,6 +180,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::microwaves::MICROWAVE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::microwaves::spawn_microwave(world, spec, pos, id));
+    }
     if proto == crate::monkeys::MONKEY {
         let id = world.resource_mut::<NetIds>().alloc();
         let monkey = spawn_bare_mob(world, pos, id);

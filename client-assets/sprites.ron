@@ -1512,6 +1512,13 @@
             "": (dmi: "icons/mob/monkey.dmi", state: "monkey1"),
             "lying": (dmi: "icons/mob/monkey.dmi", state: "monkey0"),
         },
+        "microwave": {
+            "mw": (dmi: "icons/obj/kitchen.dmi", state: "mw"),
+            "mw1": (dmi: "icons/obj/kitchen.dmi", state: "mw1"),
+        },
+        "donk-pocket": { "": (dmi: "icons/obj/food.dmi", state: "donkpocket") },
+        "burnt-mess": { "": (dmi: "icons/obj/food.dmi", state: "badrecipe") },
+        "donk-pockets": { "": (dmi: "icons/obj/storage.dmi", state: "donk_kit") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

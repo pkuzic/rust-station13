@@ -62,6 +62,10 @@ monkey-emote = { $name } { $act ->
     [tail] waves its tail.
    *[scratch] scratches.
 }
+microwave-on = The microwave turns on.
+microwave-added = You put it in the microwave.
+microwave-full = The microwave is full.
+microwave-unsuitable = You have no idea what you could cook with that.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

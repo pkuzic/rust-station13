@@ -73,6 +73,10 @@ monkey-emote = { $name } { $act ->
     [tail] машет хвостом.
    *[scratch] чешется.
 }
+microwave-on = Микроволновка включается.
+microwave-added = Вы кладёте это в микроволновку.
+microwave-full = Микроволновка полна.
+microwave-unsuitable = Вы не представляете, что из этого можно приготовить.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

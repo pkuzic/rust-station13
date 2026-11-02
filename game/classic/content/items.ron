@@ -174,5 +174,9 @@
     (id: "urn", force: 0.0, size: 3),
     (id: "circuit-board", force: 0.0, size: 2),
     (id: "flash", force: 0.0, size: 1),
+    (id: "donk-pocket", force: 0.0, size: 1),
+    (id: "burnt-mess", force: 0.0, size: 1),
+    (id: "donk-pockets", force: 0.0, storage: (),
+        contents: ["donk-pocket", "donk-pocket", "donk-pocket", "donk-pocket", "donk-pocket", "donk-pocket"]),
     (id: "sunglasses", force: 0.0, size: 1, slot: "glasses"),
 ]
