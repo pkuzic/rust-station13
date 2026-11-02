@@ -16,6 +16,7 @@
 mod alarm_panel;
 mod apc_panel;
 mod audio;
+mod camera_panel;
 mod context_menu;
 mod depth;
 mod fov;
@@ -110,6 +111,8 @@ enum UseStep {
     Menu(i32, i32),
     /// `pick:N`: pick the open menu's `N`th choice (from 1).
     Pick(usize),
+    /// `camera:N`: on an open security console, watch its `N`th camera (from 0).
+    Camera(u16),
 }
 
 impl UseStep {
@@ -127,6 +130,8 @@ impl UseStep {
                     offset(rest).map(|(x, y)| Self::Pull(x, y))
                 } else if let Some(rest) = s.strip_prefix("menu:") {
                     offset(rest).map(|(x, y)| Self::Menu(x, y))
+                } else if let Some(rest) = s.strip_prefix("camera:") {
+                    rest.trim().parse().ok().map(Self::Camera)
                 } else if let Some(rest) = s.strip_prefix("pick:") {
                     rest.trim().parse().ok().map(Self::Pick)
                 } else if let Some(rest) = s.strip_prefix("wait:") {
@@ -256,6 +261,7 @@ fn main() {
         .init_resource::<freezer_panel::OpenFreezer>()
         .init_resource::<gas_panel::OpenGas>()
         .init_resource::<vending_panel::OpenVending>()
+        .init_resource::<camera_panel::OpenCameras>()
         .init_resource::<smes_panel::OpenSmes>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
@@ -301,6 +307,7 @@ fn main() {
                     (freezer_panel::receive_freezer, freezer_panel::show_freezer).chain(),
                     (gas_panel::receive_gas, gas_panel::show_gas).chain(),
                     (vending_panel::receive_vending, vending_panel::show_vending).chain(),
+                    (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),
                     (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 ),
@@ -582,6 +589,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         // On the wall, above people.
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
+        // Up on the wall, above people (Luna `layer = 5`).
+        ("camera", _) => (Color::srgb(0.70, 0.70, 0.75), 10.0, 3.5),
         // Over the airlock it shares a tile with.
         ("firedoor", state) if state.starts_with("door0") => (Color::srgb(0.85, 0.30, 0.20), 6.0, 2.1),
         ("firedoor", _) => (Color::srgb(0.85, 0.30, 0.20), TILE_PX - 2.0, 2.1),
@@ -1167,12 +1176,12 @@ pub struct OnDeck(pub i32);
 
 /// Show what belongs to our player's deck and hide the other decks.
 fn show_own_deck(
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     mut drawn: Query<(&OnDeck, &mut Visibility)>,
     mut last: Local<Option<i32>>,
     added: Query<(), Added<OnDeck>>,
 ) {
-    let Some(deck) = own.iter().next().map(|p| p.0.z) else {
+    let Some(deck) = own.iter().next().map(|(p, view)| view.map_or(p.0, |v| v.0).z) else {
         return;
     };
     if *last == Some(deck) && added.is_empty() {
@@ -1223,14 +1232,14 @@ fn update_overlay(
     chat: Res<ChatInput>,
     mut on: ResMut<OverlayOn>,
     views: Query<(&MapLayer, &AtmosView)>,
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     mut tiles: Query<(&OverlayTile, &mut Sprite, &mut Visibility)>,
 ) {
     if !chat.open && keys.just_pressed(KeyCode::F3) {
         on.0 = !on.0;
     }
     // Our deck's air picture.
-    let deck = own.iter().next().map(|p| p.0.z);
+    let deck = own.iter().next().map(|(p, view)| view.map_or(p.0, |v| v.0).z);
     let Some(view) = views.iter().find(|(m, _)| Some(m.0.z) == deck).map(|(_, v)| v) else {
         return;
     };
@@ -1319,15 +1328,20 @@ fn glide(
 }
 
 fn follow_own_player(
-    own: Query<&Transform, (With<OwnPlayer>, Without<WorldCamera>)>,
+    own: Query<(&Transform, Option<&rs13_world::CameraView>), (With<OwnPlayer>, Without<WorldCamera>)>,
     mut camera: Single<&mut Transform, With<WorldCamera>>,
 ) {
     // The player stands in the middle of the 15 x 15 view: half a cell left of the
     // screen's centre (the HUD column is on the right) and half a cell above it (the
     // HUD row is below). The player's position is already on the world image's pixels.
-    if let Ok(player) = own.single() {
-        camera.translation.x = player.translation.x + TILE_PX / 2.0;
-        camera.translation.y = player.translation.y - TILE_PX / 2.0;
+    // Watching a security camera, the camera's tile does (`cameras.md`).
+    if let Ok((player, view)) = own.single() {
+        let at = match view {
+            Some(v) => Vec2::new(v.0.x as f32 * TILE_PX, v.0.y as f32 * TILE_PX),
+            None => player.translation.truncate(),
+        };
+        camera.translation.x = at.x + TILE_PX / 2.0;
+        camera.translation.y = at.y - TILE_PX / 2.0;
     }
 }
 
@@ -1369,6 +1383,7 @@ fn scripted_use(
     objects: Query<(&NetId, &GridPos, &Appearance), Without<Hidden>>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     mut menu: ResMut<context_menu::MenuRequest>,
+    consoles: Res<camera_panel::OpenCameras>,
     mut next_at: Local<Option<f32>>,
 ) {
     let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
@@ -1393,6 +1408,10 @@ fn scripted_use(
     }
     let action = match step {
         UseStep::Wait(_) | UseStep::Menu(..) | UseStep::Pick(_) => None,
+        UseStep::Camera(line) => consoles.0.as_ref().map(|view| ActionInput::Camera {
+            target: view.target,
+            line: Some(line),
+        }),
         UseStep::Tile(dx, dy) | UseStep::Pull(dx, dy) => {
             let tile = (me.0.x + dx, me.0.y + dy);
             objects
@@ -1493,6 +1512,7 @@ mod tests {
         assert_eq!(UseStep::parse("wait:2.5"), Some(UseStep::Wait(2.5)));
         assert_eq!(UseStep::parse("menu:0,1"), Some(UseStep::Menu(0, 1)));
         assert_eq!(UseStep::parse("pick:2"), Some(UseStep::Pick(2)));
+        assert_eq!(UseStep::parse("camera:1"), Some(UseStep::Camera(1)));
         assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
         assert_eq!(UseStep::parse("nope"), None);
     }

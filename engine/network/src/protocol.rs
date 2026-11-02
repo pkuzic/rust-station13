@@ -6,10 +6,10 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, Facing,
-    FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource,
-    MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
-    StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, Dir, DisplayName,
+    EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView,
+    LightSource, MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot,
+    SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -88,6 +88,12 @@ pub enum ActionInput {
     Freezer {
         target: NetId,
         command: FreezerCommand,
+    },
+    /// A camera picked on an open security console (its line, from 0), or `None` to stop
+    /// watching.
+    Camera {
+        target: NetId,
+        line: Option<u16>,
     },
     /// A product's Vend button on an open vending machine: its line, from 0.
     Vend {
@@ -245,6 +251,11 @@ pub struct LaserPanel(pub Option<LaserPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FreezerPanel(pub Option<FreezerPanelView>);
 
+/// Server → one client: the security console it has open, or `None` to close it. Sent
+/// when it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct CameraPanel(pub Option<CameraPanelView>);
+
 /// Server → one client: the vending machine it has open, or `None` to close it. Sent when
 /// it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -336,11 +347,14 @@ impl Plugin for ProtocolPlugin {
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<VendingPanel>()
             .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<CameraPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);
 
         app.component::<MapLayer>().replicate();
         app.component::<GridPos>().replicate();
+        app.component::<CameraView>().replicate();
         app.component::<Player>().replicate();
         app.component::<NetId>().replicate();
         app.component::<Appearance>().replicate();

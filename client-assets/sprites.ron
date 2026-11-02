@@ -499,6 +499,15 @@
             "sleeping-agent": (dmi: "icons/effects/tile_effects.dmi", state: "sleeping_agent"),
         },
         // Power monitoring computer: lit, or dark without power.
+        // Security cameras (facing their way; "off" cut), and their console.
+        "camera": {
+            "": (dmi: "icons/obj/monitors.dmi", state: "camera"),
+            "off": (dmi: "icons/obj/monitors.dmi", state: "camera1"),
+        },
+        "security-console": {
+            "seccam": (dmi: "icons/obj/computer.dmi", state: "seccam"),
+            "seccam0": (dmi: "icons/obj/computer.dmi", state: "seccam0"),
+        },
         "power-monitor": {
             "power": (dmi: "icons/obj/computer.dmi", state: "power"),
             "unpowered": (dmi: "icons/obj/computer.dmi", state: "c_unpowered"),

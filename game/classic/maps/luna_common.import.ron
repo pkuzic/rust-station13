@@ -104,6 +104,9 @@
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
+        // Security cameras and their consoles (`cameras.md`).
+        (path: "/obj/machinery/camera", id: "camera", dir: true, vars: ["c_tag", "network"]),
+        (path: "/obj/machinery/computer/security", id: "security-console"),
         // Vending machines (`vending.md`).
         (path: "/obj/machinery/vending_tg/coffee", id: "vending-coffee"),
         (path: "/obj/machinery/vending_tg/snack", id: "vending-snack"),

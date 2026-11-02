@@ -285,7 +285,7 @@ fn update_lighting(
         Option<Res<crate::glow::GlowAtlas>>,
     ),
     doors: Query<&GridPos, With<Opaque>>,
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     mut overlays: Query<(Entity, &LightOverlay, &mut Visibility)>,
     mut images: ResMut<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -302,7 +302,7 @@ fn update_lighting(
         return;
     }
     let decks: Vec<&TileMap> = maps.iter().map(|m| &m.into_inner().0).collect();
-    let me = own.iter().next().map(|p| p.0);
+    let me = own.iter().next().map(|(p, view)| view.map_or(p.0, |v| v.0));
     // The deck we stand on, or the first one before our mob arrives.
     let Some(map) = me
         .and_then(|p| decks.iter().find(|m| m.z == p.z))

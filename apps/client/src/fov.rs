@@ -103,11 +103,12 @@ fn cone_mesh() -> Mesh {
         .with_inserted_indices(Indices::U32(indices))
 }
 
-/// Follow our player's eye and facing with the cone; hide it with the lighting off.
+/// Follow our player's eye and facing with the cone; hide it with the lighting off, or
+/// while watching a security camera (it sees all round).
 fn update_fov(
     mut fov: ResMut<Fov>,
     lighting_on: Res<crate::lighting::LightingOn>,
-    me: Query<(&Transform, &Look), (With<OwnPlayer>, Without<Cone>)>,
+    me: Query<(&Transform, &Look), (With<OwnPlayer>, Without<Cone>, Without<rs13_world::CameraView>)>,
     cone: Single<(&mut Transform, &mut Visibility), With<Cone>>,
 ) {
     let (mut transform, mut visibility) = cone.into_inner();
