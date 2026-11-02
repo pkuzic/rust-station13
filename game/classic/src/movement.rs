@@ -111,14 +111,14 @@ pub fn move_mobs(
     (jetpacks, mut tanks, panes, stair_tiles, mut commands): (
         Query<&crate::jetpacks::Jetpack>,
         Query<&mut crate::equipment::TankGas>,
-        Res<crate::windows::PaneEdges>,
+        crate::windoors::EdgeBarriers<'_>,
         Query<(&GridPos, &crate::multiz::Stairs), Without<Mob>>,
         Commands,
     ),
 ) {
     let now = time.deciseconds();
     let mut sealed = crate::firedoors::closed_edges(firedoors.iter());
-    sealed.extend(panes.0.iter().copied());
+    sealed.extend(panes.iter());
     let stairs: Vec<(TilePos, crate::multiz::Stairs)> = stair_tiles.iter().map(|(p, s)| (p.0, *s)).collect();
     let mut occupied: HashSet<TilePos> = mobs.iter().map(|(_, pos, ..)| pos.0).collect();
     occupied.extend(

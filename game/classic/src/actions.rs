@@ -137,7 +137,7 @@ pub fn process_actions(
             mut food,
             mut smoking,
             inventory,
-            (consoles, mut cameras, mut paperwork),
+            (consoles, mut cameras, mut paperwork, mut windoors),
         ),
         (
             mut generators,
@@ -185,6 +185,7 @@ pub fn process_actions(
                 Query<(&GridPos, &crate::power::PowerUser), With<crate::cameras::SecurityConsole>>,
                 Query<(&GridPos, &mut crate::cameras::Camera)>,
                 crate::paperwork::PaperWork,
+                Query<&mut crate::windoors::Windoor>,
             ),
         ),
         (
@@ -940,6 +941,12 @@ pub fn process_actions(
                         continue;
                     };
                     if !in_reach(mob_pos.0, target_pos.0) {
+                        continue;
+                    }
+                    if let Ok(mut door) = windoors.get_mut(target) {
+                        // Window doors, by hand or with anything (`windoors.md`).
+                        let card = closets.card_of(mob, &hands);
+                        crate::windoors::click(&mut door, target_pos.0, mob_pos.0, card, now, &mut sounds);
                         continue;
                     }
                     if is_item && hands.active_item().is_none() && taken.insert(target) {

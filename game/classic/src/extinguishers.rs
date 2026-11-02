@@ -301,7 +301,7 @@ pub fn run_puffs(
             ),
         >,
         Query<(&GridPos, &crate::firedoors::Firedoor), Without<Puff>>,
-        Res<crate::windows::PaneEdges>,
+        crate::windoors::EdgeBarriers<'_>,
     ),
     mut puffs: Query<(Entity, &mut Puff, &mut GridPos), Without<Dense>>,
 ) {
@@ -333,7 +333,7 @@ pub fn run_puffs(
     // Puffs sprayed now take their first step next tick (spawns apply after this system).
     let closed: HashSet<TilePos> = doors.iter().map(|p| p.0).collect();
     let mut sealed = crate::firedoors::closed_edges(firedoors.iter());
-    sealed.extend(panes.0.iter().copied());
+    sealed.extend(panes.iter());
     let mut wet: Vec<TilePos> = Vec::new();
     for (entity, mut puff, mut pos) in &mut puffs {
         if now >= puff.gone_at {

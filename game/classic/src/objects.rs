@@ -102,6 +102,12 @@ pub fn spawn_station(world: &mut World, decks: Vec<TileMap>) -> Vec<String> {
         atmos.0.add_edge(at, dir);
         atmos.0.set_edge_open(at, dir, false);
     }
+    // Window doors seal theirs while shut.
+    let mut windoors = world.query::<(&GridPos, &crate::windoors::Windoor)>();
+    for (at, dir) in windoors.iter(world).map(|(p, w)| w.edge(p.0)) {
+        atmos.0.add_edge(at, dir);
+        atmos.0.set_edge_open(at, dir, false);
+    }
     world.insert_resource(atmos);
     problems
 }
@@ -274,6 +280,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::igniters::IGNITION_SWITCH {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::igniters::spawn_ignition_switch(world, spec, pos, id));
+    }
+    if proto == crate::windoors::WINDOOR || proto == crate::windoors::BRIG_WINDOOR {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::windoors::spawn_windoor(world, spec, pos, id));
     }
     if proto == "firedoor" {
         let id = world.resource_mut::<NetIds>().alloc();
