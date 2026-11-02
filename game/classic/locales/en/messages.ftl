@@ -666,3 +666,13 @@ verb-toggle-lock = Toggle Lock
 verb-rotate-chair = Rotate Chair
 verb-toggle-light = Toggle Light
 verb-toggle-jetpack = Toggle Jetpack
+
+# Security cameras (cameras.md). Args: $name; $item (noun id).
+camera-deactivated = { $name } has deactivated the { NOUN($item) }!
+camera-reactivated = { $name } has reactivated the { NOUN($item) }!
+camera-static = The screen bursts into static.
+cameras-title = Security Cameras
+cameras-select = Which camera should you change to?
+cameras-view = View
+cameras-cancel = Cancel
+cameras-deactivated = { " " }(Deactivated)

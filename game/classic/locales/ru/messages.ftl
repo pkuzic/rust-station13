@@ -692,3 +692,13 @@ verb-toggle-lock = Запереть/отпереть
 verb-rotate-chair = Повернуть стул
 verb-toggle-light = Включить/выключить свет
 verb-toggle-jetpack = Включить/выключить ранец
+
+# Камеры наблюдения (cameras.md). Аргументы: $name; $item (id существительного).
+camera-deactivated = { $name } отключает { NOUN($item, case: "acc") }!
+camera-reactivated = { $name } снова включает { NOUN($item, case: "acc") }!
+camera-static = Экран покрывается помехами.
+cameras-title = Камеры наблюдения
+cameras-select = На какую камеру переключиться?
+cameras-view = Смотреть
+cameras-cancel = Отмена
+cameras-deactivated = { " " }(отключена)

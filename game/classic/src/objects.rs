@@ -172,6 +172,14 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
     }
+    if proto == crate::cameras::CAMERA {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cameras::spawn_camera(world, spec, pos, id));
+    }
+    if proto == crate::cameras::SECURITY_CONSOLE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cameras::spawn_console(world, pos, id));
+    }
     if let Some(kind) = crate::vending::kind(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::vending::spawn_vending(world, kind, pos, id));
@@ -495,6 +503,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                     crate::gas_panel::GasPanelOut::default(),
                     crate::vending::PendingVendOps::default(),
                     crate::vending::VendingPanelOut::default(),
+                    crate::cameras::PendingCameraOps::default(),
+                    crate::cameras::CameraPanelOut::default(),
                     crate::smes_panel::PendingSmesOps::default(),
                     crate::smes_panel::SmesPanelOut::default(),
                     crate::alarms::AlarmPanelOut::default(),

@@ -88,10 +88,10 @@ fn update_heat_map(
     mut heat: ResMut<HeatMap>,
     mut images: ResMut<Assets<Image>>,
     maps: Query<&MapLayer>,
-    own: Query<&GridPos, With<OwnPlayer>>,
+    own: Query<(&GridPos, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     things: Query<(&GridPos, &Appearance)>,
 ) {
-    let deck = own.iter().next().map(|p| p.0.z);
+    let deck = own.iter().next().map(|(p, view)| view.map_or(p.0, |v| v.0).z);
     let Some(map) = maps
         .iter()
         .find(|m| Some(m.0.z) == deck)

@@ -77,6 +77,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `cable-coil:` | `icons/obj/Coils.dmi : "redcoil3"` | CC-BY-SA 3.0 |
 | `cable-coil:1` | `icons/obj/Coils.dmi : "redcoil1"` | CC-BY-SA 3.0 |
 | `cable-coil:2` | `icons/obj/Coils.dmi : "redcoil2"` | CC-BY-SA 3.0 |
+| `camera:` | `icons/obj/monitors.dmi : "camera"` | CC-BY-SA 3.0 |
+| `camera:off` | `icons/obj/monitors.dmi : "camera1"` | CC-BY-SA 3.0 |
 | `candy:` | `icons/obj/food.dmi : "candy"` | CC-BY-SA 3.0 |
 | `canister:` | `icons/obj/atmos.dmi : "grey"` | CC-BY-SA 3.0 |
 | `canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
@@ -523,6 +525,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `screwdriver:` | `icons/obj/items.dmi : "screwdriver"` | CC-BY-SA 3.0 |
 | `scrubber:off` | `icons/obj/atmospherics/vent_scrubber.dmi : "off"` | CC-BY-SA 3.0 |
 | `scrubber:on` | `icons/obj/atmospherics/vent_scrubber.dmi : "on"` | CC-BY-SA 3.0 |
+| `security-console:seccam` | `icons/obj/computer.dmi : "seccam"` | CC-BY-SA 3.0 |
+| `security-console:seccam0` | `icons/obj/computer.dmi : "seccam0"` | CC-BY-SA 3.0 |
 | `smes:` | `icons/obj/power.dmi : "smes"` | CC-BY-SA 3.0 |
 | `smes:smes-oc0` | `icons/obj/power.dmi : "smes-oc0"` | CC-BY-SA 3.0 |
 | `smes:smes-oc1` | `icons/obj/power.dmi : "smes-oc1"` | CC-BY-SA 3.0 |

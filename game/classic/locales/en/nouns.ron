@@ -19,6 +19,8 @@
     "meter": (gender: neuter, sg: (nom: "pressure meter", indef: "a pressure meter"), pl: Some((nom: "pressure meters"))),
     "welder": (gender: neuter, sg: (nom: "welding tool", indef: "a welding tool"), pl: Some((nom: "welding tools"))),
     "fuel-tank": (gender: neuter, sg: (nom: "fuel tank", indef: "a fuel tank"), pl: Some((nom: "fuel tanks"))),
+    "camera": (gender: neuter, sg: (nom: "security camera", indef: "a security camera"), pl: Some((nom: "security cameras"))),
+    "security-console": (gender: neuter, sg: (nom: "security cameras console", indef: "a security cameras console"), pl: Some((nom: "security cameras consoles"))),
     "candy": (gender: neuter, sg: (nom: "candy", indef: "a candy"), pl: Some((nom: "candies"))),
     "chips": (gender: neuter, sg: (nom: "chips", indef: "some chips"), pl: Some((nom: "chips"))),
     "beef-jerky": (gender: neuter, sg: (nom: "Scaredy's Private Reserve Beef Jerky", indef: "Scaredy's Private Reserve Beef Jerky"), pl: Some((nom: "Scaredy's Private Reserve Beef Jerky"))),

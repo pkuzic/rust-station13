@@ -10,6 +10,7 @@ pub mod apc;
 pub mod atmos;
 pub mod blastdoors;
 pub mod cables;
+pub mod cameras;
 pub mod cells;
 pub mod chairs;
 pub mod closets;
@@ -163,6 +164,7 @@ impl Plugin for ClassicPlugin {
                     freezers::process_freezer_ops,
                     gas_panel::process_gas_ops,
                     vending::process_vend_ops,
+                    cameras::process_camera_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -266,6 +268,7 @@ impl Plugin for ClassicPlugin {
                         freezers::update_freezer_views,
                         gas_panel::update_gas_views,
                         vending::update_vending_views,
+                        cameras::update_camera_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
@@ -275,11 +278,15 @@ impl Plugin for ClassicPlugin {
                     cables::update_cable_looks,
                     floors::hide_under_floors,
                     welding::update_welder_looks,
-                    extinguishers::update_extinguisher_looks,
-                    extinguishers::update_cabinet_looks,
-                    portables::update_portable_looks,
-                    vending::update_vending_looks,
-                    smoking::update_smoking_looks,
+                    // Sprites that follow what things are doing.
+                    (
+                        extinguishers::update_extinguisher_looks,
+                        extinguishers::update_cabinet_looks,
+                        portables::update_portable_looks,
+                        vending::update_vending_looks,
+                        smoking::update_smoking_looks,
+                        cameras::update_camera_looks,
+                    ),
                     lights::update_light_looks,
                     lights::update_light_sources,
                     flashlights::update_flashlight_looks,

@@ -11,6 +11,7 @@ use bevy::state::app::StatesPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
+use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
@@ -33,15 +34,16 @@ use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, FreezerCommand,
-    FreezerPanel, GasCommand, GasPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
-    PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
-    StoragePanel, VendingPanel, WirePanel,
+    ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, CameraPanel,
+    FreezerCommand, FreezerPanel, GasCommand, GasPanel, LaserCommand, LaserPanel, MoveInput, Notice,
+    NoticeChannel, PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel,
+    StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GasPanelView, GridPos, LaserPanelView,
-    MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
+    AlarmPanelView, ApcPanelView, CameraPanelView, DisplayName, FreezerPanelView, GasPanelView, GridPos,
+    LaserPanelView, MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView,
+    WirePanelView,
 };
 
 #[derive(Resource)]
@@ -73,6 +75,7 @@ struct SentPanel(
     Option<SmesPanelView>,
     Option<GasPanelView>,
     Option<VendingPanelView>,
+    Option<CameraPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -239,7 +242,7 @@ fn queue_actions(
         &mut PendingFreezerOps,
         &mut PendingSmesOps,
         &mut PendingGasOps,
-        &mut PendingVendOps,
+        (&mut PendingVendOps, &mut PendingCameraOps),
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
@@ -264,7 +267,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            mut vend_ops,
+            (mut vend_ops, mut camera_ops),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -342,6 +345,12 @@ fn queue_actions(
                                 SmesCommand::Output(l) => SmesOp::Output(level(l)),
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Camera { target, line } => {
+                    if let Some(console) = resolve(target) {
+                        camera_ops.0.push((console, line.map(usize::from)));
                     }
                     None
                 }
@@ -511,6 +520,7 @@ fn send_panels(
         &mut MessageSender<SmesPanel>,
         &mut MessageSender<GasPanel>,
         &mut MessageSender<VendingPanel>,
+        &mut MessageSender<CameraPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -523,6 +533,7 @@ fn send_panels(
         &SmesPanelOut,
         &GasPanelOut,
         &VendingPanelOut,
+        &CameraPanelOut,
     )>,
 ) {
     for (
@@ -538,6 +549,7 @@ fn send_panels(
         mut smes,
         mut gases,
         mut vendings,
+        mut camera_panels,
     ) in &mut links
     {
         let Ok((
@@ -551,6 +563,7 @@ fn send_panels(
             smes_panel,
             gas,
             vending,
+            camera,
         )) = panels.get(controls.0)
         else {
             continue;
@@ -594,6 +607,10 @@ fn send_panels(
         if sent.9 != vending.0 {
             vendings.send::<NoticeChannel>(VendingPanel(vending.0.clone()));
             sent.9 = vending.0.clone();
+        }
+        if sent.10 != camera.0 {
+            camera_panels.send::<NoticeChannel>(CameraPanel(camera.0.clone()));
+            sent.10 = camera.0.clone();
         }
     }
 }

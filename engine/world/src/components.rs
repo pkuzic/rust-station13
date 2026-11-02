@@ -336,6 +336,30 @@ pub struct FreezerPanelView {
     pub setting: u32,
 }
 
+/// On a person watching through a security camera: the camera's tile. They see from there
+/// (the server sends what it sees, and the client centres the view on it).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CameraView(pub TilePos);
+
+/// One camera in a security console's list.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CameraRow {
+    /// Its name tag (Luna `c_tag`).
+    pub tag: String,
+    /// It works.
+    pub on: bool,
+}
+
+/// An open security camera console, as shown to the player using it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CameraPanelView {
+    /// The console.
+    pub target: NetId,
+    pub cameras: Vec<CameraRow>,
+    /// The line of the camera it shows, if any.
+    pub current: Option<u16>,
+}
+
 /// One product line of a vending machine.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct VendingRow {

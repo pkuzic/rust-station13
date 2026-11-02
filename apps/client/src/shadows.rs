@@ -122,7 +122,7 @@ fn update_sight(
     mut inputs: ResMut<ShadowInputs>,
     mut sight: ResMut<Sight>,
     lighting_on: Res<crate::lighting::LightingOn>,
-    me: Query<(&GridPos, Option<&WornView>), With<OwnPlayer>>,
+    me: Query<(&GridPos, Option<&WornView>, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     items: Query<(&NetId, &Appearance)>,
     maps: Query<&MapLayer>,
     doors: Query<&GridPos, With<Opaque>>,
@@ -131,7 +131,7 @@ fn update_sight(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let (mesh, material, mut visibility) = shadows.into_inner();
-    let (Ok((pos, worn)), true) = (me.single(), lighting_on.0) else {
+    let (Ok((pos, worn, view)), true) = (me.single(), lighting_on.0) else {
         visibility.set_if_neq(Visibility::Hidden);
         if sight.seen.is_some() {
             sight.seen = None;
@@ -139,6 +139,9 @@ fn update_sight(
         inputs.0 = None;
         return;
     };
+    // Watching a security camera, you see from it (`cameras.md`).
+    let eye = GridPos(view.map_or(pos.0, |v| v.0));
+    let pos = &eye;
     visibility.set_if_neq(Visibility::Inherited);
     let Some(map) = maps.iter().find(|m| m.0.z == pos.0.z) else {
         return;

@@ -29,14 +29,15 @@ pub struct OutOfSight(HashSet<Entity>);
 /// another deck, behind a wall or closed door, or, for a person, behind their back.
 pub fn out_of_sight(
     eye: TilePos,
-    facing: Facing,
+    facing: Option<Facing>,
     at: TilePos,
     person: bool,
     seen: &mut impl FnMut(TilePos) -> bool,
 ) -> bool {
     let far = at.z != eye.z || (at.x - eye.x).abs() > SEND_RANGE || (at.y - eye.y).abs() > SEND_RANGE;
     let eye_f = [eye.x as f32, eye.y as f32];
-    far || !seen(at) || (person && sight::behind_back(eye_f, sight::facing_vector(facing.dir()), at))
+    far || !seen(at)
+        || (person && facing.is_some_and(|f| sight::behind_back(eye_f, sight::facing_vector(f.dir()), at)))
 }
 
 /// Where something off the map is.
@@ -93,6 +94,7 @@ pub fn held_out_of_sight(
 pub fn update_sight<F: QueryFilter>(
     mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
     viewers: Query<(Option<&Facing>, Option<&OpenStorage>)>,
+    cameras: Query<&rs13_world::CameraView>,
     maps: Query<&MapLayer>,
     things: Query<
         (
@@ -143,15 +145,21 @@ pub fn update_sight<F: QueryFilter>(
         let Ok((facing, open)) = viewers.get(me) else {
             continue;
         };
-        // Shut in a closet, you see from where the closet stands.
-        let eye = place(me).or_else(|| {
+        // Watching a camera, you see from it, all the way round (`cameras.rs`); shut in a
+        // closet, from where the closet stands.
+        let camera = cameras.get(me).ok().map(|v| v.0);
+        let eye = camera.or_else(|| place(me)).or_else(|| {
             contained
                 .get(me)
                 .ok()
                 .and_then(|(.., closet)| closet.and_then(|c| place(c.0)))
         });
         let Some(eye) = eye else { continue };
-        let facing = facing.copied().unwrap_or(Facing(0));
+        let facing = if camera.is_some() {
+            None
+        } else {
+            Some(facing.copied().unwrap_or(Facing(0)))
+        };
         let open = open.map(|o| o.0);
         let Some(map) = maps.iter().find(|m| m.0.z == eye.z) else {
             continue;
@@ -224,7 +232,7 @@ mod tests {
     #[test]
     fn people_behind_walls_or_backs_are_not_sent_but_neighbours_are() {
         let eye = TilePos::new(0, 0, 0);
-        let north = Facing::of(rs13_world::Dir::North);
+        let north = Some(Facing::of(rs13_world::Dir::North));
         // A wall at (2, 0): what's behind it isn't seen.
         let mut seen = |p: TilePos| !(p.x > 2 && p.y == 0);
         assert!(out_of_sight(eye, north, TilePos::new(4, 0, 0), false, &mut seen));
@@ -239,6 +247,11 @@ mod tests {
         assert!(
             !out_of_sight(eye, north, TilePos::new(0, -3, 0), false, &mut seen),
             "an item behind"
+        );
+        // Through a camera there is no behind (`cameras.md`).
+        assert!(
+            !out_of_sight(eye, None, TilePos::new(0, -3, 0), true, &mut seen),
+            "a camera sees all round"
         );
         assert!(
             !out_of_sight(eye, north, TilePos::new(0, -1, 0), true, &mut seen),

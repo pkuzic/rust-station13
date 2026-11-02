@@ -137,6 +137,7 @@ pub fn process_actions(
             mut food,
             mut smoking,
             inventory,
+            (consoles, mut cameras),
         ),
         (
             mut generators,
@@ -180,6 +181,10 @@ pub fn process_actions(
             crate::food::FoodWork,
             crate::smoking::SmokingWork,
             Query<&crate::equipment::WornBy>,
+            (
+                Query<(&GridPos, &crate::power::PowerUser), With<crate::cameras::SecurityConsole>>,
+                Query<(&GridPos, &mut crate::cameras::Camera)>,
+            ),
         ),
         (
             crate::generators::GeneratorWork,
@@ -712,6 +717,29 @@ pub fn process_actions(
                                 .unwrap_or_default();
                             visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
                         }
+                    }
+                }
+                Action::UseOn(target) if consoles.contains(target) => {
+                    // Security camera consoles open their camera list (`cameras.md`).
+                    crate::cameras::open(&consoles, mob, mob_pos.0, target, &mut commands);
+                }
+                Action::UseOn(target) if cameras.contains(target) => {
+                    // Wirecutters switch a camera off or on (`cameras.md`), within reach.
+                    let Ok((at, mut camera)) = cameras.get_mut(target) else {
+                        continue;
+                    };
+                    if !in_reach(mob_pos.0, at.0) || !holding(&hands, &appearances, "wirecutters") {
+                        continue;
+                    }
+                    let outcome = crate::cameras::cut(&mut camera);
+                    sounds.tool_used(tool, at.0);
+                    if let Some(seen) = outcome.seen {
+                        let name = appearances
+                            .get(mob)
+                            .ok()
+                            .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                            .unwrap_or_default();
+                        visible.0.push((mob_pos.0, seen.arg("name", name), None));
                     }
                 }
                 Action::UseOn(target) if vendors.contains(target) => {
