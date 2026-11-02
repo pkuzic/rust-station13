@@ -180,6 +180,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `closet:closed` | `icons/obj/closet.dmi : "closed"` | CC-BY-SA 3.0 |
 | `closet:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `closet:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
+| `closet-coffin:coffin` | `icons/obj/closet.dmi : "coffin"` | CC-BY-SA 3.0 |
+| `closet-coffin:coffin_open` | `icons/obj/closet.dmi : "coffin_open"` | CC-BY-SA 3.0 |
+| `closet-coffin:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
 | `closet-emergency:emergency` | `icons/obj/closet.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `closet-emergency:emergencyopen` | `icons/obj/closet.dmi : "emergencyopen"` | CC-BY-SA 3.0 |
 | `closet-emergency:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
@@ -353,6 +356,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `gas-filter:on-west` | `icons/obj/atmospherics/filter.dmi : "intact_on"` | CC-BY-SA 3.0 |
 | `gas-mask:` | `icons/obj/clothing/masks.dmi : "gas_alt"` | CC-BY-SA 3.0 |
 | `generator-input:` | `icons/obj/atmospherics/heat_exchanger.dmi : "intact"` | CC-BY-SA 3.0 |
+| `glass-sheet:` | `icons/obj/items.dmi : "sheet-glass"` | CC-BY-SA 3.0 |
 | `grey-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "grey"` | CC-BY-SA 3.0 |
 | `hardhat:` | `icons/obj/clothing/hats.dmi : "hardhat0_yellow"` | CC-BY-SA 3.0 |
 | `hardhat:on` | `icons/obj/clothing/hats.dmi : "hardhat1_yellow"` | CC-BY-SA 3.0 |
@@ -509,6 +513,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `linen-bin:linenbin-empty` | `icons/obj/structures.dmi : "linenbin-empty"` | CC-BY-SA 3.0 |
 | `linen-bin:linenbin-full` | `icons/obj/structures.dmi : "linenbin-full"` | CC-BY-SA 3.0 |
 | `linen-bin:linenbin-half` | `icons/obj/structures.dmi : "linenbin-half"` | CC-BY-SA 3.0 |
+| `locker-brig:secure` | `icons/obj/closet.dmi : "secure"` | CC-BY-SA 3.0 |
+| `locker-brig:secure1` | `icons/obj/closet.dmi : "secure1"` | CC-BY-SA 3.0 |
+| `locker-brig:secureopen` | `icons/obj/closet.dmi : "secureopen"` | CC-BY-SA 3.0 |
+| `locker-brig:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:securece` | `icons/obj/closet.dmi : "securece"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:securece1` | `icons/obj/closet.dmi : "securece1"` | CC-BY-SA 3.0 |
 | `locker-chief-engineer:secureceopen` | `icons/obj/closet.dmi : "secureceopen"` | CC-BY-SA 3.0 |
@@ -521,6 +529,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `locker-engineer:secureeng1` | `icons/obj/closet.dmi : "secureeng1"` | CC-BY-SA 3.0 |
 | `locker-engineer:secureengopen` | `icons/obj/closet.dmi : "secureengopen"` | CC-BY-SA 3.0 |
 | `locker-engineer:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
+| `locker-personal:secure` | `icons/obj/closet.dmi : "secure"` | CC-BY-SA 3.0 |
+| `locker-personal:secure1` | `icons/obj/closet.dmi : "secure1"` | CC-BY-SA 3.0 |
+| `locker-personal:secureopen` | `icons/obj/closet.dmi : "secureopen"` | CC-BY-SA 3.0 |
+| `locker-personal:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
+| `locker-security:sec` | `icons/obj/closet.dmi : "sec"` | CC-BY-SA 3.0 |
+| `locker-security:sec1` | `icons/obj/closet.dmi : "sec1"` | CC-BY-SA 3.0 |
+| `locker-security:secopen` | `icons/obj/closet.dmi : "secopen"` | CC-BY-SA 3.0 |
+| `locker-security:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
 | `locker-welding:secureengweld` | `icons/obj/closet.dmi : "secureengweld"` | CC-BY-SA 3.0 |
 | `locker-welding:secureengweld1` | `icons/obj/closet.dmi : "secureengweld1"` | CC-BY-SA 3.0 |
 | `locker-welding:toolclosetopen` | `icons/obj/closet.dmi : "toolclosetopen"` | CC-BY-SA 3.0 |

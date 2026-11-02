@@ -21,6 +21,10 @@ Code: `game/classic/src/closets.rs`; the kinds and what they start with are in
 | `locker-electrical` | `…/engineering_electrical` (`engine_equip`) | 2 insulated gloves, 3 electrical toolboxes, 3 multitools |
 | `locker-welding` | `…/engineering_welding` (`engine_equip`) | nothing yet |
 | `locker-engineer` | `…/engineering_personal` (`engine_equip`) | utility belt, mechanical toolbox, insulated gloves |
+| `closet-coffin` | `closet/coffin` | nothing |
+| `locker-personal` | `secure_closet/personal` (`all_personal_lockers`) | nothing yet (Luna: a backpack and a headset) |
+| `locker-brig` | `secure_closet/brig` (`security`) | nothing yet (Luna: an orange jumpsuit and shoes) |
+| `locker-security` | `secure_closet/security` (`security`) | nothing yet (Luna: an officer's gear) |
 | `crate` | `crate` | nothing |
 | `crate-internals` | `crate/internals` | an oxygen tank half the time |
 | `crate-radiation` | `crate/radiation` | nothing yet |
@@ -80,6 +84,9 @@ A crate holds items like a closet, with these differences:
   one.
 - **Fuel:** a lit welding tool burns fuel on a closet, as on anything it is used on
   (`welding.md`). Luna asks for none.
+- **Personal closets:** Luna's also opens for the first ID card swiped on it, and after that
+  for its owner's card; ours opens only for its access, since ID cards don't carry names yet.
+- **Brig lockers:** Luna bolts them down; ours can be pulled like any locker.
 - **Not implemented:**
   - rigging with cable and electropacks;
   - emags and hacktools;
