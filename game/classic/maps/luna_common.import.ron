@@ -104,6 +104,14 @@
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
+        // Paperwork (`paperwork.md`) and status displays (`status-displays.md`).
+        (path: "/obj/item/weapon/paper_bin", id: "paper-bin"),
+        (path: "/obj/item/weapon/paper", id: "paper", vars: ["name", "info"]),
+        (path: "/obj/item/weapon/pen", id: "pen"),
+        (path: "/obj/item/weapon/pen/blue", id: "pen-blue"),
+        (path: "/obj/item/weapon/pen/red", id: "pen-red"),
+        (path: "/obj/item/weapon/clipboard", id: "clipboard"),
+        (path: "/obj/machinery/status_display", id: "status-display", vars: ["mode"]),
         // Security cameras and their consoles (`cameras.md`).
         (path: "/obj/machinery/camera", id: "camera", dir: true, vars: ["c_tag", "network"]),
         (path: "/obj/machinery/computer/security", id: "security-console"),

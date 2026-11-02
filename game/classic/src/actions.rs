@@ -137,7 +137,7 @@ pub fn process_actions(
             mut food,
             mut smoking,
             inventory,
-            (consoles, mut cameras),
+            (consoles, mut cameras, mut paperwork),
         ),
         (
             mut generators,
@@ -184,6 +184,7 @@ pub fn process_actions(
             (
                 Query<(&GridPos, &crate::power::PowerUser), With<crate::cameras::SecurityConsole>>,
                 Query<(&GridPos, &mut crate::cameras::Camera)>,
+                crate::paperwork::PaperWork,
             ),
         ),
         (
@@ -352,6 +353,10 @@ pub fn process_actions(
                         if let Some(more) = cable.floors.examine(target) {
                             outbox.0.push(more);
                         }
+                        paperwork.examine(mob, target);
+                        if let Some(more) = paperwork.examine_bin(target) {
+                            outbox.0.push(more);
+                        }
                         if let Some(more) = food.examine(target) {
                             outbox.0.push(more);
                         }
@@ -482,6 +487,15 @@ pub fn process_actions(
                         }
                     }
                 }
+                Action::UseOn(target)
+                    if paperwork.takes(&hands, target)
+                        && places.get(target).map_or(true, |p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Paper bins, writing with a pen, clipboards (`paperwork.md`).
+                    if let Some(outcome) = paperwork.use_on(mob, &mut hands, target, &mut commands) {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
                 Action::UseOn(target) if people.contains(target) && food.is_food(hands.active_item()) => {
                     // Eating and drinking, or feeding someone (`food.md`).
                     let target_pos = places.get(target).map_or(mob_pos.0, |p| p.0);
@@ -530,8 +544,16 @@ pub fn process_actions(
                             || jetpacks.contains(target)
                             || radios.contains(target)
                             || extinguishers.is_extinguisher(target)
-                            || smoking.uses_self(target)) =>
+                            || smoking.uses_self(target)
+                            || paperwork.uses_self(target)) =>
                 {
+                    // A sheet's label box, a clipboard's window (`paperwork.md`).
+                    if paperwork.uses_self(target) {
+                        if let Some(outcome) = paperwork.use_self(mob, target, &mut commands) {
+                            outbox.0.extend(outcome.to_mob);
+                        }
+                        continue;
+                    }
                     // A lighter lit or shut, a lit cigarette trodden out (`smoking.md`).
                     if smoking.uses_self(target) {
                         if let Some(outcome) = smoking.use_self(

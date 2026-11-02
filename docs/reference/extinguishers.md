@@ -67,8 +67,8 @@ crowbar, a welding tool, a mini fire extinguisher, a flashlight and a radio.
 | Luna | Here |
 |---|---|
 | Spraying in space, or buckled to a chair that can move, pushes the user back | Not built |
-| Water reacts with everything on the tiles it reaches (slimes, burning people) | Only the air: there are no burning people yet |
-| Three or more units of water on a floor make it slippery for 80 s | Puffs carry one unit; not built |
+| Water also hurts slimes on the tiles it reaches | There are no slimes yet (and Luna has no burning people: heat burns them through the air) |
+| Three or more units of water on a floor make it slippery for 80 s | The same: a puff carries one unit, so spraying never wets the floor |
 | Each puff moves through the air as an object that only floors stop | Puffs stop at closed doors and sealed edges too, as people do |
 | The air under water drops to 0 K | 2.7 K, the coldest anything gets here |
 | The emergency toolbox has a red crowbar, a mini welding tool and a flare half the time | The plain crowbar and welding tool, and always a flashlight |

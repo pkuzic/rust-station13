@@ -6,10 +6,10 @@ pub mod sight;
 
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraRow,
-    CameraView, Dense, DisplayName, EnvAlert, Facing, FreezerPanelView, GasMachine, GasPanelView, GridPos,
-    Hand, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
-    PixelOffset, PowerMonitorRow, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView,
-    VendingPanelView, VendingRow, WirePanelView, WornView,
+    CameraView, ClipboardView, Dense, DisplayName, EnvAlert, Facing, FreezerPanelView, GasMachine,
+    GasPanelView, GridPos, Hand, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat,
+    NetId, Opaque, PaperMode, PaperView, PixelOffset, PowerMonitorRow, PowerMonitorView, Silhouette, Slot,
+    SmesPanelView, StorageView, VendingPanelView, VendingRow, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 
