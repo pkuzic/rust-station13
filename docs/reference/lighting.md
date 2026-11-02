@@ -83,10 +83,9 @@ made-up two-deck world.
 - **When:** the client works it out again only when the map, a light or a closed door
   changes, and redraws it when what the player sees changes.
 - **How it is drawn:** a texture with one texel per tile of the deck you stand on. Each
-  tile shows its own light flat across most of its area and blends with its neighbour only
-  in a narrow band at the edge (a quarter of a tile), so light and shadow read tile by tile,
-  and only between tiles the player sees: light from a room behind a wall never
-  shows on this side of it. It is multiplied over everything on the map, coloured light
+  tile shows its own light flat, right up to its border, with no blending between tiles,
+  so light and shadow read tile by tile with hard edges, as in BYOND: light from a room
+  behind a wall never shows on this side of it. It is multiplied over everything on the map, coloured light
   included. The HUD and the text panel are not darkened.
 - **Walls and closed doors** show the light of the floor in front of the faces that turn
   towards you: the brightest of the open tiles beside them that you see. Light from a room
@@ -168,8 +167,8 @@ What gives off light of its own stays bright in the dark and glows
 
 ## Differences from Luna
 
-- **Soft:** Luna lights whole tiles in seven steps; here light fades smoothly within and
-  across tiles.
+- **Light levels:** Luna lights whole tiles in seven steps; here each tile's light is
+  worked out smoothly by distance, though it is still drawn flat across the tile.
 - **Light across decks:** Luna has no light between decks.
 - **Not implemented:**
   - darkness hiding things other than people (items on the floor of a dark room are

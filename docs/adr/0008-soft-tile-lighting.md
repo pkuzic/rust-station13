@@ -44,3 +44,10 @@ whole-tile steps, and something that keeps working once maps have several decks.
   about a thousand tiles). Larger maps may need per-light caching or computing by chunk.
 - Light from a lower deck lights the open tile above it, but the lower deck itself isn't
   drawn through the hole until the client draws several decks.
+
+## Update (2026-11-02)
+
+The blend between tiles is gone: each tile now shows its own light flat, right up to its
+border, so shadows have hard tile edges, as in BYOND. Playing on the full station, the
+softened borders read as smudges rather than as tiles. Light is still worked out by
+straight-line distance and coloured as above; only the drawing between tiles changed.

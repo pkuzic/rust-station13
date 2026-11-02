@@ -1,15 +1,10 @@
-// Tile lighting (`docs/reference/lighting.md`). The texture holds one texel per tile. Each
-// tile shows its own light flat across most of its area, blending with its neighbour only
-// in a narrow band at the edge, so light and shadow read tile by tile without hard seams.
+// Tile lighting (`docs/reference/lighting.md`). The texture holds one texel per tile, and
+// each tile shows its own light flat, right up to its border, as BYOND's tile lighting
+// does: light and shadow read tile by tile, with hard edges.
 // The pipeline multiplies the result over the map.
-// Alpha says whether a tile is in sight: only those are blended, so light from a tile the
-// player can't see (the room behind a wall) never bleeds into what they can. Darkness
-// out of sight is drawn by the black squares of `shadows.rs`.
+// Darkness out of sight is drawn by the black squares of `shadows.rs`.
 
 @group(2) @binding(0) var light_texture: texture_2d<f32>;
-
-// How wide the blend between two tiles is, as a share of a tile.
-const EDGE: f32 = 0.25;
 
 struct FragmentInput {
     @location(2) uv: vec2<f32>,
@@ -18,30 +13,7 @@ struct FragmentInput {
 @fragment
 fn fragment(in: FragmentInput) -> @location(0) vec4<f32> {
     let size = vec2<i32>(textureDimensions(light_texture));
-    let p = in.uv * vec2<f32>(size) - 0.5;
-    let base = floor(p);
-    var f = p - base;
-    // Flat across most of each tile; blended only in a narrow band at tile edges, so
-    // shadows read as darker tiles, not a wash.
-    f = clamp((f - 0.5) / EDGE + 0.5, vec2<f32>(0.0), vec2<f32>(1.0));
-    f = f * f * (3.0 - 2.0 * f);
     let top = size - vec2<i32>(1, 1);
-    let i0 = clamp(vec2<i32>(base), vec2<i32>(0, 0), top);
-    let i1 = clamp(vec2<i32>(base) + vec2<i32>(1, 1), vec2<i32>(0, 0), top);
-    let a = textureLoad(light_texture, vec2<i32>(i0.x, i0.y), 0);
-    let b = textureLoad(light_texture, vec2<i32>(i1.x, i0.y), 0);
-    let c = textureLoad(light_texture, vec2<i32>(i0.x, i1.y), 0);
-    let d = textureLoad(light_texture, vec2<i32>(i1.x, i1.y), 0);
-    // Each corner's smoothstep weight, kept only if that tile is in sight.
-    let wa = a.a * (1.0 - f.x) * (1.0 - f.y);
-    let wb = b.a * f.x * (1.0 - f.y);
-    let wc = c.a * (1.0 - f.x) * f.y;
-    let wd = d.a * f.x * f.y;
-    let total = wa + wb + wc + wd;
     let tile = clamp(vec2<i32>(floor(in.uv * vec2<f32>(size))), vec2<i32>(0, 0), top);
-    var light = textureLoad(light_texture, tile, 0).rgb;
-    if total > 0.0001 {
-        light = (a.rgb * wa + b.rgb * wb + c.rgb * wc + d.rgb * wd) / total;
-    }
-    return vec4<f32>(light, 1.0);
+    return vec4<f32>(textureLoad(light_texture, tile, 0).rgb, 1.0);
 }
