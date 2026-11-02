@@ -174,6 +174,14 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::conveyors::CONVEYOR {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::conveyors::spawn_conveyor(world, spec, pos, id));
+    }
+    if proto == crate::conveyors::CONVEYOR_SWITCH {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::conveyors::spawn_switch(world, spec, pos, id));
+    }
     if crate::filing::is_cabinet(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::filing::spawn_cabinet(world, proto, pos, id));

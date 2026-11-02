@@ -16,6 +16,7 @@ pub mod cells;
 pub mod chairs;
 pub mod closets;
 pub mod combat;
+pub mod conveyors;
 pub mod decks;
 pub mod dispensers;
 pub mod disposals;
@@ -195,6 +196,7 @@ impl Plugin for ClassicPlugin {
                     windoors::bump_windoors,
                     windoors::run_windoors,
                     filing::stock_cabinets,
+                    conveyors::run_conveyors,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,
@@ -303,6 +305,7 @@ impl Plugin for ClassicPlugin {
                         status_displays::update_displays,
                         filing::update_cabinet_looks,
                         bedsheets::update_linen_looks,
+                        conveyors::update_conveyor_looks,
                     ),
                     lights::update_light_looks,
                     lights::update_light_sources,
