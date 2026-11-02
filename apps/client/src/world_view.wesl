@@ -37,7 +37,7 @@ struct Effects {
     dead: f32,
     cold: f32,
     hot: f32,
-    _pad: f32,
+    dazzled: f32,
 }
 @group(1) @binding(6) var<uniform> fx_a: vec4<f32>;
 @group(1) @binding(7) var<uniform> fx_b: vec4<f32>;
@@ -103,5 +103,7 @@ fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
     colour = mix(colour, colour * vec3<f32>(0.55, 0.05, 0.05), edge * fx.hurt * pulse);
     // Hit: a red flash, strongest at the edges.
     colour = mix(colour, vec3<f32>(0.7, 0.02, 0.02), fx.flash * (0.12 + 0.5 * edge));
+    // Dazzled by a flash: white, fading.
+    colour = mix(colour, vec3<f32>(1.0), clamp(fx.dazzled, 0.0, 1.0));
     return vec4<f32>(colour, 1.0);
 }

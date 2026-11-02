@@ -5,7 +5,6 @@
 // Skipped (no prototype yet):
 //      1 /obj/effect/landmark/disk_spawn
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      3 /obj/item/device/flash
 //      2 /obj/item/stack/sheet/plasteel
 //      2 /obj/item/stack/sheet/rglass
 //      1 /obj/item/weapon/cartridge/engineering
@@ -281,8 +280,8 @@
         'Τ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North]), "power-monitor"]),
         'Υ': (tile: (id: "floor"), objects: [(id: "table", dir: South, state: Some("table")), "cell-charger", (id: "pipe", dir: South)]),
         'Φ': (tile: (id: "floor"), objects: [(id: "light", dir: South), (id: "apc", dir: South), (id: "cable", ends: [East])]),
-        'Χ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), (id: "cable", ends: [South, West]), "flashlight", "utility-belt-loaded"]),
-        'Ψ': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "flashlight", "utility-belt-loaded"]),
+        'Χ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), (id: "cable", ends: [South, West]), "flash", "flashlight", "utility-belt-loaded"]),
+        'Ψ': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "flash", "flashlight", "utility-belt-loaded"]),
         'Ω': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: North), (id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'α': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "firedoor", dir: South), (id: "airlock", access: ["construction"])]),
         'β': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical"]),

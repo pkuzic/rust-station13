@@ -16,7 +16,6 @@
 //      1 /obj/item/clothing/suit/armor/captain
 //      1 /obj/item/clothing/suit/storage/captunic
 //      1 /obj/item/clothing/under/gimmick/rank/head_of_personnel/suit
-//      3 /obj/item/device/flash
 //      1 /obj/item/device/hand_tele
 //      1 /obj/item/device/t_scanner
 //      1 /obj/item/device/timer
@@ -232,7 +231,7 @@
         'ā': (tile: (id: "floor"), objects: [(id: "vent", dir: West), (id: "cable", ends: [North, South])]),
         'Ă': (tile: (id: "floor"), objects: [(id: "chair", dir: South), (id: "intercom", vars: {"pixel_x": "28"})]),
         'ă': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "pen"]),
-        'Ą': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "first-aid-kit"]),
+        'Ą': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "first-aid-kit", "flash"]),
         'ą': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), "shield-plate"]),
         'Ć': (tile: (id: "plating"), objects: [(id: "air-tank", dir: North)]),
         'ć': (tile: (id: "floor"), objects: ["bed", "bedsheet-rd", (id: "apc", dir: South), (id: "cable", ends: [North])]),
@@ -294,7 +293,7 @@
         'σ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir")), "paper-bin"]),
         'τ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir")), (id: "cable", ends: [North, South])]),
         'υ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir"))]),
-        'φ': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "cable", ends: [North, West]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir"))]),
+        'φ': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "cable", ends: [North, West]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir")), "flash", "flash"]),
         'χ': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-c")), (id: "table-reinforced", dir: NorthEast, state: Some("reinf_tabledir")), "recharger"]),
         'ψ': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-s")), (id: "apc", dir: South), (id: "cable", ends: [North]), "closet-emergency"]),
         'ω': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: West, state: Some("pipe-t")), (id: "air-alarm", dir: North, vars: {"pixel_y": "-22"}), "disposal-bin", (id: "pipe", dir: South)]),

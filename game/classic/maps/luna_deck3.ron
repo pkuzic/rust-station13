@@ -97,7 +97,6 @@
 //      1 /obj/item/clothing/under/sundress
 //      1 /obj/item/clothing/under/waiter
 //      1 /obj/item/device/analyzer
-//      4 /obj/item/device/flash
 //      2 /obj/item/device/geneticsanalyzer
 //      1 /obj/item/device/hand_tele
 //      9 /obj/item/device/igniter
@@ -999,7 +998,7 @@
         '伙': (tile: (id: "floor"), objects: [(id: "scrubber", dir: West, above_floor: true)]),
         '会': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "windoor", access: ["robotics"], dir: South, vars: {"base_state": "left", "icon_state": "left"})]),
         '伛': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "fire-alarm", dir: South, vars: {"pixel_y": "26"})]),
-        '伜': (tile: (id: "floor"), objects: [(id: "light", dir: North), (id: "table", dir: North, state: Some("table_1tilethick")), "circuit-board", "circuit-board", "circuit-board", "circuit-board"]),
+        '伜': (tile: (id: "floor"), objects: [(id: "light", dir: North), (id: "table", dir: North, state: Some("table_1tilethick")), "circuit-board", "circuit-board", "circuit-board", "circuit-board", "flash", "flash", "flash", "flash"]),
         '伝': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "conveyor-switch", vars: {"id": "robotics", "oneway": "1"})]),
         '伞': (tile: (id: "floor"), objects: ["vending-coffee"]),
         '伟': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), (id: "light", dir: East), (id: "pipe", dir: South)]),

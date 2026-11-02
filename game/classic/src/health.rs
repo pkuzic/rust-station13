@@ -153,8 +153,17 @@ pub struct Vitals {
 }
 
 /// Recompute health and consciousness. Death is permanent.
-pub fn update_vitals(mut mobs: Query<(&Body, &mut Vitals, &mut Appearance, Has<crate::chairs::Resting>)>) {
-    for (body, mut vitals, mut appearance, resting) in &mut mobs {
+#[allow(clippy::type_complexity)]
+pub fn update_vitals(
+    mut mobs: Query<(
+        &Body,
+        &mut Vitals,
+        &mut Appearance,
+        Has<crate::chairs::Resting>,
+        Has<crate::flashes::Weakened>,
+    )>,
+) {
+    for (body, mut vitals, mut appearance, resting, weakened) in &mut mobs {
         let health = body.health();
         let stat = if vitals.stat == MobStat::Dead || health < DEATH_HEALTH {
             MobStat::Dead
@@ -166,7 +175,7 @@ pub fn update_vitals(mut mobs: Query<(&Body, &mut Vitals, &mut Appearance, Has<c
         vitals.set_if_neq(Vitals { health, stat });
         let state = match stat {
             // Lying in a bed (`chairs.md`).
-            MobStat::Conscious if resting => "lying",
+            MobStat::Conscious if resting || weakened => "lying",
             MobStat::Conscious => "",
             MobStat::Unconscious => "unconscious",
             MobStat::Dead | MobStat::Ghost => "dead",

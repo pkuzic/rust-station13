@@ -173,4 +173,6 @@
     // Luna `weapon/urn`: what a crematorium leaves of someone.
     (id: "urn", force: 0.0, size: 3),
     (id: "circuit-board", force: 0.0, size: 2),
+    (id: "flash", force: 0.0, size: 1),
+    (id: "sunglasses", force: 0.0, size: 1, slot: "glasses"),
 ]

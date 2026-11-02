@@ -660,7 +660,10 @@ fn send_status(
         &CombatIntent,
         &Surroundings,
         &Lungs,
-        Has<rs13_classic::pulling::Pulling>,
+        (
+            Has<rs13_classic::pulling::Pulling>,
+            Option<&rs13_classic::flashes::Dazzled>,
+        ),
     )>,
     ghosts: Query<(), With<Ghost>>,
 ) {
@@ -668,6 +671,7 @@ fn send_status(
         let status = if ghosts.contains(controls.0) {
             // Nothing can hurt a ghost, and no air or warmth matters to it.
             StatusUpdate {
+                dazzled: 0,
                 health: 100,
                 stat: MobStat::Ghost,
                 intent: Intent::Help,
@@ -678,10 +682,11 @@ fn send_status(
                 pulling: false,
             }
         } else {
-            let Ok((vitals, intent, around, lungs, pulling)) = mobs.get(controls.0) else {
+            let Ok((vitals, intent, around, lungs, (pulling, dazzled))) = mobs.get(controls.0) else {
                 continue;
             };
             StatusUpdate {
+                dazzled: dazzled.map_or(0, |d| d.0),
                 // Luna shows health as a whole number.
                 health: vitals.health.round() as i32,
                 stat: vitals.stat,

@@ -339,6 +339,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `firesuit:` | `icons/obj/clothing/suits.dmi : "fire"` | CC-BY-SA 3.0 |
 | `first-aid-kit:` | `icons/obj/storage.dmi : "firstaid"` | CC-BY-SA 3.0 |
 | `first-aid-kit-fire:` | `icons/obj/storage.dmi : "ointment"` | CC-BY-SA 3.0 |
+| `flash:` | `icons/obj/device.dmi : "flash"` | CC-BY-SA 3.0 |
+| `flash:flashburnt` | `icons/obj/device.dmi : "flashburnt"` | CC-BY-SA 3.0 |
+| `flasher:mflash1` | `icons/obj/stationobjs.dmi : "mflash1"` | CC-BY-SA 3.0 |
 | `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
 | `floodlight:flood00` | `icons/obj/machines/floodlight.dmi : "flood00"` | CC-BY-SA 3.0 |
@@ -641,6 +644,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `plasma-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
 | `plasma-pressure-tank:` | `icons/obj/atmospherics/orange_pipe_tank.dmi : "intact"` | CC-BY-SA 3.0 |
 | `plasma-sheet:` | `icons/obj/mining.dmi : "sheet-plasma"` | CC-BY-SA 3.0 |
+| `portable-flasher:pflash-s` | `icons/obj/stationobjs.dmi : "pflash-s"` | CC-BY-SA 3.0 |
+| `portable-flasher:pflash1` | `icons/obj/stationobjs.dmi : "pflash1"` | CC-BY-SA 3.0 |
 | `portable-pump:psiphon:0` | `icons/obj/atmos.dmi : "psiphon:0"` | CC-BY-SA 3.0 |
 | `portable-pump:psiphon:1` | `icons/obj/atmos.dmi : "psiphon:1"` | CC-BY-SA 3.0 |
 | `portable-pump:siphon-connector` | `icons/obj/atmos.dmi : "siphon-connector"` | CC-BY-SA 3.0 |
@@ -778,6 +783,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `status-glyph:Z` | `icons/obj/status_display.dmi : "Z"` | CC-BY-SA 3.0 |
 | `status-glyph:~` | `icons/obj/status_display.dmi : "~"` | CC-BY-SA 3.0 |
 | `stool:` | `icons/obj/objects.dmi : "stool"` | CC-BY-SA 3.0 |
+| `sunglasses:` | `icons/obj/clothing/glasses.dmi : "sun"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `table:` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
 | `table:table-east` | `icons/obj/structures.dmi : "table"` | CC-BY-SA 3.0 |
@@ -1136,6 +1142,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:space-helmet:lying` | `icons/mob/head.dmi : "space2"` | CC-BY-SA 3.0 |
 | `worn:space-suit:` | `icons/mob/suit.dmi : "space"` | CC-BY-SA 3.0 |
 | `worn:space-suit:lying` | `icons/mob/suit.dmi : "space2"` | CC-BY-SA 3.0 |
+| `worn:sunglasses:` | `icons/mob/eyes.dmi : "sun"` | CC-BY-SA 3.0 |
+| `worn:sunglasses:lying` | `icons/mob/eyes.dmi : "sun2"` | CC-BY-SA 3.0 |
 | `worn:utility-belt:` | `icons/mob/belt.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
 | `worn:utility-belt:lying` | `icons/mob/belt.dmi : "utilitybelt2"` | CC-BY-SA 3.0 |
 | `wrench:` | `icons/obj/items.dmi : "wrench"` | CC-BY-SA 3.0 |
