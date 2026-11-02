@@ -251,6 +251,8 @@ pub enum ApcChannelSetting {
 /// them changes. Other players' health is not sent.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct StatusUpdate {
+    /// Goes up each time the player is dazzled by a flash: their view whites out.
+    pub dazzled: u8,
     pub health: i32,
     pub stat: MobStat,
     pub intent: Intent,

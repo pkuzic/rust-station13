@@ -153,6 +153,8 @@ pub fn process_actions(
                     trays,
                     crema_switches,
                     shield_parts,
+                    knocked_down,
+                    flashers,
                 ),
             ),
         ),
@@ -221,6 +223,8 @@ pub fn process_actions(
                             With<crate::shields::ShieldCapacitor>,
                         )>,
                     >,
+                    Query<(), With<crate::flashes::Weakened>>,
+                    Query<(), With<crate::flashes::Flasher>>,
                 ),
             ),
         ),
@@ -252,7 +256,7 @@ pub fn process_actions(
     let mut welded_with: Vec<(Entity, Entity, TilePos)> = Vec::new();
 
     for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mut mob_state) in &mut mobs {
-        if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+        if knocked_down.contains(mob) || vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
         }
@@ -299,6 +303,37 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if tool == Some(crate::flashes::FLASH)
+                        && (hands.active_item() == Some(target)
+                            || (people.contains(target)
+                                && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)))) =>
+                {
+                    // Flashes (`flashes.md`).
+                    let flash = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        let Some(flash) = flash else { return };
+                        if flash == target {
+                            crate::flashes::flash_around(world, mob, flash);
+                        } else {
+                            crate::flashes::flash_someone(world, mob, flash, target);
+                        }
+                    });
+                }
+                Action::UseOn(target)
+                    if flashers.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))
+                        && matches!(tool, Some("wirecutters" | "wrench")) =>
+                {
+                    let wrench = tool == Some("wrench");
+                    commands.queue(move |world: &mut World| {
+                        if wrench {
+                            crate::flashes::wrench_portable(world, mob, target);
+                        } else {
+                            crate::flashes::cut_bulb(world, mob, target);
+                        }
+                    });
+                }
                 Action::SwapHands => hands.active = hands.active.other(),
                 // Turn on the spot; a chair turns its sitter back (`movement::sync_facing`).
                 Action::Face(dir) => mob_state.facing = Some(dir),

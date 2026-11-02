@@ -109,6 +109,10 @@
             "": (dmi: "icons/mob/eyes.dmi", state: "meson"),
             "lying": (dmi: "icons/mob/eyes.dmi", state: "meson2"),
         },
+        "worn:sunglasses": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "sun"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "sun2"),
+        },
         "worn:jetpack": {
             "": (dmi: "icons/mob/back.dmi", state: "jetpack0"),
             "lying": (dmi: "icons/mob/back.dmi", state: "jetpack02"),
@@ -1494,6 +1498,16 @@
         "navbeacon": { "navbeacon0": (dmi: "icons/obj/objects.dmi", state: "navbeacon0") },
         "recharger": { "recharger0": (dmi: "icons/obj/stationobjs.dmi", state: "recharger0") },
         "circuit-board": { "": (dmi: "icons/obj/module.dmi", state: "id_mod") },
+        "flash": {
+            "": (dmi: "icons/obj/device.dmi", state: "flash"),
+            "flashburnt": (dmi: "icons/obj/device.dmi", state: "flashburnt"),
+        },
+        "sunglasses": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "sun") },
+        "flasher": { "mflash1": (dmi: "icons/obj/stationobjs.dmi", state: "mflash1") },
+        "portable-flasher": {
+            "pflash1": (dmi: "icons/obj/stationobjs.dmi", state: "pflash1"),
+            "pflash-s": (dmi: "icons/obj/stationobjs.dmi", state: "pflash-s"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

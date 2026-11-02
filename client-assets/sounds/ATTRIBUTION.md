@@ -31,6 +31,7 @@ to files in `apps/client/src/audio.rs`.
 | `machines/windowdoor.ogg` | `sound/machines/windowdoor.ogg` | `windoor` | CC-BY-SA 3.0 |
 | `items/Deconstruct.ogg` | `sound/items/Deconstruct.ogg` | `deconstruct` | CC-BY-SA 3.0 |
 | `machines/ding.ogg` | `sound/machines/ding.ogg` | `ding` | CC-BY-SA 3.0 |
+| `weapons/flash.ogg` | `sound/weapons/flash.ogg` | `flash` | CC-BY-SA 3.0 |
 | `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |
 | `items/eatfood.ogg` | `sound/items/eatfood.ogg` | `eat-food` | CC-BY-SA 3.0 |
 | `items/drink.ogg` | `sound/items/drink.ogg` | `drink` | CC-BY-SA 3.0 |

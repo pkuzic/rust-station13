@@ -288,6 +288,10 @@
         (path: "/obj/machinery/navbeacon", id: "navbeacon", vars: ["location", "codes_txt", "freq"]),
         (path: "/obj/machinery/recharger", id: "recharger"),
         (path: "/obj/item/weapon/circuitboard", id: "circuit-board"),
+        (path: "/obj/item/device/flash", id: "flash"),
+        (path: "/obj/item/clothing/glasses/sunglasses", id: "sunglasses"),
+        (path: "/obj/machinery/flasher", id: "flasher", vars: ["id"]),
+        (path: "/obj/machinery/flasher/portable", id: "portable-flasher"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

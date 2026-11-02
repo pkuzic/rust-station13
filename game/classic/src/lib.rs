@@ -28,6 +28,7 @@ pub mod filing;
 pub mod firealarms;
 pub mod firedoors;
 pub mod fires;
+pub mod flashes;
 pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
@@ -351,6 +352,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    flashes::run_flashers,
+                    flashes::recover,
                     ghosts::leave_dead_bodies,
                     ghosts::move_ghosts,
                     ghosts::run_ghost_actions,

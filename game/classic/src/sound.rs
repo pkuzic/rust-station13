@@ -64,6 +64,7 @@ pub const DRINK: &str = "drink";
 pub const WINDOOR: &str = "windoor";
 pub const DECONSTRUCT: &str = "deconstruct";
 pub const DING: &str = "ding";
+pub const FLASH: &str = "flash";
 /// Every sound id the game plays.
 pub const ALL_SOUNDS: &[&str] = &[
     AIRLOCK,
@@ -86,6 +87,7 @@ pub const ALL_SOUNDS: &[&str] = &[
     WINDOOR,
     DECONSTRUCT,
     DING,
+    FLASH,
 ];
 
 /// A sound made at a tile this tick.

@@ -23,6 +23,8 @@ use crate::{OwnStatus, TILE_PX, WorldCamera};
 
 /// How fast the effects ease toward where they are heading, per second.
 const EASE_RATE: f32 = 4.0;
+/// How fast the white-out of being dazzled by a flash fades, per second.
+const DAZZLE_FADE: f32 = 0.8;
 /// How fast the red flash of being hurt fades, per second.
 const FLASH_FADE: f32 = 4.0;
 /// How dark the edges get short of air, from 0 to 1.
@@ -54,7 +56,7 @@ pub struct WorldViewMaterial {
     /// Dark edges (short of air), red edges (hurt), red flash, unconscious: each 0 to 1.
     #[uniform(6)]
     pub effects: Vec4,
-    /// Dead, cold, overheating, unused: each 0 to 1.
+    /// Dead, cold, overheating, dazzled: each 0 to 1.
     #[uniform(7)]
     pub more_effects: Vec4,
 }
@@ -69,6 +71,7 @@ pub struct ScreenEffects {
     pub dead: f32,
     pub cold: f32,
     pub hot: f32,
+    pub dazzled: f32,
 }
 
 impl ScreenEffects {
@@ -88,11 +91,17 @@ impl ScreenEffects {
             dead: f32::from(u8::from(status.stat == MobStat::Dead)),
             cold: ((COLD_FROM - temperature) / COLD_SPAN).clamp(0.0, 1.0),
             hot: ((temperature - HOT_FROM) / HOT_SPAN).clamp(0.0, 1.0),
+            dazzled: 0.0,
         }
     }
 
     /// `dt` seconds on: ease toward `target`, fade the flash, and flash again if `hit`.
-    pub fn step(&mut self, target: &Self, dt: f32, hit: bool) {
+    pub fn step(&mut self, target: &Self, dt: f32, hit: bool, dazzled: bool) {
+        self.dazzled = if dazzled {
+            1.0
+        } else {
+            self.dazzled * (-DAZZLE_FADE * dt).exp()
+        };
         let k = 1.0 - (-EASE_RATE * dt).exp();
         let ease = |now: &mut f32, to: f32| *now += (to - *now) * k;
         ease(&mut self.breathless, target.breathless);
@@ -144,6 +153,7 @@ impl Plugin for WorldViewPlugin {
 struct Effects {
     now: ScreenEffects,
     health: Option<i32>,
+    dazzle: Option<u8>,
 }
 
 /// Tell the shader where the camera is, what time it is, how big the map is and how the
@@ -163,7 +173,10 @@ fn update_view(
     let health = status.0.as_ref().map(|s| s.health);
     let hit = matches!((effects.health, health), (Some(was), Some(now)) if now < was);
     effects.health = health;
-    effects.now.step(&target, time.delta_secs(), hit);
+    let dazzle = status.0.as_ref().map(|s| s.dazzled);
+    let dazzled = matches!((effects.dazzle, dazzle), (Some(was), Some(now)) if now != was);
+    effects.dazzle = dazzle;
+    effects.now.step(&target, time.delta_secs(), hit, dazzled);
     let fx = effects.now;
     for node in &nodes {
         if let Some(mut material) = materials.get_mut(&node.0) {
@@ -175,7 +188,7 @@ fn update_view(
             );
             material.map = Vec4::new(size.0 as f32, size.1 as f32, TILE_PX, 0.0);
             material.effects = Vec4::new(fx.breathless, fx.hurt, fx.flash, fx.unconscious);
-            material.more_effects = Vec4::new(fx.dead, fx.cold, fx.hot, 0.0);
+            material.more_effects = Vec4::new(fx.dead, fx.cold, fx.hot, fx.dazzled);
         }
     }
 }
@@ -188,6 +201,7 @@ mod tests {
 
     fn status(health: i32, stat: MobStat, alerts: Vec<EnvAlert>, kelvin: u16) -> StatusUpdate {
         StatusUpdate {
+            dazzled: 0,
             health,
             stat,
             intent: Intent::Help,
@@ -225,11 +239,11 @@ mod tests {
             ..Default::default()
         };
         let mut fx = ScreenEffects::default();
-        fx.step(&target, 0.1, true);
+        fx.step(&target, 0.1, true, false);
         assert!(fx.unconscious > 0.2 && fx.unconscious < 0.5, "{}", fx.unconscious);
         assert_eq!(fx.flash, 1.0);
         for _ in 0..20 {
-            fx.step(&target, 0.1, false);
+            fx.step(&target, 0.1, false, false);
         }
         assert!(fx.unconscious > 0.99);
         assert!(fx.flash < 0.01);
