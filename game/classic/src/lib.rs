@@ -51,6 +51,7 @@ pub mod morgue;
 pub mod movement;
 pub mod multiz;
 pub mod names;
+pub mod navbeacons;
 pub mod objects;
 pub mod paperwork;
 pub mod portables;

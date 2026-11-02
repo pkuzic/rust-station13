@@ -1490,6 +1490,10 @@
             "crema0": (dmi: "icons/obj/stationobjs.dmi", state: "crema0"),
         },
         "crematorium-tray": { "cremat": (dmi: "icons/obj/stationobjs.dmi", state: "cremat") },
+        // Waiting for bots, construction and energy weapons (`navbeacons.md`).
+        "navbeacon": { "navbeacon0": (dmi: "icons/obj/objects.dmi", state: "navbeacon0") },
+        "recharger": { "recharger0": (dmi: "icons/obj/stationobjs.dmi", state: "recharger0") },
+        "circuit-board": { "": (dmi: "icons/obj/module.dmi", state: "id_mod") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

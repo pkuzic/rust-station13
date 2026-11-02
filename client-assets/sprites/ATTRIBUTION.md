@@ -173,6 +173,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `cigarette-packet:3` | `icons/obj/cigarettes.dmi : "cigpacket3"` | CC-BY-SA 3.0 |
 | `cigarette-packet:4` | `icons/obj/cigarettes.dmi : "cigpacket4"` | CC-BY-SA 3.0 |
 | `cigarette-packet:5` | `icons/obj/cigarettes.dmi : "cigpacket5"` | CC-BY-SA 3.0 |
+| `circuit-board:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
 | `clipboard:` | `icons/obj/bureaucracy.dmi : "clipboard"` | CC-BY-SA 3.0 |
 | `clipboard:clipboard_over` | `icons/obj/bureaucracy.dmi : "clipboard_over"` | CC-BY-SA 3.0 |
 | `clipboard:clipboard_pen` | `icons/obj/bureaucracy.dmi : "clipboard_pen"` | CC-BY-SA 3.0 |
@@ -591,6 +592,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `morgue:morgue2` | `icons/obj/stationobjs.dmi : "morgue2"` | CC-BY-SA 3.0 |
 | `morgue-tray:morguet` | `icons/obj/stationobjs.dmi : "morguet"` | CC-BY-SA 3.0 |
 | `multitool:` | `icons/obj/device.dmi : "multitool"` | CC-BY-SA 3.0 |
+| `navbeacon:navbeacon0` | `icons/obj/objects.dmi : "navbeacon0"` | CC-BY-SA 3.0 |
 | `nitrogen-canister:` | `icons/obj/atmos.dmi : "red"` | CC-BY-SA 3.0 |
 | `nitrogen-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
 | `nitrogen-canister:can-o0` | `icons/obj/atmos.dmi : "can-o0"` | CC-BY-SA 3.0 |
@@ -660,6 +662,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `rack:` | `icons/obj/objects.dmi : "rack"` | CC-BY-SA 3.0 |
 | `rack-parts:` | `icons/obj/items.dmi : "rack_parts"` | CC-BY-SA 3.0 |
 | `radio:` | `icons/obj/radio.dmi : "walkietalkie"` | CC-BY-SA 3.0 |
+| `recharger:recharger0` | `icons/obj/stationobjs.dmi : "recharger0"` | CC-BY-SA 3.0 |
 | `screwdriver:` | `icons/obj/items.dmi : "screwdriver"` | CC-BY-SA 3.0 |
 | `scrubber:off` | `icons/obj/atmospherics/vent_scrubber.dmi : "off"` | CC-BY-SA 3.0 |
 | `scrubber:on` | `icons/obj/atmospherics/vent_scrubber.dmi : "on"` | CC-BY-SA 3.0 |
