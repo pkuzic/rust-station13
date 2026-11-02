@@ -92,6 +92,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `brig-windoor:rightsecureopening-south` | `icons/obj/doors/windoor.dmi : "rightsecureopening"` | CC-BY-SA 3.0 |
 | `brig-windoor:rightsecureopening-west` | `icons/obj/doors/windoor.dmi : "rightsecureopening"` | CC-BY-SA 3.0 |
 | `bruise-pack:` | `icons/obj/items.dmi : "brutepack"` | CC-BY-SA 3.0 |
+| `burnt-mess:` | `icons/obj/food.dmi : "badrecipe"` | CC-BY-SA 3.0 |
 | `cable:0-1` | `icons/obj/power_cond.dmi : "0-1"` | CC-BY-SA 3.0 |
 | `cable:0-10` | `icons/obj/power_cond.dmi : "0-10"` | CC-BY-SA 3.0 |
 | `cable:0-2` | `icons/obj/power_cond.dmi : "0-2"` | CC-BY-SA 3.0 |
@@ -295,6 +296,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `disposal-pipe:pipe-y-north` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
 | `disposal-pipe:pipe-y-south` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
 | `disposal-pipe:pipe-y-west` | `icons/obj/pipes/disposal.dmi : "pipe-y"` | CC-BY-SA 3.0 |
+| `donk-pocket:` | `icons/obj/food.dmi : "donkpocket"` | CC-BY-SA 3.0 |
+| `donk-pockets:` | `icons/obj/storage.dmi : "donk_kit"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl-p` | `icons/obj/stationobjs.dmi : "doorctrl-p"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl00` | `icons/obj/stationobjs.dmi : "doorctrl00"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl01` | `icons/obj/stationobjs.dmi : "doorctrl01"` | CC-BY-SA 3.0 |
@@ -590,6 +593,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `meter:meter3_6` | `icons/obj/meter.dmi : "meter3_6"` | CC-BY-SA 3.0 |
 | `meter:meter4` | `icons/obj/meter.dmi : "meter4"` | CC-BY-SA 3.0 |
 | `meter:meterX` | `icons/obj/meter.dmi : "meterX"` | CC-BY-SA 3.0 |
+| `microwave:mw` | `icons/obj/kitchen.dmi : "mw"` | CC-BY-SA 3.0 |
+| `microwave:mw1` | `icons/obj/kitchen.dmi : "mw1"` | CC-BY-SA 3.0 |
 | `monkey:` | `icons/mob/monkey.dmi : "monkey1"` | CC-BY-SA 3.0 |
 | `monkey:lying` | `icons/mob/monkey.dmi : "monkey0"` | CC-BY-SA 3.0 |
 | `morgue:morgue0` | `icons/obj/stationobjs.dmi : "morgue0"` | CC-BY-SA 3.0 |

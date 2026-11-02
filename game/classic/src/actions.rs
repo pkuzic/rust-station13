@@ -155,6 +155,7 @@ pub fn process_actions(
                     shield_parts,
                     knocked_down,
                     flashers,
+                    microwaves,
                 ),
             ),
         ),
@@ -225,6 +226,7 @@ pub fn process_actions(
                     >,
                     Query<(), With<crate::flashes::Weakened>>,
                     Query<(), With<crate::flashes::Flasher>>,
+                    Query<(), With<crate::microwaves::Microwave>>,
                 ),
             ),
         ),
@@ -657,6 +659,13 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if microwaves.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Microwaves (`microwaves.md`).
+                    commands.queue(move |world: &mut World| crate::microwaves::click(world, mob, target));
                 }
                 Action::UseOn(target)
                     if shield_parts.contains(target)

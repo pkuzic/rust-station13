@@ -293,6 +293,9 @@
         (path: "/obj/machinery/flasher", id: "flasher", vars: ["id"]),
         (path: "/obj/machinery/flasher/portable", id: "portable-flasher"),
         (path: "/mob/living/carbon/monkey", id: "monkey"),
+        (path: "/obj/machinery/microwave", id: "microwave"),
+        (path: "/obj/item/weapon/storage/box/donkpocket", id: "donk-pockets"),
+        (path: "/obj/item/weapon/reagent_containers/food/snacks/donkpocket", id: "donk-pocket"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

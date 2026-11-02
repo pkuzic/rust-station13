@@ -92,6 +92,12 @@ pub fn spawn_food(entity: &mut EntityWorldMut, proto: &str) {
                 Some("trash-candy"),
             ));
         }
+        crate::microwaves::DONK_POCKET => {
+            entity.insert(snack(12.0, 2.0, 12.0 * NUTRIMENT, None));
+        }
+        crate::microwaves::BURNT_MESS => {
+            entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT, None));
+        }
         "chips" => {
             entity.insert(snack(11.0, 1.0, 11.0 * NUTRIMENT, Some("trash-chips")));
         }
@@ -189,6 +195,14 @@ impl FoodWork<'_, '_> {
             sounds.play(crate::sound::EAT_FOOD, target_pos, 30.0);
             if let Ok(mut fed) = self.nutrition.get_mut(target) {
                 fed.level += snack.per_bite;
+                // Warm Donk-pockets do you good (`microwaves.md`).
+                commands.queue(move |world: &mut World| {
+                    if world.get::<crate::microwaves::Warm>(item).is_some()
+                        && let Some(mut body) = world.get_mut::<crate::health::Body>(target)
+                    {
+                        crate::microwaves::warm_bite(&mut body);
+                    }
+                });
             }
             snack.bites_left = snack.bites_left.saturating_sub(1);
             snack.bites_taken += 1;
