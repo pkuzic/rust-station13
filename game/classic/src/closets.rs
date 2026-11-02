@@ -90,7 +90,8 @@ pub struct ClosetLock {
     pub locked_look: String,
 }
 
-/// Inside this closet. Items inside have no `GridPos`; people keep theirs and are hidden.
+/// Inside this closet (or morgue drawer). Items inside have no `GridPos`; people keep theirs
+/// and are hidden.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct InCloset(pub Entity);
 
@@ -283,6 +284,8 @@ pub fn leave_closets(
 ) {
     for (mob, closet) in exits.0.drain(..) {
         let Ok((c, lock)) = closets.get(closet) else {
+            // Or a morgue drawer (`morgue.md`).
+            commands.queue(move |world: &mut World| crate::morgue::leave(world, mob, closet));
             continue;
         };
         if c.opened {

@@ -1458,5 +1458,12 @@
             "sheater1": (dmi: "icons/obj/atmos.dmi", state: "sheater1"),
             "sheater-open": (dmi: "icons/obj/atmos.dmi", state: "sheater-open"),
         },
+        // Morgue drawers: empty, with something inside, or with the tray out; the tray.
+        "morgue": {
+            "morgue1": (dmi: "icons/obj/stationobjs.dmi", state: "morgue1"),
+            "morgue2": (dmi: "icons/obj/stationobjs.dmi", state: "morgue2"),
+            "morgue0": (dmi: "icons/obj/stationobjs.dmi", state: "morgue0"),
+        },
+        "morgue-tray": { "morguet": (dmi: "icons/obj/stationobjs.dmi", state: "morguet") },
     },
 )

@@ -46,6 +46,7 @@ pub mod lights;
 pub mod machines;
 pub mod medical;
 pub mod meters;
+pub mod morgue;
 pub mod movement;
 pub mod multiz;
 pub mod names;
@@ -311,6 +312,7 @@ impl Plugin for ClassicPlugin {
                         bedsheets::update_linen_looks,
                         conveyors::update_conveyor_looks,
                         heaters::update_heater_looks,
+                        morgue::update_morgue_looks,
                     ),
                     lights::update_light_looks,
                     lights::update_light_sources,

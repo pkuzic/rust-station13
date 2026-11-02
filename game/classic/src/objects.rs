@@ -174,6 +174,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::morgue::MORGUE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::morgue::spawn_morgue(world, pos, id));
+    }
     if proto == crate::heaters::SPACE_HEATER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::heaters::spawn_heater(world, spec, pos, id));

@@ -144,7 +144,7 @@ pub fn process_actions(
                 mut windoors,
                 mut filing,
                 mut linen,
-                (mut belt_switches, belts, pulling, mut heaters),
+                (mut belt_switches, belts, pulling, mut heaters, morgues, trays),
             ),
         ),
         (
@@ -201,6 +201,8 @@ pub fn process_actions(
                     Query<(), With<crate::conveyors::Conveyor>>,
                     Query<&crate::pulling::Pulling>,
                     crate::heaters::HeaterWork,
+                    Query<(), With<crate::morgue::Morgue>>,
+                    Query<&crate::morgue::MorgueTray>,
                 ),
             ),
         ),
@@ -538,6 +540,50 @@ pub fn process_actions(
                     {
                         outbox.0.extend(outcome.to_mob);
                         outbox.0.extend(outcome.seen);
+                    }
+                }
+                Action::UseOn(target)
+                    if (morgues.contains(target) || trays.contains(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Morgue drawers and their trays (`morgue.md`).
+                    let at = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    let pulled = pulling.get(mob).ok().map(|p| p.0).filter(|p| people.contains(*p));
+                    if trays.contains(target)
+                        && let Some(body) = pulled
+                    {
+                        // Luna `m_tray/MouseDrop_T`: whoever you pull is laid on the tray.
+                        if places.get(body).is_ok_and(|p| in_reach(mob_pos.0, p.0)) {
+                            commands.entity(body).insert(GridPos(at));
+                            commands.entity(mob).remove::<crate::pulling::Pulling>();
+                            let name = |e: Entity| {
+                                appearances
+                                    .get(e)
+                                    .ok()
+                                    .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                    .unwrap_or_default()
+                            };
+                            visible.0.push((
+                                mob_pos.0,
+                                LocMsg::new("morgue-stuffed")
+                                    .arg("name", name(mob))
+                                    .arg("victim", name(body))
+                                    .arg("item", crate::morgue::MORGUE_TRAY),
+                                None,
+                            ));
+                        }
+                    } else if hands.active_item().is_none() {
+                        let morgue = trays.get(target).map_or(target, |t| t.0);
+                        commands.queue(move |world: &mut World| {
+                            let out = world
+                                .get::<crate::morgue::Morgue>(morgue)
+                                .is_some_and(|d| d.tray.is_some());
+                            if out {
+                                crate::morgue::close_tray(world, morgue);
+                            } else {
+                                crate::morgue::open_tray(world, morgue);
+                            }
+                        });
                     }
                 }
                 Action::UseOn(target)

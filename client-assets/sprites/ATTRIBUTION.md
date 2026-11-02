@@ -557,6 +557,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `meter:meter3_6` | `icons/obj/meter.dmi : "meter3_6"` | CC-BY-SA 3.0 |
 | `meter:meter4` | `icons/obj/meter.dmi : "meter4"` | CC-BY-SA 3.0 |
 | `meter:meterX` | `icons/obj/meter.dmi : "meterX"` | CC-BY-SA 3.0 |
+| `morgue:morgue0` | `icons/obj/stationobjs.dmi : "morgue0"` | CC-BY-SA 3.0 |
+| `morgue:morgue1` | `icons/obj/stationobjs.dmi : "morgue1"` | CC-BY-SA 3.0 |
+| `morgue:morgue2` | `icons/obj/stationobjs.dmi : "morgue2"` | CC-BY-SA 3.0 |
+| `morgue-tray:morguet` | `icons/obj/stationobjs.dmi : "morguet"` | CC-BY-SA 3.0 |
 | `multitool:` | `icons/obj/device.dmi : "multitool"` | CC-BY-SA 3.0 |
 | `nitrogen-canister:` | `icons/obj/atmos.dmi : "red"` | CC-BY-SA 3.0 |
 | `nitrogen-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
