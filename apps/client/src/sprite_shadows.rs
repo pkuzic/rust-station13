@@ -52,6 +52,8 @@ pub fn casts_shadow(sprite: &str) -> bool {
             | "valve"
             | "connector"
             | "gas-filter"
+            | "gas-mixer"
+            | "crematorium-igniter"
             | "injector"
             | "meter"
             | "pipe-vent"

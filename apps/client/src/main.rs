@@ -600,7 +600,9 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("apc", _) => (Color::srgb(0.25, 0.80, 0.30), 18.0, 1.6),
         (tank, _) if is_pipe_tank(tank) => (Color::srgb(0.30, 0.45, 0.75), TILE_PX - 4.0, 1.5),
         (canister, _) if is_canister(canister) => (Color::srgb(0.35, 0.55, 0.85), 20.0, 1.5),
-        ("pump" | "vent" | "scrubber", "off") => (Color::srgb(0.30, 0.30, 0.30), 16.0, 0.7),
+        ("pump" | "vent" | "scrubber", state) if state.starts_with("off") => {
+            (Color::srgb(0.30, 0.30, 0.30), 16.0, 0.7)
+        }
         ("pump", _) => (Color::srgb(0.90, 0.85, 0.40), 16.0, 0.7),
         ("vent", _) => (Color::srgb(0.70, 0.80, 0.90), 16.0, 0.7),
         ("scrubber", _) => (Color::srgb(0.55, 0.85, 0.60), 16.0, 0.7),

@@ -813,9 +813,26 @@
             "on": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "on"),
             "off": (dmi: "icons/obj/atmospherics/vent_scrubber.dmi", state: "off"),
         },
+        // Gas pumps and mixers: on or off, facing (dir index: south 0, north 1, east 2, west 3).
         "pump": {
-            "on": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on"),
-            "off": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off"),
+            "on-south": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: Some(0)),
+            "on-north": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: Some(1)),
+            "on-east": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: Some(2)),
+            "on-west": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_on", dir: Some(3)),
+            "off-south": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: Some(0)),
+            "off-north": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: Some(1)),
+            "off-east": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: Some(2)),
+            "off-west": (dmi: "icons/obj/atmospherics/pump.dmi", state: "intact_off", dir: Some(3)),
+        },
+        "gas-mixer": {
+            "on-south": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_on", dir: Some(0)),
+            "on-north": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_on", dir: Some(1)),
+            "on-east": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_on", dir: Some(2)),
+            "on-west": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_on", dir: Some(3)),
+            "off-south": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_off", dir: Some(0)),
+            "off-north": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_off", dir: Some(1)),
+            "off-east": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_off", dir: Some(2)),
+            "off-west": (dmi: "icons/obj/atmospherics/mixer.dmi", state: "intact_off", dir: Some(3)),
         },
         "valve": {
             "open": (dmi: "icons/obj/atmospherics/valve.dmi", state: "valve1"),

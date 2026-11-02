@@ -177,6 +177,17 @@ pub struct GasFilter {
     pub target: f64,
 }
 
+/// A gas mixer: gas from the pipe behind it and the pipe on its side (a quarter turn
+/// clockwise) goes to the pipe ahead, in the shares `node1` and `node2`, up to `target` kPa
+/// there (Luna `trinary/mixer`: node1 behind, node2 the side, node3 ahead).
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub struct GasMixer {
+    pub dir: Dir,
+    pub target: f64,
+    pub node1: f64,
+    pub node2: f64,
+}
+
 /// Luna's `filter_type`: 0 plasma, 1 oxygen, 2 nitrogen, 3 carbon dioxide, 4 N2O. Any other
 /// value takes nothing out (Luna's "Plasma Toxins Filter" is set to 5, so it doesn't filter).
 pub fn filter_gas(filter_type: i64) -> Option<Gas> {
@@ -446,8 +457,9 @@ pub fn run_machines(
     mut canisters: Query<(Entity, &GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
     pipe_vents: Query<(Entity, &GridPos), With<PipeVent>>,
     plates: Query<(Entity, &GridPos), With<ThermalPlate>>,
-    (filters, injectors, held, mut tanks): (
+    (filters, mixers, injectors, held, mut tanks): (
         Query<(&GridPos, &GasFilter, &Switch, &PowerUser)>,
+        Query<(&GridPos, &GasMixer, &Switch)>,
         Query<(Entity, &GridPos, &Injector, &Switch)>,
         Query<&crate::gas_panel::HeldTank>,
         Query<&mut crate::equipment::TankGas>,
@@ -565,6 +577,57 @@ pub fn run_machines(
         nets.nets[to].mix.merge(&moved);
     }
 
+    // Gas mixers (Luna `trinary/mixer/process`): each intake gives its share of the gas
+    // the outlet still needs; if either runs short, both give that much less. Luna doesn't
+    // check power. All three pipes must be there.
+    for (pos, mixer, on) in &mixers {
+        if !on.0 {
+            continue;
+        }
+        let side_dir = clockwise(mixer.dir);
+        let (Some(first), Some(second), Some(to)) = (
+            nets.net_toward(pos.0.step(mixer.dir.opposite()), side_bits(mixer.dir)),
+            nets.net_toward(pos.0.step(side_dir), side_bits(side_dir.opposite())),
+            nets.net_toward(pos.0.step(mixer.dir), side_bits(mixer.dir.opposite())),
+        ) else {
+            continue;
+        };
+        if first == to || second == to || first == second {
+            continue;
+        }
+        let out = &nets.nets[to];
+        let delta = mixer.target - out.pressure();
+        if delta <= 0.0 {
+            continue;
+        }
+        let volume = out.volume;
+        let want = |share: f64, temperature: f64| {
+            if temperature > 0.0 {
+                moles_for(share * delta, volume, temperature)
+            } else {
+                0.0
+            }
+        };
+        let mut moles1 = want(mixer.node1, nets.nets[first].mix.temperature);
+        let mut moles2 = want(mixer.node2, nets.nets[second].mix.temperature);
+        let have1 = nets.nets[first].mix.total_moles();
+        let have2 = nets.nets[second].mix.total_moles();
+        if have1 < moles1 || have2 < moles2 {
+            let ratio = |have: f64, want: f64| if want > 0.0 { have / want } else { f64::INFINITY };
+            let ratio = ratio(have1, moles1).min(ratio(have2, moles2));
+            moles1 *= ratio;
+            moles2 *= ratio;
+        }
+        if moles1 > 0.0 {
+            let moved = nets.nets[first].mix.remove_moles(moles1);
+            nets.nets[to].mix.merge(&moved);
+        }
+        if moles2 > 0.0 {
+            let moved = nets.nets[second].mix.remove_moles(moles2);
+            nets.nets[to].mix.merge(&moved);
+        }
+    }
+
     // Outlet injectors (Luna `outlet_injector/process`): the gas that fills `volume_rate`
     // litres at the network's pressure goes into the room.
     for (entity, pos, injector, on) in &injectors {
@@ -670,12 +733,36 @@ pub fn run_machines(
 pub fn update_machine_looks(
     mut machines: Query<
         (&Switch, &mut Appearance, Has<Valve>),
-        (Changed<Switch>, Without<Canister>, Without<GasFilter>),
+        (
+            Changed<Switch>,
+            Without<Canister>,
+            Without<GasFilter>,
+            Without<Pump>,
+            Without<GasMixer>,
+        ),
     >,
-    mut filters: Query<(&GasFilter, &Switch, &mut Appearance), (Changed<Switch>, Without<Canister>)>,
+    mut facing: Query<
+        (
+            Option<&GasFilter>,
+            Option<&Pump>,
+            Option<&GasMixer>,
+            &Switch,
+            &mut Appearance,
+        ),
+        (
+            Changed<Switch>,
+            Without<Canister>,
+            Or<(With<GasFilter>, With<Pump>, With<GasMixer>)>,
+        ),
+    >,
 ) {
-    for (filter, switch, mut look) in &mut filters {
-        let state = filter_look(filter, switch.0);
+    for (filter, pump, mixer, switch, mut look) in &mut facing {
+        let dir = filter
+            .map(|f| f.dir)
+            .or(pump.map(|p| p.dir))
+            .or(mixer.map(|m| m.dir))
+            .unwrap_or(Dir::South);
+        let state = facing_look(dir, switch.0);
         if look.state != state {
             look.state = state;
         }
@@ -693,9 +780,9 @@ pub fn update_machine_looks(
     }
 }
 
-/// A filter's sprite: on or off, and the way it faces ("on-north").
-pub fn filter_look(filter: &GasFilter, on: bool) -> String {
-    let facing = match filter.dir {
+/// A filter's, pump's or mixer's sprite: on or off, and the way it faces ("on-north").
+pub fn facing_look(dir: Dir, on: bool) -> String {
+    let facing = match dir {
         Dir::North => "north",
         Dir::East => "east",
         Dir::West => "west",
@@ -773,10 +860,29 @@ pub fn machine_bundle(
             .member(member(TANK_VOLUME))
             .gas(air_at_pressure(TANK_VOLUME, TANK_PRESSURE))
             .dense(),
-        "pump" => MachineSpawn::new("pump", "on").switch(true).powered().pump(Pump {
-            dir: dir.unwrap_or(Dir::East),
-            target: PUMP_TARGET,
-        }),
+        "pump" => {
+            // Hand-drawn maps leave it on at 300 kPa; Luna's map says (`pipes.md`).
+            let on = vars.get("on").is_none_or(|_| on);
+            let pump = Pump {
+                dir: dir.unwrap_or(Dir::East),
+                target: number("target_pressure").unwrap_or(PUMP_TARGET),
+            };
+            let mut spawn = MachineSpawn::new("pump", "").switch(on).powered().pump(pump);
+            spawn.state = facing_look(pump.dir, on);
+            spawn
+        }
+        "gas-mixer" => {
+            let mixer = GasMixer {
+                dir: dir.unwrap_or(Dir::South),
+                target: number("target_pressure").unwrap_or(ONE_ATMOSPHERE),
+                node1: number("node1_concentration").unwrap_or(0.5),
+                node2: number("node2_concentration").unwrap_or(0.5),
+            };
+            let mut spawn = MachineSpawn::new("gas-mixer", "").switch(on).dense();
+            spawn.state = facing_look(mixer.dir, on);
+            spawn.mixer = Some(mixer);
+            spawn
+        }
         "valve" => MachineSpawn::new("valve", "open")
             .switch(true)
             .member(member(PIPE_VOLUME))
@@ -835,7 +941,7 @@ pub fn machine_bundle(
                 target: number("target_pressure").unwrap_or(FILTER_TARGET),
             };
             let mut spawn = MachineSpawn::new("gas-filter", "").switch(on).powered();
-            spawn.state = filter_look(&filter, on);
+            spawn.state = facing_look(filter.dir, on);
             spawn.filter = Some(filter);
             spawn
         }
@@ -880,6 +986,7 @@ pub struct MachineSpawn {
     pub connector: bool,
     pub pipe_vent: bool,
     pub filter: Option<GasFilter>,
+    pub mixer: Option<GasMixer>,
     pub generator_input: bool,
     pub thermal_plate: bool,
     pub freezer: bool,
@@ -905,6 +1012,7 @@ impl MachineSpawn {
             connector: false,
             pipe_vent: false,
             filter: None,
+            mixer: None,
             generator_input: false,
             thermal_plate: false,
             freezer: false,
@@ -1006,6 +1114,9 @@ impl MachineSpawn {
         }
         if let Some(f) = self.filter {
             entity.insert(f);
+        }
+        if let Some(m) = self.mixer {
+            entity.insert(m);
         }
         if let Some(i) = self.injector {
             entity.insert(i);
