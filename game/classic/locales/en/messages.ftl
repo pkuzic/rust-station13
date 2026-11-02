@@ -570,3 +570,30 @@ walllocker-dispensed-1 = Dispensed a { NOUN($first) }.
 walllocker-dispensed-2 = Dispensed a { NOUN($first) } and { NOUN($second) }.
 walllocker-dispensed-3 = Dispensed a { NOUN($first) }, { NOUN($second) } and { NOUN($third) }.
 walllocker-put-back = You put the { NOUN($item) } back in the locker.
+
+# Canister, portable pump and scrubber windows. Args: $value, $connected, $on, $out (yes/no).
+gas-title-canister = Canister
+gas-title-pump = Portable Air Pump
+gas-title-scrubber = Portable Air Scrubber
+gas-pressure = Pressure: { $value } kPa
+gas-port = Port status: { $connected ->
+        [yes] Connected
+       *[no] Disconnected
+    }
+gas-tank = Tank pressure: { $value } kPa
+gas-remove-tank = Remove tank
+gas-valve = Release valve: { $on ->
+        [yes] Open
+       *[no] Closed
+    }
+gas-power = Power switch: { $on ->
+        [yes] On
+       *[no] Off
+    }
+gas-direction = Pump direction: { $out ->
+        [yes] Out
+       *[no] In
+    }
+gas-release = Release pressure:
+gas-target = Target pressure:
+gas-rate = Rate:

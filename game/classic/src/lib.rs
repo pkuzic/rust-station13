@@ -29,6 +29,7 @@ pub mod floodlights;
 pub mod floors;
 pub mod freezers;
 pub mod furniture;
+pub mod gas_panel;
 pub mod generators;
 pub mod hands;
 pub mod health;
@@ -156,6 +157,7 @@ impl Plugin for ClassicPlugin {
                     apc::process_apc_ops,
                     supermatter::process_laser_ops,
                     freezers::process_freezer_ops,
+                    gas_panel::process_gas_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -254,6 +256,7 @@ impl Plugin for ClassicPlugin {
                         power_monitor::update_monitor_views,
                         supermatter::update_laser_views,
                         freezers::update_freezer_views,
+                        gas_panel::update_gas_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),

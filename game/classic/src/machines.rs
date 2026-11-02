@@ -443,12 +443,14 @@ pub fn run_machines(
     pumps: Query<(&GridPos, &Pump, &Switch, &PowerUser)>,
     mut vents: Query<(Entity, &GridPos, &mut Vent, &Switch, &PowerUser)>,
     scrubbers: Query<(Entity, &GridPos, &Switch, &PowerUser), With<Scrubber>>,
-    mut canisters: Query<(&GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
+    mut canisters: Query<(Entity, &GridPos, &Canister, &Switch, &PipeMember, &mut GasStore)>,
     pipe_vents: Query<(Entity, &GridPos), With<PipeVent>>,
     plates: Query<(Entity, &GridPos), With<ThermalPlate>>,
-    (filters, injectors): (
+    (filters, injectors, held, mut tanks): (
         Query<(&GridPos, &GasFilter, &Switch, &PowerUser)>,
         Query<(Entity, &GridPos, &Injector, &Switch)>,
+        Query<&crate::gas_panel::HeldTank>,
+        Query<&mut crate::equipment::TankGas>,
     ),
 ) {
     let Some(mut atmos) = atmos else { return };
@@ -640,12 +642,24 @@ pub fn run_machines(
         net.mix.merge(&sample);
     }
 
-    for (pos, canister, release, member, mut store) in &mut canisters {
+    // An open canister releases into the gas tank held in it, or else into the room, up to
+    // its release pressure and never more than half the gap at a time (Luna `process`).
+    for (entity, pos, canister, release, member, mut store) in &mut canisters {
+        // On a port its gas is the pipes'.
         if !release.0 || member.open {
             continue;
         }
+        let own = store.0.pressure(CANISTER_VOLUME);
+        if let Some(mut tank) = held.get(entity).ok().and_then(|h| tanks.get_mut(h.0).ok()) {
+            let env = tank.mix.pressure(tank.volume);
+            let delta = (canister.release_target - env).min((own - env) / 2.0);
+            let moles = moles_for(delta, tank.volume, store.0.temperature);
+            let moved = store.0.remove_moles(moles);
+            tank.mix.merge(&moved);
+            continue;
+        }
         let room = atmos.0.pressure_at(pos.0);
-        let delta = (canister.release_target - room).min(store.0.pressure(CANISTER_VOLUME) - room);
+        let delta = (canister.release_target - room).min((own - room) / 2.0);
         let moles = moles_for(delta, TILE_VOLUME, store.0.temperature);
         let moved = store.0.remove_moles(moles);
         atmos.0.add_at(pos.0, &moved);

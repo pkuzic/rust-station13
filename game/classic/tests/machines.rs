@@ -150,8 +150,13 @@ fn an_open_canister_releases_into_the_room_up_to_one_atmosphere() {
     let mob = spawn_player_mob(app.world_mut(), PORT.step(rs13_world::Dir::South));
     let canister = find_at(&mut app, "canister", PORT);
     // Connected canisters do not release; this one is on the port. Disconnect by hand is
-    // not possible, so open its valve anyway: nothing should happen.
-    act(&mut app, mob, Action::UseOn(canister));
+    // not possible, so open its valve anyway (from its window): nothing should happen.
+    app.world_mut()
+        .get_mut::<rs13_classic::gas_panel::PendingGasOps>(mob)
+        .unwrap()
+        .0
+        .push((canister, rs13_classic::gas_panel::GasOp::Toggle));
+    seconds(&mut app, 1);
     assert!(app.world().get::<Switch>(canister).unwrap().0, "valve open");
     seconds(&mut app, 4);
     let room = app.world().resource::<StationAtmos>().0.pressure_at(PORT);

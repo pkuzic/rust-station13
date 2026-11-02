@@ -68,13 +68,23 @@ fn act(app: &mut App, mob: Entity, action: Action) -> Vec<String> {
         .collect()
 }
 
+/// The power switch in its window (`gas_panel.rs`).
+fn power(app: &mut App, mob: Entity, machine: Entity) {
+    app.world_mut()
+        .get_mut::<rs13_classic::gas_panel::PendingGasOps>(mob)
+        .unwrap()
+        .0
+        .push((machine, rs13_classic::gas_panel::GasOp::Toggle));
+    app.world_mut().run_schedule(FixedUpdate);
+}
+
 #[test]
 fn a_pump_siphons_the_room_into_its_tank() {
     let mut app = setup();
     let pump = one::<PortablePump>(&mut app);
     let mob = spawn_player_mob(app.world_mut(), TilePos::new(2, 2, 0));
     let before = app.world().resource::<StationAtmos>().0.total_moles();
-    assert_eq!(act(&mut app, mob, Action::UseOn(pump)), ["switched-on"]);
+    power(&mut app, mob, pump);
     assert_eq!(app.world().get::<Switch>(pump), Some(&Switch(true)));
     seconds(&mut app, 30);
     assert_eq!(app.world().get::<Appearance>(pump).unwrap().state, "psiphon:1");
@@ -100,7 +110,7 @@ fn a_scrubber_takes_plasma_out_of_the_air() {
         .add_at(SCRUBBER_AT, &plasma);
     let scrubber = one::<PortableScrubber>(&mut app);
     let mob = spawn_player_mob(app.world_mut(), TilePos::new(4, 2, 0));
-    act(&mut app, mob, Action::UseOn(scrubber));
+    power(&mut app, mob, scrubber);
     // Each cycle (2 s) it clears its tile's share of the room: a fifteenth of it here.
     seconds(&mut app, 120);
     let room = app.world().resource::<StationAtmos>().0.air_at(SCRUBBER_AT);

@@ -481,10 +481,14 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 crate::supermatter::LaserPanelOut::default(),
                 crate::freezers::PendingFreezerOps::default(),
                 crate::freezers::FreezerPanelOut::default(),
-                crate::smes_panel::PendingSmesOps::default(),
-                crate::smes_panel::SmesPanelOut::default(),
-                crate::alarms::AlarmPanelOut::default(),
-                crate::storage::StorageOut::default(),
+                (
+                    crate::gas_panel::PendingGasOps::default(),
+                    crate::gas_panel::GasPanelOut::default(),
+                    crate::smes_panel::PendingSmesOps::default(),
+                    crate::smes_panel::SmesPanelOut::default(),
+                    crate::alarms::AlarmPanelOut::default(),
+                    crate::storage::StorageOut::default(),
+                ),
             ),
         ))
         .id()

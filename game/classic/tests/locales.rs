@@ -123,6 +123,8 @@ fn every_message_formats_in_both_locales() {
     args.set("bin", "disposal-bin");
     args.set("cabinet", "extinguisher-cabinet");
     args.set("seat", "bed");
+    args.set("connected", "yes");
+    args.set("out", "no");
     args.set("first", "crowbar");
     args.set("second", "breath-mask");
     args.set("third", "emergency-oxygen");
