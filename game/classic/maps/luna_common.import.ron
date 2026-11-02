@@ -150,6 +150,8 @@
         (path: "/obj/structure/filingcabinet/chestdrawer", id: "chest-drawer"),
         // Linen bins and bedsheets (`bedsheets.md`).
         (path: "/obj/structure/bedsheetbin", id: "linen-bin"),
+        // Space heaters, a full cell in each (`space-heaters.md`).
+        (path: "/obj/machinery/space_heater", id: "space-heater"),
         // Conveyor belts and their switches, joined by id (`conveyors.md`).
         (path: "/obj/machinery/conveyor", id: "conveyor", dir: true, vars: ["id"]),
         (path: "/obj/machinery/conveyor/centcom_auto", id: "conveyor", dir: true, vars: ["id", "is_on"],

@@ -38,6 +38,7 @@ pub mod gas_panel;
 pub mod generators;
 pub mod hands;
 pub mod health;
+pub mod heaters;
 pub mod igniters;
 pub mod jetpacks;
 pub mod lighting;
@@ -174,6 +175,7 @@ impl Plugin for ClassicPlugin {
                     cameras::process_camera_ops,
                     paperwork::process_paper_ops,
                     filing::process_picks,
+                    heaters::process_heater_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -197,6 +199,7 @@ impl Plugin for ClassicPlugin {
                     windoors::run_windoors,
                     filing::stock_cabinets,
                     conveyors::run_conveyors,
+                    heaters::run_heaters,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,
@@ -284,6 +287,7 @@ impl Plugin for ClassicPlugin {
                         cameras::update_camera_views,
                         paperwork::update_clipboard_views,
                         filing::update_cabinet_views,
+                        heaters::update_heater_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
@@ -306,6 +310,7 @@ impl Plugin for ClassicPlugin {
                         filing::update_cabinet_looks,
                         bedsheets::update_linen_looks,
                         conveyors::update_conveyor_looks,
+                        heaters::update_heater_looks,
                     ),
                     lights::update_light_looks,
                     lights::update_light_sources,

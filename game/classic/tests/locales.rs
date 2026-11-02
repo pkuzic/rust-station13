@@ -104,6 +104,8 @@ fn every_message_formats_in_both_locales() {
     args.set("celsius", 37);
     args.set("fahrenheit", 99);
     args.set("on", "yes");
+    args.set("open", "no");
+    args.set("cell", "meter");
     args.set("watts", 5000);
     args.set("rating", 2500);
     args.set("charge", 1000);

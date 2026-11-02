@@ -144,7 +144,7 @@ pub fn process_actions(
                 mut windoors,
                 mut filing,
                 mut linen,
-                (mut belt_switches, belts, pulling),
+                (mut belt_switches, belts, pulling, mut heaters),
             ),
         ),
         (
@@ -200,6 +200,7 @@ pub fn process_actions(
                     Query<&mut crate::conveyors::ConveyorSwitch>,
                     Query<(), With<crate::conveyors::Conveyor>>,
                     Query<&crate::pulling::Pulling>,
+                    crate::heaters::HeaterWork,
                 ),
             ),
         ),
@@ -373,6 +374,9 @@ pub fn process_actions(
                         if let Some(more) = paperwork.examine_bin(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = heaters.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Some(more) = linen.examine(target) {
                             outbox.0.push(more);
                         }
@@ -534,6 +538,31 @@ pub fn process_actions(
                     {
                         outbox.0.extend(outcome.to_mob);
                         outbox.0.extend(outcome.seen);
+                    }
+                }
+                Action::UseOn(target)
+                    if heaters.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Space heaters (`space-heaters.md`).
+                    let at = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    let screwdriver = holding(&hands, &appearances, "screwdriver");
+                    if let Some(outcome) = heaters
+                        .use_on(mob, &mut hands, target, screwdriver, &mut commands)
+                        .flatten()
+                    {
+                        if screwdriver {
+                            sounds.tool_used(tool, at);
+                        }
+                        outbox.0.push(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
+                        }
                     }
                 }
                 Action::UseOn(target)

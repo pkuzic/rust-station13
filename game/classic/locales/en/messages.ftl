@@ -718,3 +718,38 @@ examine-linen-bin = { $count ->
         [one] There is one bed sheet in the bin.
        *[other] There are { $count } bed sheets in the bin.
     }
+
+# Space heaters (space-heaters.md). Args: $name; $on, $open (yes, no); $cell (yes, no,
+# meter); $value.
+heater-hatch-closed = The hatch must be open to insert a power cell.
+heater-has-cell = There is already a power cell inside.
+heater-cell-in = You insert the power cell into the space heater.
+heater-cell-in-seen = { $name } inserts a power cell into the space heater.
+heater-cell-out = You remove the power cell from the space heater.
+heater-cell-out-seen = { $name } removes the power cell from the space heater.
+heater-hatch-opened = You open the hatch on the space heater.
+heater-hatch-opened-seen = { $name } opens the hatch on the space heater.
+heater-hatch-shut = You close the hatch on the space heater.
+heater-hatch-shut-seen = { $name } closes the hatch on the space heater.
+heater-switched-on = You switch on the space heater.
+heater-switched-on-seen = { $name } switches on the space heater.
+heater-switched-off = You switch off the space heater.
+heater-switched-off-seen = { $name } switches off the space heater.
+examine-heater = The heater is { $on ->
+        [yes] on
+       *[no] off
+    } and the hatch is { $open ->
+        [yes] open
+       *[no] closed
+    }. { $cell ->
+        [yes] The power cell is installed.
+        [no] The power cell is missing.
+       *[meter] The charge meter reads { $value }%.
+    }
+heater-title = Space Heater Control Panel
+heater-cell = Power cell:
+heater-cell-installed = Installed
+heater-cell-removed = Removed
+heater-level = Power Level: { $value }%
+heater-set = Set Temperature:
+heater-degrees = { $value }°C

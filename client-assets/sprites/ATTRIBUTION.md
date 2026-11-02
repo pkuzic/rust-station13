@@ -636,6 +636,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `smes:smes-og5` | `icons/obj/power.dmi : "smes-og5"` | CC-BY-SA 3.0 |
 | `smes:smes-op0` | `icons/obj/power.dmi : "smes-op0"` | CC-BY-SA 3.0 |
 | `smes:smes-op1` | `icons/obj/power.dmi : "smes-op1"` | CC-BY-SA 3.0 |
+| `space-heater:sheater-open` | `icons/obj/atmos.dmi : "sheater-open"` | CC-BY-SA 3.0 |
+| `space-heater:sheater0` | `icons/obj/atmos.dmi : "sheater0"` | CC-BY-SA 3.0 |
+| `space-heater:sheater1` | `icons/obj/atmos.dmi : "sheater1"` | CC-BY-SA 3.0 |
 | `space-helmet:` | `icons/obj/clothing/hats.dmi : "space"` | CC-BY-SA 3.0 |
 | `space-mountain-wind:` | `icons/obj/drinks.dmi : "space_mountain_wind"` | CC-BY-SA 3.0 |
 | `space-suit:` | `icons/obj/clothing/suits.dmi : "space"` | CC-BY-SA 3.0 |

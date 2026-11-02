@@ -7,10 +7,10 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, ClipboardView, Dir,
-    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent,
-    LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset,
-    PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView,
-    WornView,
+    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, HeaterPanelView,
+    Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView,
+    PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView,
+    WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -99,6 +99,11 @@ pub enum ActionInput {
     LabelPaper {
         target: NetId,
         label: String,
+    },
+    /// A button on an open space heater.
+    Heater {
+        target: NetId,
+        command: HeaterCommand,
     },
     /// A line picked in an open list window, from 0.
     Pick {
@@ -189,6 +194,15 @@ pub enum GasCommand {
     Adjust(i32),
     /// Take the held tank out.
     RemoveTank,
+}
+
+/// Space heater window buttons (Luna's `spaceheater` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HeaterCommand {
+    /// Take the cell out, or put the one in hand in.
+    Cell,
+    /// Set it 5 °C warmer (`true`) or cooler.
+    Warmer(bool),
 }
 
 /// Clipboard window buttons (Luna's `clipboard` links); sheets by line, the top one 0.
@@ -291,6 +305,11 @@ pub struct PaperPanel(pub PaperView);
 /// changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ClipboardPanel(pub Option<ClipboardView>);
+
+/// Server → one client: the space heater it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct HeaterPanel(pub Option<HeaterPanelView>);
 
 /// Server → one client: the list window it has open, or `None` to close it. Sent when it
 /// changes.
@@ -400,6 +419,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<ClipboardPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PickListPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<HeaterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);
