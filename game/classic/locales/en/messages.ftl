@@ -676,3 +676,26 @@ cameras-select = Which camera should you change to?
 cameras-view = View
 cameras-cancel = Cancel
 cameras-deactivated = { " " }(Deactivated)
+
+# Paperwork (paperwork.md). Args: $item (noun id); $count.
+paper-bin-take = You take the { NOUN($item) } out of the paper bin.
+paper-bin-put = You put the { NOUN($item) } in the paper bin.
+paper-bin-empty = The paper bin is empty!
+examine-paper-bin = { $count ->
+        [0] There are no papers in the bin.
+        [one] There is one paper in the bin.
+       *[other] There are { $count } papers in the bin.
+    }
+clipboard-clipped = You clip the paper onto the { NOUN($item) }.
+clipboard-pen = You slot the { NOUN($item) } into the clipboard.
+clipboard-top = You move the { NOUN($item) } to the top.
+clipboard-title = Clipboard
+clipboard-remove-pen = Remove Pen
+clipboard-add-pen = Add Pen
+clipboard-write = Write
+clipboard-remove = Remove
+clipboard-top-button = Move to top
+paper-write-prompt = What text do you wish to add?
+paper-write-keys = (Enter: new line. Ctrl+Enter: save. Esc: cancel.)
+paper-label-prompt = What would you like to label the paper?
+paper-save = Save

@@ -13,8 +13,6 @@
 //      6 /obj/item/weapon/circuitboard/circuitry
 //      2 /obj/item/weapon/folder/yellow
 //      1 /obj/item/weapon/hand_labeler
-//      2 /obj/item/weapon/paper_bin
-//      1 /obj/item/weapon/pen
 //      1 /obj/item/weapon/reagent_containers/food/drinks/soda/rootbeer
 //      1 /obj/item/weapon/reagent_containers/food/snacks/burger/fishburger
 //      1 /obj/item/weapon/reagent_containers/food/snacks/candycane
@@ -165,7 +163,7 @@
         'å': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "firedoor", dir: South), (id: "window-pane", dir: East), (id: "window-pane", dir: West)]),
         'æ': (tile: (id: "floor"), objects: [(id: "comfy-chair-brown", dir: East)]),
         'ç': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), (id: "fire-alarm", dir: South, vars: {"pixel_y": "26"}), "first-aid-kit"]),
-        'è': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
+        'è': (tile: (id: "floor"), objects: ["paper-bin", "pen", (id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
         'é': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_y": "20"}), (id: "scrubber", dir: East), (id: "comfy-chair-brown", dir: West)]),
         'ê': (tile: (id: "wall", solid: true), objects: [(id: "manifold", dir: East)]),
         'ë': (tile: (id: "floor"), objects: [(id: "airlock", access: ["engine_equip"]), (id: "cable", ends: [North, South])]),
@@ -318,7 +316,7 @@
         'В': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'Г': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: East), (id: "cable", ends: [North, South])]),
         'Д': (tile: (id: "floor"), objects: ["power-monitor", (id: "cable", ends: [North])]),
-        'Е': (tile: (id: "floor"), objects: [(id: "vent", dir: South), (id: "table", dir: NorthWest, state: Some("tabledir"))]),
+        'Е': (tile: (id: "floor"), objects: [(id: "vent", dir: South), (id: "table", dir: NorthWest, state: Some("tabledir")), "paper-bin"]),
         'Ж': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "toolbox-electrical"]),
         'З': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), (id: "door-button", vars: {"id": "963852"}), (id: "window-pane", dir: South)]),
         'И': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table", dir: North, state: Some("tabledir"))]),

@@ -702,3 +702,27 @@ cameras-select = На какую камеру переключиться?
 cameras-view = Смотреть
 cameras-cancel = Отмена
 cameras-deactivated = { " " }(отключена)
+
+# Бумаги (paperwork.md). Аргументы: $item (id существительного); $count.
+paper-bin-take = Вы достаёте { NOUN($item, case: "acc") } из лотка.
+paper-bin-put = Вы кладёте { NOUN($item, case: "acc") } в лоток.
+paper-bin-empty = Лоток пуст!
+examine-paper-bin = { $count ->
+        [0] В лотке нет бумаги.
+        [one] В лотке { $count } лист.
+        [few] В лотке { $count } листа.
+       *[many] В лотке { $count } листов.
+    }
+clipboard-clipped = Вы прикрепляете лист к { NOUN($item, case: "dat") }.
+clipboard-pen = Вы вставляете { NOUN($item, case: "acc") } в планшет.
+clipboard-top = Вы перекладываете { NOUN($item, case: "acc") } наверх.
+clipboard-title = Планшет
+clipboard-remove-pen = Вынуть ручку
+clipboard-add-pen = Вставить ручку
+clipboard-write = Писать
+clipboard-remove = Вынуть
+clipboard-top-button = Наверх
+paper-write-prompt = Что вы хотите написать?
+paper-write-keys = (Enter — новая строка, Ctrl+Enter — сохранить, Esc — отмена.)
+paper-label-prompt = Как подписать лист?
+paper-save = Сохранить

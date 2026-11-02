@@ -360,6 +360,36 @@ pub struct CameraPanelView {
     pub current: Option<u16>,
 }
 
+/// What a paper window is for (Luna: reading it, its text box, its label box).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum PaperMode {
+    Read,
+    Write,
+    Label,
+}
+
+/// A sheet of paper to read, write on or label.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PaperView {
+    /// The sheet.
+    pub target: NetId,
+    /// Its name (Luna: "Paper", or "paper- 'label'").
+    pub title: String,
+    /// What is written on it, with Luna's [b], [i] and [u] tags.
+    pub text: String,
+    pub mode: PaperMode,
+}
+
+/// An open clipboard, as shown to the player carrying it (Luna's `clipboard` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ClipboardView {
+    /// The clipboard.
+    pub target: NetId,
+    pub has_pen: bool,
+    /// Its sheets' names, the top one first.
+    pub papers: Vec<String>,
+}
+
 /// One product line of a vending machine.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct VendingRow {

@@ -46,6 +46,7 @@ pub mod movement;
 pub mod multiz;
 pub mod names;
 pub mod objects;
+pub mod paperwork;
 pub mod portables;
 pub mod power;
 pub mod power_monitor;
@@ -57,6 +58,7 @@ pub mod smoking;
 pub mod sound;
 pub mod sparks;
 pub mod speech;
+pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
 pub mod teg;
@@ -165,6 +167,7 @@ impl Plugin for ClassicPlugin {
                     gas_panel::process_gas_ops,
                     vending::process_vend_ops,
                     cameras::process_camera_ops,
+                    paperwork::process_paper_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -269,6 +272,7 @@ impl Plugin for ClassicPlugin {
                         gas_panel::update_gas_views,
                         vending::update_vending_views,
                         cameras::update_camera_views,
+                        paperwork::update_clipboard_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
@@ -286,6 +290,8 @@ impl Plugin for ClassicPlugin {
                         vending::update_vending_looks,
                         smoking::update_smoking_looks,
                         cameras::update_camera_looks,
+                        paperwork::update_paperwork_looks,
+                        status_displays::update_displays,
                     ),
                     lights::update_light_looks,
                     lights::update_light_sources,

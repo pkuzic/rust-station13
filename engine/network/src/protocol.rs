@@ -6,10 +6,10 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, Dir, DisplayName,
-    EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView,
-    LightSource, MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot,
-    SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, ClipboardView, Dir,
+    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent,
+    LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PixelOffset, PowerMonitorView,
+    Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -88,6 +88,21 @@ pub enum ActionInput {
     Freezer {
         target: NetId,
         command: FreezerCommand,
+    },
+    /// The whole new text of a sheet of paper, from its text box.
+    WritePaper {
+        target: NetId,
+        text: String,
+    },
+    /// A sheet's new label, from its label box.
+    LabelPaper {
+        target: NetId,
+        label: String,
+    },
+    /// A button on an open clipboard.
+    Clipboard {
+        target: NetId,
+        command: ClipboardCommand,
     },
     /// A camera picked on an open security console (its line, from 0), or `None` to stop
     /// watching.
@@ -170,6 +185,17 @@ pub enum GasCommand {
     RemoveTank,
 }
 
+/// Clipboard window buttons (Luna's `clipboard` links); sheets by line, the top one 0.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ClipboardCommand {
+    /// Take the pen out, or put the one in hand in.
+    Pen,
+    Write(u8),
+    Remove(u8),
+    Read(u8),
+    Top(u8),
+}
+
 /// SMES window buttons (Luna's `smes` links).
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SmesCommand {
@@ -250,6 +276,15 @@ pub struct LaserPanel(pub Option<LaserPanelView>);
 /// Server → one client: the freezer it has open, or `None` to close it. Sent when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FreezerPanel(pub Option<FreezerPanelView>);
+
+/// Server → one client: a sheet of paper to read, write on or label.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PaperPanel(pub PaperView);
+
+/// Server → one client: the clipboard it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ClipboardPanel(pub Option<ClipboardView>);
 
 /// Server → one client: the security console it has open, or `None` to close it. Sent
 /// when it changes.
@@ -348,6 +383,10 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<VendingPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<CameraPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<PaperPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ClipboardPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

@@ -21,6 +21,7 @@ use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
+use rs13_classic::paperwork::{ClipboardOut, PaperOp, PaperOut, PendingPaperOps};
 use rs13_classic::power_monitor::PowerMonitorOut;
 use rs13_classic::smes_panel::{Level, PendingSmesOps, SmesOp, SmesPanelOut};
 use rs13_classic::sound::Earshot;
@@ -35,15 +36,15 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, CameraPanel,
-    FreezerCommand, FreezerPanel, GasCommand, GasPanel, LaserCommand, LaserPanel, MoveInput, Notice,
-    NoticeChannel, PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel,
-    StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, LaserCommand,
+    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PlaySound, Player, PowerMonitorPanel,
+    SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, CameraPanelView, DisplayName, FreezerPanelView, GasPanelView, GridPos,
-    LaserPanelView, MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView,
-    WirePanelView,
+    AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
+    GasPanelView, GridPos, LaserPanelView, MapLayer, NetId, PaperView, PowerMonitorView, SmesPanelView,
+    StorageView, TileMap, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -76,6 +77,7 @@ struct SentPanel(
     Option<GasPanelView>,
     Option<VendingPanelView>,
     Option<CameraPanelView>,
+    Option<ClipboardView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -118,6 +120,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
             send_sounds,
             send_status,
             send_panels,
+            send_paper,
         ),
     )
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
@@ -242,7 +245,7 @@ fn queue_actions(
         &mut PendingFreezerOps,
         &mut PendingSmesOps,
         &mut PendingGasOps,
-        (&mut PendingVendOps, &mut PendingCameraOps),
+        (&mut PendingVendOps, &mut PendingCameraOps, &mut PendingPaperOps),
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
@@ -267,7 +270,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            (mut vend_ops, mut camera_ops),
+            (mut vend_ops, mut camera_ops, mut paper_ops),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -345,6 +348,30 @@ fn queue_actions(
                                 SmesCommand::Output(l) => SmesOp::Output(level(l)),
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::WritePaper { target, text } => {
+                    if let Some(sheet) = resolve(target) {
+                        paper_ops.0.push(PaperOp::Write(sheet, text));
+                    }
+                    None
+                }
+                ActionInput::LabelPaper { target, label } => {
+                    if let Some(sheet) = resolve(target) {
+                        paper_ops.0.push(PaperOp::Label(sheet, label));
+                    }
+                    None
+                }
+                ActionInput::Clipboard { target, command } => {
+                    if let Some(board) = resolve(target) {
+                        paper_ops.0.push(match command {
+                            ClipboardCommand::Pen => PaperOp::Pen(board),
+                            ClipboardCommand::Write(n) => PaperOp::WriteSheet(board, usize::from(n)),
+                            ClipboardCommand::Remove(n) => PaperOp::Remove(board, usize::from(n)),
+                            ClipboardCommand::Read(n) => PaperOp::Read(board, usize::from(n)),
+                            ClipboardCommand::Top(n) => PaperOp::Top(board, usize::from(n)),
+                        });
                     }
                     None
                 }
@@ -505,6 +532,29 @@ fn send_status(
     }
 }
 
+/// Send each client the paper windows its mob has opened: a sheet to read, write on or
+/// label (`paperwork.md`).
+fn send_paper(
+    mut links: Query<(&Controls, &mut MessageSender<PaperPanel>)>,
+    mut mobs: Query<&mut PaperOut>,
+    ids: Query<&NetId>,
+) {
+    for (controls, mut sender) in &mut links {
+        let Ok(mut out) = mobs.get_mut(controls.0) else {
+            continue;
+        };
+        for window in out.0.drain(..) {
+            let Ok(id) = ids.get(window.sheet) else { continue };
+            sender.send::<NoticeChannel>(PaperPanel(PaperView {
+                target: *id,
+                title: window.title,
+                text: window.text,
+                mode: window.mode,
+            }));
+        }
+    }
+}
+
 /// Open, update or close each client's machine windows.
 fn send_panels(
     mut links: Query<(
@@ -521,6 +571,7 @@ fn send_panels(
         &mut MessageSender<GasPanel>,
         &mut MessageSender<VendingPanel>,
         &mut MessageSender<CameraPanel>,
+        &mut MessageSender<ClipboardPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -534,6 +585,7 @@ fn send_panels(
         &GasPanelOut,
         &VendingPanelOut,
         &CameraPanelOut,
+        &ClipboardOut,
     )>,
 ) {
     for (
@@ -550,6 +602,7 @@ fn send_panels(
         mut gases,
         mut vendings,
         mut camera_panels,
+        mut clipboard_panels,
     ) in &mut links
     {
         let Ok((
@@ -564,6 +617,7 @@ fn send_panels(
             gas,
             vending,
             camera,
+            clipboard,
         )) = panels.get(controls.0)
         else {
             continue;
@@ -611,6 +665,10 @@ fn send_panels(
         if sent.10 != camera.0 {
             camera_panels.send::<NoticeChannel>(CameraPanel(camera.0.clone()));
             sent.10 = camera.0.clone();
+        }
+        if sent.11 != clipboard.0 {
+            clipboard_panels.send::<NoticeChannel>(ClipboardPanel(clipboard.0.clone()));
+            sent.11 = clipboard.0.clone();
         }
     }
 }

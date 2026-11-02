@@ -29,6 +29,7 @@ mod hud;
 mod laser_panel;
 mod lighting;
 mod monitor_panel;
+mod paper_panel;
 mod scaling;
 mod shadows;
 mod smes_panel;
@@ -157,11 +158,28 @@ struct ScreenshotPlan(Option<String>, f32);
 #[derive(Resource)]
 struct WantedName(Option<String>);
 
-/// The say line: open while the player is typing.
+/// The say line: open while the player is typing. It also takes the typing for a sheet of
+/// paper's text box or label box (`paper_panel.rs`), when `paper` says which.
 #[derive(Resource, Default)]
 struct ChatInput {
     open: bool,
     buffer: String,
+    paper: Option<(NetId, rs13_world::PaperMode)>,
+}
+
+impl ChatInput {
+    fn start_paper(&mut self, target: NetId, mode: rs13_world::PaperMode, text: String) {
+        self.open = true;
+        self.buffer = text;
+        self.paper = Some((target, mode));
+    }
+
+    fn stop_paper(&mut self) {
+        if self.paper.take().is_some() {
+            self.open = false;
+            self.buffer.clear();
+        }
+    }
 }
 
 #[derive(Component)]
@@ -262,6 +280,8 @@ fn main() {
         .init_resource::<gas_panel::OpenGas>()
         .init_resource::<vending_panel::OpenVending>()
         .init_resource::<camera_panel::OpenCameras>()
+        .init_resource::<paper_panel::OpenPaper>()
+        .init_resource::<paper_panel::OpenClipboard>()
         .init_resource::<smes_panel::OpenSmes>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
@@ -308,6 +328,8 @@ fn main() {
                     (gas_panel::receive_gas, gas_panel::show_gas).chain(),
                     (vending_panel::receive_vending, vending_panel::show_vending).chain(),
                     (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
+                    (paper_panel::receive_paper, paper_panel::show_paper).chain(),
+                    (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),
                     (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 ),
@@ -591,6 +613,9 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
         // Up on the wall, above people (Luna `layer = 5`).
         ("camera", _) => (Color::srgb(0.70, 0.70, 0.75), 10.0, 3.5),
+        // A status display's characters, over its frame (Luna's overlays).
+        ("status-display", _) => (Color::srgb(0.20, 0.25, 0.20), TILE_PX - 4.0, 1.0),
+        ("status-glyph", _) => (Color::srgb(0.70, 0.95, 0.70), 4.0, 1.05),
         // Over the airlock it shares a tile with.
         ("firedoor", state) if state.starts_with("door0") => (Color::srgb(0.85, 0.30, 0.20), 6.0, 2.1),
         ("firedoor", _) => (Color::srgb(0.85, 0.30, 0.20), TILE_PX - 2.0, 2.1),
@@ -879,14 +904,47 @@ fn send_name(
     }
 }
 
-/// T opens the say line; typed text goes into it; Enter sends, Esc cancels.
+/// T opens the say line; typed text goes into it; Enter sends, Esc cancels. Writing on
+/// paper, Enter starts a new line and Ctrl+Enter saves; a label saves on Enter.
 fn chat_typing(
     mut keys: MessageReader<KeyboardInput>,
+    held: Res<ButtonInput<KeyCode>>,
     mut chat: ResMut<ChatInput>,
+    mut paper: ResMut<paper_panel::OpenPaper>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     for key in keys.read() {
         if key.state != ButtonState::Pressed {
+            continue;
+        }
+        if let Some((_, mode)) = chat.paper {
+            let ctrl = held.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]);
+            let max = if mode == rs13_world::PaperMode::Label {
+                paper_panel::MAX_LABEL
+            } else {
+                paper_panel::MAX_TEXT
+            };
+            match key.key_code {
+                KeyCode::Enter | KeyCode::NumpadEnter if mode == rs13_world::PaperMode::Write && !ctrl => {
+                    if chat.buffer.chars().count() < max {
+                        chat.buffer.push('\n');
+                    }
+                }
+                KeyCode::Enter | KeyCode::NumpadEnter => {
+                    paper_panel::finish_paper(&mut paper, &mut chat, &mut sender, true);
+                }
+                KeyCode::Escape => paper_panel::finish_paper(&mut paper, &mut chat, &mut sender, false),
+                KeyCode::Backspace => {
+                    chat.buffer.pop();
+                }
+                _ => {
+                    if let Some(text) = &key.text {
+                        let room = max.saturating_sub(chat.buffer.chars().count());
+                        let typed: String = text.chars().filter(|c| !c.is_control()).take(room).collect();
+                        chat.buffer.push_str(&typed);
+                    }
+                }
+            }
             continue;
         }
         if !chat.open {
@@ -1366,7 +1424,7 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
     if !chat.is_changed() {
         return;
     }
-    text.0 = if chat.open {
+    text.0 = if chat.open && chat.paper.is_none() {
         let prompt = loc.0.format("hud-say", None).unwrap_or_default();
         format!("{prompt} {}_", chat.buffer)
     } else {

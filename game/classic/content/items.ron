@@ -151,4 +151,11 @@
     (id: "lighter", force: 0.0, size: 1, slot: "belt"),
     (id: "cigarette", force: 0.0, size: 1, slot: "mask"),
     (id: "cigarette-butt", force: 0.0, size: 1),
+    // Paperwork (`paperwork.md`).
+    (id: "paper-bin", force: 0.0, size: 3),
+    (id: "paper", force: 0.0, size: 1),
+    (id: "pen", force: 0.0, size: 1, slot: "belt"),
+    (id: "pen-blue", force: 0.0, size: 1, slot: "belt"),
+    (id: "pen-red", force: 0.0, size: 1, slot: "belt"),
+    (id: "clipboard", force: 0.0, size: 2, slot: "belt"),
 ]

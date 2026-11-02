@@ -60,6 +60,8 @@ pub fn casts_shadow(sprite: &str) -> bool {
             | "blast-door"
             | "window-pane"
             | "stairs"
+            | "status-display"
+            | "status-glyph"
             | "disposal-pipe"
             | "door-button"
             | "light"
