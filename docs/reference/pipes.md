@@ -1,9 +1,11 @@
 # Pipes and atmospherics machinery (phase 1, part 2)
 
-Design: `docs/ATMOSPHERICS.md` (section 4). Code: `game/classic/src/machines.rs`.
+Design: `docs/ATMOSPHERICS.md` (section 4). Code: `game/classic/src/machines.rs`. Tests:
+`game/classic/tests/filters.rs`, `game/classic/tests/mixers.rs` and others.
 
 Formulas follow classic SS13 machinery:
 - pump: `luna:code/ATMOSPHERICS/components/binary_devices/pump.dm`
+- mixer: `trinary_devices/mixer.dm`
 - scrubber: `unary/vent_scrubber.dm`
 - vent: the vent formula in `unary/vent_pump.dm`. Luna had commented that block out in favour of Aryn's pipes; we use the classic version.
 
@@ -49,12 +51,13 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 
 | Machine | What it does each cycle |
 |---|---|
-| **Gas pump** (facing a direction) | Moves gas from the network behind it to the network ahead until that reaches its target (300 kPa): `moles = Δp × V_out / (T_in × R)`. Click to switch on/off. |
+| **Gas pump** (facing a direction, Luna `binary/pump`) | Moves gas from the network behind it to the network ahead until that reaches its target: `moles = Δp × V_out / (T_in × R)`. Needs power. Luna's map sets whether it is on (`on`, else off) and its target (`target_pressure`, else 101.325 kPa); the hand-drawn chamber's pump is on at 300 kPa. Click to switch on/off. |
 | **Manual valve** | Open: part of the pipe. Closed: splits the pipe in two. Click to open/close. |
 | **Air vent** (on a pipe) | Lets network gas into the room toward its target (101.325 kPa): `Δp = min(target − P_room, P_pipe − P_room)`, `moles = Δp × 2500 L / (T × R)`. Click to switch on/off. |
 | **Air scrubber** (on a pipe) | Takes 120 L of the tile's air (SS13 `volume_rate`) and moves its CO₂, plasma and N₂O into the network. Click to switch on/off. |
 | **Pipe vent** (an open pipe end, Luna `pipe/vent`) | 250 L of the network's gas evens out with the zone it opens into, by volume (Luna `mingle_with_turf(loc, 250)`, which equalises with the whole turf group). In space the 250 L is lost. Always open; nothing to switch. |
 | **Gas filter** (facing a direction, Luna `trinary/filter`) | Takes gas from the pipe behind it and sends it to the pipe ahead until that reaches its target (map `target_pressure`, default 101.325 kPa), by the pump formula. The filtered gas (map `filter_type`: 0 plasma, 1 O₂, 2 N₂, 3 CO₂, 4 N₂O) goes instead to the pipe a quarter turn clockwise. Needs all three pipes and power. Luna's "Plasma Toxins Filter" is set to 5, which takes nothing out; we keep that. Click to switch on/off. |
+| **Gas mixer** (facing a direction, Luna `trinary/mixer`) | Fills the pipe ahead toward its target (map `target_pressure`, default 101.325 kPa) from the pipe behind it and the pipe a quarter turn clockwise, in the shares `node1_concentration` and `node2_concentration` (default half each): each gives its share of the pressure still missing, by the pump formula at its own temperature. If either can't give its whole share, both give the same fraction less. Needs all three pipes; like Luna's, it runs without power. Dense. Click to switch on/off. |
 | **Outlet injector** (on a pipe, Luna `unary/outlet_injector`) | While on, lets out the gas that fills `volume_rate` litres (map setting, default 50) at the network's pressure into the room. No power needed. Click to switch on/off. |
 | **Connector port** (on a pipe) | A canister on it can be connected with a wrench. |
 | **Canister** | Click to open or close its release valve. While disconnected and open, it releases into the room toward 101.325 kPa, by the vent formula. Wrench it on or off a port. Canisters of one gas, and pressure tanks of one gas: `gas-tanks.md`. |
@@ -84,8 +87,8 @@ Machines run every **40 ticks (2 s)**, like SS13's machinery cycle.
 ## Not yet
 
 - Pressure-rated pipes, leaks and bursts.
-- Gas mixers.
-- Filters and injectors use our pump formula on the whole output network; Luna's use their own 200 L, so they move gas more slowly there.
+- Filters, mixers and injectors use our pump formula on the whole output network; Luna's use their own 200 L (300 L for a mixer's outlet), so they move gas more slowly there.
+- The pump's and mixer's windows (Luna's power link, output pressure and shares): only switching them on and off is built.
 - Radio control of injectors (Luna's `frequency` and `id`).
 - Heat exchangers.
 - Vents in siphon mode.

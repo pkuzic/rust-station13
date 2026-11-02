@@ -118,6 +118,12 @@
         (path: "/obj/machinery/engine/laser", id: "engine-laser", dir: true, vars: ["id"]),
         (path: "/obj/machinery/computer/lasercon", id: "laser-computer", vars: ["id"]),
         (path: "/obj/machinery/atmospherics/trinary/filter", id: "gas-filter", dir: true, vars: ["filter_type", "target_pressure", "on"]),
+        // Gas pumps and mixers: off at one atmosphere unless the map says (`pipes.md`).
+        (path: "/obj/machinery/atmospherics/binary/pump", id: "pump", dir: true, vars: ["on", "target_pressure"],
+            type_vars: {"dir": "2", "on": "0", "target_pressure": "101.325"}),
+        (path: "/obj/machinery/atmospherics/trinary/mixer", id: "gas-mixer", dir: true,
+            vars: ["on", "target_pressure", "node1_concentration", "node2_concentration"],
+            type_vars: {"dir": "2", "on": "0", "target_pressure": "101.325"}),
         (path: "/obj/machinery/atmospherics/unary/outlet_injector", id: "injector", dir: true, vars: ["volume_rate", "on"]),
         (path: "/obj/machinery/atmospherics/valve", id: "valve", dir: true),
         (path: "/obj/machinery/meter", id: "meter"),

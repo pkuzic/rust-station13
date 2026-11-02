@@ -23,6 +23,7 @@
     "paper-bin": (gender: neuter, sg: (nom: "paper bin", indef: "a paper bin"), pl: Some((nom: "paper bins"))),
     "morgue": (gender: neuter, sg: (nom: "morgue", indef: "a morgue"), pl: Some((nom: "morgues"))),
     "morgue-tray": (gender: neuter, sg: (nom: "morgue tray", indef: "a morgue tray"), pl: Some((nom: "morgue trays"))),
+    "gas-mixer": (gender: neuter, sg: (nom: "gas mixer", indef: "a gas mixer"), pl: Some((nom: "gas mixers"))),
     "crematorium": (gender: neuter, sg: (nom: "crematorium", indef: "a crematorium"), pl: Some((nom: "crematoriums"))),
     "crematorium-tray": (gender: neuter, sg: (nom: "crematorium tray", indef: "a crematorium tray"), pl: Some((nom: "crematorium trays"))),
     "crematorium-igniter": (gender: neuter, sg: (nom: "crematorium igniter", indef: "a crematorium igniter"), pl: Some((nom: "crematorium igniters"))),

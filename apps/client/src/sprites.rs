@@ -321,8 +321,13 @@ mod tests {
         for state in ["closed", "opening", "open", "closing", "deny"] {
             assert!(atlas.get("airlock", state).is_some(), "airlock:{state}");
         }
-        for sprite in ["vent", "scrubber", "pump"] {
+        for sprite in ["vent", "scrubber"] {
             for state in ["on", "off"] {
+                assert!(atlas.get(sprite, state).is_some(), "{sprite}:{state}");
+            }
+        }
+        for sprite in ["pump", "gas-mixer", "gas-filter"] {
+            for state in ["on-east", "off-south"] {
                 assert!(atlas.get(sprite, state).is_some(), "{sprite}:{state}");
             }
         }
