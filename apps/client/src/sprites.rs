@@ -237,7 +237,7 @@ fn alpha_over(under: [u8; 4], over: [u8; 4]) -> [u8; 4] {
 pub fn state_for(appearance: &Appearance) -> String {
     let base = appearance.state.split('+').next().unwrap_or_default();
     match (appearance.sprite.as_str(), base) {
-        ("human", "unconscious" | "dead") => "lying".to_owned(),
+        ("human" | "monkey", "unconscious" | "dead") => "lying".to_owned(),
         // Until `join_lines` sees the neighbours, draw a straight east–west run.
         ("cable" | "pipe", "") => "4-8".to_owned(),
         (_, state) => state.to_owned(),

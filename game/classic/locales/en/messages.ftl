@@ -56,6 +56,12 @@ flasher-disconnected = You disconnect the flashbulb.
 flasher-connected = You connect the flashbulb.
 flasher-secured = It is now secured.
 flasher-loose = It can now be moved.
+monkey-emote = { $name } { $act ->
+    [jump] jumps!
+    [roll] rolls.
+    [tail] waves its tail.
+   *[scratch] scratches.
+}
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
