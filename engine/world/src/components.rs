@@ -112,6 +112,8 @@ pub enum MobStat {
     Conscious,
     Unconscious,
     Dead,
+    /// Left the body: a player walking on as a ghost.
+    Ghost,
 }
 
 /// How a mob acts on others (BYOND `a_intent`). Disarm and grab come later.
@@ -497,6 +499,13 @@ pub struct StorageView {
     pub items: Vec<NetId>,
     /// How many it can hold.
     pub slots: u8,
+}
+
+/// A dead player walking on, drawn see-through. The living are never sent one. It carries
+/// what the body wore when they died, as those clothes may since have gone elsewhere.
+#[derive(Component, Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct Ghost {
+    pub worn: Vec<(Slot, Appearance)>,
 }
 
 /// What a person wears, as seen by clients: slot → item.

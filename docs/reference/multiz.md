@@ -45,10 +45,11 @@ bottom. Each deck's entry lies over the other deck's active tile.
 - **Sprite:** Luna's `ramptop` for the top entry and the bottom active tile, `rampbottom`
   for the others (`stairs/New`), facing their way.
 
+Ghosts click a ladder or stairs from anywhere to go to the same spot on that deck (`ghosts.md`).
+
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
 | Open floor over space would vent into it | Only sideways openings reach space; none of Luna's open floor lies over space |
 | Anything pushed into stairs goes up or down | People only |
-| Ghosts click stairs to move | No ghosts yet |

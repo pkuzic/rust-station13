@@ -104,7 +104,16 @@ impl Material2d for LightMaterial {
     }
 }
 
-fn toggle_lighting(keys: Res<ButtonInput<KeyCode>>, chat: Res<ChatInput>, mut on: ResMut<LightingOn>) {
+fn toggle_lighting(
+    keys: Res<ButtonInput<KeyCode>>,
+    chat: Res<ChatInput>,
+    became_ghost: Query<(), (Added<OwnPlayer>, With<rs13_world::Ghost>)>,
+    mut on: ResMut<LightingOn>,
+) {
+    // Ghosts see in the dark and through walls (`ghosts.md`). F4 brings the dark back.
+    if !became_ghost.is_empty() {
+        on.0 = false;
+    }
     if !chat.open && keys.just_pressed(KeyCode::F4) {
         on.0 = !on.0;
     }

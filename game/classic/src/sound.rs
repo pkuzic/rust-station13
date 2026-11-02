@@ -271,7 +271,10 @@ pub fn deliver_sounds(
     atmos: Option<Res<StationAtmos>>,
     map: crate::decks::Decks,
     doors: Query<(&GridPos, &Airlock)>,
-    mut listeners: Query<(Entity, &GridPos, &mut Earshot, Option<&Vitals>), With<Mob>>,
+    mut listeners: Query<
+        (Entity, &GridPos, &mut Earshot, Option<&Vitals>),
+        Or<(With<Mob>, With<rs13_world::Ghost>)>,
+    >,
 ) {
     if sounds.0.is_empty() {
         return;

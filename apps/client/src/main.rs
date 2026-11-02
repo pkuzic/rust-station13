@@ -348,6 +348,8 @@ fn main() {
                     apply_facing,
                     sprites::wear_layers,
                     sprites::overlays,
+                    sprites::draw_ghosts.after(sprites::wear_layers),
+                    hud::hide_for_ghosts,
                     sprites::dress,
                     sprites::animate,
                 )
@@ -903,7 +905,12 @@ fn show_only_placed(
 fn mark_own_player(
     mut commands: Commands,
     mut own: Query<(Entity, &mut Sprite, Has<Look>), (Added<Controlled>, With<Player>)>,
+    left: Query<Entity, (With<OwnPlayer>, Without<Player>)>,
 ) {
+    // The body they just left as a ghost.
+    for entity in &left {
+        commands.entity(entity).remove::<OwnPlayer>();
+    }
     for (entity, mut sprite, has_look) in &mut own {
         if !has_look {
             sprite.color = OWN_PLAYER_COLOR;
@@ -1201,7 +1208,12 @@ fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut 
         return;
     }
     let Some(status) = &own.0 else { return };
+    if status.stat == MobStat::Ghost {
+        text.0 = loc.0.format("hud-health-ghost", None).unwrap_or_default();
+        return;
+    }
     let health = match status.stat {
+        MobStat::Ghost => loc.0.format("hud-health-ghost", None),
         MobStat::Dead => loc.0.format("hud-health-dead", None),
         MobStat::Unconscious => loc.0.format("hud-health-crit", None),
         MobStat::Conscious => {

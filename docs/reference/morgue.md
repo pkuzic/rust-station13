@@ -54,7 +54,6 @@ use, so they aren't imported.
 | A body is dragged onto the tray | Click the tray while pulling them |
 | A pen labels the drawer ("Morgue- 'label'") | Not built: objects don't take names yet |
 | Explosions break drawers open | There are no explosions yet |
-| A cremated player becomes a ghost | There are no ghosts yet: the player is left with no body |
 | The urn is named and described after whose ashes it holds | Objects don't take names yet: a plain urn |
 | Players burn one after another at 30 a second, others together at 50 | Everyone inside burns together at 30 a second |
 | The admin room's crematorium (`admincell1crema`) | Not on the station decks, so not imported |

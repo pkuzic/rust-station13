@@ -186,7 +186,14 @@ pub fn run_conveyors(
     map: crate::decks::Decks,
     mut switches: Query<&mut ConveyorSwitch>,
     mut belts: Query<(&GridPos, &mut Conveyor, &mut PowerUser)>,
-    things: Query<(Entity, &GridPos), (Without<Conveyor>, Without<crate::closets::InCloset>)>,
+    things: Query<
+        (Entity, &GridPos),
+        (
+            Without<Conveyor>,
+            Without<crate::closets::InCloset>,
+            Without<rs13_world::Ghost>,
+        ),
+    >,
     pullable: crate::pulling::Pullable,
     blockers: Query<&GridPos, (With<Dense>, Without<Mob>)>,
     mobs: Query<&GridPos, With<Mob>>,

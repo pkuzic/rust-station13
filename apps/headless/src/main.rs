@@ -4,10 +4,10 @@
 //! player it can see and exits.
 //!
 //! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
-//! [--name NAME] [--say TEXT] [--use SPRITE]... [--use-held] [--wait SECONDS]...`
+//! [--name NAME] [--say TEXT] [--use SPRITE]... [--pull SPRITE]... [--use-held] [--wait SECONDS]...`
 //!
 //! `--use` and `--wait` make a script, run in order: `--use` clicks the first thing with
-//! that sprite on the map (picking it up), `--use-held` clicks the item in the active hand
+//! that sprite on the map (picking it up), `--pull` starts pulling one, `--use-held` clicks the item in the active hand
 //! (lighting a welding tool), `--wait` pauses.
 //!
 //! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
@@ -74,6 +74,7 @@ fn parse_args() -> Result<BotConfig, String> {
             "--name" => config.name = Some(value),
             "--say" => config.say = Some(value),
             "--use" => config.script.push(Step::UseOn(value)),
+            "--pull" => config.script.push(Step::Pull(value)),
             "--wait" => config.script.push(Step::Wait(Duration::from_secs_f32(
                 value.parse().map_err(|e| format!("--wait: {e}"))?,
             ))),

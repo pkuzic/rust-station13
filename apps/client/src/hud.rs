@@ -171,6 +171,21 @@ fn health_state(status: Option<&rs13_network::protocol::StatusUpdate>) -> &'stat
     }
 }
 
+/// A ghost has no hands, clothes or body to look after (`ghosts.md`).
+pub fn hide_for_ghosts(
+    own: Query<(), (With<OwnPlayer>, With<rs13_world::Ghost>)>,
+    mut cells: Query<&mut Visibility, With<HudCell>>,
+) {
+    let visibility = if own.is_empty() {
+        Visibility::Inherited
+    } else {
+        Visibility::Hidden
+    };
+    for mut cell in &mut cells {
+        cell.set_if_neq(visibility);
+    }
+}
+
 pub fn spawn_hud(mut commands: Commands, atlas: Res<SpriteAtlas>) {
     let root = commands
         .spawn(Node {

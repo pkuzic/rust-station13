@@ -175,6 +175,7 @@ fn add_shadows(
             Without<PixelOffset>,
             Without<ContactShadow>,
             Without<Layer>,
+            Without<rs13_world::Ghost>,
         ),
     >,
 ) {
