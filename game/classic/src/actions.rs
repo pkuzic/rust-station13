@@ -35,6 +35,8 @@ pub enum Action {
     Face(Dir),
     /// Start pulling something within a tile (Ctrl-click).
     Pull(Entity),
+    /// One of its verbs from the right-click menu (`verbs.rs`).
+    Verb(Entity, &'static str),
     StopPulling,
 }
 
@@ -126,7 +128,16 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut disposals, mut extinguishers, mut walllockers, gas_windows, vendors, mut food, mut smoking),
+        (
+            mut disposals,
+            mut extinguishers,
+            mut walllockers,
+            gas_windows,
+            vendors,
+            mut food,
+            mut smoking,
+            inventory,
+        ),
         (
             mut generators,
             mut dispensers,
@@ -168,6 +179,7 @@ pub fn process_actions(
             Query<(&GridPos, &crate::power::PowerUser), With<crate::vending::Vending>>,
             crate::food::FoodWork,
             crate::smoking::SmokingWork,
+            Query<&crate::equipment::WornBy>,
         ),
         (
             crate::generators::GeneratorWork,
@@ -248,6 +260,41 @@ pub fn process_actions(
                 // Turn on the spot; a chair turns its sitter back (`movement::sync_facing`).
                 Action::Face(dir) => mob_state.facing = Some(dir),
                 Action::Pull(target) => pulls.0.push((mob, target)),
+                Action::Verb(target, verb) => {
+                    // Luna's object verbs (`verbs.rs`): things within a tile, or carried.
+                    let near = places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0));
+                    let carried = hands.left == Some(target)
+                        || hands.right == Some(target)
+                        || inventory.get(target).is_ok_and(|w| w.0 == mob);
+                    let outcome = match verb {
+                        crate::verbs::TOGGLE_OPEN if near => {
+                            // As an empty hand would (Luna calls `attack_hand`).
+                            let mut bare = *hands;
+                            *bare.slot_mut(bare.active) = None;
+                            closets.use_on(mob, &mut bare, false, target, &mut commands)
+                        }
+                        crate::verbs::TOGGLE_LOCK
+                            if near && places.get(target).is_ok_and(|p| p.0 != mob_pos.0) =>
+                        {
+                            closets.toggle_lock(mob, &hands, target)
+                        }
+                        crate::verbs::ROTATE_CHAIR if near => chairs.rotate(target),
+                        crate::verbs::TOGGLE_LIGHT if carried => flashlights.use_self(target),
+                        crate::verbs::TOGGLE_JETPACK if carried => jetpacks.use_self(target),
+                        _ => None,
+                    };
+                    if let Some(outcome) = outcome {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
+                    }
+                }
                 Action::StopPulling => {
                     commands.entity(mob).remove::<crate::pulling::Pulling>();
                 }

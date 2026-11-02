@@ -38,6 +38,12 @@ pub enum ActionInput {
     SwapHands,
     /// Turn to face a way without stepping (Ctrl + a direction).
     Face(Dir),
+    /// One of an object's verbs from the right-click menu, by name (`toggle-open`). The
+    /// server decides whether it applies.
+    Verb {
+        target: NetId,
+        verb: String,
+    },
     /// Start pulling something within a tile (Ctrl-click).
     Pull(NetId),
     /// Let go of what is being pulled (the HUD pull button).

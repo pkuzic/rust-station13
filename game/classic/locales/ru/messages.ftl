@@ -685,3 +685,10 @@ cigarette-lit-lighter = Повозившись, { $name } прикуривает
 cigarette-lit = { $name } прикуривает { NOUN($item, case: "acc") } от { NOUN($tool, case: "gen") }.
 cigarette-out = Ваша { NOUN($item) } гаснет.
 cigarette-trodden = { $name } спокойно бросает { NOUN($item, case: "acc") } и затаптывает её.
+
+# Действия с предметами в меню правой кнопки (verbs.rs).
+verb-toggle-open = Открыть/закрыть
+verb-toggle-lock = Запереть/отпереть
+verb-rotate-chair = Повернуть стул
+verb-toggle-light = Включить/выключить свет
+verb-toggle-jetpack = Включить/выключить ранец

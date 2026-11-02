@@ -336,6 +336,28 @@ impl ClosetWork<'_, '_> {
             })
     }
 
+    /// Luna `secure_closet/togglelock`: a shut locker locks or unlocks for someone with its
+    /// access. `None` when `target` is no locker or is open. The caller checks it is beside
+    /// the mob.
+    pub fn toggle_lock(&mut self, mob: Entity, hands: &Hands, target: Entity) -> Option<ClickOutcome> {
+        let (_, _, closet) = self.closets.get(target).ok()?;
+        if closet.opened {
+            return None;
+        }
+        let access = self.locks.get(target).ok()?.access.clone();
+        if !allowed(&access, self.card_of(mob, hands)) {
+            return Some(ClickOutcome::told("locker-access-denied"));
+        }
+        let mut lock = self.locks.get_mut(target).ok()?;
+        lock.locked = !lock.locked;
+        let id = if lock.locked {
+            "locker-locked"
+        } else {
+            "locker-unlocked"
+        };
+        Some(seen(LocMsg::new(id)))
+    }
+
     /// Clicking a closet, with or without something in the hand. The caller checks reach
     /// and whether the held item is a lit welding tool. Messages in `seen` go to everyone
     /// who can see, the clicker too.
