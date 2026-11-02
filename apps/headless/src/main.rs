@@ -4,7 +4,7 @@
 //! player it can see and exits.
 //!
 //! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
-//! [--name NAME] [--say TEXT] [--use SPRITE]... [--pull SPRITE]... [--use-held] [--wait SECONDS]...`
+//! [--name NAME] [--say TEXT] [--use SPRITE]... [--pull SPRITE]... [--equip SLOT]... [--use-held] [--wait SECONDS]...`
 //!
 //! `--use` and `--wait` make a script, run in order: `--use` clicks the first thing with
 //! that sprite on the map (picking it up), `--pull` starts pulling one, `--use-held` clicks the item in the active hand
@@ -20,7 +20,8 @@ use std::time::Duration;
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use rs13_headless::{BotConfig, BotReport, Step, bot_app, unique_client_id};
-use rs13_world::Dir;
+use rs13_network::protocol::ActionInput;
+use rs13_world::{Dir, Slot};
 
 fn main() -> AppExit {
     let config = match parse_args() {
@@ -75,6 +76,17 @@ fn parse_args() -> Result<BotConfig, String> {
             "--say" => config.say = Some(value),
             "--use" => config.script.push(Step::UseOn(value)),
             "--pull" => config.script.push(Step::Pull(value)),
+            "--equip" => config
+                .script
+                .push(Step::Act(ActionInput::Equip(match value.as_str() {
+                    "uniform" => Slot::Uniform,
+                    "shoes" => Slot::Shoes,
+                    "suit" => Slot::Suit,
+                    "head" => Slot::Head,
+                    "mask" => Slot::Mask,
+                    "glasses" => Slot::Glasses,
+                    other => return Err(format!("--equip: unknown slot {other}")),
+                }))),
             "--wait" => config.script.push(Step::Wait(Duration::from_secs_f32(
                 value.parse().map_err(|e| format!("--wait: {e}"))?,
             ))),

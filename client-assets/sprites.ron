@@ -1532,6 +1532,479 @@
             "access_control_process": (dmi: "icons/obj/airlock_machines.dmi", state: "access_control_process"),
         },
         "access-button": { "access_button_standby": (dmi: "icons/obj/airlock_machines.dmi", state: "access_button_standby") },
+        // Clothing from Luna's decks, for its looks.
+        "earmuffs": { "": (dmi: "icons/obj/items.dmi", state: "earmuffs") },
+        "worn:earmuffs": {
+            "": (dmi: "icons/mob/ears.dmi", state: "earmuffs"),
+            "lying": (dmi: "icons/mob/ears.dmi", state: "earmuffs2"),
+        },
+        "blindfold": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "blindfold") },
+        "worn:blindfold": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "blindfold"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "blindfold2"),
+        },
+        "eyepatch": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "eyepatch") },
+        "worn:eyepatch": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "eyepatch"),
+        },
+        "green-glasses": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "gglasses") },
+        "worn:green-glasses": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "gglasses"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "gglasses2"),
+        },
+        "security-hud": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "securityhud") },
+        "worn:security-hud": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "securityhud"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "securityhud2"),
+        },
+        "monocle": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "monocle") },
+        "worn:monocle": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "monocle"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "monocle2"),
+        },
+        "glasses": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "glasses") },
+        "worn:glasses": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "glasses"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "glasses2"),
+        },
+        "hipster-glasses": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "hipster_glasses") },
+        "worn:hipster-glasses": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "hipster_glasses"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "hipster_glasses2"),
+        },
+        "science-goggles": { "": (dmi: "icons/obj/clothing/glasses.dmi", state: "purple") },
+        "worn:science-goggles": {
+            "": (dmi: "icons/mob/eyes.dmi", state: "purple"),
+            "lying": (dmi: "icons/mob/eyes.dmi", state: "purple2"),
+        },
+        "blue-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "blue") },
+        "boxing-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "boxing") },
+        "boxing-gloves-blue": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "boxingblue") },
+        "boxing-gloves-green": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "boxinggreen") },
+        "boxing-gloves-yellow": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "boxingyellow") },
+        "latex-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "latex") },
+        "worn:latex-gloves": {
+            "": (dmi: "icons/mob/hands.dmi", state: "lgloves_rhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "lgloves2_rhand"),
+        },
+        "worn:latex-gloves:l": {
+            "": (dmi: "icons/mob/hands.dmi", state: "lgloves_lhand"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "lgloves2_lhand"),
+        },
+        "light-brown-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "lightbrown") },
+        "orange-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "orange") },
+        "purple-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "purple") },
+        "rainbow-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "rainbow") },
+        "beret": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "beret") },
+        "worn:beret": {
+            "": (dmi: "icons/mob/head.dmi", state: "beret"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "beret2"),
+        },
+        "anomaly-hood": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "anom_hood") },
+        "worn:anomaly-hood": {
+            "": (dmi: "icons/mob/head.dmi", state: "anom_hood"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "anom_hood2"),
+        },
+        "bowler-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "bowler") },
+        "worn:bowler-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "bowler"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "bowler2"),
+        },
+        "cake-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "cake0") },
+        "worn:cake-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "cake0"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "cake02"),
+        },
+        "chicken-head": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "chickenhead") },
+        "worn:chicken-head": {
+            "": (dmi: "icons/mob/head.dmi", state: "chickenhead"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "chickenhead2"),
+        },
+        "flat-cap": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "flat_cap") },
+        "worn:flat-cap": {
+            "": (dmi: "icons/mob/head.dmi", state: "flat_cap"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "flat_cap2"),
+        },
+        "helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "helmet") },
+        "worn:helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "helmet"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "helmet2"),
+        },
+        "police-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "policehelm") },
+        "worn:police-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "policehelm"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "policehelm2"),
+        },
+        "captains-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "captain") },
+        "worn:captains-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "captain"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "captain2"),
+        },
+        "riot-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "riot") },
+        "worn:riot-helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "riot"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "riot2"),
+        },
+        "red-cap": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "secsoft") },
+        "worn:red-cap": {
+            "": (dmi: "icons/mob/head.dmi", state: "secsoft"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "secsoft2"),
+        },
+        "ushanka": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "ushankadown") },
+        "worn:ushanka": {
+            "": (dmi: "icons/mob/head.dmi", state: "ushankadown"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "ushankadown2"),
+        },
+        "welding-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "welding") },
+        "worn:welding-helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "welding"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "welding2"),
+        },
+        "mailman-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "mailman") },
+        "worn:mailman-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "mailman"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "mailman2"),
+        },
+        "pirate-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "pirate") },
+        "worn:pirate-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "pirate"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "pirate2"),
+        },
+        "pirate-captain-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hgpiratecap") },
+        "worn:pirate-captain-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "hgpiratecap"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hgpiratecap2"),
+        },
+        "carved-pumpkin": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "hardhat0_pumpkin") },
+        "worn:carved-pumpkin": {
+            "": (dmi: "icons/mob/head.dmi", state: "hardhat0_pumpkin"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "hardhat0_pumpkin2"),
+        },
+        "rabbit-ears": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "bunny") },
+        "worn:rabbit-ears": {
+            "": (dmi: "icons/mob/head.dmi", state: "bunny"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "bunny2"),
+        },
+        "redcoat-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "redcoat") },
+        "worn:redcoat-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "redcoat"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "redcoat2"),
+        },
+        "top-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "tophat") },
+        "worn:top-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "tophat"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "tophat2"),
+        },
+        "wizard-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "wizard-fake") },
+        "worn:wizard-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "wizard-fake"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "wizard-fake2"),
+        },
+        "muzzle": { "": (dmi: "icons/obj/clothing/masks.dmi", state: "muzzle") },
+        "worn:muzzle": {
+            "": (dmi: "icons/mob/mask.dmi", state: "muzzle"),
+            "lying": (dmi: "icons/mob/mask.dmi", state: "muzzle2"),
+        },
+        "blue-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "blue") },
+        "worn:blue-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "blue"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "blue2"),
+        },
+        "brown-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "brown") },
+        "worn:brown-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "brown"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "brown2"),
+        },
+        "clown-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "clown") },
+        "worn:clown-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "clown"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "clown2"),
+        },
+        "green-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "green") },
+        "worn:green-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "green"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "green2"),
+        },
+        "jackboots": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "jackboots") },
+        "worn:jackboots": {
+            "": (dmi: "icons/mob/feet.dmi", state: "jackboots"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "jackboots2"),
+        },
+        "laceup-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "laceups") },
+        "worn:laceup-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "laceups"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "laceups2"),
+        },
+        "purple-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "purple") },
+        "worn:purple-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "purple"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "purple2"),
+        },
+        "rainbow-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "rain_bow") },
+        "worn:rainbow-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "rain_bow"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "rain_bow2"),
+        },
+        "sandals": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "wizard") },
+        "worn:sandals": {
+            "": (dmi: "icons/mob/feet.dmi", state: "wizard"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "wizard2"),
+        },
+        "white-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "white") },
+        "worn:white-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "white"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "white2"),
+        },
+        "captains-armor": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "caparmor") },
+        "worn:captains-armor": {
+            "": (dmi: "icons/mob/suit.dmi", state: "caparmor"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "caparmor2"),
+        },
+        "ablative-vest": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "armor_reflec") },
+        "worn:ablative-vest": {
+            "": (dmi: "icons/mob/suit.dmi", state: "armor_reflec"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "armor_reflec2"),
+        },
+        "riot-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "riot") },
+        "worn:riot-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "riot"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "riot2"),
+        },
+        "armor-vest": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "armor") },
+        "worn:armor-vest": {
+            "": (dmi: "icons/mob/suit.dmi", state: "armor"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "armor2"),
+        },
+        "anomaly-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "anom_suit") },
+        "worn:anomaly-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "anom_suit"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "anom_suit2"),
+        },
+        "chicken-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "chickensuit") },
+        "worn:chicken-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "chickensuit"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "chickensuit2"),
+        },
+        "worn-shirt": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "ianshirt") },
+        "worn:worn-shirt": {
+            "": (dmi: "icons/mob/suit.dmi", state: "ianshirt"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "ianshirt2"),
+        },
+        "monkey-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "monkeysuit") },
+        "worn:monkey-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "monkeysuit"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "monkeysuit2"),
+        },
+        "pirate-coat": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "pirate") },
+        "worn:pirate-coat": {
+            "": (dmi: "icons/mob/suit.dmi", state: "pirate"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "pirate2"),
+        },
+        "pirate-captain-coat": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "hgpirate") },
+        "worn:pirate-captain-coat": {
+            "": (dmi: "icons/mob/suit.dmi", state: "hgpirate"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "hgpirate2"),
+        },
+        "coveralls": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "overalls") },
+        "worn:coveralls": {
+            "": (dmi: "icons/mob/suit.dmi", state: "overalls"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "overalls2"),
+        },
+        "armor-rig-vest": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "armourrigvest") },
+        "worn:armor-rig-vest": {
+            "": (dmi: "icons/mob/suit.dmi", state: "armourrigvest"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "armourrigvest2"),
+        },
+        "captains-tunic": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "captunic") },
+        "worn:captains-tunic": {
+            "": (dmi: "icons/mob/suit.dmi", state: "captunic"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "captunic2"),
+        },
+        "ia-jacket": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "ia_jacket_open") },
+        "worn:ia-jacket": {
+            "": (dmi: "icons/mob/suit.dmi", state: "ia_jacket_open"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "ia_jacket_open2"),
+        },
+        "straight-jacket": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "straight_jacket") },
+        "worn:straight-jacket": {
+            "": (dmi: "icons/mob/suit.dmi", state: "straight_jacket"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "straight_jacket2"),
+        },
+        "suspenders": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "suspenders") },
+        "worn:suspenders": {
+            "": (dmi: "icons/mob/suit.dmi", state: "suspenders"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "suspenders2"),
+        },
+        "blue-tag-armor": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "bluetag") },
+        "worn:blue-tag-armor": {
+            "": (dmi: "icons/mob/suit.dmi", state: "bluetag"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "bluetag2"),
+        },
+        "red-tag-armor": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "redtag") },
+        "worn:red-tag-armor": {
+            "": (dmi: "icons/mob/suit.dmi", state: "redtag"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "redtag2"),
+        },
+        "waistcoat": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "vest") },
+        "worn:waistcoat": {
+            "": (dmi: "icons/mob/suit.dmi", state: "vest"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "vest2"),
+        },
+        "wizard-robe": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "wizard-fake") },
+        "worn:wizard-robe": {
+            "": (dmi: "icons/mob/suit.dmi", state: "wizard-fake"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "wizard-fake2"),
+        },
+        "witch-robe": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "marisa") },
+        "worn:witch-robe": {
+            "": (dmi: "icons/mob/suit.dmi", state: "marisa"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "marisa2"),
+        },
+        "black-skirt": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "blackskirt") },
+        "worn:black-skirt": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "blackskirt_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "blackskirt_l"),
+        },
+        "purple-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "purple") },
+        "worn:purple-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "purple_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "purple_l"),
+        },
+        "hop-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "teal_suit") },
+        "worn:hop-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "teal_suit_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "teal_suit_l"),
+        },
+        "gladiator-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "gladiator") },
+        "worn:gladiator-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "gladiator_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "gladiator_l"),
+        },
+        "kilt": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "kilt") },
+        "worn:kilt": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "kilt_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "kilt_l"),
+        },
+        "blue-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "bluesuit") },
+        "worn:blue-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "bluesuit_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "bluesuit_l"),
+        },
+        "lawyer-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "black_suit_fem") },
+        "worn:lawyer-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "black_suit_fem_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "black_suit_fem_l"),
+        },
+        "purple-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "lawyer_purp") },
+        "worn:purple-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "lawyer_purp_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "lawyer_purp_l"),
+        },
+        "sensible-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "red_suit") },
+        "worn:sensible-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "red_suit_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "red_suit_l"),
+        },
+        "laborer-overalls": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "overalls") },
+        "worn:laborer-overalls": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "overalls_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "overalls_l"),
+        },
+        "owl-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "owl") },
+        "worn:owl-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "owl_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "owl_l"),
+        },
+        "pirate-outfit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "pirate") },
+        "worn:pirate-outfit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "pirate_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "pirate_l"),
+        },
+        "clown-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "clown") },
+        "worn:clown-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "clown_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "clown_l"),
+        },
+        "dispatcher-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "dispatch") },
+        "worn:dispatcher-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "dispatch_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "dispatch_l"),
+        },
+        "ia-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "internalaffairs") },
+        "worn:ia-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "internalaffairs_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "internalaffairs_l"),
+        },
+        "mailman-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "mailman") },
+        "worn:mailman-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "mailman_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "mailman_l"),
+        },
+        "mime-outfit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "mime") },
+        "worn:mime-outfit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "mime_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "mime_l"),
+        },
+        "police-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "police") },
+        "worn:police-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "police_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "police_l"),
+        },
+        "schoolgirl-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "schoolgirl") },
+        "worn:schoolgirl-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "schoolgirl_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "schoolgirl_l"),
+        },
+        "white-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "scratch") },
+        "worn:white-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "scratch_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "scratch_l"),
+        },
+        "black-shorts": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "blackshorts") },
+        "worn:black-shorts": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "blackshorts_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "blackshorts_l"),
+        },
+        "blue-shorts": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "blueshorts") },
+        "worn:blue-shorts": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "blueshorts_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "blueshorts_l"),
+        },
+        "green-shorts": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "greenshorts") },
+        "worn:green-shorts": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "greenshorts_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "greenshorts_l"),
+        },
+        "grey-shorts": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "greyshorts") },
+        "worn:grey-shorts": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "greyshorts_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "greyshorts_l"),
+        },
+        "red-shorts": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "redshorts") },
+        "worn:red-shorts": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "redshorts_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "redshorts_l"),
+        },
+        "soviet-uniform": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "soviet") },
+        "worn:soviet-uniform": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "soviet_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "soviet_l"),
+        },
+        "black-suit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "black_suit") },
+        "worn:black-suit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "black_suit_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "black_suit_l"),
+        },
+        "sundress": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "sundress") },
+        "worn:sundress": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "sundress_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "sundress_l"),
+        },
+        "waiter-outfit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "waiter") },
+        "worn:waiter-outfit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "waiter_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "waiter_l"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
