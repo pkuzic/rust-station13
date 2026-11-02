@@ -157,6 +157,7 @@ pub fn process_actions(
                     flashers,
                     microwaves,
                     arcades,
+                    airlock_parts,
                 ),
             ),
         ),
@@ -229,6 +230,13 @@ pub fn process_actions(
                     Query<(), With<crate::flashes::Flasher>>,
                     Query<(), With<crate::microwaves::Microwave>>,
                     Query<(), With<crate::arcade::Arcade>>,
+                    Query<
+                        (),
+                        Or<(
+                            With<crate::airlock_control::AccessButton>,
+                            With<crate::airlock_control::AirlockConsole>,
+                        )>,
+                    >,
                 ),
             ),
         ),
@@ -661,6 +669,14 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if airlock_parts.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Cycling airlocks (`airlock-control.md`).
+                    commands
+                        .queue(move |world: &mut World| crate::airlock_control::click(world, mob, target));
                 }
                 Action::UseOn(target)
                     if arcades.contains(target)

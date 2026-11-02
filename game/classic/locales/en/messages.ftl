@@ -100,6 +100,7 @@ arcade-button-attack = Attack
 arcade-button-heal = Heal
 arcade-button-recharge = Recharge Power
 arcade-button-new = New Game
+airlock-cycling = The airlock begins to cycle.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

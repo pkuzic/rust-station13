@@ -16,7 +16,6 @@
 //      1 /obj/machinery/computer/general_air_control
 //      1 /obj/machinery/doppler_array
 //      1 /obj/machinery/driver_button
-//      1 /obj/machinery/embedded_controller/radio/airlock_controller
 //      1 /obj/machinery/mass_driver
 //      7 /obj/machinery/portable_atmospherics/canister
 //      2 /obj/machinery/vending/toxins
@@ -194,7 +193,7 @@
         'Ы': (tile: (id: "floor"), objects: [(id: "windoor", access: ["tox"], dir: West, vars: {"base_state": "left", "icon_state": "left"}), (id: "windoor", access: ["tox"], dir: East, vars: {"base_state": "left", "icon_state": "left"})]),
         'Ь': (tile: (id: "floor"), objects: ["monkey"]),
         'Э': (tile: (id: "floor"), objects: [(id: "light-small", dir: East), "monkey"]),
-        'Ю': (tile: (id: "plating"), objects: ["airlock", (id: "pipe", dir: South)]),
+        'Ю': (tile: (id: "plating"), objects: [(id: "airlock", vars: {"id_tag": "toxin_airlock_door_int"}), (id: "pipe", dir: South)]),
         'Я': (tile: (id: "floor"), objects: [(id: "windoor", dir: South, vars: {"base_state": "left", "icon_state": "left"}), (id: "pipe", dir: South)]),
         'а': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South)]),
         'б': (tile: (id: "floor"), objects: ["portable-pump", (id: "pipe", dir: East)]),
@@ -203,11 +202,11 @@
         'д': (tile: (id: "floor"), objects: ["space-heater", (id: "light-small", dir: South)]),
         'е': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
         'ж': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
-        'з': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),
+        'з': (tile: (id: "plating"), objects: [(id: "airlock-console", vars: {"id_tag": "toxin_access_console", "exterior_door_tag": "toxin_airlock_door_ext", "interior_door_tag": "toxin_airlock_door_int", "airpump_tag": "toxin_airlock_pump", "pixel_x": "25", "pixel_y": "4"}), (id: "vent", dir: North, vars: {"id": "toxin_airlock_pump"}), (id: "light-small", dir: West)]),
         'и': (tile: (id: "plating"), objects: [(id: "vent", dir: North)]),
         'й': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
         'к': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "monkey"})]),
-        'л': (tile: (id: "plating"), objects: ["airlock"]),
+        'л': (tile: (id: "plating"), objects: [(id: "airlock", vars: {"id_tag": "toxin_airlock_door_ext"})]),
         'м': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "toxtest"})]),
     },
     area_legend: {

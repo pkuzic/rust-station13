@@ -30,7 +30,7 @@
     grille_tile: Some((id: "grille", solid: true, opaque: false, airtight: false)),
 
     objects: [
-        (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt"),
+        (path: "/obj/machinery/door/airlock", id: "airlock", access_var: "req_access_txt", vars: ["id_tag"]),
         // Window panes lie along the edge of their tile they face (`windows.md`).
         (path: "/obj/structure/window", id: "window-pane", dir: true),
         (path: "/obj/structure/window_pod", id: "window-pane", dir: true),
@@ -105,7 +105,7 @@
         (path: "/obj/machinery/atmospherics/pipe/tank/nitrogen", id: "nitrogen-pressure-tank", dir: true),
         (path: "/obj/machinery/atmospherics/pipe/tank/carbon_dioxide", id: "carbon-dioxide-pressure-tank", dir: true),
         (path: "/obj/machinery/atmospherics/pipe/tank/toxins", id: "plasma-pressure-tank", dir: true),
-        (path: "/obj/machinery/atmospherics/unary/vent_pump", id: "vent", dir: true),
+        (path: "/obj/machinery/atmospherics/unary/vent_pump", id: "vent", dir: true, vars: ["id"]),
         (path: "/obj/machinery/atmospherics/unary/vent_filter", id: "vent", dir: true),
         (path: "/obj/machinery/atmospherics/unary/vent_scrubber", id: "scrubber", dir: true),
         (path: "/obj/machinery/atmospherics/portables_connector", id: "connector", dir: true),
@@ -297,6 +297,12 @@
         (path: "/obj/item/weapon/storage/box/donkpocket", id: "donk-pockets"),
         (path: "/obj/item/weapon/reagent_containers/food/snacks/donkpocket", id: "donk-pocket"),
         (path: "/obj/machinery/computer/arcade", id: "arcade"),
+        // Cycling airlocks (`airlock-control.md`).
+        (path: "/obj/machinery/embedded_controller/radio/airlock_controller", id: "airlock-console",
+            vars: ["id_tag", "exterior_door_tag", "interior_door_tag", "airpump_tag"]),
+        (path: "/obj/machinery/embedded_controller/radio/access_controller", id: "access-console",
+            vars: ["id_tag", "exterior_door_tag", "interior_door_tag"]),
+        (path: "/obj/machinery/access_button", id: "access-button", vars: ["master_tag", "command"]),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

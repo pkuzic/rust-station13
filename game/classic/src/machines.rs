@@ -50,6 +50,8 @@ pub const GAS_CANISTERS: [(&str, Gas); 5] = [
 pub const PUMP_TARGET: f64 = 300.0;
 /// Litres of room air a scrubber processes per cycle (SS13 `volume_rate`).
 pub const SCRUBBER_VOLUME_RATE: f64 = 120.0;
+/// The share of its room a siphoning vent pumps out each cycle.
+pub const SIPHON_SHARE: f64 = 0.3;
 /// Default output pressure of a gas filter, kPa (Luna `target_pressure`).
 pub const FILTER_TARGET: f64 = ONE_ATMOSPHERE;
 /// Default litres an outlet injector lets out per cycle (Luna `volume_rate`).
@@ -155,6 +157,8 @@ pub struct Vent {
     pub target: f64,
     /// Panic fill, set from the air alarm: refill the whole room at once.
     pub panic: bool,
+    /// Pumping the room's air into the pipes instead, for an airlock console (Luna `purge`).
+    pub siphon: bool,
 }
 
 /// Pulls CO2, plasma and N2O out of the room into the network under it.
@@ -499,6 +503,18 @@ pub fn run_machines(
 
     for (entity, pos, mut vent, on, power) in &mut vents {
         if !on.0 || !power.powered {
+            continue;
+        }
+        if vent.siphon {
+            let Some(&id) = nets.net_of.get(&entity) else {
+                continue;
+            };
+            let moles = atmos
+                .0
+                .zone_at(pos.0)
+                .map_or(0.0, |z| atmos.0.zones()[z].mix.total_moles() * SIPHON_SHARE);
+            let taken = atmos.0.remove_at(pos.0, moles);
+            nets.nets[id].mix.merge(&taken);
             continue;
         }
         // Panic fill (Luna `panic_fill`): while the room is below 95 kPa, pour in enough
@@ -896,6 +912,7 @@ pub fn machine_bundle(
             .vent(Vent {
                 target: ONE_ATMOSPHERE,
                 panic: false,
+                siphon: false,
             }),
         "air-alarm" => {
             let mut alarm = MachineSpawn::new("air-alarm", "alarm0");

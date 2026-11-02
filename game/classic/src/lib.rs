@@ -5,6 +5,7 @@
 
 pub mod access;
 pub mod actions;
+pub mod airlock_control;
 pub mod alarms;
 pub mod apc;
 pub mod arcade;
@@ -355,6 +356,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    airlock_control::run_consoles,
                     arcade::run_arcades,
                     arcade::update_arcade_views,
                     microwaves::run_microwaves,

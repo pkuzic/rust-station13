@@ -7,6 +7,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 
 | Sprite:state | Source file : state | Licence |
 |---|---|---|
+| `access-button:access_button_standby` | `icons/obj/airlock_machines.dmi : "access_button_standby"` | CC-BY-SA 3.0 |
+| `access-console:access_control_process` | `icons/obj/airlock_machines.dmi : "access_control_process"` | CC-BY-SA 3.0 |
+| `access-console:access_control_standby` | `icons/obj/airlock_machines.dmi : "access_control_standby"` | CC-BY-SA 3.0 |
 | `air-alarm:alarm0` | `icons/obj/monitors.dmi : "alarm0"` | CC-BY-SA 3.0 |
 | `air-alarm:alarm1` | `icons/obj/monitors.dmi : "alarm1"` | CC-BY-SA 3.0 |
 | `air-alarm:alarmp` | `icons/obj/monitors.dmi : "alarmp"` | CC-BY-SA 3.0 |
@@ -21,6 +24,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `airlock:opening` | `icons/obj/doors/Doorint.dmi : "door_opening"` | CC-BY-SA 3.0 |
 | `airlock:panel` | `icons/obj/doors/Doorint.dmi : "panel_open"` | CC-BY-SA 3.0 |
 | `airlock:welded` | `icons/obj/doors/Doorint.dmi : "welded"` | CC-BY-SA 3.0 |
+| `airlock-console:airlock_control_process` | `icons/obj/airlock_machines.dmi : "airlock_control_process"` | CC-BY-SA 3.0 |
+| `airlock-console:airlock_control_standby` | `icons/obj/airlock_machines.dmi : "airlock_control_standby"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:low` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:off` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
