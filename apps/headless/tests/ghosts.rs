@@ -86,6 +86,9 @@ fn the_burnt_player_walks_on_unseen_by_the_living() {
         Step::Snapshot("through the wall".into()),
         Step::Act(ActionInput::Say("Boo".into())),
         wait(1_000),
+        Step::Act(ActionInput::Respawn),
+        wait(800),
+        Step::Snapshot("new life".into()),
     ];
     let victim = thread::spawn(move || bot(server, "Ann Hart", 23, victim));
     thread::sleep(Duration::from_millis(500));
@@ -137,6 +140,19 @@ fn the_burnt_player_walks_on_unseen_by_the_living() {
         "{:?}",
         stoker.notices
     );
+
+    let new_life = snap(&victim, "new life");
+    assert_eq!(
+        new_life.status.as_ref().unwrap().stat,
+        MobStat::Conscious,
+        "{new_life:?}"
+    );
+    assert_eq!(
+        own(&new_life),
+        TilePos::new(4, 1, 0),
+        "at the free start point: {new_life:?}"
+    );
+    assert_eq!(new_life.players.iter().filter(|p| p.own).count(), 1);
 
     let after = snap(&stoker, "after");
     assert!(

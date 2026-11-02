@@ -108,11 +108,16 @@ fn toggle_lighting(
     keys: Res<ButtonInput<KeyCode>>,
     chat: Res<ChatInput>,
     became_ghost: Query<(), (Added<OwnPlayer>, With<rs13_world::Ghost>)>,
+    became_person: Query<(), (Added<OwnPlayer>, Without<rs13_world::Ghost>)>,
     mut on: ResMut<LightingOn>,
 ) {
-    // Ghosts see in the dark and through walls (`ghosts.md`). F4 brings the dark back.
+    // Ghosts see in the dark and through walls (`ghosts.md`). F4 brings the dark back. A new
+    // character after that sees as anyone does.
     if !became_ghost.is_empty() {
         on.0 = false;
+    }
+    if !became_person.is_empty() {
+        on.0 = true;
     }
     if !chat.open && keys.just_pressed(KeyCode::F4) {
         on.0 = !on.0;

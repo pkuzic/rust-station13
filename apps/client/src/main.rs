@@ -102,6 +102,8 @@ enum UseStep {
     Pull(i32, i32),
     /// `swap`: swap hands.
     Swap,
+    /// R: a ghost starts over (`ghosts.md`).
+    Respawn,
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -128,6 +130,7 @@ impl UseStep {
         };
         match s {
             "swap" => Some(Self::Swap),
+            "respawn" => Some(Self::Respawn),
             "held" => Some(Self::Held),
             "self" => Some(Self::InHand),
             _ => {
@@ -1081,6 +1084,10 @@ fn send_hotkeys(
     if keys.just_pressed(KeyCode::KeyQ) {
         sender.send::<IntentChannel>(ActionInput::Drop);
     }
+    // A ghost starts over; the server ignores it from anyone alive (`ghosts.md`).
+    if keys.just_pressed(KeyCode::KeyR) {
+        sender.send::<IntentChannel>(ActionInput::Respawn);
+    }
     if keys.just_pressed(KeyCode::KeyX) {
         sender.send::<IntentChannel>(ActionInput::SwapHands);
     }
@@ -1524,6 +1531,7 @@ fn scripted_use(
                 })
         }
         UseStep::Swap => Some(ActionInput::SwapHands),
+        UseStep::Respawn => Some(ActionInput::Respawn),
         UseStep::Held => match hands.active {
             Hand::Right => hands.left,
             Hand::Left => hands.right,

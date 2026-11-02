@@ -35,6 +35,12 @@ A ghost looks as the body did at that moment, in one flat picture at half opacit
 
 The HUD's cells are hidden, and the status line says they are a ghost.
 
+## Starting over
+
+Pressing R as a ghost (Luna's "Respawn") starts a new character at once, in the starting
+outfit, at the first start point nobody stands on. If there is none, they are told and stay a
+ghost. The old body stays where it is, and the ghost is gone.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -45,4 +51,4 @@ The HUD's cells are hidden, and the status line says they are a ghost.
 | "Teleport" to an area every 10 s | Not built |
 | Examining shows descriptions | Only what it is, not machine details (those live in the living's click handling) |
 | Radio chatter heard | Only radios within reach of hearing a person would have |
-| Starting a new character | Not built: a ghost stays one until they reconnect |
+| A new character goes through the lobby and picks a new name | Straight to the first free start point, under the same name: there is no lobby yet |

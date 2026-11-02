@@ -60,8 +60,9 @@ punch-missed = { $attacker } пытается ударить { $victim }, но �
 hud-health = Здоровье: { $value }
 hud-health-crit = Здоровье: КРИТИЧЕСКОЕ
 hud-health-dead = Вы мертвы
-hud-health-ghost = Вы призрак
+hud-health-ghost = Вы призрак. Нажмите R, чтобы начать заново новым персонажем
 ghost-left-body = Вы покидаете своё тело. Живые вас больше не видят и не слышат.
+respawn-no-room = Все точки появления заняты. Попробуйте чуть позже.
 ghost-say = [МЁРТВЫЕ] { $name } { $verb ->
     [ask] спрашивает
     [exclaim] восклицает

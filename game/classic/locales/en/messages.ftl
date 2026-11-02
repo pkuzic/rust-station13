@@ -49,8 +49,9 @@ punch-missed = { $attacker } has attempted to punch { $victim }!
 hud-health = Health: { $value }
 hud-health-crit = Health: CRITICAL
 hud-health-dead = You are dead
-hud-health-ghost = You are a ghost
+hud-health-ghost = You are a ghost. Press R to start over as a new character
 ghost-left-body = You leave your body behind. The living can't see or hear you now.
+respawn-no-room = Every start point is taken. Try again in a moment.
 ghost-say = [DEAD] { $name } { $verb ->
     [ask] asks
     [exclaim] exclaims

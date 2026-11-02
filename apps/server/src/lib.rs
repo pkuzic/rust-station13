@@ -48,8 +48,8 @@ use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, CameraPanelView, ClipboardView, DisplayName, FreezerPanelView,
     GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId,
-    PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView,
-    WirePanelView,
+    PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, TilePos,
+    VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -59,6 +59,13 @@ struct Port(u16);
 #[derive(Resource)]
 /// The station's decks as map text, bottom deck first: deck `i` is at `z = i`.
 struct MapText(Vec<&'static str>);
+
+/// A ghost's player asking to start over, from their link.
+#[derive(Message, Debug, Clone, Copy)]
+struct RespawnRequest {
+    link: Entity,
+    ghost: Entity,
+}
 
 /// What a ghost's status says its body temperature is: neither hot nor cold on the screen.
 const GHOST_BODY_TEMPERATURE: u16 = 310;
@@ -117,6 +124,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .insert_resource(Port(port))
     .insert_resource(MapText(decks))
     .add_systems(Startup, (load_map, listen))
+    .add_message::<RespawnRequest>()
     .add_observer(replicate_net_entities)
     .add_observer(spawn_player)
     // Lightyear drops messages not read in the frame they arrive, and a frame may
@@ -126,6 +134,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
         (
             apply_move_inputs,
             queue_actions,
+            respawn_ghosts.after(queue_actions),
             send_notices,
             send_sounds,
             send_status,
@@ -214,19 +223,64 @@ fn spawn_player(
     };
 
     commands.queue(move |world: &mut World| {
-        let mob = spawn_player_mob(world, spawn);
-        world.entity_mut(mob).insert((
-            Player { client_id },
-            ControlledBy {
-                owner: link,
-                lifetime: Lifetime::SessionBased,
-            },
-        ));
+        let mob = spawn_controlled_mob(world, spawn, client_id, link);
         if let Ok(mut link) = world.get_entity_mut(link) {
             link.insert((Controls(mob), SentStatus::default(), SentPanel::default()));
         }
         info!(client_id, x = spawn.x, y = spawn.y, "player joined");
     });
+}
+
+/// A new character at `at`, controlled by this client.
+fn spawn_controlled_mob(world: &mut World, at: TilePos, client_id: u64, link: Entity) -> Entity {
+    let mob = spawn_player_mob(world, at);
+    world.entity_mut(mob).insert((
+        Player { client_id },
+        ControlledBy {
+            owner: link,
+            lifetime: Lifetime::SessionBased,
+        },
+    ));
+    mob
+}
+
+/// Ghosts who asked to start over become new characters at a free start point, under the
+/// name they had (`ghosts.md`).
+fn respawn_ghosts(
+    mut requests: MessageReader<RespawnRequest>,
+    maps: Query<&MapLayer>,
+    occupied: Query<&GridPos, With<Mob>>,
+    mut ghosts: Query<(&Player, &DisplayName, &mut Outbox), With<Ghost>>,
+    mut commands: Commands,
+) {
+    let mut taken_now: Vec<TilePos> = Vec::new();
+    let mut handled: Vec<Entity> = Vec::new();
+    for RespawnRequest { link, ghost } in requests.read().copied() {
+        // Pressed twice before the first took effect.
+        if handled.contains(&ghost) {
+            continue;
+        }
+        handled.push(ghost);
+        let Ok((player, name, mut outbox)) = ghosts.get_mut(ghost) else {
+            continue;
+        };
+        let spawn = maps
+            .iter()
+            .flat_map(|m| m.0.spawns.iter().copied())
+            .find(|s| !taken_now.contains(s) && !occupied.iter().any(|p| p.0 == *s));
+        let Some(spawn) = spawn else {
+            outbox.0.push(LocMsg::new("respawn-no-room"));
+            continue;
+        };
+        taken_now.push(spawn);
+        let (client_id, name) = (player.client_id, name.clone());
+        commands.queue(move |world: &mut World| {
+            let mob = spawn_controlled_mob(world, spawn, client_id, link);
+            world.entity_mut(mob).insert((name, NameChosen));
+            world.entity_mut(link).insert(Controls(mob));
+            world.despawn(ghost);
+        });
+    }
 }
 
 /// A player who has left their body goes on controlling their ghost (`ghosts.md`); a body
@@ -275,7 +329,8 @@ fn apply_move_inputs(
 
 /// Turn client actions into game actions for the next tick, resolving `NetId`s.
 fn queue_actions(
-    mut links: Query<(&Controls, &mut MessageReceiver<ActionInput>)>,
+    mut links: Query<(Entity, &Controls, &mut MessageReceiver<ActionInput>)>,
+    mut respawns: MessageWriter<RespawnRequest>,
     mut mobs: Query<
         (
             &mut PendingActions,
@@ -310,7 +365,7 @@ fn queue_actions(
     let find = |id: NetId| ids.iter().find(|(_, n, _)| **n == id);
     let resolve = |id: NetId| find(id).map(|(e, _, shade)| shade.map_or(e, |s| s.0));
     let examined = |id: NetId| find(id).filter(|(_, _, shade)| shade.is_none()).map(|(e, ..)| e);
-    for (controls, mut receiver) in &mut links {
+    for (link, controls, mut receiver) in &mut links {
         let Ok((
             mut pending,
             mut speech,
@@ -340,6 +395,13 @@ fn queue_actions(
                     ActionInput::Examine(id) => examined(id).map(Action::Examine),
                     ActionInput::Say(text) => {
                         speech.0.push(text);
+                        None
+                    }
+                    ActionInput::Respawn => {
+                        respawns.write(RespawnRequest {
+                            link,
+                            ghost: controls.0,
+                        });
                         None
                     }
                     _ => None,
@@ -536,6 +598,7 @@ fn queue_actions(
                     }
                     None
                 }
+                ActionInput::Respawn => None,
                 ActionInput::Say(text) => {
                     speech.0.push(text);
                     None
