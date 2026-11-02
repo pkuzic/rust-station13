@@ -312,6 +312,7 @@ impl Plugin for ClassicPlugin {
                         bedsheets::update_linen_looks,
                         conveyors::update_conveyor_looks,
                         heaters::update_heater_looks,
+                        morgue::run_crematoriums,
                         morgue::update_morgue_looks,
                     ),
                     lights::update_light_looks,

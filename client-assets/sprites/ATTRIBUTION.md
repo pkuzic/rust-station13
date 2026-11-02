@@ -234,6 +234,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `crate-radiation:radiationopen` | `icons/obj/storage.dmi : "radiationopen"` | CC-BY-SA 3.0 |
 | `crate-rcd:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
 | `crate-rcd:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |
+| `crematorium:crema0` | `icons/obj/stationobjs.dmi : "crema0"` | CC-BY-SA 3.0 |
+| `crematorium:crema1` | `icons/obj/stationobjs.dmi : "crema1"` | CC-BY-SA 3.0 |
+| `crematorium:crema2` | `icons/obj/stationobjs.dmi : "crema2"` | CC-BY-SA 3.0 |
+| `crematorium-igniter:crema_switch` | `icons/obj/power.dmi : "crema_switch"` | CC-BY-SA 3.0 |
+| `crematorium-tray:cremat` | `icons/obj/stationobjs.dmi : "cremat"` | CC-BY-SA 3.0 |
 | `crowbar:` | `icons/obj/items.dmi : "crowbar"` | CC-BY-SA 3.0 |
 | `desk-lamp:` | `icons/obj/lighting.dmi : "lamp"` | CC-BY-SA 3.0 |
 | `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
@@ -951,6 +956,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `trash-chips:` | `icons/obj/janitor.dmi : "chips"` | CC-BY-SA 3.0 |
 | `trash-raisins:` | `icons/obj/janitor.dmi : "4no_raisins"` | CC-BY-SA 3.0 |
 | `trash-sosjerky:` | `icons/obj/janitor.dmi : "sosjerky"` | CC-BY-SA 3.0 |
+| `urn:` | `icons/obj/items.dmi : "urn"` | CC-BY-SA 3.0 |
 | `utility-belt:` | `icons/obj/clothing/belts.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
 | `valve:closed` | `icons/obj/atmospherics/valve.dmi : "valve0"` | CC-BY-SA 3.0 |
 | `valve:open` | `icons/obj/atmospherics/valve.dmi : "valve1"` | CC-BY-SA 3.0 |
