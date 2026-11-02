@@ -653,6 +653,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("table" | "table-reinforced" | "table-wood" | "rack", _) => {
             (Color::srgb(0.55, 0.55, 0.60), TILE_PX - 2.0, 0.9)
         }
+        // Under what comes out of it.
+        ("microwave", _) => (Color::srgb(0.55, 0.55, 0.60), TILE_PX - 2.0, 0.9),
         _ => (Color::srgb(1.0, 0.0, 1.0), 14.0, 1.0),
     }
 }
@@ -689,7 +691,7 @@ fn pick_sprite(
 fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
         "human" | "monkey" => 3,
-        "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
+        "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" | "microwave" => 2,
         chair if rs13_classic::chairs::is_chair(chair) => 2,
         closet if rs13_classic::closets::is_closet(closet) => 2,
         // A closed or moving firedoor is what gets clicked; an open one is out of the way.
