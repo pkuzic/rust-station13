@@ -180,6 +180,16 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::monkeys::MONKEY {
+        let id = world.resource_mut::<NetIds>().alloc();
+        let monkey = spawn_bare_mob(world, pos, id);
+        world.entity_mut(monkey).remove::<PlayerControlled>().insert((
+            crate::monkeys::Monkey,
+            Appearance::new(crate::monkeys::MONKEY, ""),
+            DisplayName(crate::monkeys::monkey_name(id.0)),
+        ));
+        return Ok(monkey);
+    }
     if crate::flashes::is_flasher(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::flashes::spawn_flasher(world, spec, pos, id));

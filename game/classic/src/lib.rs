@@ -48,6 +48,7 @@ pub mod lights;
 pub mod machines;
 pub mod medical;
 pub mod meters;
+pub mod monkeys;
 pub mod morgue;
 pub mod movement;
 pub mod multiz;
@@ -352,6 +353,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    monkeys::run_monkeys,
                     flashes::run_flashers,
                     flashes::recover,
                     ghosts::leave_dead_bodies,

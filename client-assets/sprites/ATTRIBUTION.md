@@ -590,6 +590,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `meter:meter3_6` | `icons/obj/meter.dmi : "meter3_6"` | CC-BY-SA 3.0 |
 | `meter:meter4` | `icons/obj/meter.dmi : "meter4"` | CC-BY-SA 3.0 |
 | `meter:meterX` | `icons/obj/meter.dmi : "meterX"` | CC-BY-SA 3.0 |
+| `monkey:` | `icons/mob/monkey.dmi : "monkey1"` | CC-BY-SA 3.0 |
+| `monkey:lying` | `icons/mob/monkey.dmi : "monkey0"` | CC-BY-SA 3.0 |
 | `morgue:morgue0` | `icons/obj/stationobjs.dmi : "morgue0"` | CC-BY-SA 3.0 |
 | `morgue:morgue1` | `icons/obj/stationobjs.dmi : "morgue1"` | CC-BY-SA 3.0 |
 | `morgue:morgue2` | `icons/obj/stationobjs.dmi : "morgue2"` | CC-BY-SA 3.0 |

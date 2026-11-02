@@ -1508,6 +1508,10 @@
             "pflash1": (dmi: "icons/obj/stationobjs.dmi", state: "pflash1"),
             "pflash-s": (dmi: "icons/obj/stationobjs.dmi", state: "pflash-s"),
         },
+        "monkey": {
+            "": (dmi: "icons/mob/monkey.dmi", state: "monkey1"),
+            "lying": (dmi: "icons/mob/monkey.dmi", state: "monkey0"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

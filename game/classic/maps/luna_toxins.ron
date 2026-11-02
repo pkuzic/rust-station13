@@ -3,7 +3,6 @@
 // import again.
 //
 // Skipped (no prototype yet):
-//      3 /mob/living/carbon/monkey
 //      2 /obj/effect/landmark/alterations/nopath
 //      3 /obj/item/assembly/time_ignite
 //      5 /obj/item/device/igniter
@@ -193,22 +192,23 @@
         'Щ': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-scrubber"]),
         'Ъ': (tile: (id: "floor"), objects: ["shield-plate"]),
         'Ы': (tile: (id: "floor"), objects: [(id: "windoor", access: ["tox"], dir: West, vars: {"base_state": "left", "icon_state": "left"}), (id: "windoor", access: ["tox"], dir: East, vars: {"base_state": "left", "icon_state": "left"})]),
-        'Ь': (tile: (id: "floor"), objects: [(id: "light-small", dir: East)]),
-        'Э': (tile: (id: "plating"), objects: ["airlock", (id: "pipe", dir: South)]),
-        'Ю': (tile: (id: "floor"), objects: [(id: "windoor", dir: South, vars: {"base_state": "left", "icon_state": "left"}), (id: "pipe", dir: South)]),
-        'Я': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South)]),
-        'а': (tile: (id: "floor"), objects: ["portable-pump", (id: "pipe", dir: East)]),
-        'б': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-pump"]),
-        'в': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),
-        'г': (tile: (id: "floor"), objects: ["space-heater", (id: "light-small", dir: South)]),
-        'д': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
-        'е': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
-        'ж': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),
-        'з': (tile: (id: "plating"), objects: [(id: "vent", dir: North)]),
-        'и': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
-        'й': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "monkey"})]),
-        'к': (tile: (id: "plating"), objects: ["airlock"]),
-        'л': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "toxtest"})]),
+        'Ь': (tile: (id: "floor"), objects: ["monkey"]),
+        'Э': (tile: (id: "floor"), objects: [(id: "light-small", dir: East), "monkey"]),
+        'Ю': (tile: (id: "plating"), objects: ["airlock", (id: "pipe", dir: South)]),
+        'Я': (tile: (id: "floor"), objects: [(id: "windoor", dir: South, vars: {"base_state": "left", "icon_state": "left"}), (id: "pipe", dir: South)]),
+        'а': (tile: (id: "r-wall", solid: true), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South)]),
+        'б': (tile: (id: "floor"), objects: ["portable-pump", (id: "pipe", dir: East)]),
+        'в': (tile: (id: "floor"), objects: [(id: "connector", dir: West), "portable-pump"]),
+        'г': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: North, vars: {"pixel_y": "-22"})]),
+        'д': (tile: (id: "floor"), objects: ["space-heater", (id: "light-small", dir: South)]),
+        'е': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: North, vars: {"pixel_y": "-24"})]),
+        'ж': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North)]),
+        'з': (tile: (id: "plating"), objects: [(id: "vent", dir: North), (id: "light-small", dir: West)]),
+        'и': (tile: (id: "plating"), objects: [(id: "vent", dir: North)]),
+        'й': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false))),
+        'к': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "monkey"})]),
+        'л': (tile: (id: "plating"), objects: ["airlock"]),
+        'м': (tile: (id: "plating"), objects: [(id: "blast-door", vars: {"id": "toxtest"})]),
     },
     area_legend: {
         'a': "central-hallway",
@@ -258,8 +258,8 @@
         "nXГГГГ.Ω.Дκ.ЕX.nЖЗИ,ИЙ  ",
         "nXКККК.ЛМ####XaН.ЗОПРЙ  ",
         "nXСССС..ТУcФ.XoХΡЗ,,,Й  ",
-        "ЦMЧШШЩ.Ъ.Ы.ωЬXЭXЮXЯЯЯX  ",
-        "oMааабвгде...XжXзX     и",
-        "nXXXXXXXXXXйXXкXлX    и ",
+        "ЦMЧШШЩ.Ъ.ЫЬωЭXЮXЯXаааX  ",
+        "oMбббвгдеж.Ь.XзXиX     й",
+        "nXXXXXXXXXXкXXлXмX    й ",
     ],
 )

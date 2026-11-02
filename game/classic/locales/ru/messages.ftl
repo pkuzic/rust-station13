@@ -67,6 +67,12 @@ flasher-disconnected = Вы отсоединяете лампу вспышки.
 flasher-connected = Вы подсоединяете лампу вспышки.
 flasher-secured = Теперь она закреплена.
 flasher-loose = Теперь её можно двигать.
+monkey-emote = { $name } { $act ->
+    [jump] прыгает!
+    [roll] катается по полу.
+    [tail] машет хвостом.
+   *[scratch] чешется.
+}
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

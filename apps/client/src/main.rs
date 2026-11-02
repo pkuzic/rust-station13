@@ -688,7 +688,7 @@ fn pick_sprite(
 /// Which thing on a tile a click picks: lowest rank wins.
 fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
-        "human" => 3,
+        "human" | "monkey" => 3,
         "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" => 2,
         chair if rs13_classic::chairs::is_chair(chair) => 2,
         closet if rs13_classic::closets::is_closet(closet) => 2,
@@ -1386,14 +1386,15 @@ fn glide(
         &mut Transform,
         Has<Player>,
         Has<rs13_world::Silhouette>,
+        Option<&Appearance>,
         Option<&mut Glided>,
         Option<&rs13_world::PixelOffset>,
     )>,
 ) {
     let dt = time.delta_secs();
-    for (entity, pos, mut transform, player, shape, glided, offset) in &mut movers {
+    for (entity, pos, mut transform, player, shape, look, glided, offset) in &mut movers {
         // Someone in the dark glides like anyone else (`sprite_shadows.rs`, Silhouettes).
-        let is_player = player || shape;
+        let is_player = player || shape || look.is_some_and(|a| a.sprite == "monkey");
         // Hung on a wall: drawn shifted onto it (BYOND `pixel_x`, `pixel_y`).
         let shift = offset.map_or(Vec3::ZERO, |o| {
             Vec3::new(f32::from(o.0[0]), f32::from(o.0[1]), 0.0)
