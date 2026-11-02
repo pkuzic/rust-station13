@@ -753,3 +753,6 @@ heater-cell-removed = Removed
 heater-level = Power Level: { $value }%
 heater-set = Set Temperature:
 heater-degrees = { $value }°C
+
+# Morgue (morgue.md). Args: $name, $victim (names); $item (noun id).
+morgue-stuffed = { $name } stuffs { $victim } into the { NOUN($item) }!

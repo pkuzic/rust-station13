@@ -20,6 +20,8 @@
     "welder": (gender: neuter, sg: (nom: "welding tool", indef: "a welding tool"), pl: Some((nom: "welding tools"))),
     "fuel-tank": (gender: neuter, sg: (nom: "fuel tank", indef: "a fuel tank"), pl: Some((nom: "fuel tanks"))),
     "paper-bin": (gender: neuter, sg: (nom: "paper bin", indef: "a paper bin"), pl: Some((nom: "paper bins"))),
+    "morgue": (gender: neuter, sg: (nom: "morgue", indef: "a morgue"), pl: Some((nom: "morgues"))),
+    "morgue-tray": (gender: neuter, sg: (nom: "morgue tray", indef: "a morgue tray"), pl: Some((nom: "morgue trays"))),
     "space-heater": (gender: neuter, sg: (nom: "space heater", indef: "a space heater"), pl: Some((nom: "space heaters"))),
     "conveyor": (gender: neuter, sg: (nom: "conveyor belt", indef: "a conveyor belt"), pl: Some((nom: "conveyor belts"))),
     "conveyor-switch": (gender: neuter, sg: (nom: "conveyor switch", indef: "a conveyor switch"), pl: Some((nom: "conveyor switches"))),

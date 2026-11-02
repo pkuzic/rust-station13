@@ -152,6 +152,8 @@
         (path: "/obj/structure/bedsheetbin", id: "linen-bin"),
         // Space heaters, a full cell in each (`space-heaters.md`).
         (path: "/obj/machinery/space_heater", id: "space-heater"),
+        // Morgue drawers; their trays slide out east (`morgue.md`).
+        (path: "/obj/structure/morgue", id: "morgue"),
         // Conveyor belts and their switches, joined by id (`conveyors.md`).
         (path: "/obj/machinery/conveyor", id: "conveyor", dir: true, vars: ["id"]),
         (path: "/obj/machinery/conveyor/centcom_auto", id: "conveyor", dir: true, vars: ["id", "is_on"],

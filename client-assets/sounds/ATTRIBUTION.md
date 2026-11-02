@@ -29,6 +29,7 @@ to files in `apps/client/src/audio.rs`.
 | `machines/warning-buzzer.ogg` | `sound/machines/warning-buzzer.ogg` | `warning-buzzer` | CC-BY-SA 3.0 |
 | `effects/extinguish.ogg` | `sound/effects/extinguish.ogg` | `extinguish` | CC-BY-SA 3.0 |
 | `machines/windowdoor.ogg` | `sound/machines/windowdoor.ogg` | `windoor` | CC-BY-SA 3.0 |
+| `items/Deconstruct.ogg` | `sound/items/Deconstruct.ogg` | `deconstruct` | CC-BY-SA 3.0 |
 | `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |
 | `items/eatfood.ogg` | `sound/items/eatfood.ogg` | `eat-food` | CC-BY-SA 3.0 |
 | `items/drink.ogg` | `sound/items/drink.ogg` | `drink` | CC-BY-SA 3.0 |

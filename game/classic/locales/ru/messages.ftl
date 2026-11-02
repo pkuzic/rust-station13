@@ -781,3 +781,6 @@ heater-cell-removed = Снята
 heater-level = Заряд: { $value }%
 heater-set = Температура:
 heater-degrees = { $value }°C
+
+# Морг (morgue.md). Аргументы: $name, $victim (имена); $item (id существительного).
+morgue-stuffed = { $name } заталкивает { $victim } на { NOUN($item, case: "acc") }!
