@@ -43,6 +43,7 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("drink", &[ogg!("items/drink.ogg")]),
     ("windoor", &[ogg!("machines/windowdoor.ogg")]),
     ("deconstruct", &[ogg!("items/Deconstruct.ogg")]),
+    ("ding", &[ogg!("machines/ding.ogg")]),
     (
         "sparks",
         &[

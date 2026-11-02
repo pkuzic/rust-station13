@@ -756,3 +756,7 @@ heater-degrees = { $value }°C
 
 # Morgue (morgue.md). Args: $name, $victim (names); $item (noun id).
 morgue-stuffed = { $name } stuffs { $victim } into the { NOUN($item) }!
+crematorium-locked = It's locked.
+crematorium-denied = Access denied.
+crematorium-crackle = You hear a hollow crackle.
+crematorium-roar = You hear a roar as the crematorium activates.

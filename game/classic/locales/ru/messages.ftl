@@ -784,3 +784,7 @@ heater-degrees = { $value }°C
 
 # Морг (morgue.md). Аргументы: $name, $victim (имена); $item (id существительного).
 morgue-stuffed = { $name } заталкивает { $victim } на { NOUN($item, case: "acc") }!
+crematorium-locked = Заперто.
+crematorium-denied = Доступ запрещён.
+crematorium-crackle = Слышен глухой треск.
+crematorium-roar = Слышен рёв: крематорий запускается.

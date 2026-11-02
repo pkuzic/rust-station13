@@ -144,7 +144,7 @@ pub fn process_actions(
                 mut windoors,
                 mut filing,
                 mut linen,
-                (mut belt_switches, belts, pulling, mut heaters, morgues, trays),
+                (mut belt_switches, belts, pulling, mut heaters, morgues, trays, crema_switches),
             ),
         ),
         (
@@ -203,6 +203,7 @@ pub fn process_actions(
                     crate::heaters::HeaterWork,
                     Query<(), With<crate::morgue::Morgue>>,
                     Query<&crate::morgue::MorgueTray>,
+                    Query<(), With<crate::morgue::Igniter>>,
                 ),
             ),
         ),
@@ -563,18 +564,28 @@ pub fn process_actions(
                                     .and_then(|(_, n)| n.map(|n| n.0.clone()))
                                     .unwrap_or_default()
                             };
+                            let tray_noun = appearances
+                                .get(target)
+                                .map_or(crate::morgue::MORGUE_TRAY.to_owned(), |(a, _)| a.sprite.clone());
                             visible.0.push((
                                 mob_pos.0,
                                 LocMsg::new("morgue-stuffed")
                                     .arg("name", name(mob))
                                     .arg("victim", name(body))
-                                    .arg("item", crate::morgue::MORGUE_TRAY),
+                                    .arg("item", tray_noun),
                                 None,
                             ));
                         }
                     } else if hands.active_item().is_none() {
                         let morgue = trays.get(target).map_or(target, |t| t.0);
                         commands.queue(move |world: &mut World| {
+                            if crate::morgue::is_locked(world, morgue) {
+                                // Luna `crematorium/attack_hand` while it burns.
+                                if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
+                                    outbox.0.push(LocMsg::new("crematorium-locked"));
+                                }
+                                return;
+                            }
                             let out = world
                                 .get::<crate::morgue::Morgue>(morgue)
                                 .is_some_and(|d| d.tray.is_some());
@@ -584,6 +595,19 @@ pub fn process_actions(
                                 crate::morgue::open_tray(world, morgue);
                             }
                         });
+                    }
+                }
+                Action::UseOn(target)
+                    if crema_switches.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Crematorium igniters (`morgue.md`): anything in the hand works as a hand.
+                    let card = closets.card_of(mob, &hands);
+                    let access = [crate::morgue::IGNITER_ACCESS.to_owned()];
+                    if crate::access::allowed(&access, card) {
+                        commands.queue(move |world: &mut World| crate::morgue::ignite(world, target));
+                    } else {
+                        outbox.0.push(LocMsg::new("crematorium-denied"));
                     }
                 }
                 Action::UseOn(target)

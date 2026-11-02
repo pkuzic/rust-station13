@@ -1465,6 +1465,16 @@
             "morgue0": (dmi: "icons/obj/stationobjs.dmi", state: "morgue0"),
         },
         "morgue-tray": { "morguet": (dmi: "icons/obj/stationobjs.dmi", state: "morguet") },
+        // Crematoriums: empty, with something inside, or with the tray out; the tray; the
+        // igniter on the wall; the urn it leaves.
+        "crematorium": {
+            "crema1": (dmi: "icons/obj/stationobjs.dmi", state: "crema1"),
+            "crema2": (dmi: "icons/obj/stationobjs.dmi", state: "crema2"),
+            "crema0": (dmi: "icons/obj/stationobjs.dmi", state: "crema0"),
+        },
+        "crematorium-tray": { "cremat": (dmi: "icons/obj/stationobjs.dmi", state: "cremat") },
+        "crematorium-igniter": { "crema_switch": (dmi: "icons/obj/power.dmi", state: "crema_switch") },
+        "urn": { "": (dmi: "icons/obj/items.dmi", state: "urn") },
         // Coffins and the personal, brig and security lockers.
         "closet-coffin": {
             "coffin": (dmi: "icons/obj/closet.dmi", state: "coffin"),

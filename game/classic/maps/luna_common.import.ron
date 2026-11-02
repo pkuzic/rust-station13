@@ -154,6 +154,9 @@
         (path: "/obj/machinery/space_heater", id: "space-heater"),
         // Morgue drawers; their trays slide out east (`morgue.md`).
         (path: "/obj/structure/morgue", id: "morgue"),
+        // Crematoriums, their trays sliding out south, and the igniters that light them by id.
+        (path: "/obj/structure/crematorium", id: "crematorium", vars: ["id"]),
+        (path: "/obj/machinery/crema_switch", id: "crematorium-igniter", vars: ["id"]),
         // Conveyor belts and their switches, joined by id (`conveyors.md`).
         (path: "/obj/machinery/conveyor", id: "conveyor", dir: true, vars: ["id"]),
         (path: "/obj/machinery/conveyor/centcom_auto", id: "conveyor", dir: true, vars: ["id", "is_on"],
