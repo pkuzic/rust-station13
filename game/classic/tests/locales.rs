@@ -124,6 +124,9 @@ fn every_message_formats_in_both_locales() {
     args.set("cabinet", "extinguisher-cabinet");
     args.set("seat", "bed");
     args.set("connected", "yes");
+    args.set("verb", "chew");
+    args.set("tool", "lighter");
+    args.set("level", "half");
     args.set("out", "no");
     args.set("first", "crowbar");
     args.set("second", "breath-mask");

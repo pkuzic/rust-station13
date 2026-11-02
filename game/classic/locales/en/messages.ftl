@@ -597,3 +597,65 @@ gas-direction = Pump direction: { $out ->
 gas-release = Release pressure:
 gas-target = Target pressure:
 gas-rate = Rate:
+
+# Vending machine window (vending.md).
+vending-select = Select an item:
+vending-vend = Vend
+vending-sold-out = Sold Out
+
+# Eating and drinking (food.md). Args: $item, $tool (noun ids); $verb (bite, chew, nibble,
+# gnaw, gobble, chomp); $name, $target (people); $count; $level (empty, almost-empty, half,
+# almost-full, full).
+food-eat-gobble = You hungrily { food-verb } some of the { NOUN($item) } and gobble it down!
+food-eat-begin = You hungrily begin to { food-verb-inf } the { NOUN($item) }.
+food-eat = You { food-verb } the { NOUN($item) }.
+food-eat-unwilling = You unwillingly { food-verb } a bit of the { NOUN($item) }.
+food-eat-full = You cannot force any more of the { NOUN($item) } to go down your throat.
+food-verb = { $verb ->
+        [chew] chew
+        [nibble] nibble
+        [gnaw] gnaw
+        [gobble] gobble
+        [chomp] chomp
+       *[bite] bite
+    }
+# English has one form for both.
+food-verb-inf = { food-verb }
+drink-gulp = You swallow a gulp of the { NOUN($item) }.
+drink-empty = None of the { NOUN($item) } left, oh no!
+drink-feeds = { $name } feeds { $target } the { NOUN($item) }.
+examine-bitten-once = The { NOUN($item) } was bitten by someone!
+examine-bitten = The { NOUN($item) } was bitten { $count } times!
+examine-bitten-many = The { NOUN($item) } was bitten multiple times!
+examine-drink = The { NOUN($item) } is { $level ->
+        [empty] empty!
+        [almost-empty] almost empty!
+        [half] half full!
+        [almost-full] almost full!
+       *[full] full!
+    }
+hunger-1 = You feel hungry
+hunger-2 = You feel thirsty
+hunger-3 = Perhaps you should grab a bite to eat
+hunger-4 = Your stomach rumbles
+hunger-5 = Perhaps you should have a drink...
+hunger-6 = You feel empty inside
+hunger-7 = You feel a bit peckish
+hunger-8 = Whatever you last ate didn't do much to fill you up...
+hunger-9 = Hmm, some pizza would be nice
+
+# Smoking (smoking.md).
+cigarettes-out = You're out of cigs, shit! How you gonna get through the rest of the day...
+examine-cigarettes = There { $count ->
+        [one] is { $count } cig
+       *[other] are { $count } cigs
+    } left!
+lighter-on = After a few attempts, { $name } manages to light the { NOUN($item) }.
+lighter-on-burnt = After a few attempts, { $name } manages to light the { NOUN($item) }, they however burn their finger in the process.
+lighter-burn-self = You burn yourself while lighting the lighter.
+lighter-off = { $name } quietly shuts off the { NOUN($item) }.
+cigarette-lit-welder = { $name } casually lights the { NOUN($item) } with the { NOUN($tool) }, what a badass.
+cigarette-lit-lighter = After some fiddling, { $name } manages to light their { NOUN($item) } with the { NOUN($tool) }.
+cigarette-lit = { $name } lights their { NOUN($item) } with their { NOUN($tool) }.
+cigarette-out = Your { NOUN($item) } goes out.
+cigarette-trodden = { $name } calmly drops and treads on the lit { NOUN($item) }, putting it out instantly.

@@ -8,7 +8,7 @@ pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, AtmosView, Dense, DisplayName, EnvAlert, Facing,
     FreezerPanelView, GasMachine, GasPanelView, GridPos, Hand, HandsView, Hidden, Intent, LaserPanelView,
     LightSource, MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorRow, PowerMonitorView,
-    Silhouette, Slot, SmesPanelView, StorageView, WirePanelView, WornView,
+    Silhouette, Slot, SmesPanelView, StorageView, VendingPanelView, VendingRow, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

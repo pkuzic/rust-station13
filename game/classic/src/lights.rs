@@ -304,7 +304,8 @@ pub struct LightWork<'w, 's> {
     items: Query<'w, 's, &'static Item>,
     conducting: Query<'w, 's, (), With<Conducts>>,
     worn: Query<'w, 's, &'static Equipment>,
-    rng: ResMut<'w, GameRng>,
+    /// The game's dice, shared with other clicks in `process_actions`.
+    pub(crate) rng: ResMut<'w, GameRng>,
 }
 
 impl LightWork<'_, '_> {

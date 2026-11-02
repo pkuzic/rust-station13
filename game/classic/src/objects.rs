@@ -143,6 +143,7 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
 
 fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     world.init_resource::<NetIds>();
+    world.init_resource::<crate::rng::GameRng>();
     world.init_resource::<ItemProtos>();
     world.init_resource::<AccessIds>();
     if let Some(bad) = spec
@@ -170,6 +171,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::firealarms::FIRE_ALARM {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::firealarms::spawn_fire_alarm(world, spec, pos, id));
+    }
+    if let Some(kind) = crate::vending::kind(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::vending::spawn_vending(world, kind, pos, id));
     }
     if crate::portables::is_portable(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
@@ -340,7 +345,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         size: def.size,
     };
     let look = def.base.clone().unwrap_or_else(|| proto.to_owned());
+    let roll = world.resource_mut::<crate::rng::GameRng>().range(0, 3);
     let mut item = world.spawn((GridPos(pos), id, Appearance::new(look, ""), item));
+    crate::food::spawn_food(&mut item, proto);
+    crate::smoking::spawn_smokable(&mut item, proto, roll);
     if let Some(slot) = def.slot.as_deref().and_then(Slot::parse) {
         item.insert(Wearable {
             slot,
@@ -463,6 +471,7 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 },
                 CombatIntent::default(),
                 Lungs::default(),
+                crate::food::Nutrition::default(),
                 Surroundings::default(),
                 Outbox::default(),
                 crate::sound::Earshot::default(),
@@ -484,6 +493,8 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 (
                     crate::gas_panel::PendingGasOps::default(),
                     crate::gas_panel::GasPanelOut::default(),
+                    crate::vending::PendingVendOps::default(),
+                    crate::vending::VendingPanelOut::default(),
                     crate::smes_panel::PendingSmesOps::default(),
                     crate::smes_panel::SmesPanelOut::default(),
                     crate::alarms::AlarmPanelOut::default(),

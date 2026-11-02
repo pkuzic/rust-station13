@@ -26,6 +26,7 @@ use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
 use rs13_classic::supermatter::{LaserOp, LaserPanelOut, PendingLaserOps};
+use rs13_classic::vending::{PendingVendOps, VendingPanelOut};
 use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
 use rs13_classic::{ClassicPlugin, maps};
 use rs13_i18n::LocMsg;
@@ -35,12 +36,12 @@ use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, FreezerCommand,
     FreezerPanel, GasCommand, GasPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
     PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
-    StoragePanel, WirePanel,
+    StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GasPanelView, GridPos, LaserPanelView,
-    MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, WirePanelView,
+    MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -71,6 +72,7 @@ struct SentPanel(
     Option<FreezerPanelView>,
     Option<SmesPanelView>,
     Option<GasPanelView>,
+    Option<VendingPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -237,6 +239,7 @@ fn queue_actions(
         &mut PendingFreezerOps,
         &mut PendingSmesOps,
         &mut PendingGasOps,
+        &mut PendingVendOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
@@ -261,6 +264,7 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
+            mut vend_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -336,6 +340,12 @@ fn queue_actions(
                                 SmesCommand::Output(l) => SmesOp::Output(level(l)),
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Vend { target, line } => {
+                    if let Some(machine) = resolve(target) {
+                        vend_ops.0.push((machine, usize::from(line)));
                     }
                     None
                 }
@@ -498,6 +508,7 @@ fn send_panels(
         &mut MessageSender<FreezerPanel>,
         &mut MessageSender<SmesPanel>,
         &mut MessageSender<GasPanel>,
+        &mut MessageSender<VendingPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -509,6 +520,7 @@ fn send_panels(
         &FreezerPanelOut,
         &SmesPanelOut,
         &GasPanelOut,
+        &VendingPanelOut,
     )>,
 ) {
     for (
@@ -523,10 +535,21 @@ fn send_panels(
         mut freezers,
         mut smes,
         mut gases,
+        mut vendings,
     ) in &mut links
     {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer, smes_panel, gas)) =
-            panels.get(controls.0)
+        let Ok((
+            wire_panel,
+            alarm_panel,
+            storage,
+            apc_panel,
+            monitor,
+            laser,
+            freezer,
+            smes_panel,
+            gas,
+            vending,
+        )) = panels.get(controls.0)
         else {
             continue;
         };
@@ -565,6 +588,10 @@ fn send_panels(
         if sent.8 != gas.0 {
             gases.send::<NoticeChannel>(GasPanel(gas.0.clone()));
             sent.8 = gas.0.clone();
+        }
+        if sent.9 != vending.0 {
+            vendings.send::<NoticeChannel>(VendingPanel(vending.0.clone()));
+            sent.9 = vending.0.clone();
         }
     }
 }

@@ -27,6 +27,7 @@ pub mod fires;
 pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
+pub mod food;
 pub mod freezers;
 pub mod furniture;
 pub mod gas_panel;
@@ -51,6 +52,7 @@ pub mod pulling;
 pub mod radio;
 pub mod rng;
 pub mod smes_panel;
+pub mod smoking;
 pub mod sound;
 pub mod sparks;
 pub mod speech;
@@ -58,6 +60,7 @@ pub mod storage;
 pub mod supermatter;
 pub mod teg;
 pub mod time;
+pub mod vending;
 pub mod walllockers;
 pub mod welding;
 pub mod windows;
@@ -158,6 +161,7 @@ impl Plugin for ClassicPlugin {
                     supermatter::process_laser_ops,
                     freezers::process_freezer_ops,
                     gas_panel::process_gas_ops,
+                    vending::process_vend_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -221,6 +225,9 @@ impl Plugin for ClassicPlugin {
                     sparks::run_sparks,
                     extinguishers::run_puffs,
                     portables::run_portables,
+                    vending::run_vending,
+                    smoking::burn_flames,
+                    food::get_hungry,
                     disposals::run_bins,
                     disposals::run_bundles,
                     disposals::run_outlets,
@@ -257,6 +264,7 @@ impl Plugin for ClassicPlugin {
                         supermatter::update_laser_views,
                         freezers::update_freezer_views,
                         gas_panel::update_gas_views,
+                        vending::update_vending_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
@@ -269,6 +277,8 @@ impl Plugin for ClassicPlugin {
                     extinguishers::update_extinguisher_looks,
                     extinguishers::update_cabinet_looks,
                     portables::update_portable_looks,
+                    vending::update_vending_looks,
+                    smoking::update_smoking_looks,
                     lights::update_light_looks,
                     lights::update_light_sources,
                     flashlights::update_flashlight_looks,

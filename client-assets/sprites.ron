@@ -125,6 +125,14 @@
             "": (dmi: "icons/mob/back.dmi", state: "jetpack1_ce"),
             "lying": (dmi: "icons/mob/back.dmi", state: "jetpack1_ce2"),
         },
+        "worn:cigarette": {
+            "": (dmi: "icons/mob/mask.dmi", state: "cigoff"),
+            "lying": (dmi: "icons/mob/mask.dmi", state: "cigoff2"),
+        },
+        "worn:cigarette-lit": {
+            "": (dmi: "icons/mob/mask.dmi", state: "cigon"),
+            "lying": (dmi: "icons/mob/mask.dmi", state: "cigon2"),
+        },
         "worn:breath-mask": {
             "": (dmi: "icons/mob/mask.dmi", state: "breath"),
             "lying": (dmi: "icons/mob/mask.dmi", state: "breath2"),
@@ -924,6 +932,87 @@
             "pscrubber:0": (dmi: "icons/obj/atmos.dmi", state: "pscrubber:0"),
             "pscrubber:1": (dmi: "icons/obj/atmos.dmi", state: "pscrubber:1"),
         },
+        // Vending machines: normal, -off without power, -broken; the hot drinks machine's
+        // vend animation.
+        "vending-coffee": {
+            "coffee": (dmi: "icons/obj/vending.dmi", state: "coffee"),
+            "coffee-off": (dmi: "icons/obj/vending.dmi", state: "coffee-off"),
+            "coffee-broken": (dmi: "icons/obj/vending.dmi", state: "coffee-broken"),
+            "coffee-vend": (dmi: "icons/obj/vending.dmi", state: "coffee-vend"),
+        },
+        "vending-snack": {
+            "snack": (dmi: "icons/obj/vending.dmi", state: "snack"),
+            "snack-off": (dmi: "icons/obj/vending.dmi", state: "snack-off"),
+            "snack-broken": (dmi: "icons/obj/vending.dmi", state: "snack-broken"),
+        },
+        "vending-cola": {
+            "Cola_Machine": (dmi: "icons/obj/vending.dmi", state: "Cola_Machine"),
+            "Cola_Machine-off": (dmi: "icons/obj/vending.dmi", state: "Cola_Machine-off"),
+            "Cola_Machine-broken": (dmi: "icons/obj/vending.dmi", state: "Cola_Machine-broken"),
+        },
+        "vending-soda": {
+            "soda": (dmi: "icons/obj/vending.dmi", state: "soda"),
+            "soda-off": (dmi: "icons/obj/vending.dmi", state: "soda-off"),
+            "soda-broken": (dmi: "icons/obj/vending.dmi", state: "soda-broken"),
+        },
+        "vending-cigarette": {
+            "cigs": (dmi: "icons/obj/vending.dmi", state: "cigs"),
+            "cigs-off": (dmi: "icons/obj/vending.dmi", state: "cigs-off"),
+            "cigs-broken": (dmi: "icons/obj/vending.dmi", state: "cigs-broken"),
+        },
+        // Food and drink (`food.md`).
+        "candy": { "": (dmi: "icons/obj/food.dmi", state: "candy") },
+        "chips": { "": (dmi: "icons/obj/food.dmi", state: "chips") },
+        "beef-jerky": { "": (dmi: "icons/obj/food.dmi", state: "sosjerky") },
+        "no-raisin": { "": (dmi: "icons/obj/food.dmi", state: "4no_raisins") },
+        "space-twinkie": { "": (dmi: "icons/obj/food.dmi", state: "space_twinkie") },
+        "cheesie-honkers": { "": (dmi: "icons/obj/food.dmi", state: "cheesie_honkers") },
+        "trash-candy": { "": (dmi: "icons/obj/janitor.dmi", state: "candy") },
+        "trash-chips": { "": (dmi: "icons/obj/janitor.dmi", state: "chips") },
+        "trash-sosjerky": { "": (dmi: "icons/obj/janitor.dmi", state: "sosjerky") },
+        "trash-raisins": { "": (dmi: "icons/obj/janitor.dmi", state: "4no_raisins") },
+        "trash-cheesie": { "": (dmi: "icons/obj/janitor.dmi", state: "cheesie_honkers") },
+        "coffee": { "": (dmi: "icons/obj/drinks.dmi", state: "coffee") },
+        "tea": { "": (dmi: "icons/obj/cup.dmi", state: "tea") },
+        "hot-chocolate": { "": (dmi: "icons/obj/cup.dmi", state: "hotchocolate") },
+        "dry-ramen": { "": (dmi: "icons/obj/drinks.dmi", state: "ramen") },
+        "cola": { "": (dmi: "icons/obj/drinks.dmi", state: "cola") },
+        "space-mountain-wind": { "": (dmi: "icons/obj/drinks.dmi", state: "space_mountain_wind") },
+        "dr-gibb": { "": (dmi: "icons/obj/drinks.dmi", state: "dr_gibb") },
+        "starkist": { "": (dmi: "icons/obj/drinks.dmi", state: "starkist") },
+        "space-up": { "": (dmi: "icons/obj/drinks.dmi", state: "space-up") },
+        // Smoking (`smoking.md`): the packet by cigarettes left, matches, lighters by
+        // colour, lit or not, cigarettes.
+        "cigarette-packet": {
+            "": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket"),
+            "0": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket0"),
+            "1": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket1"),
+            "2": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket2"),
+            "3": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket3"),
+            "4": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket4"),
+            "5": (dmi: "icons/obj/cigarettes.dmi", state: "cigpacket5"),
+        },
+        "matchbox": { "": (dmi: "icons/obj/cigarettes.dmi", state: "matchbox") },
+        "match": {
+            "": (dmi: "icons/obj/cigarettes.dmi", state: "match_unlit"),
+            "lit": (dmi: "icons/obj/cigarettes.dmi", state: "match_lit"),
+            "burnt": (dmi: "icons/obj/cigarettes.dmi", state: "match_burnt"),
+        },
+        "lighter": {
+            "g": (dmi: "icons/obj/items.dmi", state: "lighter-g"),
+            "g-on": (dmi: "icons/obj/items.dmi", state: "lighter-g-on"),
+            "r": (dmi: "icons/obj/items.dmi", state: "lighter-r"),
+            "r-on": (dmi: "icons/obj/items.dmi", state: "lighter-r-on"),
+            "y": (dmi: "icons/obj/items.dmi", state: "lighter-y"),
+            "y-on": (dmi: "icons/obj/items.dmi", state: "lighter-y-on"),
+            "c": (dmi: "icons/obj/items.dmi", state: "lighter-c"),
+            "c-on": (dmi: "icons/obj/items.dmi", state: "lighter-c-on"),
+        },
+        "cigarette": {
+            "": (dmi: "icons/obj/clothing/masks.dmi", state: "cigoff"),
+            "lit": (dmi: "icons/obj/clothing/masks.dmi", state: "cigon"),
+        },
+        "cigarette-butt": { "": (dmi: "icons/obj/clothing/masks.dmi", state: "cigbutt") },
         "canister": {
             "": (dmi: "icons/obj/atmos.dmi", state: "grey"),
             // Overlays: the gauge light, and the connector while on a port.
