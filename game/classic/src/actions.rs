@@ -137,7 +137,7 @@ pub fn process_actions(
             mut food,
             mut smoking,
             inventory,
-            (consoles, mut cameras, mut paperwork, mut windoors),
+            (consoles, mut cameras, mut paperwork, mut windoors, mut filing, mut linen),
         ),
         (
             mut generators,
@@ -186,6 +186,8 @@ pub fn process_actions(
                 Query<(&GridPos, &mut crate::cameras::Camera)>,
                 crate::paperwork::PaperWork,
                 Query<&mut crate::windoors::Windoor>,
+                crate::filing::FilingWork,
+                crate::bedsheets::LinenWork,
             ),
         ),
         (
@@ -358,6 +360,9 @@ pub fn process_actions(
                         if let Some(more) = paperwork.examine_bin(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = linen.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Some(more) = food.examine(target) {
                             outbox.0.push(more);
                         }
@@ -497,6 +502,27 @@ pub fn process_actions(
                         outbox.0.extend(outcome.to_mob);
                     }
                 }
+                Action::UseOn(target)
+                    if (filing.contains(target) || linen.is_bin(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Filing cabinets (`filing-cabinets.md`), linen bins (`bedsheets.md`).
+                    let at = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    let wrench = holding(&hands, &appearances, "wrench");
+                    if let Some((outcome, wrenched)) =
+                        filing.use_on(mob, &mut hands, target, wrench, &mut commands)
+                    {
+                        if wrenched {
+                            sounds.play(crate::sound::RATCHET, at, 50.0);
+                        }
+                        outbox.0.extend(outcome.to_mob);
+                    } else if let Some(outcome) =
+                        linen.use_on(mob, mob_pos.0, &mut hands, target, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                        outbox.0.extend(outcome.seen);
+                    }
+                }
                 Action::UseOn(target) if people.contains(target) && food.is_food(hands.active_item()) => {
                     // Eating and drinking, or feeding someone (`food.md`).
                     let target_pos = places.get(target).map_or(mob_pos.0, |p| p.0);
@@ -546,8 +572,13 @@ pub fn process_actions(
                             || radios.contains(target)
                             || extinguishers.is_extinguisher(target)
                             || smoking.uses_self(target)
-                            || paperwork.uses_self(target)) =>
+                            || paperwork.uses_self(target)
+                            || linen.is_sheet(target)) =>
                 {
+                    // A bedsheet spread or pulled off where you stand (`bedsheets.md`).
+                    if linen.use_self(mob_pos.0, &mut hands, target, &mut commands) {
+                        continue;
+                    }
                     // A sheet's label box, a clipboard's window (`paperwork.md`).
                     if paperwork.uses_self(target) {
                         if let Some(outcome) = paperwork.use_self(mob, target, &mut commands) {

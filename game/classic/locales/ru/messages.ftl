@@ -726,3 +726,23 @@ paper-write-prompt = Что вы хотите написать?
 paper-write-keys = (Enter — новая строка, Ctrl+Enter — сохранить, Esc — отмена.)
 paper-label-prompt = Как подписать лист?
 paper-save = Сохранить
+
+# Картотеки (filing-cabinets.md). Аргументы: $cabinet, $item (id существительных).
+cabinet-put = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($cabinet, case: "acc") }.
+cabinet-wont-fit = Нельзя положить { NOUN($item, case: "acc") } в { NOUN($cabinet, case: "acc") }!
+cabinet-wrenched = Вы прикручиваете { NOUN($cabinet, case: "acc") } к полу.
+cabinet-unwrenched = Вы откручиваете { NOUN($cabinet, case: "acc") } от пола.
+cabinet-empty = В { NOUN($cabinet, case: "prep") } пусто.
+pick-list-title = { NOUN($item) }
+
+# Простыни (bedsheets.md). Аргументы: $item (id существительного); $count.
+linen-bin-put = Вы кладёте { NOUN($item, case: "acc") } в корзину для белья.
+linen-bin-hide = Вы прячете { NOUN($item, case: "acc") } среди простыней.
+linen-bin-take = Вы достаёте { NOUN($item, case: "acc") } из корзины для белья.
+linen-bin-falls-out = Из простыни выпадает { NOUN($item) }!
+examine-linen-bin = { $count ->
+        [0] В корзине нет простыней.
+        [one] В корзине { $count } простыня.
+        [few] В корзине { $count } простыни.
+       *[many] В корзине { $count } простыней.
+    }

@@ -8,6 +8,7 @@ pub mod actions;
 pub mod alarms;
 pub mod apc;
 pub mod atmos;
+pub mod bedsheets;
 pub mod blastdoors;
 pub mod cables;
 pub mod cameras;
@@ -22,6 +23,7 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod extinguishers;
+pub mod filing;
 pub mod firealarms;
 pub mod firedoors;
 pub mod fires;
@@ -170,6 +172,7 @@ impl Plugin for ClassicPlugin {
                     vending::process_vend_ops,
                     cameras::process_camera_ops,
                     paperwork::process_paper_ops,
+                    filing::process_picks,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     combat::resolve_attacks,
@@ -191,6 +194,7 @@ impl Plugin for ClassicPlugin {
                     windows::update_pane_edges,
                     windoors::bump_windoors,
                     windoors::run_windoors,
+                    filing::stock_cabinets,
                     pulling::start_pulls,
                     movement::move_mobs,
                     pulling::follow_pullers,
@@ -277,6 +281,7 @@ impl Plugin for ClassicPlugin {
                         vending::update_vending_views,
                         cameras::update_camera_views,
                         paperwork::update_clipboard_views,
+                        filing::update_cabinet_views,
                         smes_panel::update_smes_views,
                         storage::update_storage_views,
                     ),
@@ -296,6 +301,8 @@ impl Plugin for ClassicPlugin {
                         cameras::update_camera_looks,
                         paperwork::update_paperwork_looks,
                         status_displays::update_displays,
+                        filing::update_cabinet_looks,
+                        bedsheets::update_linen_looks,
                     ),
                     lights::update_light_looks,
                     lights::update_light_sources,

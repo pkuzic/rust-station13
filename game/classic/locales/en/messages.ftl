@@ -699,3 +699,22 @@ paper-write-prompt = What text do you wish to add?
 paper-write-keys = (Enter: new line. Ctrl+Enter: save. Esc: cancel.)
 paper-label-prompt = What would you like to label the paper?
 paper-save = Save
+
+# Filing cabinets (filing-cabinets.md). Args: $cabinet, $item (noun ids).
+cabinet-put = You put the { NOUN($item) } in the { NOUN($cabinet) }.
+cabinet-wont-fit = You can't put the { NOUN($item) } in the { NOUN($cabinet) }!
+cabinet-wrenched = You wrench the { NOUN($cabinet) }.
+cabinet-unwrenched = You unwrench the { NOUN($cabinet) }.
+cabinet-empty = The { NOUN($cabinet) } is empty.
+pick-list-title = { NOUN($item) }
+
+# Bedsheets (bedsheets.md). Args: $item (noun id); $count.
+linen-bin-put = You put the { NOUN($item) } in the linen bin.
+linen-bin-hide = You hide the { NOUN($item) } among the sheets.
+linen-bin-take = You take the { NOUN($item) } out of the linen bin.
+linen-bin-falls-out = The { NOUN($item) } falls out of the bedsheet!
+examine-linen-bin = { $count ->
+        [0] There are no bed sheets in the bin.
+        [one] There is one bed sheet in the bin.
+       *[other] There are { $count } bed sheets in the bin.
+    }

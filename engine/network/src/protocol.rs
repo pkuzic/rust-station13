@@ -8,8 +8,9 @@ use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, ClipboardView, Dir,
     DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent,
-    LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PixelOffset, PowerMonitorView,
-    Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset,
+    PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView,
+    WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -98,6 +99,11 @@ pub enum ActionInput {
     LabelPaper {
         target: NetId,
         label: String,
+    },
+    /// A line picked in an open list window, from 0.
+    Pick {
+        target: NetId,
+        line: u16,
     },
     /// A button on an open clipboard.
     Clipboard {
@@ -286,6 +292,11 @@ pub struct PaperPanel(pub PaperView);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ClipboardPanel(pub Option<ClipboardView>);
 
+/// Server → one client: the list window it has open, or `None` to close it. Sent when it
+/// changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct PickListPanel(pub Option<PickListView>);
+
 /// Server → one client: the security console it has open, or `None` to close it. Sent
 /// when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -387,6 +398,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<PaperPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ClipboardPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<PickListPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

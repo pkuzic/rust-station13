@@ -33,16 +33,18 @@ pub struct Pullable<'w, 's> {
             Option<&'static PipeMember>,
             Has<Portable>,
             Option<&'static Pacman>,
+            Option<&'static crate::filing::FilingCabinet>,
         ),
         With<GridPos>,
     >,
 }
 
 impl Pullable<'_, '_> {
-    /// Items, people, closets and crates, chairs, a canister not wrenched to a port and a
-    /// generator not bolted down.
+    /// Items, people, closets and crates, chairs, a canister not wrenched to a port, and a
+    /// generator or filing cabinet not bolted down.
     pub fn check(&self, target: Entity) -> bool {
-        let Ok((item, mob, closet, chair, member, canister, generator)) = self.things.get(target) else {
+        let Ok((item, mob, closet, chair, member, canister, generator, cabinet)) = self.things.get(target)
+        else {
             return false;
         };
         item || mob
@@ -50,6 +52,7 @@ impl Pullable<'_, '_> {
             || chair
             || (canister && !member.is_some_and(|m| m.open))
             || generator.is_some_and(|g| !g.anchored)
+            || cabinet.is_some_and(|c| !c.anchored)
     }
 }
 
