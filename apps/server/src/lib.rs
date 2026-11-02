@@ -15,6 +15,7 @@ use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
+use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::health::Vitals;
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
@@ -32,14 +33,14 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, FreezerCommand,
-    FreezerPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PlaySound, Player,
-    PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
-    WirePanel,
+    FreezerPanel, GasCommand, GasPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
+    PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
+    StoragePanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GridPos, LaserPanelView, MapLayer, NetId,
-    PowerMonitorView, SmesPanelView, StorageView, TileMap, WirePanelView,
+    AlarmPanelView, ApcPanelView, DisplayName, FreezerPanelView, GasPanelView, GridPos, LaserPanelView,
+    MapLayer, NetId, PowerMonitorView, SmesPanelView, StorageView, TileMap, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -69,6 +70,7 @@ struct SentPanel(
     Option<LaserPanelView>,
     Option<FreezerPanelView>,
     Option<SmesPanelView>,
+    Option<GasPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -234,6 +236,7 @@ fn queue_actions(
         &mut PendingLaserOps,
         &mut PendingFreezerOps,
         &mut PendingSmesOps,
+        &mut PendingGasOps,
         Has<NameChosen>,
     )>,
     ids: Query<(Entity, &NetId, Option<&silhouettes::Shade>)>,
@@ -257,6 +260,7 @@ fn queue_actions(
             mut laser_ops,
             mut freezer_ops,
             mut smes_ops,
+            mut gas_ops,
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -330,6 +334,20 @@ fn queue_actions(
                                 SmesCommand::Online => SmesOp::Online,
                                 SmesCommand::Input(l) => SmesOp::Input(level(l)),
                                 SmesCommand::Output(l) => SmesOp::Output(level(l)),
+                            },
+                        ));
+                    }
+                    None
+                }
+                ActionInput::Gas { target, command } => {
+                    if let Some(machine) = resolve(target) {
+                        gas_ops.0.push((
+                            machine,
+                            match command {
+                                GasCommand::Toggle => GasOp::Toggle,
+                                GasCommand::Direction => GasOp::Direction,
+                                GasCommand::Adjust(by) => GasOp::Adjust(f64::from(by)),
+                                GasCommand::RemoveTank => GasOp::RemoveTank,
                             },
                         ));
                     }
@@ -479,6 +497,7 @@ fn send_panels(
         &mut MessageSender<LaserPanel>,
         &mut MessageSender<FreezerPanel>,
         &mut MessageSender<SmesPanel>,
+        &mut MessageSender<GasPanel>,
     )>,
     panels: Query<(
         &WirePanelOut,
@@ -489,6 +508,7 @@ fn send_panels(
         &LaserPanelOut,
         &FreezerPanelOut,
         &SmesPanelOut,
+        &GasPanelOut,
     )>,
 ) {
     for (
@@ -502,9 +522,10 @@ fn send_panels(
         mut lasers,
         mut freezers,
         mut smes,
+        mut gases,
     ) in &mut links
     {
-        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer, smes_panel)) =
+        let Ok((wire_panel, alarm_panel, storage, apc_panel, monitor, laser, freezer, smes_panel, gas)) =
             panels.get(controls.0)
         else {
             continue;
@@ -540,6 +561,10 @@ fn send_panels(
         if sent.7 != smes_panel.0 {
             smes.send::<NoticeChannel>(SmesPanel(smes_panel.0.clone()));
             sent.7 = smes_panel.0.clone();
+        }
+        if sent.8 != gas.0 {
+            gases.send::<NoticeChannel>(GasPanel(gas.0.clone()));
+            sent.8 = gas.0.clone();
         }
     }
 }

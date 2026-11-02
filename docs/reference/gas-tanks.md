@@ -28,8 +28,11 @@ faces, and nobody walks through it. A meter can sit on one (`meters.md`).
 
 Canisters of one gas work like the air canister (`pipes.md`):
 
-- click one to open or close its release valve;
-- while it is open and off a port, it releases into the room toward one atmosphere;
+- click one to open its window (`portables.md`, The window): the release valve, the
+  release pressure (0.1 to 10 atm, one atmosphere to start) and a held gas tank;
+- while its valve is open and it is off a port, it releases into the gas tank held in it,
+  or else into the room, toward its release pressure, never more than half the gap at a
+  time (Luna `process`);
 - wrench it on or off a connector port.
 
 | Prototype | Luna type | Gas | Colour |
@@ -63,5 +66,5 @@ Canisters of one gas work like the air canister (`pipes.md`):
 - **Not implemented:**
   - the oxygen and plasma tank (`oxygen_agent_b`), and the empty yellow canister;
   - canister damage: bursting when overheated or shot, and the broken sprite;
-  - the canister window: release pressure, labels, and holding a tank inside;
+  - relabelling a canister;
   - the open-tank overlay.

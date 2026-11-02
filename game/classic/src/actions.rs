@@ -126,7 +126,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut disposals, mut extinguishers, mut walllockers),
+        (mut disposals, mut extinguishers, mut walllockers, gas_windows),
         (
             mut generators,
             mut dispensers,
@@ -164,6 +164,7 @@ pub fn process_actions(
             crate::disposals::DisposalWork,
             crate::extinguishers::ExtinguisherWork,
             crate::walllockers::WallLockerWork,
+            crate::gas_panel::GasPanelWork,
         ),
         (
             crate::generators::GeneratorWork,
@@ -776,6 +777,10 @@ pub fn process_actions(
                                 .map_or("canister", |(a, _)| a.sprite.as_str());
                             outbox.0.push(LocMsg::new(id).arg("item", noun));
                         }
+                    } else if is_canister {
+                        // Anything else opens its window; a gas tank goes in
+                        // (`portables.md`).
+                        gas_windows.use_on(mob, target, &mut hands, &mut commands);
                     } else if let Ok((mut alarm, power)) = alarms.get_mut(target) {
                         // Luna `attackby`: wirecutters disconnect or reconnect it; anything
                         // else opens the window, if it works.

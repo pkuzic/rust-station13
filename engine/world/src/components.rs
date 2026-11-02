@@ -336,6 +336,35 @@ pub struct FreezerPanelView {
     pub setting: u32,
 }
 
+/// Which kind of portable gas machine a [`GasPanelView`] shows.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum GasMachine {
+    Canister,
+    Pump,
+    Scrubber,
+}
+
+/// An open canister, portable pump or scrubber, as shown to the player using it (Luna's
+/// `canister`, `pump` and `scrubber` windows).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GasPanelView {
+    /// The machine.
+    pub target: NetId,
+    pub kind: GasMachine,
+    /// Its own gas, tenths of a kPa.
+    pub pressure_dkpa: u32,
+    /// Fastened to a connector port.
+    pub connected: bool,
+    /// A canister's release valve is open, or a pump or scrubber is on.
+    pub on: bool,
+    /// A pump releases its tank (rather than siphoning into it).
+    pub out: bool,
+    /// A canister's release pressure or a pump's target, kPa; a scrubber's rate, L.
+    pub setting: u32,
+    /// The gas tank held in it, if any: its pressure, tenths of a kPa.
+    pub tank_dkpa: Option<u32>,
+}
+
 /// An open SMES, as shown to the player using it (Luna's `smes` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SmesPanelView {

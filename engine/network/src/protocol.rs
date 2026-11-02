@@ -7,9 +7,9 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, Facing,
-    FreezerPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat,
-    NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView, TilePos,
-    WirePanelView, WornView,
+    FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource,
+    MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
+    StorageView, TilePos, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -83,6 +83,11 @@ pub enum ActionInput {
         target: NetId,
         command: FreezerCommand,
     },
+    /// A button on an open canister, portable pump or scrubber.
+    Gas {
+        target: NetId,
+        command: GasCommand,
+    },
     /// A button on an open SMES.
     Smes {
         target: NetId,
@@ -132,6 +137,20 @@ pub enum FreezerCommand {
     Toggle,
     /// Change the temperature it cools to by this many kelvin.
     Setting(i32),
+}
+
+/// Canister, portable pump and scrubber window buttons (Luna's `canister`, `pump` and
+/// `scrubber` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum GasCommand {
+    /// A canister's release valve, or a pump's or scrubber's power.
+    Toggle,
+    /// A pump's direction.
+    Direction,
+    /// Change the release pressure or target (kPa), or the rate (L), by this much.
+    Adjust(i32),
+    /// Take the held tank out.
+    RemoveTank,
 }
 
 /// SMES window buttons (Luna's `smes` links).
@@ -215,6 +234,11 @@ pub struct LaserPanel(pub Option<LaserPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FreezerPanel(pub Option<FreezerPanelView>);
 
+/// Server → one client: the canister, portable pump or scrubber it has open, or `None` to
+/// close it. Sent when it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct GasPanel(pub Option<GasPanelView>);
+
 /// Server → one client: the SMES it has open, or `None` to close it. Sent when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SmesPanel(pub Option<SmesPanelView>);
@@ -291,6 +315,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<FreezerPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<SmesPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<GasPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

@@ -21,6 +21,7 @@ mod depth;
 mod fov;
 mod freezer_panel;
 mod gas;
+mod gas_panel;
 mod glow;
 mod heat;
 mod hud;
@@ -252,6 +253,7 @@ fn main() {
         .init_resource::<monitor_panel::OpenMonitor>()
         .init_resource::<laser_panel::OpenLaser>()
         .init_resource::<freezer_panel::OpenFreezer>()
+        .init_resource::<gas_panel::OpenGas>()
         .init_resource::<smes_panel::OpenSmes>()
         .init_resource::<storage_panel::OpenStorage>()
         .init_resource::<OverlayOn>()
@@ -295,6 +297,7 @@ fn main() {
                     (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
                     (laser_panel::receive_laser, laser_panel::show_laser).chain(),
                     (freezer_panel::receive_freezer, freezer_panel::show_freezer).chain(),
+                    (gas_panel::receive_gas, gas_panel::show_gas).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),
                     (storage_panel::receive_storage, storage_panel::show_storage).chain(),
                 ),

@@ -594,3 +594,30 @@ walllocker-dispensed-1 = Выдано: { NOUN($first) }.
 walllocker-dispensed-2 = Выдано: { NOUN($first) } и { NOUN($second) }.
 walllocker-dispensed-3 = Выдано: { NOUN($first) }, { NOUN($second) } и { NOUN($third) }.
 walllocker-put-back = Вы кладёте { NOUN($item, case: "acc") } обратно в шкафчик.
+
+# Окна канистры, переносного насоса и скруббера. Аргументы: $value, $connected, $on, $out (yes/no).
+gas-title-canister = Канистра
+gas-title-pump = Переносной воздушный насос
+gas-title-scrubber = Переносной воздушный скруббер
+gas-pressure = Давление: { $value } кПа
+gas-port = Порт: { $connected ->
+        [yes] подключён
+       *[no] отключён
+    }
+gas-tank = Давление в баллоне: { $value } кПа
+gas-remove-tank = Вынуть баллон
+gas-valve = Выпускной клапан: { $on ->
+        [yes] открыт
+       *[no] закрыт
+    }
+gas-power = Питание: { $on ->
+        [yes] вкл.
+       *[no] выкл.
+    }
+gas-direction = Направление: { $out ->
+        [yes] наружу
+       *[no] внутрь
+    }
+gas-release = Давление выпуска:
+gas-target = Целевое давление:
+gas-rate = Производительность:

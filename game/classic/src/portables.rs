@@ -7,6 +7,8 @@ use rs13_simulation::atmos::{Gas, GasMix};
 use rs13_world::{Appearance, Dense, GridPos, NetId, TilePos};
 
 use crate::atmos::StationAtmos;
+use crate::equipment::TankGas;
+use crate::gas_panel::HeldTank;
 use crate::machines::{ALL_SIDES, GasStore, MACHINE_TICKS, PipeMember, Portable, Switch, moles_for};
 use crate::time::WorldTime;
 
@@ -73,47 +75,93 @@ pub fn spawn_portable(world: &mut World, proto: &str, pos: TilePos, id: NetId) -
     entity.id()
 }
 
-/// Every machine cycle, each one that is on and not on a port works the air on its tile
-/// (Luna `process`). On a port its tank is part of the pipes instead.
+/// Every machine cycle, each one that is on and not on a port works the gas of the tank
+/// held in it, or else the air of its tile (Luna `process`). On a port its tank is part of
+/// the pipes instead.
 #[allow(clippy::type_complexity)]
 pub fn run_portables(
     time: Res<WorldTime>,
     atmos: Option<ResMut<StationAtmos>>,
     mut pumps: Query<
-        (&GridPos, &PortablePump, &Switch, &PipeMember, &mut GasStore),
+        (
+            Entity,
+            &GridPos,
+            &PortablePump,
+            &Switch,
+            &PipeMember,
+            &mut GasStore,
+        ),
         Without<PortableScrubber>,
     >,
-    mut scrubbers: Query<(&GridPos, &PortableScrubber, &Switch, &PipeMember, &mut GasStore)>,
+    mut scrubbers: Query<(
+        Entity,
+        &GridPos,
+        &PortableScrubber,
+        &Switch,
+        &PipeMember,
+        &mut GasStore,
+    )>,
+    held: Query<&HeldTank>,
+    mut tanks: Query<&mut TankGas>,
 ) {
     let Some(mut atmos) = atmos else { return };
     if !time.tick.0.is_multiple_of(MACHINE_TICKS) {
         return;
     }
-    for (pos, pump, on, member, mut store) in &mut pumps {
+    for (entity, pos, pump, on, member, mut store) in &mut pumps {
         if !on.0 || member.open {
             continue;
         }
-        let room = atmos.0.air_at(pos.0);
+        let mut tank = held.get(entity).ok().and_then(|h| tanks.get_mut(h.0).ok());
         if pump.out {
-            let delta = pump.target - room.pressure(TILE_VOLUME);
-            let moles = moles_for(delta, TILE_VOLUME, store.0.temperature);
+            let (env, volume) = match &tank {
+                Some(t) => (t.mix.pressure(t.volume), t.volume),
+                None => (atmos.0.pressure_at(pos.0), TILE_VOLUME),
+            };
+            let moles = moles_for(pump.target - env, volume, store.0.temperature);
             let moved = store.0.remove_moles(moles);
-            atmos.0.add_at(pos.0, &moved);
+            match tank.as_mut() {
+                Some(t) => t.mix.merge(&moved),
+                None => atmos.0.add_at(pos.0, &moved),
+            }
         } else {
             let delta = pump.target - store.0.pressure(member.volume);
-            let moved = atmos
-                .0
-                .remove_at(pos.0, moles_for(delta, member.volume, room.temperature));
+            let moved = match tank.as_mut() {
+                Some(t) => {
+                    let moles = moles_for(delta, member.volume, t.mix.temperature);
+                    t.mix.remove_moles(moles)
+                }
+                None => {
+                    let room = atmos.0.air_at(pos.0).temperature;
+                    atmos.0.remove_at(pos.0, moles_for(delta, member.volume, room))
+                }
+            };
             store.0.merge(&moved);
         }
     }
-    for (pos, scrubber, on, member, mut store) in &mut scrubbers {
+    for (entity, pos, scrubber, on, member, mut store) in &mut scrubbers {
         if !on.0 || member.open {
             continue;
         }
-        // Luna samples min(1, rate / volume × 5) of the tile's air: all of it, at Luna's rate.
-        let share = (scrubber.rate / TILE_VOLUME * 5.0).min(1.0);
-        let caught = atmos.0.remove_gases_at(pos.0, &SCRUBBED, share);
+        let caught = match held.get(entity).ok().and_then(|h| tanks.get_mut(h.0).ok()) {
+            // Luna samples min(1, rate / volume × 5) of the tank's gas.
+            Some(mut t) => {
+                let share = (scrubber.rate / t.volume * 5.0).min(1.0);
+                let mut caught = GasMix::default();
+                caught.temperature = t.mix.temperature;
+                for gas in SCRUBBED {
+                    let have = t.mix.get(gas);
+                    t.mix.set(gas, have * (1.0 - share));
+                    caught.set(gas, have * share);
+                }
+                caught
+            }
+            // Of the tile's air: all of it, at Luna's rate.
+            None => {
+                let share = (scrubber.rate / TILE_VOLUME * 5.0).min(1.0);
+                atmos.0.remove_gases_at(pos.0, &SCRUBBED, share)
+            }
+        };
         store.0.merge(&caught);
     }
 }

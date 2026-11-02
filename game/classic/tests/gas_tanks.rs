@@ -117,7 +117,12 @@ fn a_loose_canister_releases_only_its_own_gas() {
     let before = app.world().resource::<StationAtmos>().0.air_at(LOOSE);
 
     let mob = spawn_player_mob(app.world_mut(), LOOSE.step(rs13_world::Dir::South));
-    act(&mut app, mob, Action::UseOn(canister));
+    // Open its release valve from its window.
+    app.world_mut()
+        .get_mut::<rs13_classic::gas_panel::PendingGasOps>(mob)
+        .unwrap()
+        .0
+        .push((canister, rs13_classic::gas_panel::GasOp::Toggle));
     ticks(&mut app, 4 * rs13_classic::machines::MACHINE_TICKS as usize);
 
     let after = app.world().resource::<StationAtmos>().0.air_at(LOOSE);
