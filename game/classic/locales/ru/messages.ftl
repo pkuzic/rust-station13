@@ -621,3 +621,67 @@ gas-direction = Направление: { $out ->
 gas-release = Давление выпуска:
 gas-target = Целевое давление:
 gas-rate = Производительность:
+
+# Окно торгового автомата (vending.md).
+vending-select = Выберите товар:
+vending-vend = Купить
+vending-sold-out = Распродано
+
+# Еда и питьё (food.md). Аргументы: $item, $tool (id существительных); $verb; $name, $target;
+# $count; $level.
+food-eat-gobble = Вы жадно { food-verb } { NOUN($item, case: "acc") } и проглатываете!
+food-eat-begin = Вы жадно принимаетесь { food-verb-inf } { NOUN($item, case: "acc") }.
+food-eat = Вы { food-verb } { NOUN($item, case: "acc") }.
+food-eat-unwilling = Вы нехотя { food-verb } немного { NOUN($item, case: "gen") }.
+food-eat-full = Вы больше не можете запихнуть в себя { NOUN($item, case: "acc") }.
+food-verb = { $verb ->
+        [chew] жуёте
+        [nibble] покусываете
+        [gnaw] грызёте
+        [gobble] уплетаете
+        [chomp] чавкаете
+       *[bite] откусываете
+    }
+food-verb-inf = { $verb ->
+        [chew] жевать
+        [nibble] покусывать
+        [gnaw] грызть
+        [gobble] уплетать
+        [chomp] чавкать
+       *[bite] откусывать
+    }
+drink-gulp = Вы делаете глоток { NOUN($item, case: "gen") }.
+drink-empty = { NOUN($item) } — пусто, вот незадача!
+drink-feeds = { $name } поит { $target }: { NOUN($item) }.
+examine-bitten-once = { NOUN($item) } — кто-то уже надкусил!
+examine-bitten = { NOUN($item) } — надкушено { $count } раза!
+examine-bitten-many = { NOUN($item) } — надкушено много раз!
+examine-drink = { NOUN($item) }: { $level ->
+        [empty] пусто!
+        [almost-empty] почти пусто!
+        [half] наполовину полно!
+        [almost-full] почти полно!
+       *[full] полно!
+    }
+hunger-1 = Вы чувствуете голод
+hunger-2 = Вас мучает жажда
+hunger-3 = Пожалуй, стоит перекусить
+hunger-4 = У вас урчит в животе
+hunger-5 = Пожалуй, стоит чего-нибудь выпить...
+hunger-6 = Вы чувствуете пустоту внутри
+hunger-7 = Вы немного проголодались
+hunger-8 = То, что вы ели в последний раз, не очень-то насытило...
+hunger-9 = Хм, пицца была бы кстати
+
+# Курение (smoking.md).
+cigarettes-out = Сигареты кончились, чёрт! Как теперь дожить до конца дня...
+examine-cigarettes = Осталось сигарет: { $count }!
+lighter-on = После нескольких попыток { $name } удаётся зажечь { NOUN($item, case: "acc") }.
+lighter-on-burnt = После нескольких попыток { $name } удаётся зажечь { NOUN($item, case: "acc") }, но при этом обжигает палец.
+lighter-burn-self = Вы обжигаетесь, зажигая зажигалку.
+lighter-off = { $name } тихо гасит { NOUN($item, case: "acc") }.
+cigarette-lit-welder = { $name } небрежно прикуривает { NOUN($item, case: "acc") } от { NOUN($tool, case: "gen") }. Крутой.
+cigarette-lit-lighter = Повозившись, { $name } прикуривает { NOUN($item, case: "acc") } от { NOUN($tool, case: "gen") }.
+cigarette-lit = { $name } прикуривает { NOUN($item, case: "acc") } от { NOUN($tool, case: "gen") }.
+cigarette-out = Ваша { NOUN($item) } гаснет.
+cigarette-trodden = { $name } спокойно бросает { NOUN($item, case: "acc") } и затаптывает её.

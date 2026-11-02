@@ -126,7 +126,7 @@ pub fn process_actions(
         mut firedoors,
         mut flashlights,
         mut firealarms,
-        (mut disposals, mut extinguishers, mut walllockers, gas_windows),
+        (mut disposals, mut extinguishers, mut walllockers, gas_windows, vendors, mut food, mut smoking),
         (
             mut generators,
             mut dispensers,
@@ -165,6 +165,9 @@ pub fn process_actions(
             crate::extinguishers::ExtinguisherWork,
             crate::walllockers::WallLockerWork,
             crate::gas_panel::GasPanelWork,
+            Query<(&GridPos, &crate::power::PowerUser), With<crate::vending::Vending>>,
+            crate::food::FoodWork,
+            crate::smoking::SmokingWork,
         ),
         (
             crate::generators::GeneratorWork,
@@ -297,6 +300,12 @@ pub fn process_actions(
                         if let Some(more) = cable.floors.examine(target) {
                             outbox.0.push(more);
                         }
+                        if let Some(more) = food.examine(target) {
+                            outbox.0.push(more);
+                        }
+                        if let Some(more) = smoking.examine(target) {
+                            outbox.0.push(more);
+                        }
                         if let Some(more) = extinguishers.examine(target) {
                             outbox.0.push(more);
                         }
@@ -397,6 +406,60 @@ pub fn process_actions(
                     }
                 }
                 Action::UseOn(target)
+                    if smoking.takes(
+                        mob,
+                        &hands,
+                        target,
+                        appearances.get(target).is_ok_and(|(a, _)| a.sprite == "matchbox"),
+                        welding.lit(hands.active_item()).is_some(),
+                    ) && places.get(target).map_or(true, |p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Matches struck, cigarettes lit, a cigarette taken out of its packet
+                    // (`smoking.md`).
+                    let welder_lit = welding.lit(hands.active_item()).is_some();
+                    if let Some(outcome) = smoking.use_on(mob, &mut hands, target, welder_lit, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
+                    }
+                }
+                Action::UseOn(target) if people.contains(target) && food.is_food(hands.active_item()) => {
+                    // Eating and drinking, or feeding someone (`food.md`).
+                    let target_pos = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    let target_name = appearances
+                        .get(target)
+                        .ok()
+                        .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                        .unwrap_or_default();
+                    if let Some(outcome) = food.use_on(
+                        mob,
+                        mob_pos.0,
+                        target,
+                        target_pos,
+                        &target_name,
+                        &mut hands,
+                        (&mut lights.rng, &mut sounds),
+                        &mut commands,
+                    ) {
+                        outbox.0.extend(outcome.to_mob);
+                        if let Some(seen) = outcome.seen {
+                            let name = appearances
+                                .get(mob)
+                                .ok()
+                                .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                .unwrap_or_default();
+                            visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                        }
+                    }
+                }
+                Action::UseOn(target)
                     if people.contains(target) && tool.is_some_and(crate::medical::treats) =>
                 {
                     // Medical packs and analyzers treat or scan instead of hitting
@@ -414,8 +477,31 @@ pub fn process_actions(
                             || flashlights.contains(target)
                             || jetpacks.contains(target)
                             || radios.contains(target)
-                            || extinguishers.is_extinguisher(target)) =>
+                            || extinguishers.is_extinguisher(target)
+                            || smoking.uses_self(target)) =>
                 {
+                    // A lighter lit or shut, a lit cigarette trodden out (`smoking.md`).
+                    if smoking.uses_self(target) {
+                        if let Some(outcome) = smoking.use_self(
+                            mob,
+                            mob_pos.0,
+                            &mut hands,
+                            target,
+                            &mut lights.rng,
+                            &mut commands,
+                        ) {
+                            outbox.0.extend(outcome.to_mob);
+                            if let Some(seen) = outcome.seen {
+                                let name = appearances
+                                    .get(mob)
+                                    .ok()
+                                    .and_then(|(_, n)| n.map(|n| n.0.clone()))
+                                    .unwrap_or_default();
+                                visible.0.push((mob_pos.0, seen.arg("name", name), None));
+                            }
+                        }
+                        continue;
+                    }
                     // The item in the active hand used on itself (Luna `attack_self`): a
                     // welding tool lights or goes out, rack parts become a rack, a
                     // flashlight switches.
@@ -580,6 +666,10 @@ pub fn process_actions(
                             visible.0.push((mob_pos.0, seen.arg("name", name), Some(mob)));
                         }
                     }
+                }
+                Action::UseOn(target) if vendors.contains(target) => {
+                    // Vending machines open their window (`vending.md`).
+                    crate::vending::open(&vendors, mob, mob_pos.0, target, &mut commands);
                 }
                 Action::UseOn(target) if walllockers.contains(target) => {
                     // Emergency wall lockers (`walllockers.md`), within reach.

@@ -9,7 +9,7 @@ use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, AtmosView, Dir, DisplayName, EnvAlert, Facing,
     FreezerPanelView, GasPanelView, GridPos, HandsView, Hidden, Intent, LaserPanelView, LightSource,
     MapLayer, MobStat, NetId, Opaque, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
-    StorageView, TilePos, WirePanelView, WornView,
+    StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -82,6 +82,11 @@ pub enum ActionInput {
     Freezer {
         target: NetId,
         command: FreezerCommand,
+    },
+    /// A product's Vend button on an open vending machine: its line, from 0.
+    Vend {
+        target: NetId,
+        line: u8,
     },
     /// A button on an open canister, portable pump or scrubber.
     Gas {
@@ -234,6 +239,11 @@ pub struct LaserPanel(pub Option<LaserPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FreezerPanel(pub Option<FreezerPanelView>);
 
+/// Server → one client: the vending machine it has open, or `None` to close it. Sent when
+/// it changes.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct VendingPanel(pub Option<VendingPanelView>);
+
 /// Server → one client: the canister, portable pump or scrubber it has open, or `None` to
 /// close it. Sent when it changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -317,6 +327,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<SmesPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<GasPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<VendingPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

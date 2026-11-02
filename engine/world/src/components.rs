@@ -336,6 +336,27 @@ pub struct FreezerPanelView {
     pub setting: u32,
 }
 
+/// One product line of a vending machine.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VendingRow {
+    /// The product's prototype id (its noun).
+    pub item: String,
+    /// How many are left.
+    pub amount: u16,
+}
+
+/// An open vending machine, as shown to the player using it (Luna's `vending` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VendingPanelView {
+    /// The machine.
+    pub target: NetId,
+    /// Its prototype id (its noun), for the title.
+    pub machine: String,
+    pub products: Vec<VendingRow>,
+    /// Not busy handing something out.
+    pub ready: bool,
+}
+
 /// Which kind of portable gas machine a [`GasPanelView`] shows.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GasMachine {

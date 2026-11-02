@@ -104,6 +104,12 @@
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
+        // Vending machines (`vending.md`).
+        (path: "/obj/machinery/vending_tg/coffee", id: "vending-coffee"),
+        (path: "/obj/machinery/vending_tg/snack", id: "vending-snack"),
+        (path: "/obj/machinery/vending_tg/cola", id: "vending-cola"),
+        (path: "/obj/machinery/vending_tg/cola/soda", id: "vending-soda"),
+        (path: "/obj/machinery/vending_tg/cigarette", id: "vending-cigarette"),
         // Portable air pumps and scrubbers (`portables.md`).
         (path: "/obj/machinery/portable_atmospherics/pump", id: "portable-pump"),
         (path: "/obj/machinery/portable_atmospherics/scrubber", id: "portable-scrubber"),
