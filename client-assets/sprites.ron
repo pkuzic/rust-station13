@@ -2005,6 +2005,15 @@
             "": (dmi: "icons/mob/uniform.dmi", state: "waiter_s"),
             "lying": (dmi: "icons/mob/uniform.dmi", state: "waiter_l"),
         },
+        "dna-scanner": {
+            "scanner_0": (dmi: "icons/obj/Cryogenic2.dmi", state: "scanner_0"),
+            "scanner_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "scanner_1"),
+        },
+        "cloning-console": { "dna": (dmi: "icons/obj/computer.dmi", state: "dna") },
+        "clone-pod": {
+            "pod_0": (dmi: "icons/obj/cloning.dmi", state: "pod_0"),
+            "pod_1": (dmi: "icons/obj/cloning.dmi", state: "pod_1"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
