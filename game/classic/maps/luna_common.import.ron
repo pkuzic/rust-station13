@@ -296,6 +296,7 @@
         (path: "/obj/machinery/microwave", id: "microwave"),
         (path: "/obj/item/weapon/storage/box/donkpocket", id: "donk-pockets"),
         (path: "/obj/item/weapon/reagent_containers/food/snacks/donkpocket", id: "donk-pocket"),
+        (path: "/obj/machinery/computer/arcade", id: "arcade"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

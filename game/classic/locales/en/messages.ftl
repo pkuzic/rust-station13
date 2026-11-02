@@ -66,6 +66,40 @@ microwave-on = The microwave turns on.
 microwave-added = You put it in the microwave.
 microwave-full = The microwave is full.
 microwave-unsuitable = You have no idea what you could cook with that.
+arcade-villain = { $title ->
+    [automatic] The Automatic
+    [farmer] Farmer
+    [lord] Lord
+    [professor] Professor
+    [evil] The Evil
+    [dread-king] The Dread King
+   *[space] The Space
+} { $villain ->
+    [melonoid] Melonoid
+    [murdertron] Murdertron
+    [sorcerer] Sorcerer
+    [ruin] Ruin
+    [jeff] Jeff
+    [ectoplasm] Ectoplasm
+    [crushulon] Crushulon
+   *[coder] Coder
+}
+arcade-new = Winners Don't Use Spacedrugs
+arcade-new-round = New Round
+arcade-attack = You attack for { $value } damage!
+arcade-heal = You use { $cost } magic to heal for { $value } damage!
+arcade-recharge = You regain { $value } points
+arcade-won = { $enemy } has fallen! Rejoice!
+arcade-steal = { $enemy } steals { $value } of your power!
+arcade-drained = You have been drained! GAME OVER
+arcade-enemy-heals = { $enemy } heals for { $value } health!
+arcade-enemy-attacks = { $enemy } attacks for { $value } damage!
+arcade-crushed = You have been crushed! GAME OVER
+arcade-stats = Health: { $hp } | Magic: { $mp } | Enemy Health: { $enemyhp }
+arcade-button-attack = Attack
+arcade-button-heal = Heal
+arcade-button-recharge = Recharge Power
+arcade-button-new = New Game
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

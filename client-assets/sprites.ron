@@ -1519,6 +1519,10 @@
         "donk-pocket": { "": (dmi: "icons/obj/food.dmi", state: "donkpocket") },
         "burnt-mess": { "": (dmi: "icons/obj/food.dmi", state: "badrecipe") },
         "donk-pockets": { "": (dmi: "icons/obj/storage.dmi", state: "donk_kit") },
+        "arcade": { "arcade": (dmi: "icons/obj/computer.dmi", state: "arcade") },
+        "toy-ripley": { "": (dmi: "icons/obj/toy.dmi", state: "ripleytoy") },
+        "toy-gygax": { "": (dmi: "icons/obj/toy.dmi", state: "gygaxtoy") },
+        "toy-durand": { "": (dmi: "icons/obj/toy.dmi", state: "durandprize") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

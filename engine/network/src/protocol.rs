@@ -6,11 +6,11 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, AtmosView, CameraPanelView, CameraView, ClipboardView, Dir,
-    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
-    HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
-    PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView, StorageView,
-    TilePos, VendingPanelView, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, CameraPanelView, CameraView,
+    ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos,
+    HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId,
+    Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
+    StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -101,6 +101,11 @@ pub enum ActionInput {
     LabelPaper {
         target: NetId,
         label: String,
+    },
+    /// A button on an open arcade machine.
+    Arcade {
+        target: NetId,
+        command: ArcadeCommand,
     },
     /// A button on an open space heater.
     Heater {
@@ -196,6 +201,15 @@ pub enum GasCommand {
     Adjust(i32),
     /// Take the held tank out.
     RemoveTank,
+}
+
+/// Arcade window buttons (Luna's `arcade` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ArcadeCommand {
+    Attack,
+    Heal,
+    Recharge,
+    NewGame,
 }
 
 /// Space heater window buttons (Luna's `spaceheater` links).
@@ -315,6 +329,10 @@ pub struct ClipboardPanel(pub Option<ClipboardView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct HeaterPanel(pub Option<HeaterPanelView>);
 
+/// Server → one client: the arcade game it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ArcadePanel(pub Option<ArcadePanelView>);
+
 /// Server → one client: the list window it has open, or `None` to close it. Sent when it
 /// changes.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -425,6 +443,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<PickListPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<HeaterPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ArcadePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<PlaySound>()
             .add_direction(NetworkDirection::ServerToClient);

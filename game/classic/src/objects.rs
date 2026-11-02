@@ -180,6 +180,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::arcade::ARCADE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::arcade::spawn_arcade(world, pos, id));
+    }
     if proto == crate::microwaves::MICROWAVE {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::microwaves::spawn_microwave(world, spec, pos, id));
@@ -564,6 +568,10 @@ fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Entity {
                 Outbox::default(),
                 crate::sound::Earshot::default(),
                 PlayerControlled,
+            ),
+            (
+                crate::arcade::PendingArcadeOps::default(),
+                crate::arcade::ArcadePanelOut::default(),
             ),
             // Machine windows and requests.
             (

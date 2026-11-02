@@ -83,6 +83,13 @@ fn every_message_formats_in_both_locales() {
     args.set("name", "John Smith");
     args.set("verb", "ask");
     args.set("act", "scratch");
+    args.set("title", "lord");
+    args.set("villain", "jeff");
+    args.set("enemy", "Lord Jeff");
+    args.set("cost", 2);
+    args.set("hp", 30);
+    args.set("mp", 10);
+    args.set("enemyhp", 45);
     args.set("text", "Hello?");
     args.set("attacker", "Alice Abbott");
     args.set("victim", "Bob Barnes");

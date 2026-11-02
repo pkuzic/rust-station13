@@ -77,6 +77,40 @@ microwave-on = Микроволновка включается.
 microwave-added = Вы кладёте это в микроволновку.
 microwave-full = Микроволновка полна.
 microwave-unsuitable = Вы не представляете, что из этого можно приготовить.
+arcade-villain = { $title ->
+    [automatic] Автоматический
+    [farmer] Фермер
+    [lord] Лорд
+    [professor] Профессор
+    [evil] Злой
+    [dread-king] Ужасный Король
+   *[space] Космический
+} { $villain ->
+    [melonoid] Мелоноид
+    [murdertron] Убийтрон
+    [sorcerer] Колдун
+    [ruin] Руин
+    [jeff] Джефф
+    [ectoplasm] Эктоплазм
+    [crushulon] Крушулон
+   *[coder] Кодер
+}
+arcade-new = Победители не употребляют космонаркотики
+arcade-new-round = Новый раунд
+arcade-attack = Вы наносите { $value } урона!
+arcade-heal = Вы тратите { $cost } магии и лечите { $value } урона!
+arcade-recharge = Вы восстанавливаете { $value } очков
+arcade-won = { $enemy } повержен! Ликуйте!
+arcade-steal = { $enemy } крадёт { $value } вашей силы!
+arcade-drained = Вас осушили! ИГРА ОКОНЧЕНА
+arcade-enemy-heals = { $enemy } лечит { $value } здоровья!
+arcade-enemy-attacks = { $enemy } наносит { $value } урона!
+arcade-crushed = Вас раздавили! ИГРА ОКОНЧЕНА
+arcade-stats = Здоровье: { $hp } | Магия: { $mp } | Здоровье врага: { $enemyhp }
+arcade-button-attack = Атаковать
+arcade-button-heal = Лечиться
+arcade-button-recharge = Восстановить силы
+arcade-button-new = Новая игра
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

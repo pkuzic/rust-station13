@@ -156,6 +156,7 @@ pub fn process_actions(
                     knocked_down,
                     flashers,
                     microwaves,
+                    arcades,
                 ),
             ),
         ),
@@ -227,6 +228,7 @@ pub fn process_actions(
                     Query<(), With<crate::flashes::Weakened>>,
                     Query<(), With<crate::flashes::Flasher>>,
                     Query<(), With<crate::microwaves::Microwave>>,
+                    Query<(), With<crate::arcade::Arcade>>,
                 ),
             ),
         ),
@@ -659,6 +661,13 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if arcades.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Arcade machines (`arcade.md`).
+                    commands.entity(mob).insert(crate::wires::PanelViewer(target));
                 }
                 Action::UseOn(target)
                     if microwaves.contains(target)
