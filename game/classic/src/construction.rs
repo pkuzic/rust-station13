@@ -27,7 +27,7 @@ pub const REINFORCED_GIRDER: &str = "girder-reinforced";
 
 /// What a stack makes: what, how many sheets, how many come of it, and how long it takes, ds. Luna's
 /// `metal_recipes`, of what exists here (`construction.md`).
-pub const RECIPES: [(&str, u32, u32, f32); 10] = [
+pub const RECIPES: [(&str, u32, u32, f32); 11] = [
     ("stool", 1, 1, 0.0),
     ("chair", 1, 1, 0.0),
     ("bed", 2, 1, 0.0),
@@ -38,9 +38,10 @@ pub const RECIPES: [(&str, u32, u32, f32); 10] = [
     (RODS, 1, 2, 0.0),
     (PLASTEEL, 2, 1, 0.0),
     (GIRDER, 2, 1, 50.0),
+    (crate::frames::FRAME, 5, 1, 25.0),
 ];
 /// Things that fill a tile, so only one can be built there.
-const ONE_PER_TILE: [&str; 5] = ["stool", "chair", "bed", "closet", GIRDER];
+const ONE_PER_TILE: [&str; 6] = ["stool", "chair", "bed", "closet", GIRDER, crate::frames::FRAME];
 /// How long it takes, ds (Luna's `do_after`s).
 const UNWELD_DS: f32 = 100.0;
 const PLATE_DS: f32 = 40.0;
@@ -67,6 +68,10 @@ pub enum Work {
     Plate(Entity),
     /// Take a girder apart with the wrench in hand.
     TakeApart(Entity),
+    /// Fasten a computer frame down, or loosen it (`frames.rs`).
+    WrenchFrame(Entity),
+    /// Take a computer back to its frame.
+    TakeDownComputer(Entity),
 }
 
 /// Someone busy at something, who has to stay put holding the tool (Luna `do_after`).
@@ -354,6 +359,8 @@ fn finish(world: &mut World, mob: Entity, job: Job) {
                 let _ = spawn_stack(world, METAL, at, 1);
             }
         }
+        Work::WrenchFrame(frame) => crate::frames::finish_wrench(world, frame),
+        Work::TakeDownComputer(computer) => crate::frames::finish_take_down(world, computer),
         Work::Plate(target) => {
             let Some(at) = world.get::<GridPos>(target).map(|p| p.0) else {
                 return;

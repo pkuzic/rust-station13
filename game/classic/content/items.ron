@@ -500,6 +500,15 @@
     (id: "c4-small", force: 0.0),
     (id: "c4-large", force: 0.0),
     (id: "c4-detonator", force: 0.0, size: 1),
+    // Circuit boards (`construction.md`).
+    (id: "board-security", force: 0.0, size: 2),
+    (id: "board-med-data", force: 0.0, size: 2),
+    (id: "board-secure-data", force: 0.0, size: 2),
+    (id: "board-card", force: 0.0, size: 2),
+    (id: "board-comms", force: 0.0, size: 2),
+    (id: "board-arcade", force: 0.0, size: 2),
+    (id: "board-cloning", force: 0.0, size: 2),
+    (id: "board-power-monitor", force: 0.0, size: 2),
     // The uplink (`traitor.md`).
     (id: "uplink-radio", force: 0.0, size: 2, slot: "belt", conducts: true),
     (id: "slug-box", force: 0.0, size: 1),

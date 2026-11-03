@@ -100,6 +100,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `blue-shorts:` | `icons/obj/clothing/uniforms.dmi : "blueshorts"` | CC-BY-SA 3.0 |
 | `blue-suit:` | `icons/obj/clothing/uniforms.dmi : "bluesuit"` | CC-BY-SA 3.0 |
 | `blue-tag-armor:` | `icons/obj/clothing/suits.dmi : "bluetag"` | CC-BY-SA 3.0 |
+| `board-arcade:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-card:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-cloning:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-comms:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-med-data:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-power-monitor:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-secure-data:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `board-security:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
 | `body-scanner:body_scanner_0` | `icons/obj/Cryogenic2.dmi : "body_scanner_0"` | CC-BY-SA 3.0 |
 | `body-scanner:body_scanner_1` | `icons/obj/Cryogenic2.dmi : "body_scanner_1"` | CC-BY-SA 3.0 |
 | `bodybag-box:` | `icons/obj/storage.dmi : "bodybags"` | CC-BY-SA 3.0 |
@@ -326,6 +334,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `comfy-chair-brown:south` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comfy-chair-brown:west` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comms-console:comm` | `icons/obj/computer.dmi : "comm"` | CC-BY-SA 3.0 |
+| `computer-frame:0` | `icons/obj/stock_parts.dmi : "0"` | CC-BY-SA 3.0 |
+| `computer-frame:1` | `icons/obj/stock_parts.dmi : "1"` | CC-BY-SA 3.0 |
+| `computer-frame:2` | `icons/obj/stock_parts.dmi : "2"` | CC-BY-SA 3.0 |
+| `computer-frame:3` | `icons/obj/stock_parts.dmi : "3"` | CC-BY-SA 3.0 |
+| `computer-frame:4` | `icons/obj/stock_parts.dmi : "4"` | CC-BY-SA 3.0 |
 | `connector:` | `icons/obj/atmospherics/portables_connector.dmi : "intact"` | CC-BY-SA 3.0 |
 | `console-screen:` | `icons/obj/stock_parts.dmi : "screen"` | CC-BY-SA 3.0 |
 | `conveyor:conveyor-1-east` | `icons/obj/recycling.dmi : "conveyor-1"` | CC-BY-SA 3.0 |
