@@ -35,6 +35,15 @@ living occupant every 2 seconds:
 | 225 K | also a 5% chance per part of 1 brute and 1 burn healed, and of 1 less toxin damage |
 | 170 K | cryoxadone in them heals 3 of each, as well |
 
+## Body scanner (`body-scanner`) and its console (`scanner-console`)
+
+Source: `luna:code/game/machinery/adv_med.dm`. Lay someone inside as with a sleeper. It does nothing to
+them, and needs no power. Clicking the console, with power, opens a window on the nearest scanner within 3
+tiles: who's inside, their health, oxygen and toxin damage, and each damaged part's brute and burn.
+
+Luna's window also shows radiation, viruses, broken bones, bleeding and implants, and can print the
+results. None of that is here yet.
+
 ## Differences from Luna
 
 | Luna | Here |

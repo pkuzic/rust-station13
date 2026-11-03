@@ -175,6 +175,8 @@ pub fn process_actions(
                             bullet_guns,
                             fill_tanks,
                             lathes,
+                            body_scanners,
+                            scan_consoles,
                         ),
                     ),
                 ),
@@ -280,6 +282,8 @@ pub fn process_actions(
                                 )>,
                             >,
                             Query<(), With<crate::autolathe::Autolathe>>,
+                            Query<(), With<crate::medbay::BodyScanner>>,
+                            Query<(), With<crate::medbay::ScannerConsole>>,
                         ),
                     ),
                 ),
@@ -364,6 +368,20 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if (body_scanners.contains(target) || scan_consoles.contains(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // The body scanner and its console (`medbay.md`).
+                    let scanner = body_scanners.contains(target);
+                    commands.queue(move |world: &mut World| {
+                        if scanner {
+                            crate::medbay::click_body_scanner(world, mob, target);
+                        } else {
+                            crate::medbay::click_scan_console(world, mob, target);
+                        }
+                    });
+                }
                 Action::UseOn(target)
                     if lathes.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>

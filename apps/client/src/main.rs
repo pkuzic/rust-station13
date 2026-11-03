@@ -38,6 +38,7 @@ mod monitor_panel;
 mod paper_panel;
 mod pick_panel;
 mod scaling;
+mod scan_panel;
 mod shadows;
 mod sleeper_panel;
 mod smes_panel;
@@ -323,6 +324,7 @@ fn main() {
         .init_resource::<sleeper_panel::OpenSleeper>()
         .init_resource::<master_panel::OpenMaster>()
         .init_resource::<lathe_panel::OpenLathe>()
+        .init_resource::<scan_panel::OpenScan>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
@@ -382,6 +384,7 @@ fn main() {
                         (sleeper_panel::receive_sleeper, sleeper_panel::show_sleeper).chain(),
                         (master_panel::receive_master, master_panel::show_master).chain(),
                         (lathe_panel::receive_lathe, lathe_panel::show_lathe).chain(),
+                        (scan_panel::receive_scan, scan_panel::show_scan).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                         (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),

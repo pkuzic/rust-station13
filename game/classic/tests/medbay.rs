@@ -8,7 +8,10 @@ use rs13_classic::chemistry::Reagents;
 use rs13_classic::closets::{InCloset, PendingClosetExits};
 use rs13_classic::health::{Body, Zone};
 use rs13_classic::machines::{MACHINE_TICKS, PipeNets, side_bits};
-use rs13_classic::medbay::{CryoCell, PendingSleeperOps, Sleeper, SleeperConsole, SleeperPanelOut};
+use rs13_classic::medbay::{
+    BodyScanner, CryoCell, PendingSleeperOps, ScanPanelOut, ScannerConsole, Sleeper, SleeperConsole,
+    SleeperPanelOut,
+};
 use rs13_classic::objects::{spawn_map, spawn_player_mob};
 use rs13_classic::pulling::Pulling;
 use rs13_simulation::atmos::Gas;
@@ -21,13 +24,15 @@ const MAP: &str = r#"(
         's': (tile: (id: "floor"), objects: ["sleeper"]),
         'k': (tile: (id: "floor"), objects: ["sleeper-console"]),
         'c': (tile: (id: "floor"), objects: ["cryo-cell"]),
+        'b': (tile: (id: "floor"), objects: ["body-scanner"]),
+        'o': (tile: (id: "floor"), objects: ["scanner-console"]),
         'p': (tile: (id: "floor"), objects: [(id: "pipe", dir: North)]),
     },
     rows: [
         "WWWWWWWW",
         "Wsk.c..W",
         "W...p..W",
-        "W......W",
+        "Wbo....W",
         "WWWWWWWW",
     ],
 )"#;
@@ -260,5 +265,61 @@ fn a_cell_with_no_gas_does_nothing_and_it_takes_a_beaker() {
     assert!(
         app.world().get::<Reagents>(beaker).unwrap().get("kelotane") < 10.0,
         "a dose went in"
+    );
+}
+
+#[test]
+fn a_body_scanner_shows_whats_hurt_and_lets_them_out() {
+    let (mut app, medic, patient) = setup(NEAR_SLEEPER);
+    let scanner = find::<BodyScanner>(&mut app);
+    let console = find::<ScannerConsole>(&mut app);
+    click(&mut app, medic, console);
+    ticks(&mut app, 1);
+    let view = app
+        .world()
+        .get::<ScanPanelOut>(medic)
+        .unwrap()
+        .0
+        .clone()
+        .expect("open");
+    assert!(view.occupant.is_none());
+
+    app.world_mut().entity_mut(medic).insert(Pulling(patient));
+    click(&mut app, medic, scanner);
+    assert_eq!(
+        app.world().get::<BodyScanner>(scanner).unwrap().occupant,
+        Some(patient)
+    );
+    assert_eq!(
+        app.world().get::<Appearance>(scanner).unwrap().state,
+        "body_scanner_1"
+    );
+    app.world_mut()
+        .get_mut::<Body>(patient)
+        .unwrap()
+        .take_damage(Zone::Chest, 12.0, 7.0);
+    ticks(&mut app, 2);
+    let view = app
+        .world()
+        .get::<ScanPanelOut>(medic)
+        .unwrap()
+        .0
+        .clone()
+        .expect("open");
+    assert!(view.occupant.is_some());
+    assert_eq!(view.parts, vec![(Zone::Chest.noun_id().to_owned(), 12, 7)]);
+
+    click(&mut app, medic, scanner);
+    assert!(
+        app.world()
+            .get::<BodyScanner>(scanner)
+            .unwrap()
+            .occupant
+            .is_none()
+    );
+    assert!(app.world().get::<Hidden>(patient).is_none());
+    assert_eq!(
+        app.world().get::<Appearance>(scanner).unwrap().state,
+        "body_scanner_0"
     );
 }

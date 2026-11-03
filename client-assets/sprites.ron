@@ -2507,6 +2507,11 @@
             "closing": (dmi: "icons/turf/shuttle.dmi", state: "doorc1"),
             "deny": (dmi: "icons/turf/shuttle.dmi", state: "door1"),
         },
+        "body-scanner": {
+            "body_scanner_0": (dmi: "icons/obj/Cryogenic2.dmi", state: "body_scanner_0"),
+            "body_scanner_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "body_scanner_1"),
+        },
+        "scanner-console": { "body_scannerconsole": (dmi: "icons/obj/Cryogenic2.dmi", state: "body_scannerconsole") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
