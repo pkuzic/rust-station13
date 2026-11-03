@@ -2512,6 +2512,151 @@
             "body_scanner_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "body_scanner_1"),
         },
         "scanner-console": { "body_scannerconsole": (dmi: "icons/obj/Cryogenic2.dmi", state: "body_scannerconsole") },
+        "chief-engineer-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "chiefengineer") },
+        "worn:chief-engineer-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "chief_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "chief_l"),
+        },
+        "engineer-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "engine") },
+        "worn:engineer-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "engine_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "engine_l"),
+        },
+        "atmos-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "atmos") },
+        "worn:atmos-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "atmos_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "atmos_l"),
+        },
+        "captain-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "captain") },
+        "worn:captain-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "captain_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "captain_l"),
+        },
+        "hop-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "hop") },
+        "worn:hop-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "hop_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "hop_l"),
+        },
+        "hos-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "hos") },
+        "worn:hos-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "hosred_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "hosred_l"),
+        },
+        "warden-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "darkred") },
+        "worn:warden-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "warden_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "warden_l"),
+        },
+        "forensic-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "forensicsred") },
+        "worn:forensic-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "forensicsred_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "forensicsred_l"),
+        },
+        "medical-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "medical") },
+        "worn:medical-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "medical_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "medical_l"),
+        },
+        "chemist-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "chemistry") },
+        "worn:chemist-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "chemistry_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "chemistry_l"),
+        },
+        "geneticist-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "genetics") },
+        "worn:geneticist-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "genetic_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "genetic_l"),
+        },
+        "scientist-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "toxins") },
+        "worn:scientist-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "toxin_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "toxin_l"),
+        },
+        "rd-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "director") },
+        "worn:rd-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "director_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "director_l"),
+        },
+        "roboticist-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "robotics") },
+        "worn:roboticist-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "robotics_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "robotics_l"),
+        },
+        "hydroponics-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "hydroponics") },
+        "worn:hydroponics-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "hydroponics_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "hydroponics_l"),
+        },
+        "bartender-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "ba_suit") },
+        "worn:bartender-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "ba_suit_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "ba_suit_l"),
+        },
+        "chef-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "chef") },
+        "worn:chef-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "chef_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "chef_l"),
+        },
+        "janitor-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "janitor") },
+        "worn:janitor-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "janitor_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "janitor_l"),
+        },
+        "quartermaster-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "qm") },
+        "worn:quartermaster-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "qm_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "qm_l"),
+        },
+        "cargotech-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "cargo") },
+        "worn:cargotech-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "cargo_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "cargo_l"),
+        },
+        "miner-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "miner") },
+        "worn:miner-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "miner_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "miner_l"),
+        },
+        "chaplain-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "chaplain") },
+        "worn:chaplain-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "chapblack_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "chapblack_l"),
+        },
+        "red-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "red") },
+        "worn:red-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "red_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "red_l"),
+        },
+        "labcoat": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "labcoat") },
+        "worn:labcoat": {
+            "": (dmi: "icons/mob/suit.dmi", state: "labcoat"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "labcoat2"),
+        },
+        "hazard-vest": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "hazard") },
+        "worn:hazard-vest": {
+            "": (dmi: "icons/mob/suit.dmi", state: "hazard"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "hazard2"),
+        },
+        "captain-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "captain") },
+        "worn:captain-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "captain"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "captain2"),
+        },
+        "chef-hat": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "chef") },
+        "worn:chef-hat": {
+            "": (dmi: "icons/mob/head.dmi", state: "chef"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "chef2"),
+        },
+        "orange-shoes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "orange") },
+        "worn:orange-shoes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "orange"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "orange2"),
+        },
+        "galoshes": { "": (dmi: "icons/obj/clothing/shoes.dmi", state: "galoshes") },
+        "worn:galoshes": {
+            "": (dmi: "icons/mob/feet.dmi", state: "galoshes"),
+            "lying": (dmi: "icons/mob/feet.dmi", state: "galoshes2"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

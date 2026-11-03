@@ -296,6 +296,9 @@ pub struct Placed {
     pub id: String,
     #[serde(default)]
     pub access: Vec<String>,
+    /// For an ID card waiting at a start point: the job it's for.
+    #[serde(default)]
+    pub job: Option<String>,
 }
 
 impl Placed {
@@ -304,7 +307,11 @@ impl Placed {
             format!("{:?}", self.id)
         } else {
             let access: Vec<String> = self.access.iter().map(|a| format!("{a:?}")).collect();
-            format!("(id: {:?}, access: [{}])", self.id, access.join(", "))
+            let vars = self
+                .job
+                .as_ref()
+                .map_or(String::new(), |job| format!(", vars: {{\"job\": {job:?}}}"));
+            format!("(id: {:?}, access: [{}]{vars})", self.id, access.join(", "))
         }
     }
 }

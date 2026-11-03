@@ -131,6 +131,11 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             .map(|v| v.trim().trim_matches('"').to_owned())
             .filter(|v| !v.is_empty())
     };
+    if spec.id == "id-card"
+        && let Some(job) = tag("job")
+    {
+        crate::jobs::set_aside(world, entity, &job);
+    }
     if spec.id == "airlock"
         && let Some(tag) = tag("id_tag")
     {

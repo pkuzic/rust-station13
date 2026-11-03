@@ -230,16 +230,13 @@ fn spawn_player(
     let client_id = remote.0.to_bits();
 
     let taken: Vec<_> = occupied.iter().map(|p| p.0).collect();
-    let Some(spawn) = maps
-        .iter()
-        .flat_map(|m| m.0.spawns.iter().copied())
-        .find(|s| !taken.contains(s))
-    else {
-        warn!(client_id, "no free spawn point; player left without a mob");
-        return;
-    };
+    let starts: Vec<_> = maps.iter().flat_map(|m| m.0.spawns.iter().copied()).collect();
 
     commands.queue(move |world: &mut World| {
+        let Some(spawn) = rs13_classic::jobs::pick_start(world, &starts, &taken) else {
+            warn!(client_id, "no free spawn point; player left without a mob");
+            return;
+        };
         let mob = spawn_controlled_mob(world, spawn, client_id, link);
         if let Ok(mut link) = world.get_entity_mut(link) {
             link.insert((Controls(mob), SentStatus::default(), SentPanel::default()));
@@ -251,6 +248,7 @@ fn spawn_player(
 /// A new character at `at`, controlled by this client.
 fn spawn_controlled_mob(world: &mut World, at: TilePos, client_id: u64, link: Entity) -> Entity {
     let mob = spawn_player_mob(world, at);
+    rs13_classic::jobs::take_up(world, mob, at);
     world.entity_mut(mob).insert((
         Player { client_id },
         ControlledBy {
