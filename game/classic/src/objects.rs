@@ -206,6 +206,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::chem_dispenser::CHEM_DISPENSER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::chem_dispenser::spawn_chem_dispenser(world, pos, id));
+    }
     if crate::security::is_turret_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::security::spawn_turret_part(world, spec, pos, id));
@@ -619,6 +623,8 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             ),
             (
                 crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
+                crate::chem_dispenser::PendingChemOps::default(),
+                crate::chem_dispenser::ChemPanelOut::default(),
                 crate::arcade::PendingArcadeOps::default(),
                 crate::arcade::ArcadePanelOut::default(),
                 crate::brig::PendingBrigOps::default(),

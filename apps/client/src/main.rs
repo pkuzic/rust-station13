@@ -19,6 +19,7 @@ mod arcade_panel;
 mod audio;
 mod brig_panel;
 mod camera_panel;
+mod chem_panel;
 mod context_menu;
 mod depth;
 mod fov;
@@ -110,6 +111,8 @@ enum UseStep {
     ArcadeAttack,
     /// `brig`: add a minute in the open door timer's window and start it.
     BrigStart,
+    /// `dispense:N`: give line `N` of the open chem dispenser's list.
+    Dispense(u8),
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -139,6 +142,7 @@ impl UseStep {
             "respawn" => Some(Self::Respawn),
             "arcade" => Some(Self::ArcadeAttack),
             "brig" => Some(Self::BrigStart),
+            _ if s.starts_with("dispense:") => s["dispense:".len()..].trim().parse().ok().map(Self::Dispense),
             "held" => Some(Self::Held),
             "self" => Some(Self::InHand),
             _ => {
@@ -301,6 +305,7 @@ fn main() {
         .init_resource::<heater_panel::OpenHeater>()
         .init_resource::<arcade_panel::OpenArcade>()
         .init_resource::<brig_panel::OpenBrig>()
+        .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
         .init_resource::<smes_panel::OpenSmes>()
@@ -353,6 +358,7 @@ fn main() {
                     (heater_panel::receive_heater, heater_panel::show_heater).chain(),
                     (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
                     (brig_panel::receive_brig, brig_panel::show_brig).chain(),
+                    (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                     (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                     (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
                     (smes_panel::receive_smes, smes_panel::show_smes).chain(),
@@ -1505,7 +1511,11 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers): (Res<arcade_panel::OpenArcade>, Res<brig_panel::OpenBrig>),
+    (arcades, timers, dispensers): (
+        Res<arcade_panel::OpenArcade>,
+        Res<brig_panel::OpenBrig>,
+        Res<chem_panel::OpenChem>,
+    ),
     mut next_at: Local<Option<f32>>,
 ) {
     let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
@@ -1554,6 +1564,10 @@ fn scripted_use(
         }
         UseStep::Swap => Some(ActionInput::SwapHands),
         UseStep::Respawn => Some(ActionInput::Respawn),
+        UseStep::Dispense(line) => dispensers.0.as_ref().map(|view| ActionInput::Chem {
+            target: view.target,
+            command: rs13_network::protocol::ChemCommand::Dispense(line),
+        }),
         UseStep::BrigStart => timers.0.as_ref().map(|view| {
             sender.send::<IntentChannel>(ActionInput::Brig {
                 target: view.target,

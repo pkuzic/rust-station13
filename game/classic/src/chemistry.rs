@@ -92,6 +92,73 @@ impl Reagents {
     }
 }
 
+/// What mixes into what (Luna's `chemical_reaction`s for the medicines we have): what it takes,
+/// in parts, what it makes and how much for those parts.
+const RECIPES: [(&[(&str, f32)], &str, f32); 10] = [
+    (
+        &[("oxygen", 1.0), ("carbon", 1.0), ("sugar", 1.0)],
+        "inaprovaline",
+        3.0,
+    ),
+    (
+        &[("silicon", 1.0), ("potassium", 1.0), ("nitrogen", 1.0)],
+        "anti_toxin",
+        3.0,
+    ),
+    (&[("silicon", 1.0), ("carbon", 1.0)], "kelotane", 2.0),
+    (&[("inaprovaline", 1.0), ("carbon", 1.0)], "bicaridine", 2.0),
+    (
+        &[("inaprovaline", 1.0), ("anti_toxin", 1.0)],
+        "tricordrazine",
+        2.0,
+    ),
+    (
+        &[("oxygen", 1.0), ("phosphorus", 1.0), ("kelotane", 1.0)],
+        "dermaline",
+        3.0,
+    ),
+    (&[("oxygen", 2.0), ("plasma", 0.1)], "dexalin", 1.0),
+    (
+        &[("dexalin", 1.0), ("carbon", 1.0), ("iron", 1.0)],
+        "dexalinp",
+        3.0,
+    ),
+    (
+        &[("sugar", 1.0), ("lithium", 1.0), ("water", 1.0)],
+        "synaptizine",
+        3.0,
+    ),
+    (
+        &[("dexalin", 1.0), ("water", 1.0), ("oxygen", 1.0)],
+        "cryoxadone",
+        3.0,
+    ),
+];
+
+/// Luna `handle_reactions`: mix whatever can mix, until nothing more does.
+pub fn react(reagents: &mut Reagents) {
+    for _ in 0..RECIPES.len() {
+        let mut any = false;
+        for (needs, makes, yields) in RECIPES {
+            let batches = needs
+                .iter()
+                .map(|(r, parts)| reagents.get(r) / parts)
+                .fold(f32::INFINITY, f32::min);
+            if batches <= 0.001 {
+                continue;
+            }
+            for (r, parts) in needs {
+                reagents.remove(r, parts * batches);
+            }
+            *reagents.amounts.entry(makes.to_owned()).or_insert(0.0) += yields * batches;
+            any = true;
+        }
+        if !any {
+            break;
+        }
+    }
+}
+
 /// A syringe: it draws or it injects (Luna `mode`).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Syringe {
@@ -213,6 +280,7 @@ pub fn transfer(world: &mut World, from: Entity, to: Entity, amount: f32) -> f32
         for (r, a) in &taken {
             into.add(r, *a);
         }
+        react(&mut into);
     }
     moved
 }

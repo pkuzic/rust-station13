@@ -2378,6 +2378,7 @@
             "i10": (dmi: "icons/obj/syringe.dmi", state: "i10"),
             "i15": (dmi: "icons/obj/syringe.dmi", state: "i15"),
         },
+        "chem-dispenser": { "dispenser": (dmi: "icons/obj/chemical.dmi", state: "dispenser") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

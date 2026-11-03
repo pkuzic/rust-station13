@@ -564,6 +564,7 @@
         (path: "/obj/item/weapon/reagent_containers/syringe", id: "syringe"),
         (path: "/obj/item/weapon/reagent_containers/syringe/inaprovaline", id: "syringe-inaprovaline"),
         (path: "/obj/item/weapon/reagent_containers/syringe/antitoxin", id: "syringe-antitoxin"),
+        (path: "/obj/machinery/chem_dispenser", id: "chem-dispenser"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

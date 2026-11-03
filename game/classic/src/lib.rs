@@ -17,6 +17,7 @@ pub mod cables;
 pub mod cameras;
 pub mod cells;
 pub mod chairs;
+pub mod chem_dispenser;
 pub mod chemistry;
 pub mod cloning;
 pub mod closets;
@@ -362,26 +363,34 @@ impl Plugin for ClassicPlugin {
             .add_systems(
                 FixedUpdate,
                 (
-                    shields::run_shields,
-                    chemistry::run_chemistry,
-                    security::run_cuffs,
-                    security::run_turrets,
-                    weapons::run_shots,
-                    weapons::run_rechargers,
-                    brig::run_brig,
-                    brig::update_brig_views,
-                    cloning::run_cloning,
-                    airlock_control::run_consoles,
-                    arcade::run_arcades,
-                    arcade::update_arcade_views,
-                    microwaves::run_microwaves,
-                    monkeys::run_monkeys,
-                    flashes::run_flashers,
-                    flashes::recover,
-                    ghosts::leave_dead_bodies,
-                    ghosts::move_ghosts,
-                    ghosts::run_ghost_actions,
-                    ghosts::ghost_speech,
+                    (
+                        shields::run_shields,
+                        chemistry::run_chemistry,
+                        chem_dispenser::run_dispensers,
+                        chem_dispenser::update_chem_views,
+                        security::run_cuffs,
+                        security::run_turrets,
+                        weapons::run_shots,
+                        weapons::run_rechargers,
+                        brig::run_brig,
+                        brig::update_brig_views,
+                        cloning::run_cloning,
+                        airlock_control::run_consoles,
+                        arcade::run_arcades,
+                        arcade::update_arcade_views,
+                    )
+                        .chain(),
+                    (
+                        microwaves::run_microwaves,
+                        monkeys::run_monkeys,
+                        flashes::run_flashers,
+                        flashes::recover,
+                        ghosts::leave_dead_bodies,
+                        ghosts::move_ghosts,
+                        ghosts::run_ghost_actions,
+                        ghosts::ghost_speech,
+                    )
+                        .chain(),
                 )
                     .chain()
                     .before(sound::deliver_sounds)

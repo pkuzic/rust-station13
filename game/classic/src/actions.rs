@@ -166,6 +166,7 @@ pub fn process_actions(
                         cuffed,
                         turret_controls,
                         reagent_holders,
+                        dispensers_chem,
                     ),
                 ),
             ),
@@ -254,6 +255,7 @@ pub fn process_actions(
                         Query<(), With<crate::security::Cuffed>>,
                         Query<(), With<crate::security::TurretControl>>,
                         Query<(), With<crate::chemistry::Reagents>>,
+                        Query<(), With<crate::chem_dispenser::ChemDispenser>>,
                     ),
                 ),
             ),
@@ -337,6 +339,12 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if dispensers_chem.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::chem_dispenser::click(world, mob, target));
+                }
                 // Syringes, pills, hyposprays and glassware (`chemistry.md`).
                 Action::UseOn(target)
                     if tool.is_some_and(crate::chemistry::is_chem_tool)

@@ -7,10 +7,10 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, BrigPanelView, CameraPanelView,
-    CameraView, ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost,
-    GridPos, HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat,
-    NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
-    StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    CameraView, ChemPanelView, ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
+    GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource,
+    MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette,
+    Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -103,6 +103,11 @@ pub enum ActionInput {
     LabelPaper {
         target: NetId,
         label: String,
+    },
+    /// A button on an open chem dispenser.
+    Chem {
+        target: NetId,
+        command: ChemCommand,
     },
     /// A button on an open brig door timer.
     Brig {
@@ -208,6 +213,16 @@ pub enum GasCommand {
     Adjust(i32),
     /// Take the held tank out.
     RemoveTank,
+}
+
+/// Chem dispenser window buttons (Luna's `chem_dispenser` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChemCommand {
+    /// Give this line of its list.
+    Dispense(u8),
+    /// Give this many units at a time.
+    Amount(u8),
+    Eject,
 }
 
 /// Door timer window buttons (Luna's `door_timer` links).
@@ -345,6 +360,10 @@ pub struct ClipboardPanel(pub Option<ClipboardView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct HeaterPanel(pub Option<HeaterPanelView>);
 
+/// Server → one client: the chem dispenser it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ChemPanel(pub Option<ChemPanelView>);
+
 /// Server → one client: the door timer it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BrigPanel(pub Option<BrigPanelView>);
@@ -463,6 +482,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<PickListPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<HeaterPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ChemPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BrigPanel>()
             .add_direction(NetworkDirection::ServerToClient);

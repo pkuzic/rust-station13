@@ -396,6 +396,20 @@ pub struct ClipboardView {
     pub papers: Vec<String>,
 }
 
+/// An open chem dispenser's window, as shown to the player (Luna's `chem_dispenser` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ChemPanelView {
+    /// The machine.
+    pub target: NetId,
+    pub energy: u16,
+    /// Units it gives at a time.
+    pub amount: u8,
+    /// Its beaker's contents and size, if it has one.
+    pub beaker: Option<(u16, u16)>,
+    /// What it can give, by reagent id.
+    pub reagents: Vec<String>,
+}
+
 /// An open brig door timer's window, as shown to the player (Luna's `door_timer` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrigPanelView {

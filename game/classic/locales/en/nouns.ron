@@ -296,6 +296,7 @@
     "syringe": (gender: neuter, sg: (nom: "syringe", indef: "a syringe"), pl: Some((nom: "syringes"))),
     "syringe-inaprovaline": (gender: neuter, sg: (nom: "inaprovaline syringe", indef: "an inaprovaline syringe"), pl: Some((nom: "inaprovaline syringes"))),
     "syringe-antitoxin": (gender: neuter, sg: (nom: "anti-toxin syringe", indef: "an anti-toxin syringe"), pl: Some((nom: "anti-toxin syringes"))),
+    "chem-dispenser": (gender: neuter, sg: (nom: "chem dispenser", indef: "a chem dispenser"), pl: Some((nom: "chem dispensers"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

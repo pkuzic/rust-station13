@@ -213,6 +213,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `chair:south` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `chair:west` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `cheesie-honkers:` | `icons/obj/food.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |
+| `chem-dispenser:dispenser` | `icons/obj/chemical.dmi : "dispenser"` | CC-BY-SA 3.0 |
 | `chest-drawer:chestdrawer` | `icons/obj/bureaucracy.dmi : "chestdrawer"` | CC-BY-SA 3.0 |
 | `chest-drawer:chestdrawer-open` | `icons/obj/bureaucracy.dmi : "chestdrawer-open"` | CC-BY-SA 3.0 |
 | `chicken-head:` | `icons/obj/clothing/hats.dmi : "chickenhead"` | CC-BY-SA 3.0 |
