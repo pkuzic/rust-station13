@@ -3,6 +3,7 @@
 mod lobby;
 mod sight;
 mod silhouettes;
+pub mod vote;
 
 use std::time::Duration;
 
@@ -183,7 +184,9 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
             send_paper,
         ),
     )
-    .add_systems(FixedUpdate, lobby::run_round)
+    .init_resource::<vote::Votes>()
+    .init_resource::<vote::VoteInbox>()
+    .add_systems(FixedUpdate, (lobby::run_round, vote::run_votes, vote::send_votes))
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
     // for a client that has just joined, before anything is sent to it.
     .add_systems(
@@ -398,6 +401,7 @@ fn apply_move_inputs(
 fn queue_actions(
     mut links: Query<(Entity, &Controls, &mut MessageReceiver<ActionInput>)>,
     mut respawns: MessageWriter<RespawnRequest>,
+    mut votes: ResMut<vote::VoteInbox>,
     mut mobs: Query<
         (
             &mut PendingActions,
@@ -488,6 +492,10 @@ fn queue_actions(
                     ActionInput::Examine(id) => examined(id).map(Action::Examine),
                     ActionInput::Say(text) => {
                         speech.0.push(text);
+                        None
+                    }
+                    ActionInput::Vote(action) => {
+                        votes.0.push((link, action));
                         None
                     }
                     ActionInput::Respawn => {
@@ -804,6 +812,10 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn => None,
+                ActionInput::Vote(action) => {
+                    votes.0.push((link, action));
+                    None
+                }
                 ActionInput::Resist => {
                     commands
                         .entity(controls.0)

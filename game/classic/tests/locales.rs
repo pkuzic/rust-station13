@@ -85,6 +85,8 @@ fn every_message_formats_in_both_locales() {
     args.set("act", "scratch");
     args.set("name", "Someone");
     args.set("done", "won");
+    args.set("kind", "restart");
+    args.set("choice", "Yes");
     args.set("mode", "extended");
     args.set("ready", 5);
     args.set("players", 5);

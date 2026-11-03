@@ -12,7 +12,7 @@ use rs13_world::{
     HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource,
     LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
     RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
-    UplinkPanelView, VendingPanelView, WirePanelView, WornView,
+    UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -132,6 +132,8 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// Anywhere: start a vote, or vote.
+    Vote(VoteAction),
     /// In the lobby: ready for the round to start, or not.
     Ready(bool),
     /// In the lobby: start now if the round is on, or else be ready for it.
@@ -441,6 +443,19 @@ pub struct CommsPanel(pub Option<CommsPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct UplinkPanel(pub Option<UplinkPanelView>);
 
+/// What someone does about a vote.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum VoteAction {
+    BeginRestart,
+    BeginMode,
+    /// Vote for this line of `VoteView::choices`.
+    Cast(u8),
+}
+
+/// Server → one client: how voting stands.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct VotePanel(pub VoteView);
+
 /// Server → one client: the lobby, or `None` once they've left it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LobbyPanel(pub Option<LobbyView>);
@@ -595,6 +610,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<CommsPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<UplinkPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<VotePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);

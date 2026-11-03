@@ -467,6 +467,24 @@ pub struct UplinkPanelView {
     pub goods: Vec<(String, u8)>,
 }
 
+/// How voting stands, as one player sees it (Luna's `Vote` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VoteView {
+    /// The vote going on: `restart` or `mode`.
+    pub kind: Option<String>,
+    /// Seconds until it closes.
+    pub ends_in: u32,
+    /// Seconds until another can start.
+    pub next_in: u32,
+    /// What can be voted for, by id, and how many are for it.
+    pub choices: Vec<(String, u16)>,
+    pub leading: Option<String>,
+    /// What this player voted for.
+    pub mine: Option<String>,
+    /// The mode can be voted on.
+    pub can_mode: bool,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {

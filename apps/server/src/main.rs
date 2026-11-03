@@ -17,6 +17,7 @@ fn main() -> AppExit {
     let mut pregame = rs13_classic::round::PREGAME_SECONDS;
     let mut pod_seconds: Option<u32> = None;
     let mut forced_mode: Option<&'static str> = None;
+    let mut vote_seconds: Option<u32> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -40,6 +41,10 @@ fn main() -> AppExit {
                     None => return usage(),
                 }
             }
+            ("--vote-seconds", Some(value)) => match value.parse() {
+                Ok(v) => vote_seconds = Some(v),
+                Err(_) => return usage(),
+            },
             ("--pod-seconds", Some(value)) => match value.parse() {
                 Ok(p) => pod_seconds = Some(p),
                 Err(_) => return usage(),
@@ -84,6 +89,18 @@ fn main() -> AppExit {
         } else {
             rs13_server::server_app_with_station(port, decks.clone())
         };
+        // What the players last voted for outlasts a restart.
+        if let Ok(voted) = rs13_server::vote::VOTED_MODE.lock()
+            && let Some(mode) = *voted
+        {
+            forced_mode = Some(mode).filter(|m| *m != rs13_server::vote::SECRET);
+        }
+        if let Some(seconds) = vote_seconds {
+            app.insert_resource(rs13_server::vote::Votes {
+                period_ds: seconds as f32 * 10.0,
+                ..Default::default()
+            });
+        }
         if let Some(mode) = forced_mode
             && rounds
         {

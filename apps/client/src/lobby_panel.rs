@@ -24,6 +24,7 @@ pub enum LobbyButton {
     Ready(bool),
     Prefer(u8),
     Join,
+    Vote,
 }
 
 const FACE: Color = Color::srgb(0.83, 0.82, 0.78);
@@ -130,6 +131,12 @@ pub fn show_lobby(
             );
         }
     }
+    button(
+        &mut commands,
+        window,
+        text(LocMsg::new("lobby-vote")),
+        LobbyButton::Vote,
+    );
     label(
         &mut commands,
         match &view.name {
@@ -194,11 +201,16 @@ fn button(commands: &mut Commands, parent: Entity, label: String, action: LobbyB
 fn click_button(
     click: On<PointerClick>,
     buttons: Query<&LobbyButton>,
+    mut votes: ResMut<crate::vote_panel::OpenVote>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     let Ok(action) = buttons.get(click.entity) else {
         return;
     };
+    if matches!(*action, LobbyButton::Vote) {
+        votes.open = true;
+        return;
+    }
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
@@ -206,5 +218,6 @@ fn click_button(
         LobbyButton::Ready(ready) => ActionInput::Ready(ready),
         LobbyButton::Prefer(line) => ActionInput::ChooseJob { line: Some(line) },
         LobbyButton::Join => ActionInput::JoinRound,
+        LobbyButton::Vote => return,
     });
 }

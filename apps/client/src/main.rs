@@ -53,6 +53,7 @@ mod sprites;
 mod storage_panel;
 mod uplink_panel;
 mod vending_panel;
+mod vote_panel;
 mod wire_panel;
 mod world_view;
 
@@ -70,7 +71,9 @@ use rs13_i18n::{Lexicon, Localizer, langid};
 use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate};
+use rs13_network::protocol::{
+    ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate, VoteAction,
+};
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
     TilePos,
@@ -139,6 +142,13 @@ enum UseStep {
     Manifest,
     /// `printmanifest`: print the crew manifest from an open identification computer.
     PrintManifest,
+    /// `vote`: open the vote window, as V does.
+    VoteOpen,
+    /// `voterestart`, `votemode`: start a vote.
+    VoteRestart,
+    VoteMode,
+    /// `votefor:N`: vote for line `N`.
+    VoteFor(u8),
     /// `buy:N`: buy line `N` of what an open Syndicate uplink sells.
     Buy(u8),
     /// `callpods`: call the escape pods on an open communications console.
@@ -187,6 +197,10 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            "vote" => Some(Self::VoteOpen),
+            "voterestart" => Some(Self::VoteRestart),
+            "votemode" => Some(Self::VoteMode),
+            _ if s.starts_with("votefor:") => s["votefor:".len()..].trim().parse().ok().map(Self::VoteFor),
             _ if s.starts_with("buy:") => s["buy:".len()..].trim().parse().ok().map(Self::Buy),
             "manifest" => Some(Self::Manifest),
             "printmanifest" => Some(Self::PrintManifest),
@@ -365,6 +379,7 @@ fn main() {
         .init_resource::<records_panel::OpenRecords>()
         .init_resource::<lobby_panel::OpenLobby>()
         .init_resource::<comms_panel::OpenComms>()
+        .init_resource::<vote_panel::OpenVote>()
         .init_resource::<uplink_panel::OpenUplink>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
@@ -433,6 +448,12 @@ fn main() {
                         (
                             (comms_panel::receive_comms, comms_panel::show_comms).chain(),
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
+                            (
+                                vote_panel::receive_vote,
+                                vote_panel::toggle_vote,
+                                vote_panel::show_vote,
+                            )
+                                .chain(),
                         ),
                         (id_panel::receive_id, id_panel::show_id).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
@@ -713,6 +734,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<records_panel::OpenRecords>().0 = None;
     world.resource_mut::<lobby_panel::OpenLobby>().0 = None;
     world.resource_mut::<comms_panel::OpenComms>().0 = None;
+    world.resource_mut::<vote_panel::OpenVote>().open = false;
     world.resource_mut::<uplink_panel::OpenUplink>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
@@ -1677,6 +1699,7 @@ fn scripted_use(
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
+    mut vote_window: ResMut<vote_panel::OpenVote>,
 ) {
     let Some(step) = plan.0.front().copied() else {
         return;
@@ -1695,6 +1718,25 @@ fn scripted_use(
     if let UseStep::Wait(seconds) = step {
         plan.0.pop_front();
         *next_at = Some(now + seconds);
+        return;
+    }
+    // These work the same with a body or without.
+    let vote = match step {
+        UseStep::VoteOpen => {
+            vote_window.open = true;
+            plan.0.pop_front();
+            *next_at = Some(now + 0.5);
+            return;
+        }
+        UseStep::VoteRestart => Some(VoteAction::BeginRestart),
+        UseStep::VoteMode => Some(VoteAction::BeginMode),
+        UseStep::VoteFor(line) => Some(VoteAction::Cast(line)),
+        _ => None,
+    };
+    if let Some(vote) = vote {
+        sender.send::<IntentChannel>(ActionInput::Vote(vote));
+        plan.0.pop_front();
+        *next_at = Some(now + 0.5);
         return;
     }
     let Ok((me, hands)) = own.single() else {
@@ -1763,6 +1805,8 @@ fn scripted_use(
             target: view.target,
             line,
         }),
+        // Dealt with above.
+        UseStep::VoteOpen | UseStep::VoteRestart | UseStep::VoteMode | UseStep::VoteFor(_) => None,
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,
             call: true,
