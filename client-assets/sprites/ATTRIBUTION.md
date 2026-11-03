@@ -36,6 +36,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `airlock-console:airlock_control_process` | `icons/obj/airlock_machines.dmi : "airlock_control_process"` | CC-BY-SA 3.0 |
 | `airlock-console:airlock_control_standby` | `icons/obj/airlock_machines.dmi : "airlock_control_standby"` | CC-BY-SA 3.0 |
 | `airlock-sensor:` | `icons/obj/airlock_machines.dmi : "airlock_sensor_off"` | CC-BY-SA 3.0 |
+| `ammo-357:` | `icons/obj/ammo.dmi : "357"` | CC-BY-SA 3.0 |
 | `anomaly-hood:` | `icons/obj/clothing/hats.dmi : "anom_hood"` | CC-BY-SA 3.0 |
 | `anomaly-suit:` | `icons/obj/clothing/suits.dmi : "anom_suit"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
@@ -1250,6 +1251,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `surgical-drapes:` | `icons/obj/surgery.dmi : "surgical_drapes"` | CC-BY-SA 3.0 |
 | `suspenders:` | `icons/obj/clothing/belts.dmi : "suspenders"` | CC-BY-SA 3.0 |
+| `syndicate-revolver:revolver` | `icons/obj/gun.dmi : "revolver"` | CC-BY-SA 3.0 |
 | `syringe:d0` | `icons/obj/syringe.dmi : "d0"` | CC-BY-SA 3.0 |
 | `syringe:d10` | `icons/obj/syringe.dmi : "d10"` | CC-BY-SA 3.0 |
 | `syringe:d15` | `icons/obj/syringe.dmi : "d15"` | CC-BY-SA 3.0 |
@@ -1514,6 +1516,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `turntable:` | `icons/effects/lasers2.dmi : "turntable"` | CC-BY-SA 3.0 |
 | `turret:grey_target_prism` | `icons/obj/turrets.dmi : "grey_target_prism"` | CC-BY-SA 3.0 |
 | `turret-control:motion3` | `icons/obj/device.dmi : "motion3"` | CC-BY-SA 3.0 |
+| `uplink-radio:` | `icons/obj/radio.dmi : "walkietalkie"` | CC-BY-SA 3.0 |
 | `urn:` | `icons/obj/items.dmi : "urn"` | CC-BY-SA 3.0 |
 | `ushanka:` | `icons/obj/clothing/hats.dmi : "ushankadown"` | CC-BY-SA 3.0 |
 | `utility-belt:` | `icons/obj/clothing/belts.dmi : "utilitybelt"` | CC-BY-SA 3.0 |

@@ -398,90 +398,9 @@ pods-minutes = До старта спасательных капсул: { $value
 pods-seconds = До старта спасательных капсул: { $value } с.
 pods-launched = Спасательные капсулы стартовали!
 round-over = Раунд окончен. Перезапуск через 60 секунд.
-round-escaped = { $name }, { $job ->
-    [captain] Капитан
-    [hop] Глава персонала
-    [hos] Глава службы безопасности
-    [chief-engineer] Главный инженер
-    [research-director] Директор исследований
-    [security-officer] Сотрудник службы безопасности
-    [warden] Надзиратель
-    [forensic-technician] Криминалист
-    [engineer] Инженер
-    [atmos-technician] Атмосферный техник
-    [medical-doctor] Врач
-    [chemist] Химик
-    [geneticist] Генетик
-    [scientist] Учёный
-    [roboticist] Робототехник
-    [hydroponicist] Гидропонист
-    [barman] Бармен
-    [chef] Повар
-    [janitor] Уборщик
-    [quartermaster] Завхоз
-    [cargo-technician] Грузчик
-    [shaft-miner] Шахтёр
-    [counselor] Советник
-    [clown] Клоун
-    [mime] Мим
-   *[assistant] Ассистент
-}: спасся.
-round-stranded = { $name }, { $job ->
-    [captain] Капитан
-    [hop] Глава персонала
-    [hos] Глава службы безопасности
-    [chief-engineer] Главный инженер
-    [research-director] Директор исследований
-    [security-officer] Сотрудник службы безопасности
-    [warden] Надзиратель
-    [forensic-technician] Криминалист
-    [engineer] Инженер
-    [atmos-technician] Атмосферный техник
-    [medical-doctor] Врач
-    [chemist] Химик
-    [geneticist] Генетик
-    [scientist] Учёный
-    [roboticist] Робототехник
-    [hydroponicist] Гидропонист
-    [barman] Бармен
-    [chef] Повар
-    [janitor] Уборщик
-    [quartermaster] Завхоз
-    [cargo-technician] Грузчик
-    [shaft-miner] Шахтёр
-    [counselor] Советник
-    [clown] Клоун
-    [mime] Мим
-   *[assistant] Ассистент
-}: остался на станции.
-round-died = { $name }, { $job ->
-    [captain] Капитан
-    [hop] Глава персонала
-    [hos] Глава службы безопасности
-    [chief-engineer] Главный инженер
-    [research-director] Директор исследований
-    [security-officer] Сотрудник службы безопасности
-    [warden] Надзиратель
-    [forensic-technician] Криминалист
-    [engineer] Инженер
-    [atmos-technician] Атмосферный техник
-    [medical-doctor] Врач
-    [chemist] Химик
-    [geneticist] Генетик
-    [scientist] Учёный
-    [roboticist] Робототехник
-    [hydroponicist] Гидропонист
-    [barman] Бармен
-    [chef] Повар
-    [janitor] Уборщик
-    [quartermaster] Завхоз
-    [cargo-technician] Грузчик
-    [shaft-miner] Шахтёр
-    [counselor] Советник
-    [clown] Клоун
-    [mime] Мим
-   *[assistant] Ассистент
-}: погиб.
+round-escaped = { $name }, { $job }: спасся.
+round-stranded = { $name }, { $job }: остался на станции.
+round-died = { $name }, { $job }: погиб.
 id-manifest-open = Открыть список экипажа
 id-manifest-title = Список экипажа:
 id-manifest-hint = Менять записи можно на компьютере охраны.
@@ -490,6 +409,43 @@ id-manifest-print = Распечатать
 id-manifest-printing = Идёт печать...
 id-manifest-back = Назад
 id-manifest-paper = бумага - «Список экипажа»
+traitor-you = Вы предатель.
+traitor-repeat = ПОВТОРЯЮ
+traitor-reminder = На случай, если вы прослушали: ВЫ ПРЕДАТЕЛЬ!
+traitor-uplink-pack = Синдикат спрятал корабельную рацию в вашем рюкзаке. Используйте её в руке: это аплинк, и там же можно вспомнить задания.
+traitor-uplink-hand = Синдикат вложил корабельную рацию вам в руку. Используйте её в руке: это аплинк, и там же можно вспомнить задания.
+traitor-uplink-floor = Синдикат оставил корабельную рацию у ваших ног. Используйте её в руке: это аплинк, и там же можно вспомнить задания.
+objective-steal = Задание №{ $value }: украсть { NOUN($item, "acc") }.{ $done ->
+    [won] {" "}Успех
+    [failed] {" "}Провал
+   *[none] {""}
+}
+objective-assassinate = Задание №{ $value }: убить: { $name }, { $job }.{ $done ->
+    [won] {" "}Успех
+    [failed] {" "}Провал
+   *[none] {""}
+}
+objective-protect = Задание №{ $value }: { $name }, { $job } — родственник высокопоставленного лидера Синдиката. Позаботьтесь, чтобы он благополучно покинул станцию.{ $done ->
+    [won] {" "}Успех
+    [failed] {" "}Провал
+   *[none] {""}
+}
+objective-escape = Задание №{ $value }: улететь на капсуле живым и не под арестом.{ $done ->
+    [won] {" "}Успех
+    [failed] {" "}Провал
+   *[none] {""}
+}
+objective-hijack = Задание №{ $value }: угнать капсулы: улететь должны только вы.{ $done ->
+    [won] {" "}Успех
+    [failed] {" "}Провал
+   *[none] {""}
+}
+uplink-title = Консоль аплинка Синдиката:
+uplink-crystals = Осталось телекристаллов: { $value }
+uplink-good = { NOUN($item) } ({ $value })
+round-traitor = Предателем Синдиката был { $name }.
+round-traitor-won = Предатель справился!
+round-traitor-lost = Предатель провалился!
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

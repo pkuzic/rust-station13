@@ -20,9 +20,9 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 1.3 Crew manifest | S | `computer.dm` `datacore` | On the ID computer, printed too, `access.md`. PDAs' copy waits for 3.21 |
 | [x] | 1.4 Escape pods: call, recall, launch, round end | M-L | `shuttle_controller` | `round.md`. Pods don't physically move; prison shuttle left out |
 | [~] | 1.5 Communications console: alert levels, status displays | S-M | `computer/communications` | Call and stop done. Left: messages, alert levels, status displays, red alert |
-| [ ] | 1.6 Objectives and the end-of-round report | S-M | `newobjective`, `intercept_report` | |
+| [x] | 1.6 Objectives and the end-of-round report | S-M | `newobjective`, `intercept_report` | `traitor.md`. Intercept report left out |
 | [ ] | 1.7 Votes: restart and mode | S | `game/vote`, `datums/vote` | |
-| [ ] | 1.8 Traitor mode and uplink | M | `gamemodes/traitor`, `Abi79/uplinks` | |
+| [~] | 1.8 Traitor mode and uplink | M | `gamemodes/traitor`, `Abi79/uplinks` | `traitor.md`. Sells only what works: more as those systems arrive |
 | [ ] | 1.9 Chat: OOC, whisper, dead chat, emotes | M | `say`, `chat_tabs/ooc`, `Whisper`, `Me` | Speech and radio exist |
 | [ ] | 1.10 Radio channels and department headsets | M | `items/devices/radio` | One channel now |
 | [ ] | 1.11 Combat: body part aiming, armour, disarm, grabs, knockouts | L | `NewMobs/Damagesystem`, `organs`, `human_defense` | Chest only now |

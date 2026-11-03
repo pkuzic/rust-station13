@@ -24,6 +24,8 @@ pub const BATON: &str = "stun-baton";
 pub const RECHARGER: &str = "recharger";
 pub const PISTOL: &str = "pistol";
 pub const REVOLVER: &str = "revolver";
+/// Luna's `gun/projectile/revolver`, which only the uplink sells (`traitor.md`).
+pub const SYNDICATE_REVOLVER: &str = "syndicate-revolver";
 pub const COMBAT_SHOTGUN: &str = "combat-shotgun";
 pub const DOUBLE_BARREL: &str = "double-barrel";
 pub const SHOT: &str = "shot";
@@ -64,7 +66,7 @@ pub enum Fires {
 /// What a bullet gun has loaded (Luna's `projectile/bullet` subtypes, by casing).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Round {
-    /// `.12` slugs.
+    /// `.12` slugs and `.357`.
     Slug,
     /// `.12` beanbags and `.38`.
     Weak,
@@ -104,6 +106,7 @@ fn ammo(proto: &str) -> Option<Ammo> {
         "magazine-9mm" => ("9mm", Round::Nine, 8),
         "magazine-12mm" => ("12mm", Round::Mid, 20),
         "speed-loader-38" => (".38", Round::Weak, 6),
+        "ammo-357" => (".357", Round::Slug, 7),
         "slug-box" => (".12", Round::Slug, 8),
         "beanbag-box" => (".12", Round::Weak, 8),
         _ => return None,
@@ -161,10 +164,11 @@ pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
     }
     match proto {
         // Bullet guns come loaded (Luna `mag_type`).
-        PISTOL | REVOLVER | COMBAT_SHOTGUN | DOUBLE_BARREL => {
+        PISTOL | REVOLVER | SYNDICATE_REVOLVER | COMBAT_SHOTGUN | DOUBLE_BARREL => {
             let (caliber, round, rounds, look) = match proto {
                 PISTOL => ("9mm", Round::Nine, 8, "pistol"),
                 REVOLVER => (".38", Round::Weak, 6, "detective"),
+                SYNDICATE_REVOLVER => (".357", Round::Slug, 7, "revolver"),
                 COMBAT_SHOTGUN => (".12", Round::Slug, 8, "cshotgun"),
                 _ => (".12", Round::Weak, 2, "dshotgun"),
             };
@@ -212,7 +216,14 @@ pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
 pub fn is_gun(proto: &str) -> bool {
     matches!(
         proto,
-        LASER_GUN | ENERGY_GUN | TASER | PISTOL | REVOLVER | COMBAT_SHOTGUN | DOUBLE_BARREL
+        LASER_GUN
+            | ENERGY_GUN
+            | TASER
+            | PISTOL
+            | REVOLVER
+            | SYNDICATE_REVOLVER
+            | COMBAT_SHOTGUN
+            | DOUBLE_BARREL
     )
 }
 
@@ -222,6 +233,7 @@ fn gun_look(proto: &str, gun: &Gun) -> String {
     match proto {
         PISTOL => return "pistol".to_owned(),
         REVOLVER => return "detective".to_owned(),
+        SYNDICATE_REVOLVER => return "revolver".to_owned(),
         COMBAT_SHOTGUN => return "cshotgun".to_owned(),
         DOUBLE_BARREL => return "dshotgun".to_owned(),
         _ => {}

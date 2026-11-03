@@ -43,6 +43,7 @@ use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
 use rs13_classic::storage::StorageOut;
 use rs13_classic::supermatter::{LaserOp, LaserPanelOut, PendingLaserOps};
+use rs13_classic::traitor::{PendingUplinkOps, UplinkPanelOut};
 use rs13_classic::vending::{PendingVendOps, VendingPanelOut};
 use rs13_classic::wires::{PendingWires, WireOp, WirePanelOut};
 use rs13_classic::{ClassicPlugin, maps};
@@ -56,7 +57,7 @@ use rs13_network::protocol::{
     FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel,
     JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel,
     PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
-    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -64,7 +65,8 @@ use rs13_world::{
     CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, DisplayName,
     FreezerPanelView, GasPanelView, Ghost, HeaterPanelView, IdComputerView, Intent, JobPanelView,
     LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView,
-    SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, UplinkPanelView, VendingPanelView,
+    WirePanelView,
 };
 
 #[derive(Resource)]
@@ -121,6 +123,7 @@ struct SentPanel(
     Option<RecordsPanelView>,
     Option<IdComputerView>,
     Option<CommsPanelView>,
+    Option<UplinkPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -423,7 +426,7 @@ fn queue_actions(
                 &mut PendingLatheOps,
                 &mut PendingJobOps,
                 &mut PendingRecordOps,
-                (&mut PendingIdOps, &mut PendingCommsOps),
+                (&mut PendingIdOps, &mut PendingCommsOps, &mut PendingUplinkOps),
                 Has<rs13_classic::jobs::ChoosingJob>,
             ),
             Has<NameChosen>,
@@ -467,7 +470,7 @@ fn queue_actions(
                 mut lathe_ops,
                 mut job_ops,
                 mut record_ops,
-                (mut id_ops, mut comms_ops),
+                (mut id_ops, mut comms_ops, mut uplink_ops),
                 choosing,
             ),
             name_chosen,
@@ -603,6 +606,12 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Uplink { target, line } => {
+                    if let Some(uplink) = resolve(target) {
+                        uplink_ops.0.push((uplink, usize::from(line)));
                     }
                     None
                 }
@@ -962,6 +971,7 @@ fn send_panels(
             &mut MessageSender<RecordsPanel>,
             &mut MessageSender<IdComputerPanel>,
             &mut MessageSender<CommsPanel>,
+            &mut MessageSender<UplinkPanel>,
         ),
     )>,
     panels: Query<(
@@ -991,6 +1001,7 @@ fn send_panels(
             &RecordsPanelOut,
             &IdPanelOut,
             &CommsPanelOut,
+            &UplinkPanelOut,
         ),
     )>,
 ) {
@@ -1023,6 +1034,7 @@ fn send_panels(
             mut record_panels,
             mut id_panels,
             mut comms_panels,
+            mut uplink_panels,
         ),
     ) in &mut links
     {
@@ -1040,7 +1052,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record, id_view, comms),
+            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record, id_view, comms, uplink),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1144,6 +1156,10 @@ fn send_panels(
         if sent.24 != comms.0 {
             comms_panels.send::<NoticeChannel>(CommsPanel(comms.0.clone()));
             sent.24 = comms.0.clone();
+        }
+        if sent.25 != uplink.0 {
+            uplink_panels.send::<NoticeChannel>(UplinkPanel(uplink.0.clone()));
+            sent.25 = uplink.0.clone();
         }
     }
 }

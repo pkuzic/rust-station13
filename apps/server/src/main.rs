@@ -16,6 +16,7 @@ fn main() -> AppExit {
     let mut rounds: Option<bool> = None;
     let mut pregame = rs13_classic::round::PREGAME_SECONDS;
     let mut pod_seconds: Option<u32> = None;
+    let mut forced_mode: Option<&'static str> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -30,6 +31,15 @@ fn main() -> AppExit {
             _ => {}
         }
         match (arg.as_str(), args.next()) {
+            ("--mode", Some(value)) => {
+                let built = rs13_classic::round::MODES
+                    .iter()
+                    .find(|m| m.built && m.id == value);
+                match built {
+                    Some(mode) => forced_mode = Some(mode.id),
+                    None => return usage(),
+                }
+            }
             ("--pod-seconds", Some(value)) => match value.parse() {
                 Ok(p) => pod_seconds = Some(p),
                 Err(_) => return usage(),
@@ -74,6 +84,13 @@ fn main() -> AppExit {
         } else {
             rs13_server::server_app_with_station(port, decks.clone())
         };
+        if let Some(mode) = forced_mode
+            && rounds
+        {
+            app.world_mut()
+                .resource_mut::<rs13_classic::round::Round>()
+                .forced_mode = Some(mode);
+        }
         if let Some(seconds) = pod_seconds {
             let mut pods = rs13_classic::escape::EscapePods::default();
             pods.launch_ds = seconds as f32 * 10.0;

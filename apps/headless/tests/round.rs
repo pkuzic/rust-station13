@@ -90,6 +90,7 @@ fn a_finished_round_asks_for_a_restart() {
     let mut app = rs13_server::server_app_with_rounds(port, vec![MAP], 5);
     app.insert_resource(rs13_classic::round::Round {
         phase: rs13_classic::round::Phase::Finished { restart_at: 0.0 },
+        forced_mode: None,
     });
     assert_eq!(
         app.run(),

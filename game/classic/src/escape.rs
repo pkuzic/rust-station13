@@ -104,7 +104,7 @@ fn tell_everyone(world: &mut World, msg: &LocMsg) {
     }
 }
 
-fn in_pod(world: &mut World, at: TilePos) -> bool {
+pub(crate) fn in_pod(world: &mut World, at: TilePos) -> bool {
     let mut maps = world.query::<&MapLayer>();
     maps.iter(world)
         .find_map(|m| {
@@ -274,7 +274,13 @@ fn declare_completion(world: &mut World) {
         } else {
             "round-stranded"
         };
-        tell_everyone(world, &LocMsg::new(id).arg("name", name).arg("job", job));
+        tell_everyone(
+            world,
+            &LocMsg::new(id).arg("name", name).msg("job", format!("job-{job}")),
+        );
+    }
+    for line in crate::traitor::report(world) {
+        tell_everyone(world, &line);
     }
 }
 

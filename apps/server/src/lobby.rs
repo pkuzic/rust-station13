@@ -116,9 +116,6 @@ pub fn run_round(world: &mut World) {
             if now < starts_at {
                 return;
             }
-            let mode = pick_mode(&mut world.resource_mut::<GameRng>());
-            world.resource_mut::<Round>().phase = Phase::Playing { mode };
-            info!(mode, "round started");
             // Those with a job in mind choose first.
             let mut ready: Vec<(bool, Entity)> = links
                 .iter(world)
@@ -126,8 +123,18 @@ pub fn run_round(world: &mut World) {
                 .map(|(e, l)| (l.prefer.is_none(), e))
                 .collect();
             ready.sort();
+            let mode = round
+                .forced_mode
+                .unwrap_or_else(|| pick_mode(&mut world.resource_mut::<GameRng>()));
+            // A traitor round needs someone there to start with: late joiners never are one.
+            let mode = if ready.is_empty() { "extended" } else { mode };
+            world.resource_mut::<Round>().phase = Phase::Playing { mode };
+            info!(mode, "round started");
             for (_, link) in ready {
                 enter_world(world, link, &starts, mode);
+            }
+            if mode == "traitor" {
+                rs13_classic::traitor::choose_traitors(world);
             }
             return;
         }

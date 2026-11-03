@@ -92,6 +92,7 @@ pub mod storage;
 pub mod supermatter;
 pub mod teg;
 pub mod time;
+pub mod traitor;
 pub mod vending;
 pub mod verbs;
 pub mod walllockers;
@@ -406,6 +407,8 @@ impl Plugin for ClassicPlugin {
                             hydroponics::run_pots,
                             escape::run_escape,
                             escape::update_comms_views,
+                            traitor::run_traitors,
+                            traitor::update_uplink_views,
                         )
                             .chain(),
                         autolathe::run_autolathes,

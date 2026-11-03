@@ -52,6 +52,7 @@ fn heard(app: &mut App, who: Entity) -> Vec<String> {
         .map(|(_, v)| match v {
             LocArg::Str(s) => s.clone(),
             LocArg::Num(n) => n.to_string(),
+            LocArg::Msg(id) => id.clone(),
         })
         .collect();
     outbox.0.clear();

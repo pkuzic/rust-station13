@@ -25,7 +25,7 @@ pub const MODES: [Mode; 9] = [
     Mode {
         id: "traitor",
         probability: 8,
-        built: false,
+        built: true,
     },
     Mode {
         id: "meteor",
@@ -100,6 +100,8 @@ pub const RESTART_DS: f32 = 600.0;
 #[derive(Resource, Debug, Clone, Copy, PartialEq)]
 pub struct Round {
     pub phase: Phase,
+    /// Always this mode (`rs13-server --mode`).
+    pub forced_mode: Option<&'static str>,
 }
 
 impl Round {
@@ -108,6 +110,7 @@ impl Round {
             phase: Phase::Pregame {
                 starts_at: seconds as f32 * 10.0,
             },
+            forced_mode: None,
         }
     }
 }
