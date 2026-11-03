@@ -2052,6 +2052,7 @@
         "shot": {
             "laser": (dmi: "icons/obj/projectiles.dmi", state: "laser"),
             "spark": (dmi: "icons/obj/projectiles.dmi", state: "spark"),
+            "bullet": (dmi: "icons/obj/projectiles.dmi", state: "bullet"),
         },
         "closet-bio-science": {
             "bio": (dmi: "icons/obj/closet.dmi", state: "bio"),
@@ -2460,6 +2461,15 @@
             "can-o3": (dmi: "icons/obj/atmos.dmi", state: "can-o3"),
             "can-connector": (dmi: "icons/obj/atmos.dmi", state: "can-connector"),
         },
+        "pistol": { "pistol": (dmi: "icons/obj/gun.dmi", state: "pistol") },
+        "revolver": { "detective": (dmi: "icons/obj/gun.dmi", state: "detective") },
+        "combat-shotgun": { "cshotgun": (dmi: "icons/obj/gun.dmi", state: "cshotgun") },
+        "double-barrel": { "dshotgun": (dmi: "icons/obj/gun.dmi", state: "dshotgun") },
+        "magazine-9mm": { "": (dmi: "icons/obj/ammo.dmi", state: "9x19p") },
+        "magazine-12mm": { "": (dmi: "icons/obj/ammo.dmi", state: "12mm") },
+        "speed-loader-38": { "": (dmi: "icons/obj/ammo.dmi", state: "38") },
+        "slug-box": { "": (dmi: "icons/obj/ammo.dmi", state: "gbox") },
+        "beanbag-box": { "": (dmi: "icons/obj/ammo.dmi", state: "bbox") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

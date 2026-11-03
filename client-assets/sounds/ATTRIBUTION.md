@@ -34,6 +34,7 @@ to files in `apps/client/src/audio.rs`.
 | `weapons/handcuffs.ogg` | `sound/weapons/handcuffs.ogg` | `handcuffs` | CC-BY-SA 3.0 |
 | `weapons/flash.ogg` | `sound/weapons/flash.ogg` | `flash` | CC-BY-SA 3.0 |
 | `weapons/Laser.ogg` | `sound/weapons/Laser.ogg` | `laser` | CC-BY-SA 3.0 |
+| `weapons/Gunshot.ogg` | `sound/weapons/Gunshot.ogg` | `gunshot` | CC-BY-SA 3.0 |
 | `weapons/Taser.ogg` | `sound/weapons/Taser.ogg` | `taser` | CC-BY-SA 3.0 |
 | `weapons/Egloves.ogg` | `sound/weapons/Egloves.ogg` | `baton-hit` | CC-BY-SA 3.0 |
 | `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |

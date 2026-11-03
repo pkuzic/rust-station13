@@ -22,6 +22,10 @@ pub const ENERGY_GUN: &str = "energy-gun";
 pub const TASER: &str = "taser";
 pub const BATON: &str = "stun-baton";
 pub const RECHARGER: &str = "recharger";
+pub const PISTOL: &str = "pistol";
+pub const REVOLVER: &str = "revolver";
+pub const COMBAT_SHOTGUN: &str = "combat-shotgun";
+pub const DOUBLE_BARREL: &str = "double-barrel";
 pub const SHOT: &str = "shot";
 
 /// What one shot uses (Luna `charge_cost`).
@@ -54,6 +58,65 @@ pub const RECHARGER_IDLE_WATTS: f64 = 4.0;
 pub enum Fires {
     Beam,
     Electrode,
+    Bullet(Round),
+}
+
+/// What a bullet gun has loaded (Luna's `projectile/bullet` subtypes, by casing).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Round {
+    /// `.12` slugs.
+    Slug,
+    /// `.12` beanbags and `.38`.
+    Weak,
+    /// `12mm`.
+    Mid,
+    /// `9mm`.
+    Nine,
+}
+
+impl Round {
+    /// Brute damage, and how long it knocks someone down, ds (Luna `damage`, `weaken`).
+    pub fn effect(self) -> (f32, f32) {
+        match self {
+            Round::Slug => (60.0, 0.0),
+            Round::Weak => (10.0, 200.0),
+            Round::Mid => (25.0, 60.0),
+            Round::Nine => (30.0, 0.0),
+        }
+    }
+}
+
+/// A magazine, speed loader or box: what's in it, and what takes it.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Ammo {
+    pub caliber: &'static str,
+    pub round: Round,
+    pub rounds: i32,
+}
+
+/// A bullet gun's caliber.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Caliber(pub &'static str);
+
+/// What a prototype of ammunition holds when new.
+fn ammo(proto: &str) -> Option<Ammo> {
+    let (caliber, round, rounds) = match proto {
+        "magazine-9mm" => ("9mm", Round::Nine, 8),
+        "magazine-12mm" => ("12mm", Round::Mid, 20),
+        "speed-loader-38" => (".38", Round::Weak, 6),
+        "slug-box" => (".12", Round::Slug, 8),
+        "beanbag-box" => (".12", Round::Weak, 8),
+        _ => return None,
+    };
+    Some(Ammo {
+        caliber,
+        round,
+        rounds,
+    })
+}
+
+pub fn is_ammo(proto: &str) -> bool {
+    ammo(proto).is_some()
 }
 
 /// An energy gun: its charge, and for the two-way one, its setting.
@@ -92,7 +155,31 @@ pub struct Recharger {
 
 /// Fit the components a new weapon needs.
 pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
+    if let Some(ammo) = ammo(proto) {
+        entity.insert(ammo);
+        return;
+    }
     match proto {
+        // Bullet guns come loaded (Luna `mag_type`).
+        PISTOL | REVOLVER | COMBAT_SHOTGUN | DOUBLE_BARREL => {
+            let (caliber, round, rounds, look) = match proto {
+                PISTOL => ("9mm", Round::Nine, 8, "pistol"),
+                REVOLVER => (".38", Round::Weak, 6, "detective"),
+                COMBAT_SHOTGUN => (".12", Round::Slug, 8, "cshotgun"),
+                _ => (".12", Round::Weak, 2, "dshotgun"),
+            };
+            entity.insert((
+                Gun {
+                    charge: rounds * SHOT_COST,
+                    capacity: rounds * SHOT_COST,
+                    fires: Fires::Bullet(round),
+                    switchable: false,
+                    last_shot_ds: None,
+                },
+                Caliber(caliber),
+                Appearance::new(proto, look),
+            ));
+        }
         LASER_GUN | ENERGY_GUN | TASER => {
             let (capacity, fires, switchable) = match proto {
                 LASER_GUN => (GUN_CELL, Fires::Beam, false),
@@ -123,11 +210,22 @@ pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
 }
 
 pub fn is_gun(proto: &str) -> bool {
-    matches!(proto, LASER_GUN | ENERGY_GUN | TASER)
+    matches!(
+        proto,
+        LASER_GUN | ENERGY_GUN | TASER | PISTOL | REVOLVER | COMBAT_SHOTGUN | DOUBLE_BARREL
+    )
 }
 
 /// Luna `gun/energy/update_icon`: its charge by quarters.
 fn gun_look(proto: &str, gun: &Gun) -> String {
+    // Bullet guns look the same however many rounds they have.
+    match proto {
+        PISTOL => return "pistol".to_owned(),
+        REVOLVER => return "detective".to_owned(),
+        COMBAT_SHOTGUN => return "cshotgun".to_owned(),
+        DOUBLE_BARREL => return "dshotgun".to_owned(),
+        _ => {}
+    }
     let quarter = (f64::from(gun.charge) / f64::from(gun.capacity) * 4.0).round() as i32 * 25;
     match proto {
         ENERGY_GUN if gun.fires == Fires::Beam => format!("energykill{quarter}"),
@@ -173,8 +271,10 @@ pub fn switch_gun(world: &mut World, mob: Entity, gun_entity: Entity) {
     gun.fires = match gun.fires {
         Fires::Beam => Fires::Electrode,
         Fires::Electrode => Fires::Beam,
+        bullet @ Fires::Bullet(_) => bullet,
     };
     let id = match gun.fires {
+        Fires::Bullet(_) => return,
         Fires::Beam => "gun-set-kill",
         Fires::Electrode => "gun-set-stun",
     };
@@ -206,6 +306,7 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
     let sound = match gun.fires {
         Fires::Beam => crate::sound::LASER,
         Fires::Electrode => crate::sound::TASER,
+        Fires::Bullet(_) => crate::sound::GUNSHOT,
     };
     world.resource_mut::<SoundEvents>().play(sound, at, 50.0);
     let item = world
@@ -217,6 +318,54 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
         .arg("item", item);
     world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
     launch(world, mob, at, to, gun.fires);
+}
+
+/// A click with ammunition on a gun: as many rounds go in as fit (Luna `gun/projectile/attackby`).
+pub fn load(world: &mut World, mob: Entity, gun_entity: Entity) {
+    let Some(item) = world.get::<Hands>(mob).and_then(Hands::active_item) else {
+        return;
+    };
+    let (Some(ammo), Some(gun), Some(caliber)) = (
+        world.get::<Ammo>(item).copied(),
+        world.get::<Gun>(gun_entity).copied(),
+        world.get::<Caliber>(gun_entity).copied(),
+    ) else {
+        return;
+    };
+    if ammo.caliber != caliber.0 {
+        tell(world, mob, LocMsg::new("gun-wrong-ammo"));
+        return;
+    }
+    // One kind at a time: this keeps a count, not a row of casings.
+    if gun.charge >= SHOT_COST && gun.fires != Fires::Bullet(ammo.round) {
+        tell(world, mob, LocMsg::new("gun-other-ammo"));
+        return;
+    }
+    let moved = ammo.rounds.min((gun.capacity - gun.charge) / SHOT_COST);
+    if moved <= 0 {
+        tell(
+            world,
+            mob,
+            LocMsg::new(if ammo.rounds <= 0 {
+                "ammo-empty"
+            } else {
+                "gun-full"
+            }),
+        );
+        return;
+    }
+    if let Some(mut gun) = world.get_mut::<Gun>(gun_entity) {
+        gun.charge += moved * SHOT_COST;
+        gun.fires = Fires::Bullet(ammo.round);
+    }
+    if let Some(mut ammo) = world.get_mut::<Ammo>(item) {
+        ammo.rounds -= moved;
+    }
+    tell(
+        world,
+        mob,
+        LocMsg::new("gun-loaded").num("value", i64::from(moved)),
+    );
 }
 
 /// Send a shot from `at` through `to`, on along the same line to the end of its reach.
@@ -233,6 +382,7 @@ pub fn launch(world: &mut World, firer: Entity, at: TilePos, to: TilePos, fires:
     let look = match fires {
         Fires::Beam => "laser",
         Fires::Electrode => "spark",
+        Fires::Bullet(_) => "bullet",
     };
     world.spawn((
         GridPos(at),
@@ -308,6 +458,22 @@ fn hit(world: &mut World, shot: &Shot, person: Entity, at: TilePos) {
                 body.take_damage(zone, 0.0, BEAM_BURN);
             }
             let msg = LocMsg::new("shot-hit-laser").arg("name", name);
+            world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+        }
+        Fires::Bullet(round) => {
+            let (brute, weaken) = round.effect();
+            let zone = {
+                let mut rng = world.resource_mut::<GameRng>();
+                ran_zone(Zone::Chest, &mut rng)
+            };
+            if let Some(mut body) = world.get_mut::<Body>(person) {
+                body.take_damage(zone, brute, 0.0);
+            }
+            if weaken > 0.0 {
+                let until = world.resource::<WorldTime>().deciseconds() + weaken;
+                world.entity_mut(person).insert(Weakened(until));
+            }
+            let msg = LocMsg::new("shot-hit-bullet").arg("name", name);
             world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
         }
         Fires::Electrode => {
@@ -437,7 +603,10 @@ pub fn click_recharger(world: &mut World, mob: Entity, recharger: Entity) {
     let held = world.get::<Hands>(mob).and_then(Hands::active_item);
     match (held, state.charging) {
         (Some(item), None) => {
-            let fits = world.get::<Gun>(item).is_some() || world.get::<Baton>(item).is_some();
+            let fits = world
+                .get::<Gun>(item)
+                .is_some_and(|g| !matches!(g.fires, Fires::Bullet(_)))
+                || world.get::<Baton>(item).is_some();
             if !fits {
                 return;
             }
