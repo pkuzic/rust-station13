@@ -215,6 +215,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::escape::COMMS_CONSOLE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::escape::spawn_console(world, pos, id));
+    }
     if proto == crate::security::BARRIER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::security::spawn_barrier(world, pos, id));
@@ -678,6 +682,10 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
                     (
                         crate::id_computer::PendingIdOps::default(),
                         crate::id_computer::IdPanelOut::default(),
+                    ),
+                    (
+                        crate::escape::PendingCommsOps::default(),
+                        crate::escape::CommsPanelOut::default(),
                     ),
                     crate::records::PendingRecordOps::default(),
                     crate::records::RecordsPanelOut::default(),

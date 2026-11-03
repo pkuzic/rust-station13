@@ -82,3 +82,17 @@ fn people_wait_for_the_round_and_join_after_it() {
     assert_eq!(spot(&first), (5, 1), "the doctor's post, as asked");
     assert_eq!(spot(&second), (1, 1), "the post that's left");
 }
+
+/// A finished round asks `rs13-server` to start again, once its time is up.
+#[test]
+fn a_finished_round_asks_for_a_restart() {
+    let port = 20_000 + ((std::process::id() + 24_004) % 20_000) as u16;
+    let mut app = rs13_server::server_app_with_rounds(port, vec![MAP], 5);
+    app.insert_resource(rs13_classic::round::Round {
+        phase: rs13_classic::round::Phase::Finished { restart_at: 0.0 },
+    });
+    assert_eq!(
+        app.run(),
+        bevy::app::AppExit::from_code(rs13_server::RESTART_CODE)
+    );
+}

@@ -377,6 +377,115 @@ lobby-join = Join the game
 lobby-name = Your name: { $name }. Press T to change it.
 lobby-no-name = You'll get a random name. Press T to type one.
 lobby-prefer = The job you'd like:
+comms-title = Communications console
+comms-call = Call the escape pods
+comms-recall = Stop the launch
+comms-launching = The escape pods launch in { $value } { $value ->
+    [one] second
+   *[other] seconds
+}.
+comms-gone = The escape pods have gone.
+comms-denied = Access denied.
+pods-called = Alert: escape pods launching in { $value } { $value ->
+    [one] minute
+   *[other] minutes
+}. Their doors are unlocked.
+pods-already-called = Launch process already started!
+pods-recalled = Alert: escape pods launch sequence aborted.
+pods-minutes = { $value } { $value ->
+    [one] minute
+   *[other] minutes
+} until escape pod launch.
+pods-seconds = { $value } { $value ->
+    [one] second
+   *[other] seconds
+} until escape pod launch.
+pods-launched = The escape pods have launched!
+round-over = The round is over. Restarting in 60 seconds.
+round-escaped = { $name }, { $job ->
+    [captain] Captain
+    [hop] Head of Personnel
+    [hos] Head of Security
+    [chief-engineer] Chief Engineer
+    [research-director] Research Director
+    [security-officer] Security Officer
+    [warden] Warden
+    [forensic-technician] Forensic Technician
+    [engineer] Engineer
+    [atmos-technician] Atmospheric Technician
+    [medical-doctor] Medical Doctor
+    [chemist] Chemist
+    [geneticist] Geneticist
+    [scientist] Scientist
+    [roboticist] Roboticist
+    [hydroponicist] Hydroponicist
+    [barman] Barman
+    [chef] Chef
+    [janitor] Janitor
+    [quartermaster] Quartermaster
+    [cargo-technician] Cargo Technician
+    [shaft-miner] Shaft Miner
+    [counselor] Counselor
+    [clown] Clown
+    [mime] Mime
+   *[assistant] Assistant
+}, escaped.
+round-stranded = { $name }, { $job ->
+    [captain] Captain
+    [hop] Head of Personnel
+    [hos] Head of Security
+    [chief-engineer] Chief Engineer
+    [research-director] Research Director
+    [security-officer] Security Officer
+    [warden] Warden
+    [forensic-technician] Forensic Technician
+    [engineer] Engineer
+    [atmos-technician] Atmospheric Technician
+    [medical-doctor] Medical Doctor
+    [chemist] Chemist
+    [geneticist] Geneticist
+    [scientist] Scientist
+    [roboticist] Roboticist
+    [hydroponicist] Hydroponicist
+    [barman] Barman
+    [chef] Chef
+    [janitor] Janitor
+    [quartermaster] Quartermaster
+    [cargo-technician] Cargo Technician
+    [shaft-miner] Shaft Miner
+    [counselor] Counselor
+    [clown] Clown
+    [mime] Mime
+   *[assistant] Assistant
+}, was left behind.
+round-died = { $name }, { $job ->
+    [captain] Captain
+    [hop] Head of Personnel
+    [hos] Head of Security
+    [chief-engineer] Chief Engineer
+    [research-director] Research Director
+    [security-officer] Security Officer
+    [warden] Warden
+    [forensic-technician] Forensic Technician
+    [engineer] Engineer
+    [atmos-technician] Atmospheric Technician
+    [medical-doctor] Medical Doctor
+    [chemist] Chemist
+    [geneticist] Geneticist
+    [scientist] Scientist
+    [roboticist] Roboticist
+    [hydroponicist] Hydroponicist
+    [barman] Barman
+    [chef] Chef
+    [janitor] Janitor
+    [quartermaster] Quartermaster
+    [cargo-technician] Cargo Technician
+    [shaft-miner] Shaft Miner
+    [counselor] Counselor
+    [clown] Clown
+    [mime] Mime
+   *[assistant] Assistant
+}, died.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

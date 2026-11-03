@@ -385,6 +385,103 @@ lobby-join = Войти в игру
 lobby-name = Ваше имя: { $name }. Нажмите T, чтобы изменить.
 lobby-no-name = Имя будет случайным. Нажмите T, чтобы ввести своё.
 lobby-prefer = Желаемая должность:
+comms-title = Пульт связи
+comms-call = Вызвать спасательные капсулы
+comms-recall = Остановить запуск
+comms-launching = Спасательные капсулы стартуют через { $value } с.
+comms-gone = Спасательные капсулы улетели.
+comms-denied = Доступ запрещён.
+pods-called = Внимание: спасательные капсулы стартуют через { $value } мин. Их двери открыты.
+pods-already-called = Запуск уже начат!
+pods-recalled = Внимание: запуск спасательных капсул отменён.
+pods-minutes = До старта спасательных капсул: { $value } мин.
+pods-seconds = До старта спасательных капсул: { $value } с.
+pods-launched = Спасательные капсулы стартовали!
+round-over = Раунд окончен. Перезапуск через 60 секунд.
+round-escaped = { $name }, { $job ->
+    [captain] Капитан
+    [hop] Глава персонала
+    [hos] Глава службы безопасности
+    [chief-engineer] Главный инженер
+    [research-director] Директор исследований
+    [security-officer] Сотрудник службы безопасности
+    [warden] Надзиратель
+    [forensic-technician] Криминалист
+    [engineer] Инженер
+    [atmos-technician] Атмосферный техник
+    [medical-doctor] Врач
+    [chemist] Химик
+    [geneticist] Генетик
+    [scientist] Учёный
+    [roboticist] Робототехник
+    [hydroponicist] Гидропонист
+    [barman] Бармен
+    [chef] Повар
+    [janitor] Уборщик
+    [quartermaster] Завхоз
+    [cargo-technician] Грузчик
+    [shaft-miner] Шахтёр
+    [counselor] Советник
+    [clown] Клоун
+    [mime] Мим
+   *[assistant] Ассистент
+}: спасся.
+round-stranded = { $name }, { $job ->
+    [captain] Капитан
+    [hop] Глава персонала
+    [hos] Глава службы безопасности
+    [chief-engineer] Главный инженер
+    [research-director] Директор исследований
+    [security-officer] Сотрудник службы безопасности
+    [warden] Надзиратель
+    [forensic-technician] Криминалист
+    [engineer] Инженер
+    [atmos-technician] Атмосферный техник
+    [medical-doctor] Врач
+    [chemist] Химик
+    [geneticist] Генетик
+    [scientist] Учёный
+    [roboticist] Робототехник
+    [hydroponicist] Гидропонист
+    [barman] Бармен
+    [chef] Повар
+    [janitor] Уборщик
+    [quartermaster] Завхоз
+    [cargo-technician] Грузчик
+    [shaft-miner] Шахтёр
+    [counselor] Советник
+    [clown] Клоун
+    [mime] Мим
+   *[assistant] Ассистент
+}: остался на станции.
+round-died = { $name }, { $job ->
+    [captain] Капитан
+    [hop] Глава персонала
+    [hos] Глава службы безопасности
+    [chief-engineer] Главный инженер
+    [research-director] Директор исследований
+    [security-officer] Сотрудник службы безопасности
+    [warden] Надзиратель
+    [forensic-technician] Криминалист
+    [engineer] Инженер
+    [atmos-technician] Атмосферный техник
+    [medical-doctor] Врач
+    [chemist] Химик
+    [geneticist] Генетик
+    [scientist] Учёный
+    [roboticist] Робототехник
+    [hydroponicist] Гидропонист
+    [barman] Бармен
+    [chef] Повар
+    [janitor] Уборщик
+    [quartermaster] Завхоз
+    [cargo-technician] Грузчик
+    [shaft-miner] Шахтёр
+    [counselor] Советник
+    [clown] Клоун
+    [mime] Мим
+   *[assistant] Ассистент
+}: погиб.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

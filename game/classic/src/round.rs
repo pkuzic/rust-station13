@@ -87,7 +87,14 @@ pub enum Phase {
     Playing {
         mode: &'static str,
     },
+    /// Over: ds until the server restarts (Luna's 60 seconds).
+    Finished {
+        restart_at: f32,
+    },
 }
+
+/// How long after the end of a round the server restarts, ds.
+pub const RESTART_DS: f32 = 600.0;
 
 /// Where the round has got to. Only there on a server running rounds.
 #[derive(Resource, Debug, Clone, Copy, PartialEq)]

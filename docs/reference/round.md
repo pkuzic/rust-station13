@@ -23,6 +23,22 @@ ready stays in the lobby, where **Join the game** puts them in at once. The chat
 
 Only **extended** is built so far, with nothing special going on, so it's always that one for now.
 
+## Getting off the station
+
+Sources: `luna:code/datums/shuttle_controller.dm` (`PodControl`, `CreateShuttles`),
+`luna:code/game/machinery/computer/communications.dm`. Code: `game/classic/src/escape.rs`,
+`apps/client/src/comms_panel.rs`. Tests: `game/classic/tests/escape.rs`.
+
+Luna's way off is two escape pods, whose doors stay bolted until they're called. With `heads` access, a
+communications console calls them. Everyone is told, the doors unlock, and they launch in 10 minutes, with a warning
+every minute, then every 10 seconds, then every 5. The launch can be stopped until 30 seconds before.
+
+At the launch their doors swing shut and bolt. 2.5 minutes later the pods arrive and the round is over: everyone is
+told who escaped, who was left behind and who died. 60 seconds after that the server starts again with a clean
+station, and clients reconnect and find themselves in the lobby.
+
+`rs13-server --pod-seconds N` shortens the launch and the trip, for trying it out.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -34,4 +50,8 @@ Only **extended** is built so far, with nothing special going on, so it's always
 | A mode that can't start returns everyone to the lobby | Extended always can |
 | A message of the day, a preferences file saved between rounds | Not built |
 | Roles are given before anyone appears | Same, but with no antagonists yet |
-| The round ends when the shuttle reaches CentCom, and the server restarts | Not built: the escape shuttle is next (`LUNA_PARITY.md`) |
+| The pods fly: their contents move to a transit area and then CentCom, leaving hull behind | They stay where they are with their doors bolted, and whoever's aboard has escaped |
+| The prison shuttle and its console | Not built |
+| Red alert in every area and sounds while launching; status displays show it | Only chat messages |
+| Modes can forbid or delay the call | No mode needs that yet |
+| The console also has messages, alert levels and status display settings | Only the call and the stop |

@@ -442,6 +442,17 @@ pub struct RecordsPanelView {
     pub rows: Vec<RecordRow>,
 }
 
+/// An open communications console's window, as shown to the player (Luna's `comm_console`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CommsPanelView {
+    /// The console.
+    pub target: NetId,
+    /// Seconds until the escape pods launch, if they've been called.
+    pub launch_in: Option<u32>,
+    /// They've gone.
+    pub gone: bool,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {

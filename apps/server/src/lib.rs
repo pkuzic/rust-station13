@@ -22,6 +22,7 @@ use rs13_classic::cloning::Arrivals;
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
+use rs13_classic::escape::{CommsPanelOut, PendingCommsOps};
 use rs13_classic::filing::{PendingPicks, PickListOut};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
@@ -51,19 +52,19 @@ use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
     ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand,
-    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand,
-    FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand,
-    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
-    PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel,
-    StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsPanel,
+    FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel,
+    JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel,
+    PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
+    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BodyScanView, BrigPanelView,
-    CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, Ghost, HeaterPanelView, IdComputerView, Intent, JobPanelView, LaserPanelView, MapLayer,
-    MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView, Slot,
-    SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, DisplayName,
+    FreezerPanelView, GasPanelView, Ghost, HeaterPanelView, IdComputerView, Intent, JobPanelView,
+    LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView,
+    SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -119,6 +120,7 @@ struct SentPanel(
     Option<JobPanelView>,
     Option<RecordsPanelView>,
     Option<IdComputerView>,
+    Option<CommsPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -135,6 +137,9 @@ pub fn server_app(port: u16) -> App {
 pub fn server_app_with_map(port: u16, map: &'static str) -> App {
     server_app_with_station(port, vec![map])
 }
+
+/// The exit code asking `rs13-server` to start again: the round is over.
+pub const RESTART_CODE: u8 = 75;
 
 /// A server running rounds: people wait in the lobby until the round starts (`round.md`).
 pub fn server_app_with_rounds(port: u16, decks: Vec<&'static str>, pregame_seconds: u32) -> App {
@@ -418,7 +423,7 @@ fn queue_actions(
                 &mut PendingLatheOps,
                 &mut PendingJobOps,
                 &mut PendingRecordOps,
-                &mut PendingIdOps,
+                (&mut PendingIdOps, &mut PendingCommsOps),
                 Has<rs13_classic::jobs::ChoosingJob>,
             ),
             Has<NameChosen>,
@@ -462,7 +467,7 @@ fn queue_actions(
                 mut lathe_ops,
                 mut job_ops,
                 mut record_ops,
-                mut id_ops,
+                (mut id_ops, mut comms_ops),
                 choosing,
             ),
             name_chosen,
@@ -598,6 +603,12 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Comms { target, call } => {
+                    if let Some(console) = resolve(target) {
+                        comms_ops.0.push((console, call));
                     }
                     None
                 }
@@ -943,6 +954,7 @@ fn send_panels(
             &mut MessageSender<JobPanel>,
             &mut MessageSender<RecordsPanel>,
             &mut MessageSender<IdComputerPanel>,
+            &mut MessageSender<CommsPanel>,
         ),
     )>,
     panels: Query<(
@@ -971,6 +983,7 @@ fn send_panels(
             &JobPanelOut,
             &RecordsPanelOut,
             &IdPanelOut,
+            &CommsPanelOut,
         ),
     )>,
 ) {
@@ -1002,6 +1015,7 @@ fn send_panels(
             mut job_panels,
             mut record_panels,
             mut id_panels,
+            mut comms_panels,
         ),
     ) in &mut links
     {
@@ -1019,7 +1033,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record, id_view),
+            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record, id_view, comms),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1119,6 +1133,10 @@ fn send_panels(
         if sent.23 != id_view.0 {
             id_panels.send::<NoticeChannel>(IdComputerPanel(id_view.0.clone()));
             sent.23 = id_view.0.clone();
+        }
+        if sent.24 != comms.0 {
+            comms_panels.send::<NoticeChannel>(CommsPanel(comms.0.clone()));
+            sent.24 = comms.0.clone();
         }
     }
 }

@@ -7,10 +7,10 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
-    BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir,
-    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
-    HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView,
-    MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
+    BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView,
+    CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos,
+    HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource,
+    LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
     RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
     VendingPanelView, WirePanelView, WornView,
 };
@@ -116,6 +116,11 @@ pub enum ActionInput {
     IdComputer {
         target: NetId,
         line: Option<u8>,
+    },
+    /// On a communications console: call the escape pods, or stop them.
+    Comms {
+        target: NetId,
+        call: bool,
     },
     /// In the lobby: ready for the round to start, or not.
     Ready(bool),
@@ -418,6 +423,10 @@ pub struct ChemPanel(pub Option<ChemPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct IdComputerPanel(pub Option<IdComputerView>);
 
+/// Server → one client: the communications console it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct CommsPanel(pub Option<CommsPanelView>);
+
 /// Server → one client: the lobby, or `None` once they've left it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LobbyPanel(pub Option<LobbyView>);
@@ -568,6 +577,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<ChemPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<IdComputerPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<CommsPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);

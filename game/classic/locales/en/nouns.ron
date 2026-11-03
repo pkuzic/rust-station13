@@ -444,6 +444,7 @@
     "grille": (gender: neuter, sg: (nom: "grille", indef: "a grille"), pl: Some((nom: "grilles"))),
     "space": (gender: neuter, sg: (nom: "space", indef: "space"), pl: Some((nom: "space"))),
     "open-space": (gender: neuter, sg: (nom: "open space", indef: "open space"), pl: Some((nom: "open space"))),
+    "comms-console": (gender: neuter, sg: (nom: "communications console", indef: "a communications console"), pl: Some((nom: "communications consoles"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),
