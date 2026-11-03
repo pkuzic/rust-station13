@@ -324,7 +324,7 @@ pub fn is_pipe_tank(sprite: &str) -> bool {
 
 /// Is this sprite a canister (air or one gas)?
 pub fn is_canister(sprite: &str) -> bool {
-    sprite == "canister" || GAS_CANISTERS.iter().any(|(id, _)| *id == sprite)
+    sprite == "canister" || sprite == "empty-canister" || GAS_CANISTERS.iter().any(|(id, _)| *id == sprite)
 }
 
 /// Luna's canister gauge light: `can-o0` below 10 kPa, `can-o1` below one atmosphere,
@@ -972,6 +972,12 @@ pub fn machine_bundle(
             spawn
         }
         "canister" => canister("canister", air_at_pressure(CANISTER_VOLUME, CANISTER_PRESSURE)),
+        // Luna's plain canister starts empty, for filling.
+        "empty-canister" => {
+            let mut empty = GasMix::default();
+            empty.temperature = T20C;
+            canister("empty-canister", empty)
+        }
         _ => {
             if let Some(&(id, gas)) = GAS_TANKS.iter().find(|(id, _)| *id == proto) {
                 MachineSpawn::new(id, "")

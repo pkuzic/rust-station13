@@ -15,3 +15,17 @@ Luna's uses for them aren't built, for example:
 - **Security:** riot shields don't block.
 - **Containers:** boxes, belts and backpacks open and hold things, but start empty, apart from the
   spare handcuffs.
+
+## The rest
+
+A second batch added 36 more kinds, in the same way. Some do something:
+
+- `plasma-tank` holds plasma at 3 atmospheres, and `emergency-oxygen-double` is a larger emergency tank, which starts empty.
+- `advanced-trauma-kit` heals 60 brute and `advanced-burn-kit` heals 40 burn, 5 uses each.
+- `banana`, `plump-helmet`, `waffles`, `noodles`, `candy-cane` and `fishburger` can be eaten.
+- `pill-bottle-*` come with 7 pills.
+
+The rest are only things to carry for now: coins, crayons, clown and mime PDAs, AI modules, the
+timer-igniter assembly, flour, ketchup, the drinks in this batch, cups and the voice disk.
+
+Luna's plain canister is `empty-canister`: a canister with nothing in it, for filling (`pipes.md`).
