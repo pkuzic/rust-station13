@@ -2053,6 +2053,200 @@
             "laser": (dmi: "icons/obj/projectiles.dmi", state: "laser"),
             "spark": (dmi: "icons/obj/projectiles.dmi", state: "spark"),
         },
+        "closet-bio-science": {
+            "bio": (dmi: "icons/obj/closet.dmi", state: "bio"),
+            "bioopen": (dmi: "icons/obj/closet.dmi", state: "bioopen"),
+        },
+        "closet": {
+            "closed": (dmi: "icons/obj/closet.dmi", state: "closed"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-green": {
+            "green": (dmi: "icons/obj/closet.dmi", state: "green"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-black": {
+            "black": (dmi: "icons/obj/closet.dmi", state: "black"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-grey": {
+            "grey": (dmi: "icons/obj/closet.dmi", state: "grey"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-mixed": {
+            "mixed": (dmi: "icons/obj/closet.dmi", state: "mixed"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-red": {
+            "red": (dmi: "icons/obj/closet.dmi", state: "red"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-pink": {
+            "pink": (dmi: "icons/obj/closet.dmi", state: "pink"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-orange": {
+            "orange": (dmi: "icons/obj/closet.dmi", state: "orange"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-hydroponics": {
+            "green": (dmi: "icons/obj/closet.dmi", state: "green"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-chapel": {
+            "closed": (dmi: "icons/obj/closet.dmi", state: "closed"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-bar": {
+            "black": (dmi: "icons/obj/closet.dmi", state: "black"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-atmospherics": {
+            "yellow": (dmi: "icons/obj/closet.dmi", state: "yellow"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "wardrobe-toxins": {
+            "white": (dmi: "icons/obj/closet.dmi", state: "white"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "locker-scientist": {
+            "secureres": (dmi: "icons/obj/closet.dmi", state: "secureres"),
+            "secureresopen": (dmi: "icons/obj/closet.dmi", state: "secureresopen"),
+            "secureres1": (dmi: "icons/obj/closet.dmi", state: "secureres1"),
+        },
+        "locker-doctor": {
+            "securemed": (dmi: "icons/obj/closet.dmi", state: "securemed"),
+            "securemedopen": (dmi: "icons/obj/closet.dmi", state: "securemedopen"),
+            "securemed1": (dmi: "icons/obj/closet.dmi", state: "securemed1"),
+        },
+        "locker-medicine": {
+            "medical": (dmi: "icons/obj/closet.dmi", state: "medical"),
+            "medicalopen": (dmi: "icons/obj/closet.dmi", state: "medicalopen"),
+            "medical1": (dmi: "icons/obj/closet.dmi", state: "medical1"),
+        },
+        "locker-anesthetic": {
+            "medical": (dmi: "icons/obj/closet.dmi", state: "medical"),
+            "medicalopen": (dmi: "icons/obj/closet.dmi", state: "medicalopen"),
+            "medical1": (dmi: "icons/obj/closet.dmi", state: "medical1"),
+        },
+        "locker-blood": {
+            "medical": (dmi: "icons/obj/closet.dmi", state: "medical"),
+            "medicalopen": (dmi: "icons/obj/closet.dmi", state: "medicalopen"),
+            "medical1": (dmi: "icons/obj/closet.dmi", state: "medical1"),
+        },
+        "locker-genetics": {
+            "securemed": (dmi: "icons/obj/closet.dmi", state: "securemed"),
+            "securemedopen": (dmi: "icons/obj/closet.dmi", state: "securemedopen"),
+            "securemed1": (dmi: "icons/obj/closet.dmi", state: "securemed1"),
+        },
+        "locker-meat": {
+            "fridge": (dmi: "icons/obj/closet.dmi", state: "fridge"),
+            "fridgeopen": (dmi: "icons/obj/closet.dmi", state: "fridgeopen"),
+        },
+        "locker-chemist": {
+            "securechem": (dmi: "icons/obj/closet.dmi", state: "securechem"),
+            "secureresopen": (dmi: "icons/obj/closet.dmi", state: "secureresopen"),
+            "securechem1": (dmi: "icons/obj/closet.dmi", state: "securechem1"),
+        },
+        "locker-animal": {
+            "secure": (dmi: "icons/obj/closet.dmi", state: "secure"),
+            "secureopen": (dmi: "icons/obj/closet.dmi", state: "secureopen"),
+            "secure1": (dmi: "icons/obj/closet.dmi", state: "secure1"),
+        },
+        "locker-roboticist": {
+            "secureres": (dmi: "icons/obj/closet.dmi", state: "secureres"),
+            "secureresopen": (dmi: "icons/obj/closet.dmi", state: "secureresopen"),
+            "secureres1": (dmi: "icons/obj/closet.dmi", state: "secureres1"),
+        },
+        "locker-botanist": {
+            "hydrosecure": (dmi: "icons/obj/closet.dmi", state: "hydrosecure"),
+            "hydrosecureopen": (dmi: "icons/obj/closet.dmi", state: "hydrosecureopen"),
+            "hydrosecure1": (dmi: "icons/obj/closet.dmi", state: "hydrosecure1"),
+        },
+        "locker-cargo": {
+            "securecargo": (dmi: "icons/obj/closet.dmi", state: "securecargo"),
+            "securecargoopen": (dmi: "icons/obj/closet.dmi", state: "securecargoopen"),
+            "securecargo1": (dmi: "icons/obj/closet.dmi", state: "securecargo1"),
+        },
+        "locker-booze": {
+            "cabinetdetective": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective"),
+            "cabinetdetective_open": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective_open"),
+            "cabinetdetective_locked": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective_locked"),
+        },
+        "locker-warden": {
+            "wardensecure": (dmi: "icons/obj/closet.dmi", state: "wardensecure"),
+            "wardensecureopen": (dmi: "icons/obj/closet.dmi", state: "wardensecureopen"),
+            "wardensecure1": (dmi: "icons/obj/closet.dmi", state: "wardensecure1"),
+        },
+        "locker-rd": {
+            "rdsecure": (dmi: "icons/obj/closet.dmi", state: "rdsecure"),
+            "rdsecureopen": (dmi: "icons/obj/closet.dmi", state: "rdsecureopen"),
+            "rdsecure1": (dmi: "icons/obj/closet.dmi", state: "rdsecure1"),
+        },
+        "locker-quartermaster": {
+            "secureqm": (dmi: "icons/obj/closet.dmi", state: "secureqm"),
+            "secureqmopen": (dmi: "icons/obj/closet.dmi", state: "secureqmopen"),
+            "secureqm1": (dmi: "icons/obj/closet.dmi", state: "secureqm1"),
+        },
+        "locker-kitchen": {
+            "secure": (dmi: "icons/obj/closet.dmi", state: "secure"),
+            "secureopen": (dmi: "icons/obj/closet.dmi", state: "secureopen"),
+            "secure1": (dmi: "icons/obj/closet.dmi", state: "secure1"),
+        },
+        "locker-hos": {
+            "hossecure": (dmi: "icons/obj/closet.dmi", state: "hossecure"),
+            "hossecureopen": (dmi: "icons/obj/closet.dmi", state: "hossecureopen"),
+            "hossecure1": (dmi: "icons/obj/closet.dmi", state: "hossecure1"),
+        },
+        "locker-hop": {
+            "hopsecure": (dmi: "icons/obj/closet.dmi", state: "hopsecure"),
+            "hopsecureopen": (dmi: "icons/obj/closet.dmi", state: "hopsecureopen"),
+            "hopsecure1": (dmi: "icons/obj/closet.dmi", state: "hopsecure1"),
+        },
+        "locker-forensics": {
+            "sec": (dmi: "icons/obj/closet.dmi", state: "sec"),
+            "secopen": (dmi: "icons/obj/closet.dmi", state: "secopen"),
+            "sec1": (dmi: "icons/obj/closet.dmi", state: "sec1"),
+        },
+        "locker-detective": {
+            "cabinetdetective": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective"),
+            "cabinetdetective_open": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective_open"),
+            "cabinetdetective_locked": (dmi: "icons/obj/closet.dmi", state: "cabinetdetective_locked"),
+        },
+        "locker-courtroom": {
+            "secure": (dmi: "icons/obj/closet.dmi", state: "secure"),
+            "secureopen": (dmi: "icons/obj/closet.dmi", state: "secureopen"),
+            "secure1": (dmi: "icons/obj/closet.dmi", state: "secure1"),
+        },
+        "locker-captain": {
+            "capsecure": (dmi: "icons/obj/closet.dmi", state: "capsecure"),
+            "capsecureopen": (dmi: "icons/obj/closet.dmi", state: "capsecureopen"),
+            "capsecure1": (dmi: "icons/obj/closet.dmi", state: "capsecure1"),
+        },
+        "closet-legal": {
+            "blue": (dmi: "icons/obj/closet.dmi", state: "blue"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "closet-bio-security": {
+            "bio_security": (dmi: "icons/obj/closet.dmi", state: "bio_security"),
+            "bio_securityopen": (dmi: "icons/obj/closet.dmi", state: "bio_securityopen"),
+        },
+        "closet-bio-janitor": {
+            "bio_janitor": (dmi: "icons/obj/closet.dmi", state: "bio_janitor"),
+            "bio_janitoropen": (dmi: "icons/obj/closet.dmi", state: "bio_janitoropen"),
+        },
+        "closet-custodial": {
+            "mixed": (dmi: "icons/obj/closet.dmi", state: "mixed"),
+            "open": (dmi: "icons/obj/closet.dmi", state: "open"),
+        },
+        "closet-eod": {
+            "bombsuit": (dmi: "icons/obj/closet.dmi", state: "bombsuit"),
+            "bombsuitopen": (dmi: "icons/obj/closet.dmi", state: "bombsuitopen"),
+        },
+        "closet-eod-security": {
+            "bombsuitsec": (dmi: "icons/obj/closet.dmi", state: "bombsuitsec"),
+            "bombsuitsecopen": (dmi: "icons/obj/closet.dmi", state: "bombsuitsecopen"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

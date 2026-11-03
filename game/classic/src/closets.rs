@@ -69,6 +69,7 @@ pub fn is_closet(sprite: &str) -> bool {
         .iter()
         .any(|k| sprite == *k || sprite.strip_prefix(k).is_some_and(|r| r.starts_with('-')))
         || sprite.starts_with("locker-")
+        || sprite.starts_with("wardrobe-")
 }
 
 /// A closet, locker or crate, and what is inside it.
