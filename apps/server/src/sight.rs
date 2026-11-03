@@ -165,12 +165,16 @@ pub fn update_sight<F: QueryFilter>(
             continue;
         };
         let mut tiles: HashMap<TilePos, bool> = HashMap::new();
+        let blocks = |p: TilePos| map.0.is_opaque(p) || closed.contains(&p);
+        // The client's test (`sight::seen_tiles`), a tile at a time: what's on a wall or door
+        // tile it shows has to arrive too, such as the open fire shutter under a closed airlock.
         let mut seen = |at: TilePos| {
-            *tiles.entry(at).or_insert_with(|| {
-                sight::sees([eye.x as f32, eye.y as f32], at, |p| {
-                    map.0.is_opaque(p) || closed.contains(&p)
-                })
-            })
+            let mut centre = |p: TilePos| {
+                *tiles
+                    .entry(p)
+                    .or_insert_with(|| sight::sees([eye.x as f32, eye.y as f32], p, blocks))
+            };
+            centre(at) || (blocks(at) && sight::borders_seen(at, blocks, &mut centre))
         };
         let placed_hidden: HashSet<Entity> = things
             .iter()

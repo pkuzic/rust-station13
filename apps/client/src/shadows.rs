@@ -13,7 +13,8 @@ use std::collections::HashSet;
 use bevy::asset::RenderAssetUsages;
 use bevy::mesh::{Indices, PrimitiveTopology};
 use bevy::prelude::*;
-use rs13_world::{Appearance, GridPos, MapLayer, NetId, Opaque, Slot, TileMap, TilePos, WornView, sight};
+use rs13_world::sight::{self, seen_tiles};
+use rs13_world::{Appearance, GridPos, MapLayer, NetId, Opaque, Slot, TileMap, TilePos, WornView};
 
 use crate::{OwnPlayer, TILE_PX};
 
@@ -40,37 +41,6 @@ impl Sight {
     pub fn sees(&self, tile: TilePos) -> bool {
         self.seen.as_ref().is_none_or(|seen| seen.contains(&tile))
     }
-}
-
-/// The tiles seen from `eye` within `range`: those whose centre is in sight, and walls and
-/// closed doors (`blocks`) bordering one of those floor tiles, or touching one at the
-/// corner of a room.
-pub fn seen_tiles(eye: TilePos, range: i32, blocks: impl Fn(TilePos) -> bool) -> HashSet<TilePos> {
-    let at = |dx: i32, dy: i32| TilePos::new(eye.x + dx, eye.y + dy, eye.z);
-    let centre = [eye.x as f32, eye.y as f32];
-    let mut seen: HashSet<TilePos> = (-range..=range)
-        .flat_map(|dy| (-range..=range).map(move |dx| (dx, dy)))
-        .map(|(dx, dy)| at(dx, dy))
-        .filter(|t| sight::sees(centre, *t, &blocks))
-        .collect();
-    let open_seen = |t: TilePos, seen: &HashSet<TilePos>| !blocks(t) && seen.contains(&t);
-    let walls: Vec<TilePos> = (-range..=range)
-        .flat_map(|dy| (-range..=range).map(move |dx| (dx, dy)))
-        .map(|(dx, dy)| at(dx, dy))
-        .filter(|t| blocks(*t) && !seen.contains(t))
-        .filter(|t| {
-            let n = |dx: i32, dy: i32| TilePos::new(t.x + dx, t.y + dy, t.z);
-            let beside = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-                .into_iter()
-                .any(|(dx, dy)| open_seen(n(dx, dy), &seen));
-            let corner = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
-                .into_iter()
-                .any(|(dx, dy)| open_seen(n(dx, dy), &seen) && blocks(n(dx, 0)) && blocks(n(0, dy)));
-            beside || corner
-        })
-        .collect();
-    seen.extend(walls);
-    seen
 }
 
 /// Walls and closed doors near `at` (`opaque_near` used to be the shadow casters).

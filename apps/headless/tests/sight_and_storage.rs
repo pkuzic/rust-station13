@@ -201,3 +201,54 @@ fn shut_in_a_closet_you_still_have_yourself() {
     );
     assert!(has(shut, "closet"), "and the closet around us: {shut:?}");
 }
+
+/// A row of airlocks with fire shutters along the south of a room, seen from far along it.
+const EDGE_MAP: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        '1': (tile: (id: "floor"), spawn: true),
+        'D': (tile: (id: "floor"), objects: ["airlock", "firedoor"]),
+        'f': (tile: (id: "floor"), objects: ["firedoor"]),
+    },
+    rows: [
+        "WWWWWWWW",
+        "W1.....W",
+        "W......W",
+        "WDDDDDDW",
+        "W...f..W",
+        "WWWWWWWW",
+    ],
+)"#;
+
+/// What's on a closed door's tile arrives whenever the door shows, even with its centre out of
+/// sight behind the doors next to it, and what's beyond the doors doesn't.
+#[test]
+fn what_shares_a_shown_doors_tile_is_sent_with_it() {
+    let port = 20_000 + ((std::process::id() + 15_101) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_map(port, EDGE_MAP).run());
+    thread::sleep(Duration::from_millis(500));
+    let viewer = run_bot(
+        server,
+        vec![wait(1_500), Step::Snapshot("end".into())],
+        Duration::from_secs(3),
+    );
+    let result = viewer.join().unwrap();
+    let seen = snapshot(&result, "end");
+    let on = |sprite: &str, x: i32, y: i32| {
+        seen.placed
+            .iter()
+            .any(|(s, p)| s == sprite && p.x == x && p.y == y)
+    };
+    // Rows count from the south: the doors are row 2, the shutter beyond them row 1.
+    for x in 1..=6 {
+        assert!(on("airlock", x, 2), "airlock at {x}");
+        assert!(
+            on("firedoor", x, 2),
+            "the shutter on the airlock at {x}: {:?}",
+            seen.placed
+        );
+    }
+    assert!(!on("firedoor", 4, 1), "the shutter beyond them");
+}
