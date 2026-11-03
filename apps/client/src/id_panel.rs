@@ -23,6 +23,8 @@ pub struct IdWindow;
 pub enum IdButton {
     Line(u8),
     Eject,
+    Manifest,
+    Print,
     Close,
 }
 
@@ -82,7 +84,37 @@ pub fn show_id(
     let label = |commands: &mut Commands, s: String| {
         commands.spawn((Text::new(s), ui_text_font(14.0), TextColor(TEXT), ChildOf(window)));
     };
-    if !view.has_card {
+    if let Some(crew) = &view.manifest {
+        label(&mut commands, text(LocMsg::new("id-manifest-title")));
+        label(&mut commands, text(LocMsg::new("id-manifest-hint")));
+        for (name, job) in crew {
+            let job = text(LocMsg::new(format!("job-{job}")));
+            label(
+                &mut commands,
+                text(
+                    LocMsg::new("id-manifest-row")
+                        .arg("name", name.clone())
+                        .arg("job", job),
+                ),
+            );
+        }
+        if view.printing {
+            label(&mut commands, text(LocMsg::new("id-manifest-printing")));
+        } else {
+            button(
+                &mut commands,
+                window,
+                text(LocMsg::new("id-manifest-print")),
+                IdButton::Print,
+            );
+        }
+        button(
+            &mut commands,
+            window,
+            text(LocMsg::new("id-manifest-back")),
+            IdButton::Manifest,
+        );
+    } else if !view.has_card {
         label(&mut commands, text(LocMsg::new("id-computer-empty")));
     } else {
         let job = view.job.as_ref().map_or_else(
@@ -122,6 +154,14 @@ pub fn show_id(
                 IdButton::Line(line as u8),
             );
         }
+    }
+    if view.manifest.is_none() {
+        button(
+            &mut commands,
+            window,
+            text(LocMsg::new("id-manifest-open")),
+            IdButton::Manifest,
+        );
     }
     button(
         &mut commands,
@@ -177,6 +217,14 @@ fn click_button(
                 sender.send::<IntentChannel>(ActionInput::IdComputer {
                     target: view.target,
                     line: None,
+                });
+            }
+        }
+        IdButton::Manifest | IdButton::Print => {
+            if let Some(view) = &open.0 {
+                sender.send::<IntentChannel>(ActionInput::IdManifest {
+                    target: view.target,
+                    print: matches!(*action, IdButton::Print),
                 });
             }
         }

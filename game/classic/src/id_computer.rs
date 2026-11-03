@@ -1,9 +1,12 @@
 //! The identification computer (Luna's `computer/card`): put a card in, and with `change_ids` access
-//! give it another job's access. Spec: `docs/reference/access.md`.
+//! give it another job's access. It also shows and prints the crew manifest. Spec:
+//! `docs/reference/access.md`.
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dense, DisplayName, GridPos, IdComputerView, MobStat, NetId, Slot, TilePos};
+use rs13_world::{
+    Appearance, Dense, DisplayName, GridPos, IdComputerView, MobStat, NetId, ObjectSpec, Slot, TilePos,
+};
 
 use crate::access::{IdCard, allowed};
 use crate::actions::{Outbox, in_reach};
@@ -11,18 +14,27 @@ use crate::closets::InCloset;
 use crate::equipment::Equipment;
 use crate::hands::{Hands, HeldBy};
 use crate::health::Vitals;
-use crate::jobs::{CardOwner, jobs};
+use crate::jobs::{CardOwner, HasJob, jobs};
+use crate::objects::spawn_object;
+use crate::paperwork::PAPER;
 use crate::power::{Channel, PowerUser};
+use crate::time::WorldTime;
 use crate::wires::PanelViewer;
 
 pub const ID_COMPUTER: &str = "id-computer";
 /// The access that lets someone change a card (Luna `access_change_ids`).
 pub const CHANGE_IDS: &str = "change_ids";
 
-/// The computer, and the card in it.
-#[derive(Component, Debug, Clone, Copy, Default, PartialEq, Eq)]
+/// How long a printout takes, ds (Luna's `sleep(50)`).
+pub const PRINT_DS: f32 = 50.0;
+
+/// The computer, the card in it, and whether it's on the crew manifest.
+#[derive(Component, Debug, Clone, Copy, Default, PartialEq)]
 pub struct IdComputer {
     pub card: Option<Entity>,
+    pub manifest: bool,
+    /// When a printout comes out, ds.
+    pub printing_at: Option<f32>,
 }
 
 /// A button on its window.
@@ -31,6 +43,9 @@ pub enum IdOp {
     /// Give the card this line of the job list.
     Assign(usize),
     Eject,
+    /// Switch to the crew manifest, or back.
+    Manifest,
+    Print,
 }
 
 /// What a mob asked of an identification computer this tick.
@@ -89,7 +104,22 @@ pub fn click(world: &mut World, mob: Entity, machine: Entity) {
 }
 
 fn apply(world: &mut World, mob: Entity, machine: Entity, op: IdOp) {
-    let Some(card) = world.get::<IdComputer>(machine).and_then(|c| c.card) else {
+    let now = world.resource::<WorldTime>().deciseconds();
+    let Some(mut computer) = world.get_mut::<IdComputer>(machine) else {
+        return;
+    };
+    match op {
+        IdOp::Manifest => {
+            computer.manifest = !computer.manifest;
+            return;
+        }
+        IdOp::Print => {
+            computer.printing_at.get_or_insert(now + PRINT_DS);
+            return;
+        }
+        _ => {}
+    }
+    let Some(card) = computer.card else {
         return;
     };
     match op {
@@ -123,11 +153,55 @@ fn apply(world: &mut World, mob: Entity, machine: Entity, op: IdOp) {
                 },
             ));
         }
+        IdOp::Manifest | IdOp::Print => {}
+    }
+}
+
+/// Everyone with a job, in the order they arrived (Luna's `data_core.general`).
+fn crew(people: impl Iterator<Item = (Entity, String, String)>) -> Vec<(String, String)> {
+    let mut all: Vec<_> = people.collect();
+    all.sort_by_key(|(e, ..)| *e);
+    all.into_iter().map(|(_, name, job)| (name, job)).collect()
+}
+
+/// A sheet with the crew manifest on it. The job names are in the reader's language, so the sheet
+/// says which ones it means, and the client fills them in (`paperwork.md`).
+fn print_manifest(world: &mut World, at: TilePos) {
+    let mut people = world.query::<(Entity, &DisplayName, &HasJob)>();
+    let list = crew(people.iter(world).map(|(e, n, j)| (e, n.0.clone(), j.0.clone())));
+    let mut text = String::from("[msg:id-manifest-title]\n");
+    for (name, job) in list {
+        text.push_str(&format!("[b]{name}[/b] - [job:{job}]\n"));
+    }
+    let mut sheet = ObjectSpec::new(PAPER);
+    sheet
+        .vars
+        .insert("name".to_owned(), "[msg:id-manifest-paper]".to_owned());
+    sheet.vars.insert("info".to_owned(), text);
+    // Paper is always a known prototype.
+    let _ = spawn_object(world, &sheet, at);
+}
+
+/// Printouts that are ready.
+fn finish_printing(world: &mut World) {
+    let now = world.resource::<WorldTime>().deciseconds();
+    let mut machines = world.query::<(Entity, &GridPos, &IdComputer)>();
+    let done: Vec<(Entity, TilePos)> = machines
+        .iter(world)
+        .filter(|(.., c)| c.printing_at.is_some_and(|at| now >= at))
+        .map(|(e, p, _)| (e, p.0))
+        .collect();
+    for (machine, at) in done {
+        if let Some(mut computer) = world.get_mut::<IdComputer>(machine) {
+            computer.printing_at = None;
+        }
+        print_manifest(world, at);
     }
 }
 
 /// Buttons pressed.
 pub fn run_id_computers(world: &mut World) {
+    finish_printing(world);
     let mut askers = world.query::<(Entity, &GridPos, &mut PendingIdOps)>();
     let asked: Vec<(Entity, TilePos, Vec<(Entity, IdOp)>)> = askers
         .iter_mut(world)
@@ -170,6 +244,7 @@ pub fn update_id_views(
     machines: Query<(&GridPos, &IdComputer, &NetId, &PowerUser)>,
     cards: Query<Option<&CardOwner>, With<IdCard>>,
     names: Query<&DisplayName>,
+    people: Query<(Entity, &DisplayName, &HasJob)>,
     mut commands: Commands,
 ) {
     for (mob, pos, viewer, mut out, vitals) in &mut viewers {
@@ -189,6 +264,10 @@ pub fn update_id_views(
                         .map(|n| n.0.clone()),
                     job: owner.map(|c| c.job.clone()),
                     jobs: jobs().iter().map(|j| j.id.clone()).collect(),
+                    manifest: computer
+                        .manifest
+                        .then(|| crew(people.iter().map(|(e, n, j)| (e, n.0.clone(), j.0.clone())))),
+                    printing: computer.printing_at.is_some(),
                 }
             })
         });

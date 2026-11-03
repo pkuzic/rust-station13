@@ -134,6 +134,10 @@ enum UseStep {
     Job(u8),
     /// `jobstay`: stay in the job the window offers.
     JobStay,
+    /// `manifest`: switch an open identification computer to the crew manifest, or back.
+    Manifest,
+    /// `printmanifest`: print the crew manifest from an open identification computer.
+    PrintManifest,
     /// `callpods`: call the escape pods on an open communications console.
     CallPods,
     /// `ready`: ready for the round to start, in the lobby.
@@ -180,6 +184,8 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            "manifest" => Some(Self::Manifest),
+            "printmanifest" => Some(Self::PrintManifest),
             "joinround" => Some(Self::JoinRound),
             _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
@@ -1739,6 +1745,10 @@ fn scripted_use(
         }),
         UseStep::Job(line) => Some(ActionInput::ChooseJob { line: Some(line) }),
         UseStep::JobStay => Some(ActionInput::ChooseJob { line: None }),
+        UseStep::Manifest | UseStep::PrintManifest => ids.0.as_ref().map(|view| ActionInput::IdManifest {
+            target: view.target,
+            print: matches!(step, UseStep::PrintManifest),
+        }),
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,
             call: true,

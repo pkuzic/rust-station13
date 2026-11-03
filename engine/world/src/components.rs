@@ -421,6 +421,10 @@ pub struct IdComputerView {
     pub job: Option<String>,
     /// Every job, by id.
     pub jobs: Vec<String>,
+    /// The crew manifest instead (Luna's `mode`): each person's name and job, by id.
+    pub manifest: Option<Vec<(String, String)>>,
+    /// A copy of it is on its way out.
+    pub printing: bool,
 }
 
 /// One person's line in a records window.
