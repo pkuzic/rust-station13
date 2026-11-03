@@ -1317,6 +1317,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `trash-chips:` | `icons/obj/janitor.dmi : "chips"` | CC-BY-SA 3.0 |
 | `trash-raisins:` | `icons/obj/janitor.dmi : "4no_raisins"` | CC-BY-SA 3.0 |
 | `trash-sosjerky:` | `icons/obj/janitor.dmi : "sosjerky"` | CC-BY-SA 3.0 |
+| `turret:grey_target_prism` | `icons/obj/turrets.dmi : "grey_target_prism"` | CC-BY-SA 3.0 |
+| `turret-control:motion3` | `icons/obj/device.dmi : "motion3"` | CC-BY-SA 3.0 |
 | `urn:` | `icons/obj/items.dmi : "urn"` | CC-BY-SA 3.0 |
 | `ushanka:` | `icons/obj/clothing/hats.dmi : "ushankadown"` | CC-BY-SA 3.0 |
 | `utility-belt:` | `icons/obj/clothing/belts.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
@@ -1514,6 +1516,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:grey-jumpsuit:lying` | `icons/mob/uniform.dmi : "grey_l"` | CC-BY-SA 3.0 |
 | `worn:grey-shorts:` | `icons/mob/uniform.dmi : "greyshorts_s"` | CC-BY-SA 3.0 |
 | `worn:grey-shorts:lying` | `icons/mob/uniform.dmi : "greyshorts_l"` | CC-BY-SA 3.0 |
+| `worn:handcuffs:` | `icons/mob/mob.dmi : "handcuff1"` | CC-BY-SA 3.0 |
+| `worn:handcuffs:lying` | `icons/mob/mob.dmi : "handcuff2"` | CC-BY-SA 3.0 |
 | `worn:hardhat:` | `icons/mob/head.dmi : "hardhat0_yellow"` | CC-BY-SA 3.0 |
 | `worn:hardhat:lying` | `icons/mob/head.dmi : "hardhat0_yellow2"` | CC-BY-SA 3.0 |
 | `worn:hardhat-blue:` | `icons/mob/head.dmi : "hardhat0_dblue"` | CC-BY-SA 3.0 |

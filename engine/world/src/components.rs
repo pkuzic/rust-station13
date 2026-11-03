@@ -185,10 +185,13 @@ pub enum Slot {
     Id,
     Glasses,
     Ears,
+    /// Handcuffs on your wrists: nobody puts these on themselves (`security.md`).
+    Cuffs,
 }
 
 impl Slot {
-    pub const ALL: [Slot; 11] = [
+    pub const ALL: [Slot; 12] = [
+        Slot::Cuffs,
         Slot::Uniform,
         Slot::Suit,
         Slot::Head,
@@ -216,6 +219,7 @@ impl Slot {
             Slot::Id => "id",
             Slot::Glasses => "glasses",
             Slot::Ears => "ears",
+            Slot::Cuffs => "cuffs",
         }
     }
 

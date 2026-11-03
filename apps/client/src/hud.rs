@@ -106,6 +106,8 @@ fn cell_state(
     let flag = |on: bool| u8::from(on);
     let alert = |a: rs13_world::EnvAlert| status.is_some_and(|s| s.alerts.contains(&a));
     match cell {
+        // Never a cell of its own: only drawn on the wearer.
+        Cell::Slot(Slot::Cuffs) => "equip-n".into(),
         Cell::Slot(Slot::Mask) => "equip-n".into(),
         Cell::Slot(Slot::Head) => "hair".into(),
         Cell::Slot(Slot::Back) => "equip-ne".into(),

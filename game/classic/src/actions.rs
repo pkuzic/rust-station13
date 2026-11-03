@@ -158,7 +158,7 @@ pub fn process_actions(
                     microwaves,
                     arcades,
                     airlock_parts,
-                    (scanners, cloning_consoles, door_timers, rechargers),
+                    (scanners, cloning_consoles, door_timers, rechargers, cuffed, turret_controls),
                 ),
             ),
         ),
@@ -243,6 +243,8 @@ pub fn process_actions(
                         Query<(), With<crate::cloning::CloningConsole>>,
                         Query<(), With<crate::brig::DoorTimer>>,
                         Query<(), With<crate::weapons::Recharger>>,
+                        Query<(), With<crate::security::Cuffed>>,
+                        Query<(), With<crate::security::TurretControl>>,
                     ),
                 ),
             ),
@@ -275,7 +277,11 @@ pub fn process_actions(
     let mut welded_with: Vec<(Entity, Entity, TilePos)> = Vec::new();
 
     for (mob, mob_pos, mut hands, mut pending, mut outbox, mut intent, vitals, mut mob_state) in &mut mobs {
-        if knocked_down.contains(mob) || vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+        // Cuffed hands can't do anything (`security.md`).
+        if knocked_down.contains(mob)
+            || cuffed.contains(mob)
+            || vitals.is_some_and(|v| v.stat != MobStat::Conscious)
+        {
             pending.0.clear();
             continue;
         }
@@ -322,6 +328,31 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if tool == Some(crate::security::HANDCUFFS)
+                        && people.contains(target)
+                        && target != mob
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::security::start_cuffing(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool.is_none()
+                        && cuffed.contains(target)
+                        && target != mob
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::security::start_uncuffing(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if turret_controls.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::security::click_control(world, mob, target));
+                }
                 // Guns and batons first: they answer clicks of their own (`weapons.md`).
                 Action::UseOn(target)
                     if tool.is_some_and(crate::weapons::is_gun) && hands.active_item() == Some(target) =>

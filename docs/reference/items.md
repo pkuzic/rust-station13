@@ -12,6 +12,6 @@ Luna's uses for them aren't built, for example:
 - **Paperwork:** stamps don't stamp, and folders don't hold papers.
 - **Construction:** stock parts build nothing, and the new sheets aren't usable yet.
 - **Devices:** scanners and analyzers don't scan. Timers, sensors and igniters don't assemble.
-- **Security:** handcuffs don't cuff, and riot shields don't block.
+- **Security:** riot shields don't block.
 - **Containers:** boxes, belts and backpacks open and hold things, but start empty, apart from the
   spare handcuffs.
