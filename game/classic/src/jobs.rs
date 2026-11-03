@@ -14,6 +14,7 @@ use crate::hands::{Hands, HeldBy};
 use crate::movement::Mob;
 use crate::objects::spawn_object;
 use crate::storage::{InStorage, Storage};
+use crate::time::WorldTime;
 
 /// A job's kit. Its order in `content/jobs.ron` is the order jobs fill up in.
 #[derive(Debug, Deserialize)]
@@ -57,9 +58,13 @@ pub struct CardOwner {
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Post(pub TilePos);
 
-/// Someone just arrived, who may still swap their job for another.
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ChoosingJob;
+/// Someone just arrived and choosing a job, out of the world until they do, or until this
+/// time, ds.
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
+pub struct ChoosingJob(pub f32);
+
+/// How long they have to choose, ds.
+pub const CHOOSING_DS: f32 = 600.0;
 
 /// What a mob answered: this line of the list, or `None` to stay as they are.
 #[derive(Component, Debug, Default)]
@@ -72,6 +77,13 @@ pub struct JobPanelOut(pub Option<JobPanelView>);
 /// Mark a card placed for a job.
 pub fn set_aside(world: &mut World, card: Entity, job: &str) {
     world.entity_mut(card).insert((JobCard(job.to_owned()), Hidden));
+}
+
+/// `pick_start`, with every mob's tile taken.
+pub fn next_start(world: &mut World, starts: &[TilePos]) -> Option<TilePos> {
+    let mut mobs = world.query_filtered::<&GridPos, With<Mob>>();
+    let taken: Vec<TilePos> = mobs.iter(world).map(|p| p.0).collect();
+    pick_start(world, starts, &taken)
 }
 
 /// Where the next player should start: a free start point of the job fewest people have, the
@@ -120,7 +132,25 @@ fn wear(world: &mut World, mob: Entity, item: Entity) {
     }
 }
 
-/// Whoever has just started at `at` gets the job waiting there, if there is one.
+/// Offer someone arriving at `at` the job waiting there, if there is one: they stay out of the
+/// world, holding that post, until they've chosen. True if there was one.
+pub fn offer(world: &mut World, mob: Entity, at: TilePos) -> bool {
+    let mut cards = world.query::<(&JobCard, &GridPos)>();
+    let Some(job) = cards
+        .iter(world)
+        .find(|(_, p)| p.0 == at)
+        .map(|(j, _)| j.0.clone())
+    else {
+        return false;
+    };
+    let until = world.resource::<WorldTime>().deciseconds() + CHOOSING_DS;
+    world
+        .entity_mut(mob)
+        .insert((HasJob(job), Post(at), ChoosingJob(until), Hidden));
+    true
+}
+
+/// Whoever has settled at `at` gets the job waiting there, if there is one.
 pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
     let mut cards = world.query::<(Entity, &JobCard, &GridPos)>();
     let (card, job) = cards
@@ -164,83 +194,35 @@ pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
             world.entity_mut(item).remove::<GridPos>().insert(HeldBy(mob));
         }
     }
-    world
-        .entity_mut(mob)
-        .insert((HasJob(job.clone()), Post(at), ChoosingJob));
+    world.entity_mut(mob).insert((HasJob(job.clone()), Post(at)));
     if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
         outbox.0.push(LocMsg::new("job-assigned").arg("job", job.clone()));
     }
     Some(job)
 }
 
-fn despawn_with_contents(world: &mut World, item: Entity) {
-    let inside = world
-        .get::<Storage>(item)
-        .map(|s| s.items.clone())
-        .unwrap_or_default();
-    for thing in inside {
-        despawn_with_contents(world, thing);
-    }
-    world.entity_mut(item).despawn();
-}
-
-/// Swap someone's job for the one on `line` of the list: their kit goes, their card goes back to
-/// its post, and they start again at a free post of the new job.
-fn change_job(world: &mut World, mob: Entity, line: usize) -> bool {
-    let Some(new) = jobs().get(line) else {
-        return false;
-    };
+/// The first free post of a job.
+fn free_post(world: &mut World, job: &str) -> Option<TilePos> {
     let mut mobs = world.query_filtered::<&GridPos, With<Mob>>();
     let taken: Vec<TilePos> = mobs.iter(world).map(|p| p.0).collect();
     let mut cards = world.query::<(&JobCard, &GridPos)>();
-    let Some(at) = cards
+    cards
         .iter(world)
-        .find(|(j, p)| j.0 == new.id && !taken.contains(&p.0))
+        .find(|(j, p)| j.0 == job && !taken.contains(&p.0))
         .map(|(_, p)| p.0)
-    else {
-        return false;
-    };
-    let (Some(old), Some(post)) = (
-        world.get::<HasJob>(mob).map(|j| j.0.clone()),
-        world.get::<Post>(mob).map(|p| p.0),
-    ) else {
-        return false;
-    };
-    let card = world.get::<Equipment>(mob).and_then(|e| e.get(Slot::Id));
-    let worn: Vec<Entity> = world
-        .get::<Equipment>(mob)
-        .map(|e| e.0.values().copied().filter(|i| Some(*i) != card).collect())
-        .unwrap_or_default();
-    for item in worn {
-        despawn_with_contents(world, item);
-    }
-    if let Some(mut equipment) = world.get_mut::<Equipment>(mob) {
-        equipment.0.clear();
-    }
-    let held: Vec<Entity> = world
-        .get::<Hands>(mob)
-        .map(|h| h.left.into_iter().chain(h.right).collect())
-        .unwrap_or_default();
-    for item in held {
-        despawn_with_contents(world, item);
-    }
-    if let Some(mut hands) = world.get_mut::<Hands>(mob) {
-        hands.left = None;
-        hands.right = None;
-    }
-    if let Some(card) = card {
-        world
-            .entity_mut(card)
-            .remove::<WornBy>()
-            .remove::<CardOwner>()
-            .insert((GridPos(post), JobCard(old), Hidden));
-    }
-    world.entity_mut(mob).insert(GridPos(at));
-    take_up(world, mob, at);
-    true
 }
 
-/// Answers to the job window (Luna's job choice, offered on arrival rather than before the round).
+/// Someone has decided: out they come, at their post, with its card and kit.
+fn settle(world: &mut World, mob: Entity) {
+    let Some(post) = world.get::<Post>(mob).map(|p| p.0) else {
+        return;
+    };
+    world.entity_mut(mob).remove::<(ChoosingJob, Hidden)>();
+    take_up(world, mob, post);
+}
+
+/// Answers to the job window, and whoever has taken too long stays with the job they were offered
+/// (Luna's job choice, offered as they arrive rather than before the round).
 pub fn run_job_choices(world: &mut World) {
     let mut askers = world.query::<(Entity, &mut PendingJobOps)>();
     let asked: Vec<(Entity, Vec<Option<usize>>)> = askers
@@ -253,26 +235,50 @@ pub fn run_job_choices(world: &mut World) {
             if world.get::<ChoosingJob>(mob).is_none() {
                 continue;
             }
-            if let Some(line) = answer {
-                change_job(world, mob, line);
-            }
-            world.entity_mut(mob).remove::<ChoosingJob>();
+            let Some(line) = answer else {
+                settle(world, mob);
+                continue;
+            };
+            let Some(job) = jobs().get(line) else {
+                continue;
+            };
+            // A job with no free post leaves the window open, to choose again.
+            let Some(at) = free_post(world, &job.id) else {
+                continue;
+            };
+            world.entity_mut(mob).insert((GridPos(at), Post(at)));
+            settle(world, mob);
         }
+    }
+    let now = world.resource::<WorldTime>().deciseconds();
+    let mut waiting = world.query::<(Entity, &ChoosingJob)>();
+    let late: Vec<Entity> = waiting
+        .iter(world)
+        .filter(|(_, c)| now >= c.0)
+        .map(|(e, _)| e)
+        .collect();
+    for mob in late {
+        settle(world, mob);
     }
 }
 
 /// Show each new arrival the jobs still open.
 pub fn update_job_views(
     mut mobs: Query<(Option<&HasJob>, Option<&ChoosingJob>, &mut JobPanelOut)>,
-    cards: Query<&JobCard>,
+    cards: Query<(&JobCard, &GridPos)>,
+    people: Query<&GridPos, With<Mob>>,
 ) {
+    let taken: Vec<TilePos> = people.iter().map(|p| p.0).collect();
     for (job, choosing, mut out) in &mut mobs {
         let view = choosing.and(job).map(|job| JobPanelView {
             current: job.0.clone(),
             rows: jobs()
                 .iter()
                 .map(|j| {
-                    let open = cards.iter().filter(|c| c.0 == j.id).count();
+                    let open = cards
+                        .iter()
+                        .filter(|(c, p)| c.0 == j.id && !taken.contains(&p.0))
+                        .count();
                     (j.id.clone(), open as u16)
                 })
                 .collect(),

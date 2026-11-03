@@ -32,13 +32,15 @@ pub fn update_silhouettes(
             Option<&Facing>,
             &Appearance,
             Option<&Shaded>,
+            Has<rs13_world::Hidden>,
         ),
         (With<Mob>, Without<Shade>),
     >,
     mut shades: Query<(Entity, &Shade, &mut GridPos, &mut Facing, &mut Appearance), Without<Mob>>,
 ) {
-    for (person, pos, facing, look, shaded) in &people {
-        let dark = pos.is_some_and(|p| light.is_dark(p.0));
+    for (person, pos, facing, look, shaded, hidden) in &people {
+        // Someone out of the world, shut in a closet or choosing a job, casts no shape.
+        let dark = !hidden && pos.is_some_and(|p| light.is_dark(p.0));
         match (dark, shaded) {
             (true, None) => {
                 let Some(pos) = pos else { continue };
@@ -62,7 +64,7 @@ pub fn update_silhouettes(
         }
     }
     for (shade, of, mut pos, mut facing, mut look) in &mut shades {
-        let Ok((_, Some(person_pos), person_facing, person_look, Some(_))) = people.get(of.0) else {
+        let Ok((_, Some(person_pos), person_facing, person_look, Some(_), _)) = people.get(of.0) else {
             // Its person is gone or no longer in the dark: the loop above or this one
             // takes it away.
             if people.get(of.0).is_err() {

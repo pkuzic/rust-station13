@@ -297,8 +297,8 @@ job-assigned = You are the { $job ->
     [mime] Mime
    *[assistant] Assistant
 }.
-job-window-title = You've been given a job. You can stay, or take another that's open.
-job-keep = Stay in this job
+job-window-title = You're down as { $job }. Choose that, or another job that's open.
+job-keep = Start in this job
 job-row = { $job } ({ $value } free)
 records-security = Security records. Click someone to change their status.
 records-medical = Medical records

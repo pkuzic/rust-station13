@@ -14,23 +14,26 @@ in `jobs.ron` the better, so a small round gets an engineer, a doctor and a secu
 nobody doubles up until every job with a free start point is taken. A card waiting at an empty start point
 can't be seen or taken.
 
-A respawn starts at the first free start point. If that one's card has gone it has no job, and wears a grey
-jumpsuit and black shoes.
+A respawn is offered a job the same way. Once every post with a card has been taken, it starts at any free start
+point with no job, in a grey jumpsuit and black shoes.
 
 Maps without jobs on their start points work as before: a grey jumpsuit, black shoes, and no card.
 
 ## Choosing
 
-Someone who arrives at a post also sees a window listing every job and how many posts each has free, with
-the ones that have none greyed out. Staying or choosing closes it for good. Choosing another job takes
-away everything they were given, puts their card back at their post, and starts them at a free post of the
-new job with its card and kit. Things they picked up in the meantime go too, if they were worn or in hand.
+Someone arriving is offered a job and sees a window listing every job and how many posts each has free, with
+those that have none greyed out. Until they choose they aren't in the world: nobody can see them, and they can't
+move or do anything, but the post they were offered is held for them. Choosing starts them at a post of that job,
+or the offered one, with its card and kit. A job whose last post has just gone leaves the window open. After 60
+seconds they start in the job they were offered.
+
+Bots that never answer start after those 60 seconds too. On maps without jobs nobody is asked.
 
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
-| Players set which jobs they prefer before the round, and it divides them up | They're given one on arrival, and can swap it once for any that's free |
+| Players set which jobs they prefer before the round, and it divides them up | Each chooses as they arrive, from what's free |
 | Every job has a PDA and most a department headset | Only engineers' headsets exist here |
 | Each job has its department's backpack, its own hat or armour, and some have grenades, implants and so on | Only what exists here. See `jobs.ron` |
 | A card and PDA carry the person's name and job title | The card only carries access |
