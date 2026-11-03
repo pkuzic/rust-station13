@@ -284,3 +284,24 @@ fn nobody_is_asked_on_a_map_without_jobs() {
     assert!(!offer(app.world_mut(), mob, A));
     assert!(app.world().get::<ChoosingJob>(mob).is_none());
 }
+
+#[test]
+fn a_cards_access_comes_from_its_job() {
+    let mut app = setup();
+    let card = card_for(&mut app, A, "chemist", &[]);
+    let chemist = jobs().iter().find(|j| j.id == "chemist").unwrap();
+    assert_eq!(app.world().get::<IdCard>(card).unwrap().access, chemist.access);
+    assert!(chemist.access.contains(&"chemistry".to_owned()));
+}
+
+#[test]
+fn every_jobs_access_is_a_known_id_and_the_captain_has_them_all() {
+    let known = rs13_classic::access::AccessIds::default().0;
+    for job in jobs() {
+        for id in &job.access {
+            assert!(known.contains(id), "{}: {id}", job.id);
+        }
+    }
+    let captain = jobs().iter().find(|j| j.id == "captain").unwrap();
+    assert_eq!(captain.access.len(), known.len());
+}

@@ -42,7 +42,10 @@ and off.
 
 Source: `luna:code/game/objects/structures/barricade.dm`. They block the way. Clicking one with any ID card in
 hand locks or unlocks it, which shows on its light. Luna's access check is commented out, so any card works
-there too.
+there too. An unlocked barrier can be pulled; locking one makes whoever is pulling it let go.
 
-In Luna an unlocked barrier can be pushed around, and it can be damaged and repaired with a welder. Here they
-can't be moved or broken yet, so the lock only changes the light.
+A barrier has 100 health. Hitting one takes 3/4 of what you're holding's force, and at none it falls apart. A lit
+welder repairs it fully, and uses up the welder's usual fuel for being used on something.
+
+Differences from Luna: shots, explosions and blobs don't damage it, it doesn't drop metal rods when it breaks, and
+burn weapons don't do less than brute. An emag doesn't short it out.

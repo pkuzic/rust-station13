@@ -99,27 +99,24 @@ pub fn spawn_food(entity: &mut EntityWorldMut, proto: &str) {
             entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT, None));
         }
         // Each is its reagents plus the 8 every snack starts with.
-        // What grows in plant pots (`hydroponics.md`).
-        "tomato" | "apple" | "lemon" | "lime" | "orange" | "carrot" | "potato" => {
-            entity.insert(snack(8.0, 2.0, 8.0 * NUTRIMENT, None));
+        // Luna gives every snack 8 nutriment; `amount` is how many bites these are. Its crops and
+        // these plain foods have nothing else in them that does anything here.
+        "tomato" | "potato" | "candy-cane" | "ketchup" => {
+            entity.insert(snack(8.0, 8.0, 8.0 * NUTRIMENT, None));
         }
+        "lemon" | "lime" => {
+            entity.insert(snack(8.0, 4.0, 8.0 * NUTRIMENT, None));
+        }
+        "orange" | "apple" | "carrot" | "noodles" | "fishburger" | "flour" | "plump-helmet" => {
+            entity.insert(snack(9.0, 3.0, 8.0 * NUTRIMENT, None));
+        }
+        // Luna's banana also has 1 of its own juice, and a bite of 5.
         "banana" => {
-            entity.insert(snack(13.0, 2.0, 13.0 * NUTRIMENT, None));
+            entity.insert(snack(9.0, 5.0, 8.0 * NUTRIMENT + JUICE, None));
         }
-        "plump-helmet" => {
-            entity.insert(snack(14.0, 2.0, 14.0 * NUTRIMENT, None));
-        }
+        // Luna adds 8 to the 8 every snack has.
         "waffles" => {
             entity.insert(snack(16.0, 2.0, 16.0 * NUTRIMENT, None));
-        }
-        "noodles" => {
-            entity.insert(snack(12.0, 2.0, 12.0 * NUTRIMENT, None));
-        }
-        "candy-cane" => {
-            entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT + 4.0 * SUGAR, None));
-        }
-        "fishburger" => {
-            entity.insert(snack(14.0, 2.0, 14.0 * NUTRIMENT, None));
         }
         "chips" => {
             entity.insert(snack(11.0, 1.0, 11.0 * NUTRIMENT, Some("trash-chips")));

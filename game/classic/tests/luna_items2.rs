@@ -98,6 +98,11 @@ fn new_food_can_be_eaten() {
         "noodles",
         "candy-cane",
         "fishburger",
+        "flour",
+        "ketchup",
+        "tomato",
+        "lemon",
+        "apple",
     ] {
         let mut app = setup();
         let mob = spawn_player_mob(app.world_mut(), AT);
@@ -113,11 +118,9 @@ fn new_food_can_be_eaten() {
                 .push(Action::UseOn(target));
             app.world_mut().run_schedule(FixedUpdate);
         }
-        assert_eq!(
-            app.world().get::<Snack>(food).unwrap().bites_left,
-            before - 1,
-            "{proto}"
-        );
+        // The last bite takes it all.
+        let left = app.world().get::<Snack>(food).map_or(0, |s| s.bites_left);
+        assert_eq!(left, before - 1, "{proto}");
         assert!(
             app.world().get::<Nutrition>(mob).unwrap().level > fed - 1.0,
             "{proto}"

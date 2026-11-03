@@ -12,7 +12,7 @@ const SCENERY: [(&str, bool, bool); 26] = [
     ("pod-engine", true, true),
     ("shuttle-heater", true, false),
     ("holopad", false, false),
-    ("plastic-flaps", false, true),
+    ("plastic-flaps", true, true),
     ("mirror", false, false),
     ("noticeboard", false, false),
     ("mop-bucket", true, false),
@@ -34,12 +34,20 @@ const SCENERY: [(&str, bool, bool); 26] = [
     ("scanner", true, false),
 ];
 
+/// Plastic flaps (Luna's `plasticflaps`): dense to people and to air, but things go through, such as
+/// what a conveyor carries and shots.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PlasticFlaps;
+
 pub fn is_scenery(proto: &str) -> bool {
     SCENERY.iter().any(|(id, ..)| *id == proto)
 }
 
 pub fn spawn_scenery(world: &mut World, proto: &str, pos: TilePos, id: NetId) -> Entity {
     let mut thing = world.spawn((GridPos(pos), id, Appearance::new(proto, "")));
+    if proto == "plastic-flaps" {
+        thing.insert(PlasticFlaps);
+    }
     if let Some((_, dense, opaque)) = SCENERY.iter().find(|(id, ..)| *id == proto) {
         if *dense {
             thing.insert(Dense);

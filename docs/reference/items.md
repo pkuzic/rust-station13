@@ -22,10 +22,11 @@ A second batch added 36 more kinds, in the same way. Some do something:
 
 - `plasma-tank` holds plasma at 3 atmospheres, and `emergency-oxygen-double` is a larger emergency tank, which starts empty.
 - `advanced-trauma-kit` heals 60 brute and `advanced-burn-kit` heals 40 burn, 5 uses each.
-- `banana`, `plump-helmet`, `waffles`, `noodles`, `candy-cane` and `fishburger` can be eaten.
+- `banana`, `plump-helmet`, `waffles`, `noodles`, `candy-cane`, `fishburger`, `flour` and `ketchup` can be
+  eaten, for Luna's nutrition and bites. A plump helmet's drug does nothing yet.
 - `pill-bottle-*` come with 7 pills.
 
 The rest are only things to carry for now: coins, crayons, clown and mime PDAs, AI modules, the
-timer-igniter assembly, flour, ketchup, the drinks in this batch, cups and the voice disk.
+timer-igniter assembly, the drinks in this batch, cups and the voice disk.
 
 Luna's plain canister is `empty-canister`: a canister with nothing in it, for filling (`pipes.md`).

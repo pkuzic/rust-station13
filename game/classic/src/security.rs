@@ -392,9 +392,22 @@ pub fn run_turrets(world: &mut World) {
 }
 
 /// A deployable barrier (Luna's `deployable/barrier`). Locked, it stays where it is.
-#[derive(Component, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct Barrier {
     pub locked: bool,
+    pub health: f32,
+}
+
+/// What it can take (Luna `maxhealth`).
+pub const BARRIER_HEALTH: f32 = 100.0;
+
+impl Default for Barrier {
+    fn default() -> Self {
+        Self {
+            locked: false,
+            health: BARRIER_HEALTH,
+        }
+    }
 }
 
 pub const BARRIER: &str = "barrier";
@@ -411,26 +424,61 @@ pub fn spawn_barrier(world: &mut World, pos: TilePos, id: NetId) -> Entity {
         .id()
 }
 
-/// Swiping any ID card locks or unlocks it: Luna's `req_access` is commented out (`barrier/attackby`).
+/// A click with something in hand (Luna `barrier/attackby`): any ID card locks or unlocks it, as its
+/// `req_access` is commented out; a lit welder repairs it; anything else hits it for 3/4 of its force.
 pub fn click_barrier(world: &mut World, mob: Entity, barrier: Entity) {
-    let held = world
+    let Some(item) = world
         .get::<crate::hands::Hands>(mob)
-        .and_then(crate::hands::Hands::active_item);
-    if !held.is_some_and(|item| world.get::<IdCard>(item).is_some()) {
-        return;
-    }
-    let Some(mut state) = world.get_mut::<Barrier>(barrier) else {
+        .and_then(crate::hands::Hands::active_item)
+    else {
         return;
     };
-    state.locked = !state.locked;
-    let locked = state.locked;
-    if let Some(mut look) = world.get_mut::<Appearance>(barrier) {
-        look.state = if locked { "barrier1" } else { "barrier0" }.to_owned();
-    }
-    let id = if locked {
-        "barrier-locked"
+    let Some(state) = world.get::<Barrier>(barrier).copied() else {
+        return;
+    };
+    let id = if world.get::<IdCard>(item).is_some() {
+        let locked = !state.locked;
+        if let Some(mut b) = world.get_mut::<Barrier>(barrier) {
+            b.locked = locked;
+        }
+        if let Some(mut look) = world.get_mut::<Appearance>(barrier) {
+            look.state = if locked { "barrier1" } else { "barrier0" }.to_owned();
+        }
+        if locked {
+            // Bolted down: whoever was pulling it lets go.
+            let mut pullers = world.query::<(Entity, &crate::pulling::Pulling)>();
+            let holding: Vec<Entity> = pullers
+                .iter(world)
+                .filter(|(_, p)| p.0 == barrier)
+                .map(|(e, _)| e)
+                .collect();
+            for puller in holding {
+                world.entity_mut(puller).remove::<crate::pulling::Pulling>();
+            }
+            "barrier-locked"
+        } else {
+            "barrier-unlocked"
+        }
+    } else if world.get::<crate::welding::Welder>(item).is_some_and(|w| w.lit) {
+        if state.health >= BARRIER_HEALTH {
+            return;
+        }
+        if let Some(mut b) = world.get_mut::<Barrier>(barrier) {
+            b.health = BARRIER_HEALTH;
+        }
+        "barrier-repaired"
     } else {
-        "barrier-unlocked"
+        let force = world.get::<crate::hands::Item>(item).map_or(0.0, |i| i.force);
+        let health = state.health - force * 0.75;
+        if health <= 0.0 {
+            world.entity_mut(barrier).despawn();
+            "barrier-broken"
+        } else {
+            if let Some(mut b) = world.get_mut::<Barrier>(barrier) {
+                b.health = health;
+            }
+            "barrier-hit"
+        }
     };
     if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
         outbox.0.push(LocMsg::new(id));

@@ -8,6 +8,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{GridPos, Hidden, JobPanelView, ObjectSpec, Slot, TilePos};
 use serde::Deserialize;
 
+use crate::access::IdCard;
 use crate::actions::Outbox;
 use crate::equipment::{Equipment, Wearable, WornBy};
 use crate::hands::{Hands, HeldBy};
@@ -74,8 +75,14 @@ pub struct PendingJobOps(pub Vec<Option<usize>>);
 #[derive(Component, Debug, Clone, Default, PartialEq)]
 pub struct JobPanelOut(pub Option<JobPanelView>);
 
-/// Mark a card placed for a job.
+/// Mark a card placed for a job, which gives it the job's access (`content/jobs.ron`). A test map's
+/// job that isn't on the list keeps whatever access it was placed with.
 pub fn set_aside(world: &mut World, card: Entity, job: &str) {
+    if let Some(job) = jobs().iter().find(|j| j.id == job) {
+        world.entity_mut(card).insert(IdCard {
+            access: job.access.clone(),
+        });
+    }
     world.entity_mut(card).insert((JobCard(job.to_owned()), Hidden));
 }
 
