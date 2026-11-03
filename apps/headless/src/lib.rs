@@ -21,7 +21,8 @@ use rs13_network::protocol::{
 use rs13_world::{Appearance, Dir, GridPos, Hidden, NetId, StorageView, TilePos};
 
 /// Give up if no own player has been received after this long.
-const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
+// Long enough to wait out a short countdown on a machine that is busy, as during the whole test suite.
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Resource, Clone, Debug)]
 pub struct BotConfig {
