@@ -405,6 +405,31 @@ pub fn process_actions(
                     commands
                         .queue(move |world: &mut World| crate::construction::use_stack(world, mob, target));
                 }
+                Action::UseOn(target)
+                    if tool == Some("screwdriver")
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::frames::is_computer(&look.sprite)) =>
+                {
+                    // Taking a computer down (`construction.md`).
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::frames::start_taking_down(world, mob, held, target);
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if hands.active_item().is_some()
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::frames::FRAME) =>
+                {
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::frames::use_on_frame(world, mob, held, target);
+                        });
+                    }
+                }
                 Action::UseOn(target) if buildable.contains(target) && hands.active_item().is_some() => {
                     if let Some(held) = hands.active_item() {
                         commands.queue(move |world: &mut World| {

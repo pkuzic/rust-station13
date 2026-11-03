@@ -215,6 +215,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::frames::FRAME {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::frames::spawn_frame(world, pos, id));
+    }
     if proto == crate::construction::GIRDER || proto == crate::construction::REINFORCED_GIRDER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::construction::spawn_girder(world, proto, pos, id));

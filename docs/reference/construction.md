@@ -25,6 +25,25 @@ Anything that takes time needs you to stay where you are holding the same thing,
 - **Rods** used in hand: 2 make a grille on your tile. Wirecutters on it: gone, for 2 rods. A grille lets air through.
 - **Glass** used in hand: a pane on your tile, on the side you face or the next free one. A wrench on it: back to a sheet.
 
+## Computers
+
+Sources: `luna:code/game/machinery/computer/buildandrepair.dm`, `computer.dm`. Code: `game/classic/src/frames.rs`. Tests:
+`game/classic/tests/frames.rs`.
+
+A computer frame is 5 metal sheets and 2.5 seconds, and is put together in order. Each step undoes:
+
+| Step | With | Undo with |
+|---|---|---|
+| Fastened down (2 s) | Wrench | Wrench. A loose frame comes apart for its metal with a lit welding tool |
+| Board put in | A circuit board | Crowbar |
+| Board fixed | Screwdriver | Screwdriver |
+| Wired | 5 lengths of cable | Wirecutters |
+| Glass | 2 sheets of glass | Crowbar |
+| Working | Screwdriver: the computer the board is for | Screwdriver (2 s): back to the glass step, board inside |
+
+Boards exist for the security console, medical and security records, the ID computer, communications, arcade, cloning and
+the power monitor. Nothing sells or makes spare boards yet, so they come from taking a computer down.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -35,5 +54,7 @@ Anything that takes time needs you to stay where you are holding the same thing,
 | Girders can be dislodged, to make false walls that open | Not built |
 | Metal also makes swivel and comfy chairs, canisters, turret and light frames, grenade casings, iron doors | Not built |
 | Stacks build more than one at a time | One at a time |
-| Computer and machine frames | Next (`LUNA_PARITY.md`) |
+| Machine frames and their parts | Waits for research (3.11), which is what makes the boards |
+| A broken computer's glass falls out when it's taken down | Computers don't break |
+| A board keeps a console's settings | Not kept |
 | Rods can be welded back into metal | Not built |

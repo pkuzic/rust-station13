@@ -44,6 +44,7 @@ pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
 pub mod food;
+pub mod frames;
 pub mod freezers;
 pub mod furniture;
 pub mod gas_panel;
