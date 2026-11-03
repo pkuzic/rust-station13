@@ -112,7 +112,7 @@ fn blind(world: &mut World, mob: Entity, for_ds: f32) -> bool {
     true
 }
 
-fn dazzle(world: &mut World, mob: Entity) {
+pub(crate) fn dazzle(world: &mut World, mob: Entity) {
     let count = world.get::<Dazzled>(mob).map_or(0, |d| d.0);
     world.entity_mut(mob).insert(Dazzled(count.wrapping_add(1)));
 }

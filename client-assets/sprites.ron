@@ -2505,6 +2505,18 @@
             "grabbed1": (dmi: "icons/mob/screen1.dmi", state: "grabbed1"),
             "grabbed+1": (dmi: "icons/mob/screen1.dmi", state: "grabbed+1"),
         },
+        "c4-small": {
+            "c-4small_0": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4small_0"),
+            "c-4small_1": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4small_1"),
+        },
+        "c4-large": {
+            "c-4large_0": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4large_0"),
+            "c-4large_1": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4large_1"),
+        },
+        "c4-detonator": {
+            "c-4detonator_0": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4detonator_0"),
+            "c-4detonator_1": (dmi: "icons/obj/syndieweapons.dmi", state: "c-4detonator_1"),
+        },
         "uplink-radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "speed-loader-38": { "": (dmi: "icons/obj/ammo.dmi", state: "38") },
         "slug-box": { "": (dmi: "icons/obj/ammo.dmi", state: "gbox") },

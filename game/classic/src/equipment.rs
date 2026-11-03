@@ -25,6 +25,8 @@ pub struct Armor {
     pub bullet: u8,
     pub laser: u8,
     pub energy: u8,
+    #[serde(default)]
+    pub bomb: u8,
 }
 
 /// An item prototype from `content/items.ron`.
@@ -120,6 +122,8 @@ pub struct Wearable {
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct TankGas {
     pub mix: GasMix,
+    /// How long it can stand too much pressure (Luna `integrity`).
+    pub integrity: u8,
     /// Litres.
     pub volume: f64,
     /// kPa (Luna `distribute_pressure`, default one atmosphere).
@@ -142,6 +146,7 @@ impl TankGas {
             mix,
             volume: spec.volume,
             release: rs13_simulation::atmos::gas::ONE_ATMOSPHERE,
+            integrity: 3,
         }
     }
 

@@ -566,6 +566,7 @@ grab-take-off = You have to take off their { NOUN($item) } first!
 armor-absorbs = Your armor absorbs the blow!
 armor-softens = Your armor softens the blow!
 slipped = You slipped on the { NOUN($item) }!
+explosion-heard = An explosion rocks the station!
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

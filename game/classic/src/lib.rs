@@ -32,6 +32,7 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod escape;
+pub mod explosions;
 pub mod extinguishers;
 pub mod filing;
 pub mod firealarms;
@@ -146,6 +147,7 @@ impl Plugin for ClassicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<time::WorldTime>()
             .init_resource::<escape::EscapePods>()
+            .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
             .init_resource::<pulling::PendingPulls>()
@@ -266,7 +268,14 @@ impl Plugin for ClassicPlugin {
                     atmos::space_wind,
                     atmos::drift,
                     environment::sense_surroundings,
-                    (environment::life, environment::burn_in_fires),
+                    (
+                        environment::life,
+                        environment::burn_in_fires,
+                        explosions::run_charges,
+                        explosions::run_tanks,
+                        explosions::run_blasts,
+                    )
+                        .chain(),
                     health::update_vitals,
                     atmos::publish_atmos_view,
                 )
