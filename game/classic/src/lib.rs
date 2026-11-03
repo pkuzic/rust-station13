@@ -10,6 +10,7 @@ pub mod alarms;
 pub mod apc;
 pub mod arcade;
 pub mod atmos;
+pub mod autolathe;
 pub mod bedsheets;
 pub mod blastdoors;
 pub mod brig;
@@ -387,6 +388,8 @@ impl Plugin for ClassicPlugin {
                     (
                         medbay::run_medbay,
                         medbay::update_sleeper_views,
+                        autolathe::run_autolathes,
+                        autolathe::update_lathe_views,
                         chem_master::run_chem_masters,
                         chem_master::update_master_views,
                         microwaves::run_microwaves,

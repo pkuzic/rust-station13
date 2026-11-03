@@ -48,6 +48,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `armor-rig-vest:` | `icons/obj/clothing/suits.dmi : "armourrigvest"` | CC-BY-SA 3.0 |
 | `armor-vest:` | `icons/obj/clothing/suits.dmi : "armor"` | CC-BY-SA 3.0 |
 | `atmos-analyzer:` | `icons/obj/device.dmi : "atmos"` | CC-BY-SA 3.0 |
+| `autolathe:autolathe` | `icons/obj/stationobjs.dmi : "autolathe"` | CC-BY-SA 3.0 |
+| `autolathe:autolathe_n` | `icons/obj/stationobjs.dmi : "autolathe_n"` | CC-BY-SA 3.0 |
 | `backpack:` | `icons/obj/storage.dmi : "backpack"` | CC-BY-SA 3.0 |
 | `banana:` | `icons/obj/items.dmi : "banana"` | CC-BY-SA 3.0 |
 | `barstool:` | `icons/obj/objects.dmi : "barstool"` | CC-BY-SA 3.0 |

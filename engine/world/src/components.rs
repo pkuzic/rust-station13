@@ -410,6 +410,27 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// One line of an autolathe's window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AutolatheRow {
+    pub item: String,
+    pub metal: i32,
+    pub glass: i32,
+    pub can_make: bool,
+}
+
+/// An open autolathe's window, as shown to the player (Luna's `autolathe` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AutolathePanelView {
+    /// The machine.
+    pub target: NetId,
+    pub metal: i32,
+    pub glass: i32,
+    /// Whether it's making something now.
+    pub busy: bool,
+    pub rows: Vec<AutolatheRow>,
+}
+
 /// An open CheMaster's window, as shown to the player (Luna's `chemmaster` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChemMasterPanelView {

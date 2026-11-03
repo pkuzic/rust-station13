@@ -231,6 +231,15 @@ gun-wrong-ammo = That doesn't fit this gun.
 gun-other-ammo = There's another kind of round loaded. Fire those first.
 ammo-empty = There's nothing left in it.
 shot-hit-bullet = { $name } is hit by a bullet!
+lathe-title = Metal: { $metal } cm³. Glass: { $glass } cm³.
+lathe-busy = Working...
+lathe-row = { NOUN($item) } ({ $metal } m, { $glass } g)
+lathe-fed = You feed { $value } { $value ->
+    [one] sheet
+   *[other] sheets
+} in.
+lathe-full = It has no room for that.
+lathe-refuses = It doesn't take that.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

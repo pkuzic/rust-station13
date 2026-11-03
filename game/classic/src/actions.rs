@@ -174,6 +174,7 @@ pub fn process_actions(
                             chem_masters,
                             bullet_guns,
                             fill_tanks,
+                            lathes,
                         ),
                     ),
                 ),
@@ -278,6 +279,7 @@ pub fn process_actions(
                                     With<crate::welding::FuelTank>,
                                 )>,
                             >,
+                            Query<(), With<crate::autolathe::Autolathe>>,
                         ),
                     ),
                 ),
@@ -362,6 +364,13 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if lathes.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // The autolathe (`autolathe.md`).
+                    commands.queue(move |world: &mut World| crate::autolathe::click(world, mob, target));
+                }
                 Action::UseOn(target)
                     if bullet_guns.contains(target)
                         && tool.is_some_and(crate::weapons::is_ammo)
