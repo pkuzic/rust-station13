@@ -13,6 +13,7 @@ use rs13_world::{Dir, Intent, MobStat, TileMap};
 
 #[derive(Default)]
 struct Extra {
+    hold_secs: Option<u64>,
     examine: Option<&'static str>,
     name: Option<&'static str>,
     say: Option<&'static str>,
@@ -26,7 +27,7 @@ fn run_bot(server: SocketAddr, dir: Dir, extra: Extra) -> thread::JoinHandle<Bot
             client_id: unique_client_id(),
             dir: Some(dir),
             // Long enough to cross the room and stop.
-            hold: Duration::from_secs(5),
+            hold: Duration::from_secs(extra.hold_secs.unwrap_or(5)),
             examine: extra.examine.map(str::to_owned),
             name: extra.name.map(str::to_owned),
             say: extra.say.map(str::to_owned),
@@ -71,6 +72,9 @@ fn two_clients_move_in_one_room() {
         Extra {
             // In sight of the spawn: what a mob can't see isn't sent to it at all.
             examine: Some("wrench"),
+            // The second is behind its back, so it's only sent once right next to it: stay until
+            // the second has had its whole time to catch up, however slowly it joined.
+            hold_secs: Some(9),
             ..Extra::default()
         },
     );
