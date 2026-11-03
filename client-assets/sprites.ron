@@ -2496,6 +2496,10 @@
         "party-button": { "": (dmi: "icons/obj/monitors.dmi", state: "fire0") },
         "mining-laser": { "": (dmi: "icons/obj/singularity.dmi", state: "emitter") },
         "scanner": { "": (dmi: "icons/obj/computer.dmi", state: "aiupload") },
+        "autolathe": {
+            "autolathe": (dmi: "icons/obj/stationobjs.dmi", state: "autolathe"),
+            "autolathe_n": (dmi: "icons/obj/stationobjs.dmi", state: "autolathe_n"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

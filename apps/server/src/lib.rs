@@ -12,6 +12,7 @@ use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
 use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
+use rs13_classic::autolathe::{LathePanelOut, PendingLatheOps};
 use rs13_classic::brig::{BrigOp, BrigPanelOut, PendingBrigOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::chem_dispenser::{ChemOp, ChemPanelOut, PendingChemOps};
@@ -45,17 +46,17 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
-    ArcadePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemMasterCommand, ChemMasterPanel,
-    ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel,
-    HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel,
-    PickListPanel, PlaySound, Player, PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
-    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    ArcadePanel, AutolathePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemMasterCommand,
+    ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand,
+    GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
+    PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel,
+    SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ChemMasterPanelView,
-    ChemPanelView, ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos,
-    HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView,
+    AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BrigPanelView, CameraPanelView,
+    ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost,
+    GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView,
     PowerMonitorView, SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView,
     WirePanelView,
 };
@@ -108,6 +109,7 @@ struct SentPanel(
     Option<ChemPanelView>,
     Option<SleeperPanelView>,
     Option<ChemMasterPanelView>,
+    Option<AutolathePanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -395,6 +397,7 @@ fn queue_actions(
                 &mut PendingChemOps,
                 &mut PendingSleeperOps,
                 &mut PendingMasterOps,
+                &mut PendingLatheOps,
             ),
             Has<NameChosen>,
         ),
@@ -434,6 +437,7 @@ fn queue_actions(
                 mut chem_ops,
                 mut sleeper_ops,
                 mut master_ops,
+                mut lathe_ops,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -563,6 +567,12 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Autolathe { target, line } => {
+                    if let Some(machine) = resolve(target) {
+                        lathe_ops.0.push((machine, usize::from(line)));
                     }
                     None
                 }
@@ -878,6 +888,7 @@ fn send_panels(
             &mut MessageSender<ChemPanel>,
             &mut MessageSender<SleeperPanel>,
             &mut MessageSender<ChemMasterPanel>,
+            &mut MessageSender<AutolathePanel>,
         ),
     )>,
     panels: Query<(
@@ -901,6 +912,7 @@ fn send_panels(
             &ChemPanelOut,
             &SleeperPanelOut,
             &MasterPanelOut,
+            &LathePanelOut,
         ),
     )>,
 ) {
@@ -927,6 +939,7 @@ fn send_panels(
             mut chem_panels,
             mut sleeper_panels,
             mut master_panels,
+            mut lathe_panels,
         ),
     ) in &mut links
     {
@@ -944,7 +957,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master),
+            (heater, arcade, brig, chem, sleeper, master, lathe),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1024,6 +1037,10 @@ fn send_panels(
         if sent.18 != master.0 {
             master_panels.send::<NoticeChannel>(ChemMasterPanel(master.0.clone()));
             sent.18 = master.0.clone();
+        }
+        if sent.19 != lathe.0 {
+            lathe_panels.send::<NoticeChannel>(AutolathePanel(lathe.0.clone()));
+            sent.19 = lathe.0.clone();
         }
     }
 }

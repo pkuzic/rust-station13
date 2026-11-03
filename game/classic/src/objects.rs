@@ -210,6 +210,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::autolathe::AUTOLATHE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::autolathe::spawn_autolathe(world, pos, id));
+    }
     if crate::scenery::is_scenery(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::scenery::spawn_scenery(world, proto, pos, id));
@@ -642,6 +646,8 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             (
                 crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
                 (
+                    crate::autolathe::PendingLatheOps::default(),
+                    crate::autolathe::LathePanelOut::default(),
                     crate::chem_master::PendingMasterOps::default(),
                     crate::chem_master::MasterPanelOut::default(),
                 ),

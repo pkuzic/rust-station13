@@ -31,6 +31,7 @@ mod heat;
 mod heater_panel;
 mod hud;
 mod laser_panel;
+mod lathe_panel;
 mod lighting;
 mod master_panel;
 mod monitor_panel;
@@ -121,6 +122,8 @@ enum UseStep {
     Buffer(u8),
     /// `makepill`: make a pill on an open CheMaster.
     MakePill,
+    /// `lathe:N`: make line `N` of an open autolathe's list.
+    Lathe(u8),
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -152,6 +155,7 @@ impl UseStep {
             "brig" => Some(Self::BrigStart),
             _ if s.starts_with("dispense:") => s["dispense:".len()..].trim().parse().ok().map(Self::Dispense),
             "makepill" => Some(Self::MakePill),
+            _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
             _ if s.starts_with("buffer:") => s["buffer:".len()..].trim().parse().ok().map(Self::Buffer),
             _ if s.starts_with("inject:") => s["inject:".len()..].trim().parse().ok().map(Self::Inject),
             "held" => Some(Self::Held),
@@ -318,6 +322,7 @@ fn main() {
         .init_resource::<brig_panel::OpenBrig>()
         .init_resource::<sleeper_panel::OpenSleeper>()
         .init_resource::<master_panel::OpenMaster>()
+        .init_resource::<lathe_panel::OpenLathe>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
@@ -358,26 +363,31 @@ fn main() {
                 receive_status,
                 // Machine windows and the open container.
                 (
-                    (wire_panel::receive_panel, wire_panel::show_panel).chain(),
-                    (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
-                    (apc_panel::receive_apc, apc_panel::show_apc).chain(),
-                    (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
-                    (laser_panel::receive_laser, laser_panel::show_laser).chain(),
-                    (freezer_panel::receive_freezer, freezer_panel::show_freezer).chain(),
-                    (gas_panel::receive_gas, gas_panel::show_gas).chain(),
-                    (vending_panel::receive_vending, vending_panel::show_vending).chain(),
-                    (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
-                    (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
-                    (heater_panel::receive_heater, heater_panel::show_heater).chain(),
-                    (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
-                    (brig_panel::receive_brig, brig_panel::show_brig).chain(),
-                    (sleeper_panel::receive_sleeper, sleeper_panel::show_sleeper).chain(),
-                    (master_panel::receive_master, master_panel::show_master).chain(),
-                    (chem_panel::receive_chem, chem_panel::show_chem).chain(),
-                    (paper_panel::receive_paper, paper_panel::show_paper).chain(),
-                    (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
-                    (smes_panel::receive_smes, smes_panel::show_smes).chain(),
-                    (storage_panel::receive_storage, storage_panel::show_storage).chain(),
+                    (
+                        (wire_panel::receive_panel, wire_panel::show_panel).chain(),
+                        (alarm_panel::receive_alarm, alarm_panel::show_alarm).chain(),
+                        (apc_panel::receive_apc, apc_panel::show_apc).chain(),
+                        (monitor_panel::receive_monitor, monitor_panel::show_monitor).chain(),
+                        (laser_panel::receive_laser, laser_panel::show_laser).chain(),
+                        (freezer_panel::receive_freezer, freezer_panel::show_freezer).chain(),
+                        (gas_panel::receive_gas, gas_panel::show_gas).chain(),
+                    ),
+                    (
+                        (vending_panel::receive_vending, vending_panel::show_vending).chain(),
+                        (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
+                        (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
+                        (heater_panel::receive_heater, heater_panel::show_heater).chain(),
+                        (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
+                        (brig_panel::receive_brig, brig_panel::show_brig).chain(),
+                        (sleeper_panel::receive_sleeper, sleeper_panel::show_sleeper).chain(),
+                        (master_panel::receive_master, master_panel::show_master).chain(),
+                        (lathe_panel::receive_lathe, lathe_panel::show_lathe).chain(),
+                        (chem_panel::receive_chem, chem_panel::show_chem).chain(),
+                        (paper_panel::receive_paper, paper_panel::show_paper).chain(),
+                        (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
+                        (smes_panel::receive_smes, smes_panel::show_smes).chain(),
+                        (storage_panel::receive_storage, storage_panel::show_storage).chain(),
+                    ),
                 ),
                 glide,
                 (
@@ -1526,12 +1536,13 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters): (
+    (arcades, timers, dispensers, sleepers, masters, lathes): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
         Res<sleeper_panel::OpenSleeper>,
         Res<master_panel::OpenMaster>,
+        Res<lathe_panel::OpenLathe>,
     ),
     mut next_at: Local<Option<f32>>,
 ) {
@@ -1584,6 +1595,10 @@ fn scripted_use(
         UseStep::Buffer(line) => masters.0.as_ref().map(|view| ActionInput::ChemMaster {
             target: view.target,
             command: rs13_network::protocol::ChemMasterCommand::Add(line),
+        }),
+        UseStep::Lathe(line) => lathes.0.as_ref().map(|view| ActionInput::Autolathe {
+            target: view.target,
+            line,
         }),
         UseStep::MakePill => masters.0.as_ref().map(|view| ActionInput::ChemMaster {
             target: view.target,

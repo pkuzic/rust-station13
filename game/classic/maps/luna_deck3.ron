@@ -22,7 +22,6 @@
 //      1 /obj/item/weapon/storage/box/dna_inject
 //      1 /obj/item/weapon/storage/box/imp_kit/da
 //      1 /obj/item/weapon/talkingcrystal
-//      1 /obj/machinery/autolathe
 //      1 /obj/machinery/body_scanconsole
 //      1 /obj/machinery/bodyscanner
 //      1 /obj/machinery/computer/general_air_control
@@ -1442,19 +1441,20 @@
         '凜': (tile: (id: "floor"), objects: [(id: "camera", dir: West), "portable-pump"]),
         '凝': (tile: (id: "space"), objects: [(id: "cable", ends: [East, West])]),
         '凞': (tile: (id: "floor"), objects: [(id: "scrubber", dir: South), (id: "table", dir: South, state: Some("table")), "hand-labeler", (id: "cable", ends: [East, West])]),
-        '凟': (tile: (id: "floor"), objects: [(id: "cable", ends: [East]), (id: "apc", dir: East), (id: "cable", ends: [West])]),
-        '几': (tile: (id: "r-wall", solid: true), objects: [(id: "cable", ends: [North, West])]),
-        '凡': (tile: (id: "floor"), objects: ["floor-tile", (id: "light", dir: West), (id: "camera", dir: East)]),
-        '凢': (tile: (id: "floor"), objects: [(id: "light", dir: East), "portable-scrubber"]),
-        '凣': (tile: (id: "floor"), objects: ["disposal-bin", (id: "disposal-pipe", dir: East, state: Some("pipe-t")), (id: "pipe", dir: East)]),
-        '凤': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-s")), "closet-tools", (id: "pipe", dir: East)]),
-        '凥': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: West, state: Some("pipe-c")), "toolbox-electrical", "toolbox-electrical", (id: "table", dir: NorthWest, state: Some("tabledir")), (id: "pipe", dir: East)]),
-        '処': (tile: (id: "floor"), objects: [(id: "table", dir: NorthEast, state: Some("tabledir")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "glass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"}), (id: "pipe", dir: East)]),
-        '凧': (tile: (id: "floor"), objects: ["closet-emergency", (id: "pipe", dir: NorthWest)]),
-        '凨': (tile: (id: "floor"), objects: ["caution"]),
-        '凩': (tile: (id: "plating"), objects: ["shuttle-engine-left"]),
-        '凪': (tile: (id: "plating"), objects: ["shuttle-engine"]),
-        '凫': (tile: (id: "plating"), objects: ["shuttle-engine-right"]),
+        '凟': (tile: (id: "floor"), objects: ["autolathe", (id: "cable", ends: [East, West])]),
+        '几': (tile: (id: "floor"), objects: [(id: "cable", ends: [East]), (id: "apc", dir: East), (id: "cable", ends: [West])]),
+        '凡': (tile: (id: "r-wall", solid: true), objects: [(id: "cable", ends: [North, West])]),
+        '凢': (tile: (id: "floor"), objects: ["floor-tile", (id: "light", dir: West), (id: "camera", dir: East)]),
+        '凣': (tile: (id: "floor"), objects: [(id: "light", dir: East), "portable-scrubber"]),
+        '凤': (tile: (id: "floor"), objects: ["disposal-bin", (id: "disposal-pipe", dir: East, state: Some("pipe-t")), (id: "pipe", dir: East)]),
+        '凥': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-s")), "closet-tools", (id: "pipe", dir: East)]),
+        '処': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: West, state: Some("pipe-c")), "toolbox-electrical", "toolbox-electrical", (id: "table", dir: NorthWest, state: Some("tabledir")), (id: "pipe", dir: East)]),
+        '凧': (tile: (id: "floor"), objects: [(id: "table", dir: NorthEast, state: Some("tabledir")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "glass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"}), (id: "pipe", dir: East)]),
+        '凨': (tile: (id: "floor"), objects: ["closet-emergency", (id: "pipe", dir: NorthWest)]),
+        '凩': (tile: (id: "floor"), objects: ["caution"]),
+        '凪': (tile: (id: "plating"), objects: ["shuttle-engine-left"]),
+        '凫': (tile: (id: "plating"), objects: ["shuttle-engine"]),
+        '凬': (tile: (id: "plating"), objects: ["shuttle-engine-right"]),
     },
     area_legend: {
         'a': "crew-quarters-bar",
@@ -1794,8 +1794,8 @@
         "                X,,,,,,,,,,,,,X X了凍凎:仂仂仂仂仂减凐凍冓XXXXX,,,,,,,,,,,,,X XX#,,,#XX               ",
         "                X,,,,,,,,,,,,,X X佶凑凒傎   凓凔凕凖凗1凘Χ儷儷X,,,,,,,,,,,,,X XX##,##XX               ",
         "                X,,,,,,,,,,,,,X X凙k凚X   備凛.2.1..à凜X,,,,,,,,,,,,,X XXX###XXX               ",
-        "                X,,,,,,,,,,,,,偩凝偩凞υ凟偩凝凝凝几凡.2.介为.Þ凢X,,,,,,,,,,,,,X  XXXXXXX                ",
-        "                X,,,,,,,,,,,,,X X價仂仂仂什什什仂凣凤凥処凧Ò凨ÞÞX,,,,,,,,,,,,,X   XXXXX                 ",
+        "                X,,,,,,,,,,,,,偩凝偩凞凟几偩凝凝凝凡凢.2.介为.Þ凣X,,,,,,,,,,,,,X  XXXXXXX                ",
+        "                X,,,,,,,,,,,,,X X價仂仂仂什什什仂凤凥処凧凨Ò凩ÞÞX,,,,,,,,,,,,,X   XXXXX                 ",
         "                X,,,,,,,,,,,##X         XXXXXXXXXXX##,,,,,,,,,,,X                         ",
         "                X,,,,,,,,,,,,,#                   #,,,,,,,,,,,,,X                         ",
         "                X,,,,,,,,,,,##X                   X##,,,,,,,,,,,X                         ",
@@ -1805,7 +1805,7 @@
         "                X,,,,,,,,,,,,,X                   X,,,,,,,,,,,,,X                         ",
         "                X,,,,,,,,,,,,,X                   X,,,,,,,,,,,,,X                         ",
         "                XXXXXXXXXXXXXXX                   XXXXXXXXXXXXXXX                         ",
-        "                X凩凪凫X凩凪凪凪凫X凩凪凫X                   X凩凪凫X凩凪凪凪凫X凩凪凫X                         ",
+        "                X凪凫凬X凪凫凫凫凬X凪凫凬X                   X凪凫凬X凪凫凫凫凬X凪凫凬X                         ",
         "                X   X     X   X                   X   X     X   X                         ",
         "                                                                                          ",
         "                                                                                          ",
