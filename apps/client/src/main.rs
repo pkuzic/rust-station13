@@ -30,6 +30,7 @@ mod glow;
 mod heat;
 mod heater_panel;
 mod hud;
+mod id_panel;
 mod job_panel;
 mod laser_panel;
 mod lathe_panel;
@@ -131,6 +132,8 @@ enum UseStep {
     Job(u8),
     /// `record:N`: press line `N` of an open records computer's list.
     Record(u8),
+    /// `assign:N`: give the card in an open identification computer line `N` of the job list.
+    Assign(u8),
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -162,6 +165,7 @@ impl UseStep {
             "brig" => Some(Self::BrigStart),
             _ if s.starts_with("dispense:") => s["dispense:".len()..].trim().parse().ok().map(Self::Dispense),
             "makepill" => Some(Self::MakePill),
+            _ if s.starts_with("assign:") => s["assign:".len()..].trim().parse().ok().map(Self::Assign),
             _ if s.starts_with("record:") => s["record:".len()..].trim().parse().ok().map(Self::Record),
             _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
@@ -335,6 +339,7 @@ fn main() {
         .init_resource::<scan_panel::OpenScan>()
         .init_resource::<job_panel::OpenJob>()
         .init_resource::<records_panel::OpenRecords>()
+        .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
@@ -397,6 +402,7 @@ fn main() {
                         (scan_panel::receive_scan, scan_panel::show_scan).chain(),
                         (job_panel::receive_job, job_panel::show_job).chain(),
                         (records_panel::receive_records, records_panel::show_records).chain(),
+                        (id_panel::receive_id, id_panel::show_id).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                         (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
@@ -1551,7 +1557,7 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records): (
+    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1559,6 +1565,7 @@ fn scripted_use(
         Res<master_panel::OpenMaster>,
         Res<lathe_panel::OpenLathe>,
         Res<records_panel::OpenRecords>,
+        Res<id_panel::OpenIdComputer>,
     ),
     mut next_at: Local<Option<f32>>,
 ) {
@@ -1611,6 +1618,10 @@ fn scripted_use(
         UseStep::Buffer(line) => masters.0.as_ref().map(|view| ActionInput::ChemMaster {
             target: view.target,
             command: rs13_network::protocol::ChemMasterCommand::Add(line),
+        }),
+        UseStep::Assign(line) => ids.0.as_ref().map(|view| ActionInput::IdComputer {
+            target: view.target,
+            line: Some(line),
         }),
         UseStep::Record(line) => records.0.as_ref().map(|view| ActionInput::Records {
             target: view.target,

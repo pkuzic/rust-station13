@@ -49,6 +49,7 @@ pub mod ghosts;
 pub mod hands;
 pub mod health;
 pub mod heaters;
+pub mod id_computer;
 pub mod igniters;
 pub mod jetpacks;
 pub mod jobs;
@@ -391,10 +392,15 @@ impl Plugin for ClassicPlugin {
                         medbay::run_medbay,
                         medbay::update_sleeper_views,
                         medbay::update_scan_views,
-                        jobs::run_job_choices,
-                        jobs::update_job_views,
-                        records::run_records,
-                        records::update_records_views,
+                        (
+                            jobs::run_job_choices,
+                            jobs::update_job_views,
+                            id_computer::run_id_computers,
+                            id_computer::update_id_views,
+                            records::run_records,
+                            records::update_records_views,
+                        )
+                            .chain(),
                         autolathe::run_autolathes,
                         autolathe::update_lathe_views,
                         chem_master::run_chem_masters,

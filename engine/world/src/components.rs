@@ -410,6 +410,19 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// An open identification computer's window, as shown to the player (Luna's `computer/card`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct IdComputerView {
+    /// The computer.
+    pub target: NetId,
+    pub has_card: bool,
+    /// Whose the card in it is, and its job, by id.
+    pub owner: Option<String>,
+    pub job: Option<String>,
+    /// Every job, by id.
+    pub jobs: Vec<String>,
+}
+
 /// One person's line in a records window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RecordRow {

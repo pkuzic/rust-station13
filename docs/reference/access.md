@@ -38,3 +38,18 @@ chat message is shown. Bumping goes through the same path.
 
 The ID slot (`wear_id`), PDAs, silicons, job access lists assigned at spawn, card owner
 names and job titles, the ID computer, emags.
+
+## The identification computer (`id-computer`)
+
+Source: `luna:code/game/machinery/computer/card.dm`. Code: `game/classic/src/id_computer.rs`. Tests:
+`game/classic/tests/id_computer.rs`.
+
+Clicking one with a card in hand puts it in the slot. The window, which needs power, shows whose the card is
+and its job, and lists all the jobs. Pressing one gives the card that job's access and title, if the card
+you wear has `change_ids`, as the Head of Personnel's and captain's do. Anyone can eject the card.
+
+Examining a job's card says whose it is and what job it's for.
+
+Differences from Luna: you can only give a card a whole job's access, not tick off single accesses, or type a
+custom title or name. Your own card has to be worn, not put in a second slot. It doesn't change what the
+person's job is in the records, only their card. A crew manifest isn't built.

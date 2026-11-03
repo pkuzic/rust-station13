@@ -644,6 +644,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `ia-jacket:` | `icons/obj/clothing/suits.dmi : "ia_jacket_open"` | CC-BY-SA 3.0 |
 | `ia-uniform:` | `icons/obj/clothing/uniforms.dmi : "internalaffairs"` | CC-BY-SA 3.0 |
 | `id-card:` | `icons/obj/card.dmi : "id"` | CC-BY-SA 3.0 |
+| `id-computer:id` | `icons/obj/computer.dmi : "id"` | CC-BY-SA 3.0 |
 | `igniter:igniter0` | `icons/obj/stationobjs.dmi : "igniter0"` | CC-BY-SA 3.0 |
 | `igniter:igniter1` | `icons/obj/stationobjs.dmi : "igniter1"` | CC-BY-SA 3.0 |
 | `igniter-device:` | `icons/obj/device.dmi : "igniter"` | CC-BY-SA 3.0 |

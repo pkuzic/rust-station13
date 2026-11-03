@@ -418,6 +418,7 @@
     "security-records": (gender: neuter, sg: (nom: "security records computer", indef: "a security records computer"), pl: Some((nom: "security records computers"))),
     "detective-records": (gender: neuter, sg: (nom: "security records computer", indef: "a security records computer"), pl: Some((nom: "security records computers"))),
     "medical-records": (gender: neuter, sg: (nom: "medical records computer", indef: "a medical records computer"), pl: Some((nom: "medical records computers"))),
+    "id-computer": (gender: neuter, sg: (nom: "identification computer", indef: "an identification computer"), pl: Some((nom: "identification computers"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

@@ -27,6 +27,7 @@ use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::ghosts::Departures;
 use rs13_classic::health::Vitals;
 use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
+use rs13_classic::id_computer::{IdOp, IdPanelOut, PendingIdOps};
 use rs13_classic::jobs::{JobPanelOut, PendingJobOps};
 use rs13_classic::medbay::{PendingSleeperOps, ScanPanelOut, SleeperPanelOut};
 use rs13_classic::movement::{Mob, MoveIntent};
@@ -50,18 +51,18 @@ use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
     ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand,
     ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand,
-    FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, JobPanel, LaserCommand, LaserPanel,
-    MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel,
-    RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
-    VendingPanel, WirePanel,
+    FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand,
+    LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
+    PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel,
+    StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BodyScanView, BrigPanelView,
     CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, JobPanelView, LaserPanelView, MapLayer, MobStat,
-    NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView, Slot,
-    SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    GasPanelView, Ghost, GridPos, HeaterPanelView, IdComputerView, Intent, JobPanelView, LaserPanelView,
+    MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView,
+    Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -116,6 +117,7 @@ struct SentPanel(
     Option<BodyScanView>,
     Option<JobPanelView>,
     Option<RecordsPanelView>,
+    Option<IdComputerView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -404,6 +406,7 @@ fn queue_actions(
                 &mut PendingLatheOps,
                 &mut PendingJobOps,
                 &mut PendingRecordOps,
+                &mut PendingIdOps,
             ),
             Has<NameChosen>,
         ),
@@ -446,6 +449,7 @@ fn queue_actions(
                 mut lathe_ops,
                 mut job_ops,
                 mut record_ops,
+                mut id_ops,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -575,6 +579,13 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::IdComputer { target, line } => {
+                    if let Some(machine) = resolve(target) {
+                        let op = line.map_or(IdOp::Eject, |line| IdOp::Assign(usize::from(line)));
+                        id_ops.0.push((machine, op));
                     }
                     None
                 }
@@ -910,6 +921,7 @@ fn send_panels(
             &mut MessageSender<BodyScanPanel>,
             &mut MessageSender<JobPanel>,
             &mut MessageSender<RecordsPanel>,
+            &mut MessageSender<IdComputerPanel>,
         ),
     )>,
     panels: Query<(
@@ -937,6 +949,7 @@ fn send_panels(
             &ScanPanelOut,
             &JobPanelOut,
             &RecordsPanelOut,
+            &IdPanelOut,
         ),
     )>,
 ) {
@@ -967,6 +980,7 @@ fn send_panels(
             mut scan_panels,
             mut job_panels,
             mut record_panels,
+            mut id_panels,
         ),
     ) in &mut links
     {
@@ -984,7 +998,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record),
+            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record, id_view),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1080,6 +1094,10 @@ fn send_panels(
         if sent.22 != record.0 {
             record_panels.send::<NoticeChannel>(RecordsPanel(record.0.clone()));
             sent.22 = record.0.clone();
+        }
+        if sent.23 != id_view.0 {
+            id_panels.send::<NoticeChannel>(IdComputerPanel(id_view.0.clone()));
+            sent.23 = id_view.0.clone();
         }
     }
 }

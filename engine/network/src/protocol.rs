@@ -9,9 +9,10 @@ use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
     BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir,
     DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
-    HeaterPanelView, Hidden, Intent, JobPanelView, LaserPanelView, LightSource, MapLayer, MobStat, NetId,
-    Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, Silhouette,
-    SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, MapLayer,
+    MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView,
+    Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView,
+    WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -109,6 +110,12 @@ pub enum ActionInput {
     Chem {
         target: NetId,
         command: ChemCommand,
+    },
+    /// Give the card in an open identification computer this line of the job list, or `None` to
+    /// eject it.
+    IdComputer {
+        target: NetId,
+        line: Option<u8>,
     },
     /// Press this line of an open records computer's list.
     Records {
@@ -401,6 +408,10 @@ pub struct HeaterPanel(pub Option<HeaterPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChemPanel(pub Option<ChemPanelView>);
 
+/// Server → one client: the identification computer it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct IdComputerPanel(pub Option<IdComputerView>);
+
 /// Server → one client: the records computer it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct RecordsPanel(pub Option<RecordsPanelView>);
@@ -545,6 +556,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<HeaterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ChemPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<IdComputerPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RecordsPanel>()
             .add_direction(NetworkDirection::ServerToClient);

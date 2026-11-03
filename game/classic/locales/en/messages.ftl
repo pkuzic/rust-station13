@@ -313,6 +313,38 @@ record-released = Released
 record-active = Active
 record-unconscious = *Unconscious*
 record-deceased = *Deceased*
+id-computer-empty = Put a card in, by clicking with it in your hand.
+id-computer-card = Card of { $name }. Job: { $job }.
+id-computer-no-job = none
+id-computer-eject = Eject the card
+examine-card = It belongs to { $name }, { $job ->
+    [captain] Captain
+    [hop] Head of Personnel
+    [hos] Head of Security
+    [chief-engineer] Chief Engineer
+    [research-director] Research Director
+    [security-officer] Security Officer
+    [warden] Warden
+    [forensic-technician] Forensic Technician
+    [engineer] Engineer
+    [atmos-technician] Atmospheric Technician
+    [medical-doctor] Medical Doctor
+    [chemist] Chemist
+    [geneticist] Geneticist
+    [scientist] Scientist
+    [roboticist] Roboticist
+    [hydroponicist] Hydroponicist
+    [barman] Barman
+    [chef] Chef
+    [janitor] Janitor
+    [quartermaster] Quartermaster
+    [cargo-technician] Cargo Technician
+    [shaft-miner] Shaft Miner
+    [counselor] Counselor
+    [clown] Clown
+    [mime] Mime
+   *[assistant] Assistant
+}.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
