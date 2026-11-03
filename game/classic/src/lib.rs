@@ -73,6 +73,7 @@ pub mod power_monitor;
 pub mod pulling;
 pub mod radio;
 pub mod reagent_tanks;
+pub mod records;
 pub mod rng;
 pub mod scenery;
 pub mod security;
@@ -392,6 +393,8 @@ impl Plugin for ClassicPlugin {
                         medbay::update_scan_views,
                         jobs::run_job_choices,
                         jobs::update_job_views,
+                        records::run_records,
+                        records::update_records_views,
                         autolathe::run_autolathes,
                         autolathe::update_lathe_views,
                         chem_master::run_chem_masters,

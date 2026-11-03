@@ -177,6 +177,7 @@ pub fn process_actions(
                             lathes,
                             body_scanners,
                             scan_consoles,
+                            records_consoles,
                         ),
                     ),
                 ),
@@ -284,6 +285,7 @@ pub fn process_actions(
                             Query<(), With<crate::autolathe::Autolathe>>,
                             Query<(), With<crate::medbay::BodyScanner>>,
                             Query<(), With<crate::medbay::ScannerConsole>>,
+                            Query<(), With<crate::records::RecordsConsole>>,
                         ),
                     ),
                 ),
@@ -368,6 +370,13 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if records_consoles.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Crew records (`records.md`).
+                    commands.queue(move |world: &mut World| crate::records::click(world, mob, target));
+                }
                 Action::UseOn(target)
                     if (body_scanners.contains(target) || scan_consoles.contains(target))
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>

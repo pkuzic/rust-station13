@@ -410,6 +410,25 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// One person's line in a records window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RecordRow {
+    pub name: String,
+    /// Their job, by id.
+    pub job: String,
+    /// Their criminal status or condition, by id.
+    pub status: String,
+}
+
+/// An open records computer's window, as shown to the player (Luna's `secure_data`, `med_data`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RecordsPanelView {
+    /// The computer.
+    pub target: NetId,
+    pub medical: bool,
+    pub rows: Vec<RecordRow>,
+}
+
 /// The job window a new arrival sees (Luna's job choice).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JobPanelView {

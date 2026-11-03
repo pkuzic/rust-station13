@@ -686,6 +686,9 @@
         (path: "/obj/item/clothing/head/chefhat", id: "chef-hat"),
         (path: "/obj/item/clothing/shoes/orange", id: "orange-shoes"),
         (path: "/obj/item/clothing/shoes/galoshes", id: "galoshes"),
+        (path: "/obj/machinery/computer/secure_data", id: "security-records"),
+        (path: "/obj/machinery/computer/secure_data/detective_computer", id: "detective-records"),
+        (path: "/obj/machinery/computer/med_data", id: "medical-records"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),
