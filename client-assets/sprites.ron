@@ -2499,6 +2499,11 @@
         "magazine-12mm": { "": (dmi: "icons/obj/ammo.dmi", state: "12mm") },
         "syndicate-revolver": { "revolver": (dmi: "icons/obj/gun.dmi", state: "revolver") },
         "ammo-357": { "": (dmi: "icons/obj/ammo.dmi", state: "357") },
+        "grab": {
+            "grabbed": (dmi: "icons/mob/screen1.dmi", state: "grabbed"),
+            "grabbed1": (dmi: "icons/mob/screen1.dmi", state: "grabbed1"),
+            "grabbed+1": (dmi: "icons/mob/screen1.dmi", state: "grabbed+1"),
+        },
         "uplink-radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "speed-loader-38": { "": (dmi: "icons/obj/ammo.dmi", state: "38") },
         "slug-box": { "": (dmi: "icons/obj/ammo.dmi", state: "gbox") },

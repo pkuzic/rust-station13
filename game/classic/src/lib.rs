@@ -47,6 +47,7 @@ pub mod furniture;
 pub mod gas_panel;
 pub mod generators;
 pub mod ghosts;
+pub mod grabs;
 pub mod hands;
 pub mod health;
 pub mod heaters;
@@ -210,7 +211,7 @@ impl Plugin for ClassicPlugin {
                     heaters::process_heater_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
-                    (combat::resolve_attacks, combat::come_round).chain(),
+                    (combat::resolve_attacks, combat::come_round, grabs::run_grabs).chain(),
                     medical::resolve_treatments,
                     speech::speak,
                     combat::deliver_visible,
@@ -233,6 +234,7 @@ impl Plugin for ClassicPlugin {
                     conveyors::run_conveyors,
                     heaters::run_heaters,
                     pulling::start_pulls,
+                    grabs::struggle,
                     movement::move_mobs,
                     pulling::follow_pullers,
                     pulling::drop_lost_pulls,
