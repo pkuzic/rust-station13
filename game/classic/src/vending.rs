@@ -3,11 +3,9 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{
-    Appearance, GridPos, MobStat, NetId, ObjectSpec, Slot, TilePos, VendingPanelView, VendingRow,
-};
+use rs13_world::{Appearance, GridPos, MobStat, NetId, ObjectSpec, TilePos, VendingPanelView, VendingRow};
 
-use crate::access::{IdCard, allowed};
+use crate::access::{IdCard, Shown};
 use crate::actions::{Outbox, in_reach};
 use crate::equipment::Equipment;
 use crate::hands::Hands;
@@ -263,19 +261,13 @@ pub fn process_vend_ops(
             if !awake || !in_reach(pos.0, at.0) || !power.powered || machine.vending.is_some() {
                 continue;
             }
-            if let Some(access) = machine.kind.access {
-                let held = hands.and_then(Hands::active_item);
-                let worn = equipment.and_then(|e| e.get(Slot::Id));
-                let card = [held, worn]
-                    .into_iter()
-                    .flatten()
-                    .find_map(|item| cards.get(item).ok());
-                if !allowed(&[access.to_owned()], card) {
-                    if let Some(outbox) = outbox.as_mut() {
-                        outbox.0.push(LocMsg::new("vending-denied"));
-                    }
-                    continue;
+            if let Some(access) = machine.kind.access
+                && !Shown::of(hands, equipment, &cards).opens(&[access.to_owned()])
+            {
+                if let Some(outbox) = outbox.as_mut() {
+                    outbox.0.push(LocMsg::new("vending-denied"));
                 }
+                continue;
             }
             let Some(left) = machine.stock.get_mut(line).filter(|n| **n > 0) else {
                 continue;

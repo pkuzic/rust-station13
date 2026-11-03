@@ -53,3 +53,12 @@ Examining a job's card says whose it is and what job it's for.
 Differences from Luna: you can only give a card a whole job's access, not tick off single accesses, or type a
 custom title or name. Your own card has to be worn, not put in a second slot. It doesn't change what the
 person's job is in the records, only their card. A crew manifest isn't built.
+
+## How a person's access is checked
+
+Everything goes through one check, `access::Shown`: the card in the active hand or the one in the ID slot, either
+one being enough, so holding a useless card doesn't undo the one worn. Airlocks (by click and by walking into
+them), window doors, lockers, vendors, records, brig timers, turret controls and crematorium switches all use it.
+
+Three things want a card in particular: an APC's lock and a barrier's are swiped with the one in hand, and the
+identification computer wants your worn card, as the one in hand goes into its slot.

@@ -7,7 +7,6 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, Dir, DisplayName, GridPos, Hidden, Intent, MobStat, TilePos};
 
-use crate::access::IdCard;
 use crate::combat::{CombatIntent, PendingAttacks};
 use crate::doors::{Airlock, DoorState};
 use crate::hands::{Hands, HeldBy, Item};
@@ -101,7 +100,6 @@ pub fn process_actions(
     stores: Query<&GasStore>,
     mut nets: ResMut<PipeNets>,
     batteries: Query<&Smes>,
-    cards: Query<&IdCard>,
     people: Query<(), With<Body>>,
     mut attacks: ResMut<PendingAttacks>,
     appearances: Query<(&Appearance, Option<&DisplayName>)>,
@@ -1012,9 +1010,8 @@ pub fn process_actions(
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
                 {
                     // Crematorium igniters (`morgue.md`): anything in the hand works as a hand.
-                    let card = closets.card_of(mob, &hands);
                     let access = [crate::morgue::IGNITER_ACCESS.to_owned()];
-                    if crate::access::allowed(&access, card) {
+                    if closets.shown(mob, &hands).opens(&access) {
                         commands.queue(move |world: &mut World| crate::morgue::ignite(world, target));
                     } else {
                         outbox.0.push(LocMsg::new("crematorium-denied"));
@@ -1526,8 +1523,8 @@ pub fn process_actions(
                     }
                     if let Ok(mut door) = windoors.get_mut(target) {
                         // Window doors, by hand or with anything (`windoors.md`).
-                        let card = closets.card_of(mob, &hands);
-                        crate::windoors::click(&mut door, target_pos.0, mob_pos.0, card, now, &mut sounds);
+                        let shown = closets.shown(mob, &hands);
+                        crate::windoors::click(&mut door, target_pos.0, mob_pos.0, shown, now, &mut sounds);
                         continue;
                     }
                     if is_item && hands.active_item().is_none() && taken.insert(target) {
@@ -1632,10 +1629,8 @@ pub fn process_actions(
                             commands.entity(mob).insert(crate::wires::PanelViewer(target));
                             continue;
                         }
-                        // By hand or with any item; only an ID card in the active hand
-                        // counts for access.
-                        let card = hands.active_item().and_then(|e| cards.get(e).ok());
-                        airlock.use_by(now, card);
+                        // By hand or with any item (`access.md`).
+                        airlock.use_by(now, closets.shown(mob, &hands));
                     }
                 }
             }

@@ -6,13 +6,11 @@ use std::collections::BTreeSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, BrigPanelView, GridPos, MobStat, NetId, ObjectSpec, Slot, TilePos};
+use rs13_world::{Appearance, BrigPanelView, GridPos, MobStat, NetId, ObjectSpec, TilePos};
 
-use crate::access::{IdCard, allowed};
+use crate::access::Shown;
 use crate::actions::{Outbox, in_reach};
-use crate::equipment::Equipment;
 use crate::flashes::{FLASHER_COOLDOWN_DS, Flasher, fire_flasher};
-use crate::hands::Hands;
 use crate::health::Vitals;
 use crate::machines::MACHINE_TICKS;
 use crate::power::{Channel, PowerUser};
@@ -89,18 +87,8 @@ pub fn spawn_door_timer(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: 
         .id()
 }
 
-/// The card this mob shows: in the active hand, or worn.
-fn card_of(world: &World, mob: Entity) -> Option<IdCard> {
-    let held = world.get::<Hands>(mob).and_then(Hands::active_item);
-    let worn = world.get::<Equipment>(mob).and_then(|e| e.get(Slot::Id));
-    [held, worn]
-        .into_iter()
-        .flatten()
-        .find_map(|item| world.get::<IdCard>(item).cloned())
-}
-
 fn is_allowed(world: &World, mob: Entity) -> bool {
-    allowed(&[TIMER_ACCESS.to_owned()], card_of(world, mob).as_ref())
+    Shown::of_mob(world, mob).opens(&[TIMER_ACCESS.to_owned()])
 }
 
 /// A click on a timer (Luna `attack_hand`): its window opens. Using it wants access.

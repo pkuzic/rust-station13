@@ -4,13 +4,11 @@
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    Appearance, Dense, DisplayName, GridPos, MobStat, NetId, RecordRow, RecordsPanelView, Slot, TilePos,
+    Appearance, Dense, DisplayName, GridPos, MobStat, NetId, RecordRow, RecordsPanelView, TilePos,
 };
 
-use crate::access::{IdCard, allowed};
+use crate::access::Shown;
 use crate::actions::{Outbox, in_reach};
-use crate::equipment::Equipment;
-use crate::hands::Hands;
 use crate::health::Vitals;
 use crate::jobs::HasJob;
 use crate::power::{Channel, PowerUser};
@@ -70,13 +68,7 @@ fn wanted(console: RecordsConsole) -> String {
 }
 
 fn permitted(world: &World, mob: Entity, console: RecordsConsole) -> bool {
-    let held = world.get::<Hands>(mob).and_then(Hands::active_item);
-    let worn = world.get::<Equipment>(mob).and_then(|e| e.get(Slot::Id));
-    let card = [held, worn]
-        .into_iter()
-        .flatten()
-        .find_map(|item| world.get::<IdCard>(item));
-    allowed(&[wanted(console)], card)
+    Shown::of_mob(world, mob).opens(&[wanted(console)])
 }
 
 /// A click opens it, with power and the right card (Luna `attack_hand`, its login).
