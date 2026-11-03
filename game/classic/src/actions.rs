@@ -382,6 +382,13 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target) if tool == Some(crate::grabs::GRAB) => {
+                    // Tightening a grab, or putting them on a table (`combat.md`).
+                    if let Some(grab) = hands.active_item() {
+                        commands
+                            .queue(move |world: &mut World| crate::grabs::use_grab(world, mob, grab, target));
+                    }
+                }
                 Action::UseOn(target) if uplinks.contains(target) && !places.contains(target) => {
                     // In the hand it's the uplink (`traitor.md`); on the floor it's picked up.
                     commands.queue(move |world: &mut World| crate::traitor::use_uplink(world, mob, target));

@@ -18,7 +18,7 @@ are for an empty hand.
   your body is.
 - **Disarm:** on someone standing. 25%: pushed down for 4 seconds. 35%: drops what's in their active hand. Otherwise it
   misses.
-- **Grab:** does nothing yet.
+- **Grab:** takes hold of them with that hand. See below.
 - **Harm:** a punch for 1 to 9, which misses 10% of the time.
 
 ## What blows do
@@ -32,6 +32,22 @@ are for an empty hand.
 
 Someone protected is told so. A lit welding tool burns, and nothing stops it.
 
+## Grabs
+
+Sources: `luna:code/modules/mob/mob.dm` (`obj/item/weapon/grab`, `client/Move`), `tables_racks.dm`. Code:
+`game/classic/src/grabs.rs`. Tests: `game/classic/tests/grabs.rs`.
+
+The grab sits in your hand like an item, and dropping it lets go. Click the person, or the grab itself, to tighten it.
+
+| Hold | How | While it lasts |
+|---|---|---|
+| Passive | Grab intent, on someone, with an empty hand. Not if they're buckled in | They come with you. If they walk, it ends |
+| Both hands | 75%. Otherwise you lose hold. Not with your other hand holding someone else | They come with you, and drop what they hold. Each attempt to walk, once a second, has a 25% chance of breaking free |
+| Neck | Not with a helmet or gas mask in the way | They're on your tile, and drop what they hold. 5% to break free |
+| Choking | Click again to start or stop | Each second they miss breaths and 45% of the time go down for 6 seconds |
+
+A grab ends if you go down or lose them. Clicking a table with a grab puts them on it, down for 10 seconds.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -41,4 +57,6 @@ Someone protected is told so. A lit welding tool burns, and nothing stops it.
 | Help on someone in crit starts CPR | Not built |
 | Blood on the weapon, the attacker and the floor | Not built (3.3, 3.19) |
 | Broken and robotic arms change a punch, hulks and stun gloves | Not built (3.3, 3.5) |
+| Throwing someone from a grab, into closets, onto spikes and into gibbers | Not built (4.2, 3.7) |
+| A grab on someone at both hands stops anyone else tightening theirs | It doesn't |
 | Blows at the groin can't knock anyone down unless they're a zombie, which looks like a bug | Kept: no knockdown |

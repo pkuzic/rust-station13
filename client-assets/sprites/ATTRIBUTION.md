@@ -555,6 +555,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `gladiator-uniform:` | `icons/obj/clothing/uniforms.dmi : "gladiator"` | CC-BY-SA 3.0 |
 | `glass-sheet:` | `icons/obj/items.dmi : "sheet-glass"` | CC-BY-SA 3.0 |
 | `glasses:` | `icons/obj/clothing/glasses.dmi : "glasses"` | CC-BY-SA 3.0 |
+| `grab:grabbed` | `icons/mob/screen1.dmi : "grabbed"` | CC-BY-SA 3.0 |
+| `grab:grabbed+1` | `icons/mob/screen1.dmi : "grabbed+1"` | CC-BY-SA 3.0 |
+| `grab:grabbed1` | `icons/mob/screen1.dmi : "grabbed1"` | CC-BY-SA 3.0 |
 | `green-glasses:` | `icons/obj/clothing/glasses.dmi : "gglasses"` | CC-BY-SA 3.0 |
 | `green-shoes:` | `icons/obj/clothing/shoes.dmi : "green"` | CC-BY-SA 3.0 |
 | `green-shorts:` | `icons/obj/clothing/uniforms.dmi : "greenshorts"` | CC-BY-SA 3.0 |

@@ -492,6 +492,8 @@
     (id: "speed-loader-38", force: 0.0, size: 1),
     (id: "ammo-357", force: 0.0, size: 2),
     (id: "syndicate-revolver", force: 5.0, size: 3, slot: "belt", conducts: true),
+    // What a hand holds someone with (`combat.md`).
+    (id: "grab", force: 0.0, size: 5),
     // The uplink (`traitor.md`).
     (id: "uplink-radio", force: 0.0, size: 2, slot: "belt", conducts: true),
     (id: "slug-box", force: 0.0, size: 1),

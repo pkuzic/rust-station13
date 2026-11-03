@@ -335,6 +335,9 @@ pub fn resolve_attacks(
                 _ => {}
             }
             body.take_damage(zone, damage, 0.0);
+        } else if intent == Intent::Grab {
+            commands.queue(move |world: &mut World| crate::grabs::start(world, attacker, target));
+            continue;
         } else if intent == Intent::Disarm {
             if lying {
                 continue;
