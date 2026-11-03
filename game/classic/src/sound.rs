@@ -65,6 +65,9 @@ pub const WINDOOR: &str = "windoor";
 pub const DECONSTRUCT: &str = "deconstruct";
 pub const DING: &str = "ding";
 pub const FLASH: &str = "flash";
+pub const LASER: &str = "laser";
+pub const TASER: &str = "taser";
+pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// Every sound id the game plays.
 pub const ALL_SOUNDS: &[&str] = &[
     AIRLOCK,
@@ -88,6 +91,9 @@ pub const ALL_SOUNDS: &[&str] = &[
     DECONSTRUCT,
     DING,
     FLASH,
+    LASER,
+    TASER,
+    BATON_HIT_SOUND,
 ];
 
 /// A sound made at a tile this tick.

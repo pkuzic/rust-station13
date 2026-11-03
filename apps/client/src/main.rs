@@ -628,6 +628,7 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
         ("connector", _) => (Color::srgb(0.50, 0.50, 0.50), 14.0, 0.65),
         ("meter", _) => (Color::srgb(0.85, 0.85, 0.85), 10.0, 0.75),
         ("laser-beam", _) => (Color::srgb(0.4, 0.4, 1.0), TILE_PX, 3.1),
+        ("shot", _) => (Color::srgb(1.0, 0.3, 0.3), TILE_PX / 2.0, 3.1),
         // Burning air, over everything but the walls' fixtures.
         ("fire", _) => (Color::srgb(1.0, 0.5, 0.1), TILE_PX, 3.2),
         // Blast doors stand like airlocks.
@@ -682,7 +683,8 @@ fn pick_sprite(
     drawn
         .iter()
         .filter(|(_, a, _, _, v)| {
-            **v != Visibility::Hidden && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
+            **v != Visibility::Hidden
+                && !matches!(a.sprite.as_str(), "shot" | "fire" | "laser-beam" | "sparks")
         })
         .filter_map(|(id, _, at, sprite, _)| {
             let centre = at.translation();
@@ -1189,7 +1191,7 @@ fn send_clicks(
             .iter()
             .filter(|(_, pos, a)| {
                 (pos.0.x, pos.0.y, pos.0.z) == (tile.0, tile.1, me.0.z)
-                    && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
+                    && !matches!(a.sprite.as_str(), "shot" | "fire" | "laser-beam" | "sparks")
             })
             .min_by_key(|(_, _, a)| click_rank(a))
             .map(|(id, ..)| *id)
@@ -1538,7 +1540,7 @@ fn scripted_use(
                 .iter()
                 .filter(|(_, pos, a)| {
                     (pos.0.x, pos.0.y, pos.0.z) == (tile.0, tile.1, me.0.z)
-                        && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks")
+                        && !matches!(a.sprite.as_str(), "shot" | "fire" | "laser-beam" | "sparks")
                 })
                 .min_by_key(|(_, _, a)| click_rank(a))
                 .map(|(id, ..)| match step {

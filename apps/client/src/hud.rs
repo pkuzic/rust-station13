@@ -257,7 +257,7 @@ pub fn update_hud(
     let status = status.0.as_ref();
     let sprite_of = |id: Option<NetId>| {
         id.and_then(|id| items.iter().find(|(n, _)| **n == id))
-            .map(|(_, a)| a.sprite.clone())
+            .map(|(_, a)| (a.sprite.clone(), crate::sprites::state_for(a)))
     };
     let content = |cell: Cell| match cell {
         Cell::Slot(slot) => sprite_of(worn.and_then(|w| w.get(slot))),
@@ -277,7 +277,12 @@ pub fn update_hud(
         }
     }
     for (CellItem(cell), mut image, mut visibility) in &mut contents {
-        let index = content(*cell).and_then(|sprite| atlas.index(&sprite, "", 0));
+        // As it is now (a gun showing its charge), or plain if it has no such look.
+        let index = content(*cell).and_then(|(sprite, state)| {
+            atlas
+                .index(&sprite, &state, 0)
+                .or_else(|| atlas.index(&sprite, "", 0))
+        });
         match index {
             Some(index) => {
                 set_index(&mut image, index);
@@ -292,7 +297,7 @@ pub fn update_hud(
     let new_tip = hovered.map(|cell| {
         let name = cell_name(&loc, cell);
         match content(cell) {
-            Some(sprite) => format!("{name}: {}", loc.0.noun(&sprite, Case::Nom)),
+            Some((sprite, _)) => format!("{name}: {}", loc.0.noun(&sprite, Case::Nom)),
             None => name,
         }
     });

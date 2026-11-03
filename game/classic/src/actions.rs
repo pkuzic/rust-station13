@@ -158,7 +158,7 @@ pub fn process_actions(
                     microwaves,
                     arcades,
                     airlock_parts,
-                    (scanners, cloning_consoles, door_timers),
+                    (scanners, cloning_consoles, door_timers, rechargers),
                 ),
             ),
         ),
@@ -242,6 +242,7 @@ pub fn process_actions(
                         Query<(), With<crate::cloning::DnaScanner>>,
                         Query<(), With<crate::cloning::CloningConsole>>,
                         Query<(), With<crate::brig::DoorTimer>>,
+                        Query<(), With<crate::weapons::Recharger>>,
                     ),
                 ),
             ),
@@ -321,6 +322,55 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // Guns and batons first: they answer clicks of their own (`weapons.md`).
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::weapons::is_gun) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| crate::weapons::switch_gun(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::weapons::is_gun)
+                        && places.get(target).is_ok_and(|p| !in_reach(mob_pos.0, p.0)) =>
+                {
+                    let gun = hands.active_item();
+                    let to = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    commands.queue(move |world: &mut World| {
+                        if let Some(gun) = gun {
+                            crate::weapons::fire(world, mob, gun, to);
+                        }
+                    });
+                }
+                Action::UseOnTile(to)
+                    if tool.is_some_and(crate::weapons::is_gun) && !in_reach(mob_pos.0, to) =>
+                {
+                    let gun = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        if let Some(gun) = gun {
+                            crate::weapons::fire(world, mob, gun, to);
+                        }
+                    });
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::weapons::BATON) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| crate::weapons::toggle_baton(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::weapons::BATON)
+                        && people.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    let baton = hands.active_item();
+                    // On harm intent it's also a blow like any other.
+                    if intent.as_deref().is_some_and(|i| i.0 == rs13_world::Intent::Harm) {
+                        attacks.0.push((mob, target));
+                    }
+                    commands.queue(move |world: &mut World| {
+                        if let Some(baton) = baton {
+                            crate::weapons::baton_hit(world, mob, baton, target);
+                        }
+                    });
+                }
                 Action::UseOn(target)
                     if tool == Some(crate::flashes::FLASH)
                         && (hands.active_item() == Some(target)
@@ -675,6 +725,13 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if rechargers.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::weapons::click_recharger(world, mob, target));
                 }
                 Action::UseOn(target)
                     if door_timers.contains(target)

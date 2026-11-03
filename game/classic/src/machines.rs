@@ -887,8 +887,6 @@ pub fn machine_bundle(
             spawn.state = facing_look(pump.dir, on);
             spawn
         }
-        // It takes energy guns and batons (`navbeacons.md`); there are none to charge yet.
-        "recharger" => MachineSpawn::new("recharger", "recharger0").powered(),
         "gas-mixer" => {
             let mixer = GasMixer {
                 dir: dir.unwrap_or(Dir::South),

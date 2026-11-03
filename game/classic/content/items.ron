@@ -276,6 +276,11 @@
     (id: "sundress", force: 0.0, slot: "uniform"),
     (id: "waiter-outfit", force: 0.0, slot: "uniform"),
     (id: "flash", force: 0.0, size: 1),
+    // Energy guns and stun batons (`weapons.md`).
+    (id: "laser-gun", force: 5.0, slot: "belt", conducts: true),
+    (id: "energy-gun", force: 5.0, slot: "belt", conducts: true),
+    (id: "taser", force: 5.0, slot: "belt", conducts: true),
+    (id: "stun-baton", force: 10.0, slot: "belt", conducts: true),
     (id: "toy-ripley", force: 0.0, size: 2),
     (id: "toy-gygax", force: 0.0, size: 2),
     (id: "toy-durand", force: 0.0, size: 2),

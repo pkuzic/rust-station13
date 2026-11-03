@@ -56,6 +56,7 @@ pub fn casts_shadow(sprite: &str) -> bool {
             | "crematorium-igniter"
             | "shield"
             | "shield-plate"
+            | "shot"
             | "door-timer"
             | "airlock-console"
             | "access-console"
