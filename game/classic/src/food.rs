@@ -99,6 +99,10 @@ pub fn spawn_food(entity: &mut EntityWorldMut, proto: &str) {
             entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT, None));
         }
         // Each is its reagents plus the 8 every snack starts with.
+        // What grows in plant pots (`hydroponics.md`).
+        "tomato" | "apple" | "lemon" | "lime" | "orange" | "carrot" | "potato" => {
+            entity.insert(snack(8.0, 2.0, 8.0 * NUTRIMENT, None));
+        }
         "banana" => {
             entity.insert(snack(13.0, 2.0, 13.0 * NUTRIMENT, None));
         }

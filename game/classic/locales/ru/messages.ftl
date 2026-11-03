@@ -353,6 +353,15 @@ examine-card = Владелец: { $name }, { $job ->
     [mime] Мим
    *[assistant] Ассистент
 }.
+pot-occupied = В нём уже что-то растёт.
+pot-planted = Вы сажаете семена.
+pot-cleared = Вы убираете погибшее растение.
+pot-harvested = Вы собираете урожай: { $value } шт.
+pot-not-ready = Урожай ещё не созрел.
+examine-pot-empty = В нём ничего не растёт. Воды: { $value } ед.
+examine-pot-dead = Растение в нём погибло.
+examine-pot-ripe = Растение готово к сбору урожая. Воды: { $value } ед.
+examine-pot-growing = В нём что-то растёт. Воды: { $value } ед.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

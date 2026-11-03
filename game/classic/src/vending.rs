@@ -31,7 +31,24 @@ pub struct VendingKind {
 }
 
 /// The kinds on NSV Luna.
-pub const KINDS: [VendingKind; 9] = [
+pub const KINDS: [VendingKind; 10] = [
+    VendingKind {
+        id: "vending-seeds",
+        look: "seeds",
+        delay_ds: 10.0,
+        products: &[
+            ("seed-tomato", 10),
+            ("seed-apple", 10),
+            ("seed-banana", 10),
+            ("seed-lemon", 10),
+            ("seed-lime", 10),
+            ("seed-orange", 10),
+            ("seed-carrot", 10),
+            ("seed-potato", 10),
+        ],
+        access: None,
+        wall: false,
+    },
     VendingKind {
         id: "vending-medical",
         look: "med",

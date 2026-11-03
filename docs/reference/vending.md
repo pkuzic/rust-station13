@@ -18,6 +18,7 @@ Dense, on the equipment channel of their area's APC, and full when the round sta
 | `vending-cola` | `cola` | `Cola_Machine` | 1 s | Space Cola, Space Mountain Wind, Dr. Gibb, Star-kist, Space-Up: 10 each |
 | `vending-soda` | `cola/soda` | `soda` | 1 s | as `vending-cola` |
 | `vending-cigarette` | `cigarette` | `cigs` | 3.4 s | cigarette packets and matchboxes: 10 each; cheap lighters: 4 |
+| `vending-seeds` | `submachine/seed_vendor` | `seeds` | 1 s | seeds of what plant pots grow: 10 each (`hydroponics.md`) |
 | `vending-medical` | `vending/medical` | `med` | 1 s | medical supplies and first-aid kits: 4 each. Needs `medical` access |
 | `vending-wallmed` | `vending_tg/wallmed` | `wallmed` | 1 s | bruise packs, ointment, syringes and a health analyzer. Hung on a wall, so not dense |
 | `vending-toxins` | `vending/toxins` | `generic` | 1 s | tools and bomb parts: 4 each. Needs `tox` access |
