@@ -39,6 +39,22 @@ station, and clients reconnect and find themselves in the lobby.
 
 `rs13-server --pod-seconds N` shortens the launch and the trip, for trying it out.
 
+## Votes
+
+Sources: `luna:code/game/vote.dm`, `config/config.txt`. Code: `apps/server/src/vote.rs`, `apps/client/src/vote_panel.rs`.
+Tests: `apps/headless/tests/votes.rs`.
+
+V opens the vote window, in the lobby or in the world, dead or alive. Anyone can start a vote to restart or, on a server
+running rounds, to change the mode. It's open for a minute, and the next can start 10 minutes after it ends.
+
+- **Restart** passes if more say yes than no. Those who don't vote don't count, so one yes and nobody against is enough.
+  The server restarts 5 seconds later.
+- **Mode** goes to whichever choice has the most, ties at random, and those who don't vote count as no change. Before the
+  round it settles this round. Once a round is on, the server restarts in 10 seconds. The choice stays for the rounds
+  after, until voted otherwise. **Secret** goes back to a random mode each round.
+
+`rs13-server --vote-seconds N` shortens a vote, for trying it out.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -54,4 +70,7 @@ station, and clients reconnect and find themselves in the lobby.
 | The prison shuttle and its console | Not built |
 | Red alert in every area and sounds while launching; status displays show it | Only chat messages |
 | Modes can forbid or delay the call | No mode needs that yet |
+| Clients idle for 2 minutes don't count in a vote | They do |
+| A voted mode is saved to disk | It lasts as long as `rs13-server` runs |
+| Admins can start a custom vote | Not built: no admins yet (1.15) |
 | The console also has messages, alert levels and status display settings | Only the call and the stop |

@@ -32,12 +32,14 @@ pub struct InLobby {
 
 /// Read what people in the lobby ask for.
 pub fn read_lobby_inputs(
-    mut links: Query<(&mut InLobby, &mut MessageReceiver<ActionInput>), Without<Controls>>,
+    mut links: Query<(Entity, &mut InLobby, &mut MessageReceiver<ActionInput>), Without<Controls>>,
+    mut votes: ResMut<crate::vote::VoteInbox>,
 ) {
-    for (mut lobby, mut receiver) in &mut links {
+    for (link, mut lobby, mut receiver) in &mut links {
         for input in receiver.receive() {
             match input {
                 ActionInput::Ready(ready) => lobby.ready = ready,
+                ActionInput::Vote(action) => votes.0.push((link, action)),
                 ActionInput::JoinRound => {
                     lobby.ready = true;
                     lobby.joining = true;

@@ -450,6 +450,31 @@ uplink-good = { NOUN($item) } ({ $value })
 round-traitor = The syndicate traitor was { $name }.
 round-traitor-won = The traitor was successful!
 round-traitor-lost = The traitor has failed!
+vote-started = A vote to { $kind ->
+    [mode] change the game mode
+   *[restart] restart
+} has been started. You have { $value } seconds. Press V to vote.
+vote-title = A vote to { $kind ->
+    [mode] change the game mode
+   *[restart] restart
+} is in progress.
+vote-closes-in = { $value } seconds until voting is closed.
+vote-next-in = The next vote can begin in { $value } seconds.
+vote-leading = Current winner: { $choice }
+vote-begin-restart = Begin restart vote
+vote-begin-mode = Begin change mode vote
+vote-choice-no = No
+vote-choice-restart = Yes
+vote-choice-default = No change
+vote-choice-secret = Secret
+vote-choice-extended = Extended
+vote-choice-traitor = Traitor
+vote-result-no-restart = Voting has closed. Result is no restart.
+vote-result-restart = Voting has closed. Result is restart: the server restarts in { $value } seconds.
+vote-result-no-change = Voting has closed. Result is no change.
+vote-result-mode = Voting has closed. Result is a change to { $mode }.
+vote-reboot = The server restarts in { $value } seconds.
+lobby-vote = Vote
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

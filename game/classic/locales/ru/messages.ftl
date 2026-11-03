@@ -446,6 +446,31 @@ uplink-good = { NOUN($item) } ({ $value })
 round-traitor = Предателем Синдиката был { $name }.
 round-traitor-won = Предатель справился!
 round-traitor-lost = Предатель провалился!
+vote-started = Началось голосование { $kind ->
+    [mode] за смену режима
+   *[restart] за перезапуск
+}. Осталось секунд: { $value }. Нажмите V, чтобы проголосовать.
+vote-title = Идёт голосование { $kind ->
+    [mode] за смену режима
+   *[restart] за перезапуск
+}.
+vote-closes-in = До конца голосования секунд: { $value }.
+vote-next-in = Следующее голосование можно начать через секунд: { $value }.
+vote-leading = Сейчас побеждает: { $choice }
+vote-begin-restart = Начать голосование за перезапуск
+vote-begin-mode = Начать голосование за смену режима
+vote-choice-no = Нет
+vote-choice-restart = Да
+vote-choice-default = Без изменений
+vote-choice-secret = Секретный
+vote-choice-extended = Расширенный
+vote-choice-traitor = Предатель
+vote-result-no-restart = Голосование окончено. Перезапуска не будет.
+vote-result-restart = Голосование окончено. Сервер перезапустится через секунд: { $value }.
+vote-result-no-change = Голосование окончено. Без изменений.
+vote-result-mode = Голосование окончено. Режим меняется на: { $mode }.
+vote-reboot = Сервер перезапустится через секунд: { $value }.
+lobby-vote = Голосование
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

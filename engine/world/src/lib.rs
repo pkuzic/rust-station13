@@ -12,7 +12,7 @@ pub use components::{
     Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque,
     PaperMode, PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow,
     RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, UplinkPanelView,
-    VendingPanelView, VendingRow, WirePanelView, WornView,
+    VendingPanelView, VendingRow, VoteView, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 
