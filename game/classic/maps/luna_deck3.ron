@@ -37,9 +37,6 @@
 //      3 /obj/item/weapon/reagent_containers/glass/compostbag
 //      2 /obj/item/weapon/reagent_containers/glass/wateringcan
 //      1 /obj/item/weapon/reagent_containers/spray/waterflower
-//      1 /obj/item/weapon/reagent_containers/syringe/antitoxin
-//      2 /obj/item/weapon/reagent_containers/syringe/antiviral
-//      1 /obj/item/weapon/reagent_containers/syringe/inaprovaline
 //      1 /obj/item/weapon/secstorage/ssafe
 //      1 /obj/item/weapon/staff
 //      1 /obj/item/weapon/storage/box/disk/genetics
@@ -709,7 +706,7 @@
         '亻': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South), (id: "pipe", dir: South)]),
         '亼': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South), (id: "cable", ends: [North, South])]),
         '亽': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), "space-heater"]),
-        '亾': (tile: (id: "floor"), objects: [(id: "camera", dir: East, vars: {"c_tag": "Virology West"}), (id: "table", dir: SouthEast, state: Some("tabledir")), "beaker-large", "dropper"]),
+        '亾': (tile: (id: "floor"), objects: [(id: "camera", dir: East, vars: {"c_tag": "Virology West"}), (id: "table", dir: SouthEast, state: Some("tabledir")), "beaker-large", "dropper", "syringe", "syringe"]),
         '亿': (tile: (id: "floor"), objects: [(id: "manifold", dir: West)]),
         '什': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "pipe", dir: East), (id: "chair", dir: East), (id: "cable", ends: [North, South])]),
         '仁': (tile: (id: "floor"), objects: [(id: "light", dir: East), (id: "pipe", dir: East), (id: "table", dir: SouthWest, state: Some("tabledir")), "syringe-box", "beaker-box", "beaker-large", "beaker"]),
@@ -882,7 +879,7 @@
         '佨': (tile: (id: "floor"), objects: [(id: "manifold", dir: West), "bed"]),
         '佩': (tile: (id: "floor"), objects: [(id: "air-alarm", dir: South, vars: {"pixel_y": "26"}), (id: "fire-alarm", dir: West, vars: {"pixel_x": "-24"}), (id: "scrubber", dir: West, above_floor: true), "bed", (id: "light", dir: West)]),
         '佪': (tile: (id: "floor"), objects: [(id: "pipe", dir: South, above_floor: true)]),
-        '佫': (tile: (id: "floor"), objects: [(id: "vent", dir: East), (id: "table", dir: SouthWest, state: Some("tabledir")), "bottle-antitoxin", (id: "bottle-inaprovaline", vars: {"pixel_x": "10", "pixel_y": "10"}), (id: "pill-inaprovaline", vars: {"pixel_x": "10"}), (id: "pill-antitox", vars: {"pixel_x": "5", "pixel_y": "5"}), (id: "light", dir: East)]),
+        '佫': (tile: (id: "floor"), objects: [(id: "vent", dir: East), (id: "table", dir: SouthWest, state: Some("tabledir")), (id: "syringe-inaprovaline", vars: {"pixel_y": "15"}), (id: "syringe-antitoxin", vars: {"pixel_y": "10"}), "bottle-antitoxin", (id: "bottle-inaprovaline", vars: {"pixel_x": "10", "pixel_y": "10"}), (id: "pill-inaprovaline", vars: {"pixel_x": "10"}), (id: "pill-antitox", vars: {"pixel_x": "5", "pixel_y": "5"}), (id: "light", dir: East)]),
         '佬': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), (id: "paper", vars: {"name": "re: Damn Chimps", "info": "Angela, while it may appear that the lab monkeys are communicating with each other, I assure you it's quite impossible. You claim that one monkey signed the passcode for a supply closet to another and the latter proceeded to open it. As I'm sure you know, there have literally been tens of thousands of studies of primate intelligence and there is no evidence of behavior even remotely that sophisticated. So either you've single handedly trumped the entire field of animal behaviorists or you're badly in need of a vacation."})]),
         '佭': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "first-aid-kit-toxin"]),
         '佮': (tile: (id: "floor"), objects: [(id: "vent", dir: North), (id: "table", dir: NorthWest, state: Some("tabledir")), "clipboard", (id: "air-alarm", dir: East, vars: {"pixel_x": "-22"}), "folder-white", "stamp"]),

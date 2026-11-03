@@ -485,6 +485,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     let mut item = world.spawn((GridPos(pos), id, Appearance::new(look, ""), item));
     crate::food::spawn_food(&mut item, proto);
     crate::weapons::fit_weapon(&mut item, proto);
+    crate::chemistry::fit(&mut item, proto);
     crate::smoking::spawn_smokable(&mut item, proto, roll);
     crate::paperwork::spawn_paperwork(&mut item, spec);
     crate::bedsheets::spawn_bedsheet(&mut item, spec);
@@ -617,6 +618,7 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
                 PlayerControlled,
             ),
             (
+                crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
                 crate::arcade::PendingArcadeOps::default(),
                 crate::arcade::ArcadePanelOut::default(),
                 crate::brig::PendingBrigOps::default(),

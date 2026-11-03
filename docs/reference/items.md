@@ -7,7 +7,7 @@ listed in `game/classic/content/items.ron`.
 
 Luna's uses for them aren't built, for example:
 
-- **Chemistry:** bottles, beakers, pills, droppers, syringes and sprays hold nothing.
+- **Chemistry:** droppers and sprays hold nothing yet (`chemistry.md` has the rest).
 - **Surgery:** the tools only cut as weapons.
 - **Paperwork:** stamps don't stamp, and folders don't hold papers.
 - **Construction:** stock parts build nothing, and the new sheets aren't usable yet.
