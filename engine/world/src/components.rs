@@ -410,6 +410,21 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// An open body scanner console's window, as shown to the player (Luna's `scanconsole` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BodyScanView {
+    /// The console.
+    pub target: NetId,
+    /// Who is in its scanner.
+    pub occupant: Option<String>,
+    pub stat: MobStat,
+    pub health: i16,
+    pub oxy: i16,
+    pub tox: i16,
+    /// The damaged parts, by noun id: brute and burn.
+    pub parts: Vec<(String, i16, i16)>,
+}
+
 /// One line of an autolathe's window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AutolatheRow {

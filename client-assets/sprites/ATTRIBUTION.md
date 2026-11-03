@@ -93,6 +93,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `blue-shorts:` | `icons/obj/clothing/uniforms.dmi : "blueshorts"` | CC-BY-SA 3.0 |
 | `blue-suit:` | `icons/obj/clothing/uniforms.dmi : "bluesuit"` | CC-BY-SA 3.0 |
 | `blue-tag-armor:` | `icons/obj/clothing/suits.dmi : "bluetag"` | CC-BY-SA 3.0 |
+| `body-scanner:body_scanner_0` | `icons/obj/Cryogenic2.dmi : "body_scanner_0"` | CC-BY-SA 3.0 |
+| `body-scanner:body_scanner_1` | `icons/obj/Cryogenic2.dmi : "body_scanner_1"` | CC-BY-SA 3.0 |
 | `bodybag-box:` | `icons/obj/storage.dmi : "bodybags"` | CC-BY-SA 3.0 |
 | `bone-gel:` | `icons/obj/surgery.dmi : "bone-gel"` | CC-BY-SA 3.0 |
 | `bookcase:` | `icons/obj/computer.dmi : "bookcase"` | CC-BY-SA 3.0 |
@@ -1015,6 +1017,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `sandals:` | `icons/obj/clothing/shoes.dmi : "wizard"` | CC-BY-SA 3.0 |
 | `scalpel:` | `icons/obj/surgery.dmi : "scalpel"` | CC-BY-SA 3.0 |
 | `scanner:` | `icons/obj/computer.dmi : "aiupload"` | CC-BY-SA 3.0 |
+| `scanner-console:body_scannerconsole` | `icons/obj/Cryogenic2.dmi : "body_scannerconsole"` | CC-BY-SA 3.0 |
 | `scanning-module:` | `icons/obj/stock_parts.dmi : "scan_module"` | CC-BY-SA 3.0 |
 | `schoolgirl-uniform:` | `icons/obj/clothing/uniforms.dmi : "schoolgirl"` | CC-BY-SA 3.0 |
 | `science-goggles:` | `icons/obj/clothing/glasses.dmi : "purple"` | CC-BY-SA 3.0 |

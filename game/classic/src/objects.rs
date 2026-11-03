@@ -660,7 +660,10 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
                     crate::chem_master::MasterPanelOut::default(),
                 ),
                 crate::medbay::PendingSleeperOps::default(),
-                crate::medbay::SleeperPanelOut::default(),
+                (
+                    crate::medbay::SleeperPanelOut::default(),
+                    crate::medbay::ScanPanelOut::default(),
+                ),
                 crate::chem_dispenser::PendingChemOps::default(),
                 crate::chem_dispenser::ChemPanelOut::default(),
                 crate::arcade::PendingArcadeOps::default(),

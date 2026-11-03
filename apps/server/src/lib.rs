@@ -27,7 +27,7 @@ use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::ghosts::Departures;
 use rs13_classic::health::Vitals;
 use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
-use rs13_classic::medbay::{PendingSleeperOps, SleeperPanelOut};
+use rs13_classic::medbay::{PendingSleeperOps, ScanPanelOut, SleeperPanelOut};
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
@@ -46,19 +46,19 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
-    ArcadePanel, AutolathePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemMasterCommand,
-    ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand,
-    GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
-    PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel,
-    SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand,
+    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand,
+    FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput,
+    Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SleeperPanel,
+    SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BrigPanelView, CameraPanelView,
-    ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost,
-    GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView,
-    PowerMonitorView, SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView,
-    WirePanelView,
+    AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BodyScanView, BrigPanelView,
+    CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView,
+    GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId,
+    PaperView, PickListView, PowerMonitorView, SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap,
+    TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -110,6 +110,7 @@ struct SentPanel(
     Option<SleeperPanelView>,
     Option<ChemMasterPanelView>,
     Option<AutolathePanelView>,
+    Option<BodyScanView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -889,6 +890,7 @@ fn send_panels(
             &mut MessageSender<SleeperPanel>,
             &mut MessageSender<ChemMasterPanel>,
             &mut MessageSender<AutolathePanel>,
+            &mut MessageSender<BodyScanPanel>,
         ),
     )>,
     panels: Query<(
@@ -913,6 +915,7 @@ fn send_panels(
             &SleeperPanelOut,
             &MasterPanelOut,
             &LathePanelOut,
+            &ScanPanelOut,
         ),
     )>,
 ) {
@@ -940,6 +943,7 @@ fn send_panels(
             mut sleeper_panels,
             mut master_panels,
             mut lathe_panels,
+            mut scan_panels,
         ),
     ) in &mut links
     {
@@ -957,7 +961,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master, lathe),
+            (heater, arcade, brig, chem, sleeper, master, lathe, scan),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1041,6 +1045,10 @@ fn send_panels(
         if sent.19 != lathe.0 {
             lathe_panels.send::<NoticeChannel>(AutolathePanel(lathe.0.clone()));
             sent.19 = lathe.0.clone();
+        }
+        if sent.20 != scan.0 {
+            scan_panels.send::<NoticeChannel>(BodyScanPanel(scan.0.clone()));
+            sent.20 = scan.0.clone();
         }
     }
 }

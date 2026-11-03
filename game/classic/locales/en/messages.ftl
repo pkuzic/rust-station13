@@ -240,6 +240,9 @@ lathe-fed = You feed { $value } { $value ->
 } in.
 lathe-full = It has no room for that.
 lathe-refuses = It doesn't take that.
+scanner-empty = The scanner is empty.
+scanner-unhurt = No wounds found.
+scanner-part = { NOUN($item) }: { $value } brute, { $burn } burn.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

@@ -6,12 +6,12 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BrigPanelView,
-    CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir, DisplayName,
-    EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden,
-    Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView,
-    PixelOffset, PowerMonitorView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
-    VendingPanelView, WirePanelView, WornView,
+    AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
+    BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir,
+    DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
+    HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque,
+    PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, SleeperPanelView, Slot,
+    SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -392,6 +392,10 @@ pub struct HeaterPanel(pub Option<HeaterPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChemPanel(pub Option<ChemPanelView>);
 
+/// Server → one client: the body scanner console it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct BodyScanPanel(pub Option<BodyScanView>);
+
 /// Server → one client: the autolathe it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct AutolathePanel(pub Option<AutolathePanelView>);
@@ -524,6 +528,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<HeaterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ChemPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<BodyScanPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<AutolathePanel>()
             .add_direction(NetworkDirection::ServerToClient);

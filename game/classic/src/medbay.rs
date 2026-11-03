@@ -4,7 +4,8 @@
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    Appearance, Dense, Dir, DisplayName, GridPos, Hidden, MobStat, NetId, SleeperPanelView, TilePos,
+    Appearance, BodyScanView, Dense, Dir, DisplayName, GridPos, Hidden, MobStat, NetId, SleeperPanelView,
+    TilePos,
 };
 
 use crate::actions::{Outbox, in_reach};
@@ -22,6 +23,8 @@ use crate::wires::PanelViewer;
 pub const SLEEPER: &str = "sleeper";
 pub const SLEEPER_CONSOLE: &str = "sleeper-console";
 pub const CRYO_CELL: &str = "cryo-cell";
+pub const BODY_SCANNER: &str = "body-scanner";
+pub const SCANNER_CONSOLE: &str = "scanner-console";
 /// How far a console reaches for its sleeper, tiles.
 pub const LINK_RANGE: i32 = 3;
 /// What a console can inject, and how much at a time (Luna `inject_*`).
@@ -53,6 +56,19 @@ pub struct Sleeper {
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SleeperConsole;
 
+/// A body scanner, and who lies in it.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct BodyScanner {
+    pub occupant: Option<Entity>,
+}
+
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ScannerConsole;
+
+/// What a mob's open body scanner console window shows.
+#[derive(Component, Debug, Clone, Default, PartialEq)]
+pub struct ScanPanelOut(pub Option<BodyScanView>);
+
 /// A cryo cell: who is in it, its beaker, and whether it's on.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct CryoCell {
@@ -71,13 +87,25 @@ pub struct PendingSleeperOps(pub Vec<(Entity, usize)>);
 pub struct SleeperPanelOut(pub Option<SleeperPanelView>);
 
 pub fn is_medbay_part(proto: &str) -> bool {
-    matches!(proto, SLEEPER | SLEEPER_CONSOLE | CRYO_CELL)
+    matches!(
+        proto,
+        SLEEPER | SLEEPER_CONSOLE | CRYO_CELL | BODY_SCANNER | SCANNER_CONSOLE
+    )
 }
 
 pub fn spawn_part(world: &mut World, proto: &str, pos: TilePos, id: NetId) -> Entity {
     let mut entity = world.spawn((GridPos(pos), id, Dense));
     match proto {
         SLEEPER => entity.insert((Appearance::new(SLEEPER, "sleeper-open"), Sleeper::default())),
+        BODY_SCANNER => entity.insert((
+            Appearance::new(BODY_SCANNER, "body_scanner_0"),
+            BodyScanner::default(),
+        )),
+        SCANNER_CONSOLE => entity.insert((
+            Appearance::new(SCANNER_CONSOLE, "body_scannerconsole"),
+            ScannerConsole,
+            PowerUser::new(Channel::Equipment, 40.0),
+        )),
         CRYO_CELL => entity.insert((
             Appearance::new(CRYO_CELL, "celltop-p"),
             CryoCell::default(),
@@ -147,6 +175,46 @@ pub fn click_sleeper(world: &mut World, mob: Entity, sleeper: Entity) {
         }
     } else if occupant.is_some() {
         leave_sleeper(world, sleeper);
+    }
+}
+
+/// A click on a body scanner: someone pulled goes in; otherwise whoever is in it comes out (Luna
+/// `bodyscanner/attackby`, `eject`).
+pub fn click_body_scanner(world: &mut World, mob: Entity, scanner: Entity) {
+    let occupant = world.get::<BodyScanner>(scanner).and_then(|s| s.occupant);
+    if let Some(person) = pulled_person(world, mob) {
+        if occupant.is_some() {
+            tell(world, mob, "medbay-occupied");
+            return;
+        }
+        if lay_inside(world, mob, scanner, person) {
+            if let Some(mut s) = world.get_mut::<BodyScanner>(scanner) {
+                s.occupant = Some(person);
+            }
+            set_look(world, scanner, "body_scanner_1");
+        }
+    } else if occupant.is_some() {
+        leave_body_scanner(world, scanner);
+    }
+}
+
+fn leave_body_scanner(world: &mut World, scanner: Entity) {
+    let Some(person) = world.get::<BodyScanner>(scanner).and_then(|s| s.occupant) else {
+        return;
+    };
+    if let Ok(mut e) = world.get_entity_mut(person) {
+        e.remove::<(InCloset, Hidden)>();
+    }
+    if let Some(mut s) = world.get_mut::<BodyScanner>(scanner) {
+        s.occupant = None;
+    }
+    set_look(world, scanner, "body_scanner_0");
+}
+
+/// A click on its console opens the window, with power.
+pub fn click_scan_console(world: &mut World, mob: Entity, console: Entity) {
+    if world.get::<PowerUser>(console).is_some_and(|p| p.powered) {
+        world.entity_mut(mob).insert(PanelViewer(console));
     }
 }
 
@@ -222,6 +290,12 @@ pub fn leave(world: &mut World, mob: Entity, machine: Entity) -> bool {
     if world.get::<Sleeper>(machine).is_some() {
         if awake {
             leave_sleeper(world, machine);
+        }
+        return true;
+    }
+    if world.get::<BodyScanner>(machine).is_some() {
+        if awake {
+            leave_body_scanner(world, machine);
         }
         return true;
     }
@@ -441,6 +515,65 @@ pub fn update_sleeper_views(
                         )
                     })
                     .collect(),
+            })
+        });
+        if view.is_none() && target.is_some() {
+            commands.entity(mob).remove::<PanelViewer>();
+        }
+        if out.0 != view {
+            out.0 = view;
+        }
+    }
+}
+
+/// Show each player the body scanner console they have open (Luna `body_scanconsole/attack_hand`).
+#[allow(clippy::type_complexity)]
+pub fn update_scan_views(
+    mut viewers: Query<(
+        Entity,
+        &GridPos,
+        Option<&PanelViewer>,
+        &mut ScanPanelOut,
+        Option<&Vitals>,
+    )>,
+    consoles: Query<(&GridPos, &NetId, &PowerUser), With<ScannerConsole>>,
+    scanners: Query<(Entity, &GridPos, &BodyScanner)>,
+    people: Query<(&Body, &Vitals, &DisplayName)>,
+    mut commands: Commands,
+) {
+    for (mob, pos, viewer, mut out, vitals) in &mut viewers {
+        let target = viewer.and_then(|v| consoles.get(v.0).ok());
+        let view = target.and_then(|(at, id, power)| {
+            let usable =
+                in_reach(pos.0, at.0) && power.powered && vitals.is_none_or(|v| v.stat == MobStat::Conscious);
+            if !usable {
+                return None;
+            }
+            let near =
+                |p: TilePos| p.z == at.0.z && (p.x - at.0.x).abs().max((p.y - at.0.y).abs()) <= LINK_RANGE;
+            let scanner = scanners
+                .iter()
+                .filter(|(_, p, _)| near(p.0))
+                .min_by_key(|(_, p, _)| (p.0.x - at.0.x).abs() + (p.0.y - at.0.y).abs());
+            let person = scanner
+                .and_then(|(.., s)| s.occupant)
+                .and_then(|p| people.get(p).ok());
+            let round = |n: f32| n.round() as i16;
+            Some(BodyScanView {
+                target: *id,
+                occupant: person.map(|(.., n)| n.0.clone()),
+                stat: person.map_or(MobStat::Conscious, |(_, v, _)| v.stat),
+                health: person.map_or(0, |(b, ..)| round(b.health())),
+                oxy: person.map_or(0, |(b, ..)| round(b.oxy)),
+                tox: person.map_or(0, |(b, ..)| round(b.tox)),
+                parts: person.map_or_else(Vec::new, |(b, ..)| {
+                    Zone::ALL
+                        .iter()
+                        .map(|z| (*z, b.organ(*z)))
+                        .filter(|(_, o)| o.brute >= 0.5 || o.burn >= 0.5)
+                        .map(|(z, o)| (z.noun_id().to_owned(), round(o.brute), round(o.burn)))
+                        .collect()
+                }),
             })
         });
         if view.is_none() && target.is_some() {
