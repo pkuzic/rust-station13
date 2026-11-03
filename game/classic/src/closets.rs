@@ -6,10 +6,10 @@ use std::collections::HashMap;
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dense, GridPos, Hidden, ObjectSpec, Slot, TilePos};
+use rs13_world::{Appearance, Dense, GridPos, Hidden, ObjectSpec, TilePos};
 use serde::Deserialize;
 
-use crate::access::{IdCard, allowed};
+use crate::access::{IdCard, Shown};
 use crate::actions::{ClickOutcome, Outbox};
 use crate::equipment::Equipment;
 use crate::hands::{Hands, HeldBy, Item};
@@ -326,18 +326,9 @@ impl ClosetWork<'_, '_> {
         self.closets.contains(target)
     }
 
-    /// Luna `allowed`: the card in the active hand, else the one in the ID slot.
-    pub(crate) fn card_of(&self, mob: Entity, hands: &Hands) -> Option<&IdCard> {
-        hands
-            .active_item()
-            .and_then(|e| self.cards.get(e).ok())
-            .or_else(|| {
-                self.worn
-                    .get(mob)
-                    .ok()
-                    .and_then(|e| e.get(Slot::Id))
-                    .and_then(|e| self.cards.get(e).ok())
-            })
+    /// The cards this mob shows. `hands` comes apart from the query, which the caller holds mutably.
+    pub(crate) fn shown(&self, mob: Entity, hands: &Hands) -> Shown<'_> {
+        Shown::of(Some(hands), self.worn.get(mob).ok(), &self.cards)
     }
 
     /// Luna `secure_closet/togglelock`: a shut locker locks or unlocks for someone with its
@@ -349,7 +340,7 @@ impl ClosetWork<'_, '_> {
             return None;
         }
         let access = self.locks.get(target).ok()?.access.clone();
-        if !allowed(&access, self.card_of(mob, hands)) {
+        if !self.shown(mob, hands).opens(&access) {
             return Some(ClickOutcome::told("locker-access-denied"));
         }
         let mut lock = self.locks.get_mut(target).ok()?;
@@ -425,7 +416,7 @@ impl ClosetWork<'_, '_> {
             let opens = held.is_none() && !lock.locked && !closet.welded;
             if !opens {
                 let access = lock.access.clone();
-                if !allowed(&access, self.card_of(mob, hands)) {
+                if !self.shown(mob, hands).opens(&access) {
                     return Some(ClickOutcome::told("locker-access-denied"));
                 }
                 let mut lock = self.locks.get_mut(target).ok()?;

@@ -7,7 +7,7 @@ use rs13_world::{
     Appearance, Dense, DisplayName, GridPos, Hidden, MapLayer, MobStat, NetId, ObjectSpec, Slot, TilePos,
 };
 
-use crate::access::{IdCard, allowed};
+use crate::access::{IdCard, Shown};
 use crate::actions::Outbox;
 use crate::closets::InCloset;
 use crate::combat::VisibleEvents;
@@ -280,13 +280,7 @@ fn area_of(world: &mut World, at: TilePos) -> Option<String> {
 /// A click on a turret control (Luna's panel, as one button): on and stunning, on and lethal,
 /// off. It wants the right card.
 pub fn click_control(world: &mut World, mob: Entity, control: Entity) {
-    let held = world.get::<Hands>(mob).and_then(Hands::active_item);
-    let worn = world.get::<Equipment>(mob).and_then(|e| e.get(Slot::Id));
-    let card = [held, worn]
-        .into_iter()
-        .flatten()
-        .find_map(|item| world.get::<IdCard>(item).cloned());
-    if !allowed(&[CONTROL_ACCESS.to_owned()], card.as_ref()) {
+    if !Shown::of_mob(world, mob).opens(&[CONTROL_ACCESS.to_owned()]) {
         if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
             outbox.0.push(LocMsg::new("turret-denied"));
         }

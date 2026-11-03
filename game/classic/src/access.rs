@@ -3,7 +3,11 @@
 use std::collections::BTreeSet;
 
 use bevy_ecs::prelude::*;
+use rs13_world::Slot;
 use serde::Deserialize;
+
+use crate::equipment::Equipment;
+use crate::hands::Hands;
 
 /// An ID card: the access ids it grants.
 #[derive(Component, Debug, Clone, PartialEq, Eq, Default)]
@@ -38,6 +42,45 @@ pub fn allowed(required: &[String], card: Option<&IdCard>) -> bool {
         return true;
     }
     card.is_some_and(|card| required.iter().any(|r| card.access.contains(r)))
+}
+
+/// The cards someone shows when they use something: what's in their active hand and what's in
+/// their ID slot. Everything that checks a person's access goes through this (Luna `allowed`).
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Shown<'a> {
+    pub held: Option<&'a IdCard>,
+    pub worn: Option<&'a IdCard>,
+}
+
+impl<'a> Shown<'a> {
+    /// Either card will do, so holding a card of no use doesn't undo the one being worn.
+    pub fn opens(&self, required: &[String]) -> bool {
+        allowed(required, self.held) || allowed(required, self.worn)
+    }
+
+    pub fn of(hands: Option<&Hands>, equipment: Option<&Equipment>, cards: &'a Query<&IdCard>) -> Self {
+        Self {
+            held: hands
+                .and_then(Hands::active_item)
+                .and_then(|item| cards.get(item).ok()),
+            worn: equipment
+                .and_then(|e| e.get(Slot::Id))
+                .and_then(|item| cards.get(item).ok()),
+        }
+    }
+
+    pub fn of_mob(world: &'a World, mob: Entity) -> Self {
+        Self {
+            held: world
+                .get::<Hands>(mob)
+                .and_then(Hands::active_item)
+                .and_then(|item| world.get::<IdCard>(item)),
+            worn: world
+                .get::<Equipment>(mob)
+                .and_then(|e| e.get(Slot::Id))
+                .and_then(|item| world.get::<IdCard>(item)),
+        }
+    }
 }
 
 #[cfg(test)]

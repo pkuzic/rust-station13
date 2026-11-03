@@ -4,7 +4,7 @@ use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, Dense, Dir, GridPos, Opaque, TilePos};
 
-use crate::access::{IdCard, allowed};
+use crate::access::Shown;
 use crate::actions::Outbox;
 use crate::hands::Item;
 use crate::movement::Mob;
@@ -115,13 +115,13 @@ impl Airlock {
 
     /// Luna's door `attackby`, also reached by hand and by bumping: ignored while
     /// operating; with access, toggle; without, a closed door shows "deny".
-    pub fn use_by(&mut self, now: f32, card: Option<&IdCard>) {
+    pub fn use_by(&mut self, now: f32, shown: Shown) {
         if matches!(self.state, DoorState::Opening { .. } | DoorState::Closing { .. }) {
             return;
         }
         // A cut ID scanner wire: no card counts (Luna `requiresID`).
-        let card = if self.id_scan { card } else { None };
-        if allowed(&self.req_access, card) {
+        let shown = if self.id_scan { shown } else { Shown::default() };
+        if shown.opens(&self.req_access) {
             self.toggle(now);
         } else if self.is_dense() {
             self.deny_until = Some(now + DENY_DS);

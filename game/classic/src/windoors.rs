@@ -7,7 +7,7 @@ use std::collections::HashSet;
 use bevy_ecs::prelude::*;
 use rs13_world::{Appearance, Dir, GridPos, NetId, ObjectSpec, TilePos};
 
-use crate::access::{IdCard, allowed};
+use crate::access::{IdCard, Shown};
 use crate::actions::in_reach;
 use crate::equipment::Equipment;
 use crate::hands::Hands;
@@ -127,15 +127,6 @@ pub fn spawn_windoor(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: Net
         .id()
 }
 
-/// The ID card someone shows a door: in the active hand, or worn.
-fn card<'a>(hands: &Hands, equipment: Option<&Equipment>, cards: &'a Query<&IdCard>) -> Option<&'a IdCard> {
-    hands.active_item().and_then(|e| cards.get(e).ok()).or_else(|| {
-        equipment
-            .and_then(|e| e.get(rs13_world::Slot::Id))
-            .and_then(|e| cards.get(e).ok())
-    })
-}
-
 fn dir_name(dir: Dir) -> &'static str {
     match dir {
         Dir::North => "north",
@@ -172,7 +163,7 @@ pub fn click(
     door: &mut Windoor,
     at: TilePos,
     mob_pos: TilePos,
-    card: Option<&IdCard>,
+    shown: Shown,
     now: f32,
     sounds: &mut SoundEvents,
 ) {
@@ -180,7 +171,7 @@ pub fn click(
         return;
     }
     match door.swing {
-        _ if !allowed(&door.access, card) => {
+        _ if !shown.opens(&door.access) => {
             if door.sealed() {
                 door.deny_until = Some(now + DENY_DS);
             }
@@ -218,7 +209,7 @@ pub fn bump_windoors(
             if door.swing != Swing::Closed || !crosses(at.0, door.dir, pos.0, to) {
                 continue;
             }
-            if allowed(&door.access, card(hands, equipment, &cards)) {
+            if Shown::of(Some(hands), equipment, &cards).opens(&door.access) {
                 open(&mut door, now, at.0, true, &mut sounds);
             }
         }

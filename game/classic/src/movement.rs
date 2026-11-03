@@ -9,6 +9,7 @@ use bevy_ecs::prelude::*;
 use rs13_world::{Dense, Dir, GridPos, MobStat, TileMap, TilePos};
 
 use crate::access::IdCard;
+use crate::access::Shown;
 use crate::atmos::{has_handhold, is_space};
 use crate::doors::{Airlock, BUMP_COOLDOWN_DS, DoorState};
 use crate::hands::Hands;
@@ -220,10 +221,7 @@ pub fn move_mobs(
                     shocks.0.push((entity, crate::wires::HAND_SHOCK));
                     continue;
                 }
-                let card = hands
-                    .and_then(|h| h.active_item())
-                    .and_then(|e| cards.get(e).ok());
-                airlock.use_by(now, card);
+                airlock.use_by(now, Shown::of(hands, equipment, &cards));
             }
         }
     }
