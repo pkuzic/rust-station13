@@ -303,16 +303,15 @@ pub struct Placed {
 
 impl Placed {
     fn ron(&self) -> String {
-        if self.access.is_empty() {
-            format!("{:?}", self.id)
-        } else {
-            let access: Vec<String> = self.access.iter().map(|a| format!("{a:?}")).collect();
-            let vars = self
-                .job
-                .as_ref()
-                .map_or(String::new(), |job| format!(", vars: {{\"job\": {job:?}}}"));
-            format!("(id: {:?}, access: [{}]{vars})", self.id, access.join(", "))
+        if self.access.is_empty() && self.job.is_none() {
+            return format!("{:?}", self.id);
         }
+        let access: Vec<String> = self.access.iter().map(|a| format!("{a:?}")).collect();
+        let vars = self
+            .job
+            .as_ref()
+            .map_or(String::new(), |job| format!(", vars: {{\"job\": {job:?}}}"));
+        format!("(id: {:?}, access: [{}]{vars})", self.id, access.join(", "))
     }
 }
 

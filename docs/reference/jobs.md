@@ -17,6 +17,9 @@ can't be seen or taken.
 A respawn is offered a job the same way. Once every post with a card has been taken, it starts at any free start
 point with no job, in a grey jumpsuit and black shoes.
 
+What each job opens is in `jobs.ron` only. The map's start points just name a job, and its card takes that job's
+access when it's placed.
+
 Maps without jobs on their start points work as before: a grey jumpsuit, black shoes, and no card.
 
 ## Choosing

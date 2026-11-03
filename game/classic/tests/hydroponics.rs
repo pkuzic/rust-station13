@@ -6,7 +6,7 @@ use rs13_classic::ClassicPlugin;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::chemistry::Reagents;
 use rs13_classic::hands::Hands;
-use rs13_classic::hydroponics::{PLANTS, PlantPot};
+use rs13_classic::hydroponics::{GROWTH_PER_CYCLE, PLANTS, POT_WATER, PlantPot};
 use rs13_classic::machines::MACHINE_TICKS;
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_world::{Appearance, GridPos, ObjectSpec, TileMap, TilePos};
@@ -94,7 +94,11 @@ fn a_seed_grows_with_water_and_changes_its_look() {
     );
     assert_eq!(state(&app, pot).growth, 0);
     ticks(&mut app, 3 * MACHINE_TICKS);
-    assert_eq!(state(&app, pot).growth, 3);
+    assert_eq!(state(&app, pot).growth, 3 * GROWTH_PER_CYCLE);
+    assert!(
+        app.world().get::<Reagents>(pot).unwrap().get("water") < POT_WATER,
+        "it drinks"
+    );
     assert_eq!(
         app.world().get::<Appearance>(pot).unwrap().state,
         "pot-empty+tomato-G1"
@@ -109,14 +113,21 @@ fn a_seed_grows_with_water_and_changes_its_look() {
 }
 
 #[test]
-fn too_much_water_stops_it_growing() {
+fn watering_a_pot_doesnt_stop_it_growing_and_a_dry_one_stops() {
     let (mut app, _, pot) = setup("seed-tomato");
     app.world_mut()
         .get_mut::<Reagents>(pot)
         .unwrap()
-        .add("water", 50.0);
+        .add("water", 100.0);
+    ticks(&mut app, MACHINE_TICKS);
+    let grown = state(&app, pot).growth;
+    assert_eq!(grown, GROWTH_PER_CYCLE);
+    app.world_mut()
+        .get_mut::<Reagents>(pot)
+        .unwrap()
+        .remove("water", 1000.0);
     ticks(&mut app, 3 * MACHINE_TICKS);
-    assert_eq!(state(&app, pot).growth, 0);
+    assert_eq!(state(&app, pot).growth, grown);
 }
 
 #[test]
@@ -175,5 +186,5 @@ fn a_full_pot_refuses_another_seed_and_a_beaker_pours_in() {
     app.world_mut().run_schedule(FixedUpdate);
     click(&mut app, mob, beaker);
     click(&mut app, mob, pot);
-    assert_eq!(app.world().get::<Reagents>(pot).unwrap().get("water"), 210.0);
+    assert!(app.world().get::<Reagents>(pot).unwrap().get("water") > 205.0);
 }

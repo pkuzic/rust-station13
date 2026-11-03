@@ -17,6 +17,11 @@ pub const PLANT_POT: &str = "plant-pot";
 /// What a pot holds, and the water it starts with (Luna `plantpot/New`).
 pub const POT_SIZE: f32 = 360.0;
 pub const POT_WATER: f32 = 200.0;
+/// How much a plant grows a cycle. Luna's is 1, which takes up to 43 minutes to first ripen: too
+/// long to see in most rounds.
+pub const GROWTH_PER_CYCLE: i32 = 3;
+/// What a plant drinks a cycle, so a pot needs watering in the end, and too much soon goes.
+pub const DRINKS: f32 = 0.5;
 
 /// A kind of plant (Luna's `datum/plant`).
 #[derive(Debug, PartialEq)]
@@ -298,9 +303,9 @@ pub fn run_pots(world: &mut World) {
         }
         let plant = &PLANTS[growing.plant];
         if water > 0.0 {
-            // Luna's plants only grow with no more than this much water around them.
-            if water <= POT_WATER {
-                growing.growth += 1;
+            growing.growth += GROWTH_PER_CYCLE;
+            if let Some(mut reagents) = world.get_mut::<Reagents>(pot) {
+                reagents.remove("water", DRINKS);
             }
         } else if world.resource_mut::<GameRng>().range(0, 99) >= plant.endurance {
             growing.health -= 1;
