@@ -98,7 +98,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 Present in Luna's folders but not compiled, or not in Luna at all, so not to be built for parity: cult, the wizard game
 mode datum, simple animals (carp, corgi), pAI, MMI, ninja, zombie, CTF, deathmatch, `machinery/kitchen/*` other than
 the monkey recycler, the `modules/hydroponics` folder (the `ISaidNo Release` version is the one compiled), biogenerator,
-mint, mech bay, escape pods, telecomms and the singularity engine.
+mint, mech bay, telecomms and the singularity engine.
 
 ## How this list was made
 
