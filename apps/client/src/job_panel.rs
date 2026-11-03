@@ -83,7 +83,7 @@ pub fn show_job(
     };
     label(
         &mut commands,
-        text(LocMsg::new("job-window-title").arg("job", view.current.clone())),
+        text(LocMsg::new("job-window-title").arg("job", text(LocMsg::new(format!("job-{}", view.current))))),
     );
     button(
         &mut commands,

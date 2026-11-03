@@ -30,7 +30,7 @@ use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
 use rs13_classic::id_computer::{IdOp, IdPanelOut, PendingIdOps};
 use rs13_classic::jobs::{JobPanelOut, PendingJobOps};
 use rs13_classic::medbay::{PendingSleeperOps, ScanPanelOut, SleeperPanelOut};
-use rs13_classic::movement::{Mob, MoveIntent};
+use rs13_classic::movement::MoveIntent;
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
 use rs13_classic::paperwork::{ClipboardOut, PaperOp, PaperOut, PendingPaperOps};
@@ -60,9 +60,9 @@ use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BodyScanView, BrigPanelView,
     CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView,
-    GasPanelView, Ghost, GridPos, HeaterPanelView, IdComputerView, Intent, JobPanelView, LaserPanelView,
-    MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView,
-    Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    GasPanelView, Ghost, HeaterPanelView, IdComputerView, Intent, JobPanelView, LaserPanelView, MapLayer,
+    MobStat, NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView, Slot,
+    SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -229,18 +229,16 @@ fn spawn_player(
     trigger: On<Add<Connected>>,
     links: Query<&RemoteId, With<ClientOf>>,
     maps: Query<&MapLayer>,
-    occupied: Query<&GridPos, With<Mob>>,
     mut commands: Commands,
 ) {
     let link = trigger.entity;
     let Ok(remote) = links.get(link) else { return };
     let client_id = remote.0.to_bits();
 
-    let taken: Vec<_> = occupied.iter().map(|p| p.0).collect();
     let starts: Vec<_> = maps.iter().flat_map(|m| m.0.spawns.iter().copied()).collect();
 
     commands.queue(move |world: &mut World| {
-        let Some(spawn) = rs13_classic::jobs::pick_start(world, &starts, &taken) else {
+        let Some(spawn) = rs13_classic::jobs::next_start(world, &starts) else {
             warn!(client_id, "no free spawn point; player left without a mob");
             return;
         };
@@ -255,7 +253,7 @@ fn spawn_player(
 /// A new character at `at`, controlled by this client.
 fn spawn_controlled_mob(world: &mut World, at: TilePos, client_id: u64, link: Entity) -> Entity {
     let mob = spawn_player_mob(world, at);
-    rs13_classic::jobs::take_up(world, mob, at);
+    rs13_classic::jobs::offer(world, mob, at);
     world.entity_mut(mob).insert((
         Player { client_id },
         ControlledBy {
@@ -271,11 +269,10 @@ fn spawn_controlled_mob(world: &mut World, at: TilePos, client_id: u64, link: En
 fn respawn_ghosts(
     mut requests: MessageReader<RespawnRequest>,
     maps: Query<&MapLayer>,
-    occupied: Query<&GridPos, With<Mob>>,
-    mut ghosts: Query<(&Player, &DisplayName, &mut Outbox), With<Ghost>>,
+    ghosts: Query<(&Player, &DisplayName), With<Ghost>>,
     mut commands: Commands,
 ) {
-    let mut taken_now: Vec<TilePos> = Vec::new();
+    let starts: Vec<TilePos> = maps.iter().flat_map(|m| m.0.spawns.iter().copied()).collect();
     let mut handled: Vec<Entity> = Vec::new();
     for RespawnRequest { link, ghost } in requests.read().copied() {
         // Pressed twice before the first took effect.
@@ -283,20 +280,18 @@ fn respawn_ghosts(
             continue;
         }
         handled.push(ghost);
-        let Ok((player, name, mut outbox)) = ghosts.get_mut(ghost) else {
+        let Ok((player, name)) = ghosts.get(ghost) else {
             continue;
         };
-        let spawn = maps
-            .iter()
-            .flat_map(|m| m.0.spawns.iter().copied())
-            .find(|s| !taken_now.contains(s) && !occupied.iter().any(|p| p.0 == *s));
-        let Some(spawn) = spawn else {
-            outbox.0.push(LocMsg::new("respawn-no-room"));
-            continue;
-        };
-        taken_now.push(spawn);
         let (client_id, name) = (player.client_id, name.clone());
+        let starts = starts.clone();
         commands.queue(move |world: &mut World| {
+            let Some(spawn) = rs13_classic::jobs::next_start(world, &starts) else {
+                if let Some(mut outbox) = world.get_mut::<Outbox>(ghost) {
+                    outbox.0.push(LocMsg::new("respawn-no-room"));
+                }
+                return;
+            };
             let mob = spawn_controlled_mob(world, spawn, client_id, link);
             world.entity_mut(mob).insert((name, NameChosen));
             world.entity_mut(link).insert(Controls(mob));
@@ -361,7 +356,7 @@ fn follow_to_clones(
 /// Copy the latest movement request from each client onto its mob.
 fn apply_move_inputs(
     mut links: Query<(&Controls, &mut MessageReceiver<MoveInput>)>,
-    mut intents: Query<&mut MoveIntent>,
+    mut intents: Query<&mut MoveIntent, Without<rs13_classic::jobs::ChoosingJob>>,
 ) {
     for (controls, mut receiver) in &mut links {
         let Some(input) = receiver.receive().last() else {
@@ -407,6 +402,7 @@ fn queue_actions(
                 &mut PendingJobOps,
                 &mut PendingRecordOps,
                 &mut PendingIdOps,
+                Has<rs13_classic::jobs::ChoosingJob>,
             ),
             Has<NameChosen>,
         ),
@@ -450,6 +446,7 @@ fn queue_actions(
                 mut job_ops,
                 mut record_ops,
                 mut id_ops,
+                choosing,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -482,6 +479,10 @@ fn queue_actions(
             continue;
         };
         for input in receiver.receive() {
+            // Not in the world yet: all they can do is choose (`jobs.md`).
+            if choosing && !matches!(input, ActionInput::ChooseJob { .. }) {
+                continue;
+            }
             let action = match input {
                 ActionInput::UseOn(id) => resolve(id).map(Action::UseOn),
                 ActionInput::Examine(id) => examined(id).map(Action::Examine),

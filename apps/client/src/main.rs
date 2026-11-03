@@ -130,6 +130,8 @@ enum UseStep {
     Lathe(u8),
     /// `job:N`: take line `N` of the job window's list.
     Job(u8),
+    /// `jobstay`: stay in the job the window offers.
+    JobStay,
     /// `record:N`: press line `N` of an open records computer's list.
     Record(u8),
     /// `assign:N`: give the card in an open identification computer line `N` of the job list.
@@ -167,6 +169,7 @@ impl UseStep {
             "makepill" => Some(Self::MakePill),
             _ if s.starts_with("assign:") => s["assign:".len()..].trim().parse().ok().map(Self::Assign),
             _ if s.starts_with("record:") => s["record:".len()..].trim().parse().ok().map(Self::Record),
+            "jobstay" => Some(Self::JobStay),
             _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
             _ if s.starts_with("buffer:") => s["buffer:".len()..].trim().parse().ok().map(Self::Buffer),
@@ -1628,6 +1631,7 @@ fn scripted_use(
             line,
         }),
         UseStep::Job(line) => Some(ActionInput::ChooseJob { line: Some(line) }),
+        UseStep::JobStay => Some(ActionInput::ChooseJob { line: None }),
         UseStep::Lathe(line) => lathes.0.as_ref().map(|view| ActionInput::Autolathe {
             target: view.target,
             line,
