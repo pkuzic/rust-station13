@@ -3,14 +3,12 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{
-    Appearance, AutolathePanelView, AutolatheRow, Dense, GridPos, MobStat, NetId, ObjectSpec, TilePos,
-};
+use rs13_world::{Appearance, AutolathePanelView, AutolatheRow, Dense, GridPos, MobStat, NetId, TilePos};
 
 use crate::actions::{Outbox, in_reach};
 use crate::hands::{Hands, Stack};
 use crate::health::Vitals;
-use crate::objects::spawn_object;
+use crate::objects::spawn_stack;
 use crate::power::{Channel, PowerUser};
 use crate::time::WorldTime;
 use crate::wires::PanelViewer;
@@ -190,7 +188,8 @@ pub fn run_autolathes(world: &mut World) {
             look.state = AUTOLATHE.to_owned();
         }
         // Every recipe is a prototype (`tests/autolathe.rs` checks).
-        let _ = spawn_object(world, &ObjectSpec::new(RECIPES[line].0), at);
+        // One of it, if it stacks.
+        let _ = spawn_stack(world, RECIPES[line].0, at, 1);
     }
 }
 

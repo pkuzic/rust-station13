@@ -487,6 +487,16 @@ pub struct VoteView {
     pub can_mode: bool,
 }
 
+/// An open stack of sheets' window, as shown to the player holding it (Luna's stack recipes).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BuildPanelView {
+    /// The stack.
+    pub target: NetId,
+    pub amount: u16,
+    /// What it makes, by prototype: how many sheets, and how many come of it.
+    pub recipes: Vec<(String, u8, u8)>,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {

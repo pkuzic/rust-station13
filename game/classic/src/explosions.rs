@@ -12,6 +12,7 @@ use rs13_world::{Appearance, Ghost, GridPos, MapLayer, ObjectSpec, Slot, TileDef
 use crate::atmos::StationAtmos;
 use crate::closets::InCloset;
 use crate::combat::{COUNT_DS, Paralyzed, VisibleEvents};
+use crate::construction::dismantle_wall;
 use crate::doors::{Airlock, DoorState};
 use crate::equipment::{Equipment, TankGas, Wearable, WornBy};
 use crate::hands::{Hands, HeldBy, Item};
@@ -269,16 +270,17 @@ pub fn hit_tile(world: &mut World, at: TilePos, severity: u8) {
     }
     let mut chance = |percent: f32| world.resource_mut::<GameRng>().prob(percent);
     if tile.solid {
-        let dismantle = match severity {
-            1 => {
-                open_to_space(world, at);
-                return;
+        match severity {
+            1 => open_to_space(world, at),
+            2 => {
+                let devastated = chance(50.0);
+                dismantle_wall(world, at, devastated);
             }
-            2 => true,
-            _ => chance(20.0),
-        };
-        if dismantle {
-            dismantle_wall(world, at);
+            _ => {
+                if chance(20.0) {
+                    dismantle_wall(world, at, false);
+                }
+            }
         }
         return;
     }
@@ -306,13 +308,6 @@ pub fn hit_tile(world: &mut World, at: TilePos, severity: u8) {
             }
         }
     }
-}
-
-/// Down to plating, with what it was made of left there (Luna `dismantle_wall`).
-pub fn dismantle_wall(world: &mut World, at: TilePos) {
-    replace_tile(world, at, "plating", false);
-    set_cell(world, at, Cell::Open);
-    metal(world, at, 2);
 }
 
 /// What a blast does to what's on a tile. Things held or inside go with what they're in, unless
@@ -605,7 +600,7 @@ pub fn run_charges(world: &mut World) {
         for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
             let next = TilePos::new(at.x + dx, at.y + dy, at.z);
             if tile_at(world, next).is_some_and(|t| t.solid) {
-                dismantle_wall(world, next);
+                dismantle_wall(world, next, true);
             }
             let mut doors = world.query::<(Entity, &GridPos, &Airlock)>();
             let door = doors

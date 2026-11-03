@@ -185,6 +185,7 @@ pub fn process_actions(
                             barriers,
                             comms_consoles,
                             uplinks,
+                            buildable,
                         ),
                     ),
                 ),
@@ -298,6 +299,13 @@ pub fn process_actions(
                             Query<(), With<crate::security::Barrier>>,
                             Query<(), With<crate::escape::CommsConsole>>,
                             Query<(), With<crate::traitor::Uplink>>,
+                            Query<
+                                (),
+                                Or<(
+                                    With<crate::construction::Girder>,
+                                    With<crate::windows::WindowPane>,
+                                )>,
+                            >,
                         ),
                     ),
                 ),
@@ -382,6 +390,35 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if hands.active_item() == Some(target)
+                        && matches!(
+                            tool,
+                            Some(
+                                crate::construction::METAL
+                                    | crate::construction::GLASS
+                                    | crate::construction::RODS
+                            )
+                        ) =>
+                {
+                    // A stack used in hand (`construction.md`).
+                    commands
+                        .queue(move |world: &mut World| crate::construction::use_stack(world, mob, target));
+                }
+                Action::UseOn(target) if buildable.contains(target) && hands.active_item().is_some() => {
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::construction::use_on_thing(world, mob, held, target);
+                        });
+                    }
+                }
+                Action::UseOnTile(tile) if matches!(tool, Some("wirecutters" | "welder")) => {
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::construction::use_on_tile(world, mob, held, tile);
+                        });
+                    }
+                }
                 Action::UseOn(target)
                     if tool == Some(crate::explosions::DETONATOR) && hands.active_item() == Some(target) =>
                 {

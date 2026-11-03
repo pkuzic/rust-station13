@@ -26,7 +26,8 @@
     (id: "fire-extinguisher-mini", force: 3.0, size: 2),
     // Luna: 30 lengths, w_class 1.5 (we have whole sizes: it fits where size 2 does).
     (id: "cable-coil", force: 0.0, size: 2, stack: 30),
-    (id: "metal-sheet", force: 5.0),
+    (id: "metal-sheet", force: 5.0, stack: 50),
+    (id: "rods", force: 9.0, stack: 60, conducts: true),
     // Luna `device/radio`: a walkie-talkie on the common channel, worn on the belt (`radio.md`).
     (id: "radio", force: 0.0, size: 2, slot: "belt", conducts: true),
     // Luna `radio/headset/headset_eng`: a radio worn on the ears; `;` talks into it.
