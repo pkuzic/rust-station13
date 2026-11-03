@@ -51,6 +51,7 @@ pub mod health;
 pub mod heaters;
 pub mod igniters;
 pub mod jetpacks;
+pub mod jobs;
 pub mod lighting;
 pub mod lights;
 pub mod machines;

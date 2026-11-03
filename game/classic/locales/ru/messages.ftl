@@ -251,6 +251,60 @@ lathe-refuses = Это туда не загрузить.
 scanner-empty = Сканер пуст.
 scanner-unhurt = Ран не обнаружено.
 scanner-part = { NOUN($item) }: ушибы { $value }, ожоги { $burn }.
+job-captain = Капитан
+job-hop = Глава персонала
+job-hos = Глава службы безопасности
+job-chief-engineer = Главный инженер
+job-research-director = Директор исследований
+job-security-officer = Сотрудник службы безопасности
+job-warden = Надзиратель
+job-forensic-technician = Криминалист
+job-engineer = Инженер
+job-atmos-technician = Атмосферный техник
+job-medical-doctor = Врач
+job-chemist = Химик
+job-geneticist = Генетик
+job-scientist = Учёный
+job-roboticist = Робототехник
+job-hydroponicist = Гидропонист
+job-barman = Бармен
+job-chef = Повар
+job-janitor = Уборщик
+job-quartermaster = Завхоз
+job-cargo-technician = Грузчик
+job-shaft-miner = Шахтёр
+job-counselor = Советник
+job-clown = Клоун
+job-mime = Мим
+job-assistant = Ассистент
+job-assigned = Ваша должность: { $job ->
+    [captain] Капитан
+    [hop] Глава персонала
+    [hos] Глава службы безопасности
+    [chief-engineer] Главный инженер
+    [research-director] Директор исследований
+    [security-officer] Сотрудник службы безопасности
+    [warden] Надзиратель
+    [forensic-technician] Криминалист
+    [engineer] Инженер
+    [atmos-technician] Атмосферный техник
+    [medical-doctor] Врач
+    [chemist] Химик
+    [geneticist] Генетик
+    [scientist] Учёный
+    [roboticist] Робототехник
+    [hydroponicist] Гидропонист
+    [barman] Бармен
+    [chef] Повар
+    [janitor] Уборщик
+    [quartermaster] Завхоз
+    [cargo-technician] Грузчик
+    [shaft-miner] Шахтёр
+    [counselor] Советник
+    [clown] Клоун
+    [mime] Мим
+   *[assistant] Ассистент
+}.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

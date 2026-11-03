@@ -243,6 +243,60 @@ lathe-refuses = It doesn't take that.
 scanner-empty = The scanner is empty.
 scanner-unhurt = No wounds found.
 scanner-part = { NOUN($item) }: { $value } brute, { $burn } burn.
+job-captain = Captain
+job-hop = Head of Personnel
+job-hos = Head of Security
+job-chief-engineer = Chief Engineer
+job-research-director = Research Director
+job-security-officer = Security Officer
+job-warden = Warden
+job-forensic-technician = Forensic Technician
+job-engineer = Engineer
+job-atmos-technician = Atmospheric Technician
+job-medical-doctor = Medical Doctor
+job-chemist = Chemist
+job-geneticist = Geneticist
+job-scientist = Scientist
+job-roboticist = Roboticist
+job-hydroponicist = Hydroponicist
+job-barman = Barman
+job-chef = Chef
+job-janitor = Janitor
+job-quartermaster = Quartermaster
+job-cargo-technician = Cargo Technician
+job-shaft-miner = Shaft Miner
+job-counselor = Counselor
+job-clown = Clown
+job-mime = Mime
+job-assistant = Assistant
+job-assigned = You are the { $job ->
+    [captain] Captain
+    [hop] Head of Personnel
+    [hos] Head of Security
+    [chief-engineer] Chief Engineer
+    [research-director] Research Director
+    [security-officer] Security Officer
+    [warden] Warden
+    [forensic-technician] Forensic Technician
+    [engineer] Engineer
+    [atmos-technician] Atmospheric Technician
+    [medical-doctor] Medical Doctor
+    [chemist] Chemist
+    [geneticist] Geneticist
+    [scientist] Scientist
+    [roboticist] Roboticist
+    [hydroponicist] Hydroponicist
+    [barman] Barman
+    [chef] Chef
+    [janitor] Janitor
+    [quartermaster] Quartermaster
+    [cargo-technician] Cargo Technician
+    [shaft-miner] Shaft Miner
+    [counselor] Counselor
+    [clown] Clown
+    [mime] Mime
+   *[assistant] Assistant
+}.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
