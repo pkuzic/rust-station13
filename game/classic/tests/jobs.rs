@@ -96,12 +96,12 @@ fn starting_at_a_job_gives_its_card_clothes_and_tools() {
     assert_eq!(sprite_in(&app, mob, Slot::Uniform), "engineer-jumpsuit");
     assert_eq!(sprite_in(&app, mob, Slot::Shoes), "orange-shoes");
 
-    let held = app
-        .world()
-        .get::<Hands>(mob)
-        .unwrap()
-        .active_item()
-        .expect("toolbox");
+    let hands = app.world().get::<Hands>(mob).unwrap();
+    assert!(
+        hands.active_item().is_none(),
+        "the hand that does things stays free"
+    );
+    let held = hands.left.or(hands.right).expect("toolbox");
     assert_eq!(
         app.world().get::<Appearance>(held).unwrap().sprite,
         "toolbox-mechanical"

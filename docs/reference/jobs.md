@@ -6,7 +6,7 @@ Sources: `luna:code/game/jobs/jobs.dm`, `jobprocs.dm` (`DivideOccupations`, `Equ
 Code: `game/classic/src/jobs.rs`, `game/classic/content/jobs.ron`. Tests: `game/classic/tests/jobs.rs`.
 
 Each start point on Luna's map is for a job. Whoever starts there gets that job: its ID card worn with the
-job's access, its clothes, the tools it starts with in hand and in a backpack, and a message saying what
+job's access, its clothes, the tools it starts with in the hand not in use and in a backpack, and a message saying what
 they are. The captain's card has every access.
 
 There are 26 jobs, from captain to assistant. Each new player gets the job fewest people have, the earlier

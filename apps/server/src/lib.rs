@@ -493,6 +493,7 @@ fn queue_actions(
                 ActionInput::Drop => Some(Action::Drop),
                 ActionInput::CloseStorage => Some(Action::CloseStorage),
                 ActionInput::UseOnTile(tile) => Some(Action::UseOnTile(tile)),
+                ActionInput::ExamineTile(tile) => Some(Action::ExamineTile(tile)),
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::Face(dir) => Some(Action::Face(dir)),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),

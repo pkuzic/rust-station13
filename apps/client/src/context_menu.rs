@@ -9,11 +9,12 @@ use bevy::window::PrimaryWindow;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, IntentChannel};
-use rs13_world::{Appearance, DisplayName, GridPos, Hidden, NetId};
+use rs13_world::{Appearance, DisplayName, GridPos, Hidden, MapLayer, NetId, PixelOffset, TilePos};
 
-use crate::{Loc, OwnPlayer, WorldCamera, click_rank, cursor_tile, ui_text_font};
+use crate::shadows::Sight;
+use crate::{Loc, OwnPlayer, TILE_PX, WorldCamera, click_rank, cursor_tile, ui_text_font};
 
-/// Things on one tile listed at most.
+/// Things on one tile listed at most, besides the tile itself.
 const MAX_THINGS: usize = 8;
 
 const FACE: Color = Color::srgb(0.83, 0.82, 0.78);
@@ -38,6 +39,14 @@ pub struct MenuRequest {
     pub pick: Option<usize>,
 }
 
+/// The tile something is drawn on: its own, unless it's hung far enough over to show on the next
+/// (BYOND `pixel_x`, `pixel_y`).
+fn drawn_tile(pos: TilePos, offset: Option<&PixelOffset>) -> (i32, i32) {
+    let shift = |d: i8| (f32::from(d) / TILE_PX).round() as i32;
+    let (dx, dy) = offset.map_or((0, 0), |o| (shift(o.0[0]), shift(o.0[1])));
+    (pos.x + dx, pos.y + dy)
+}
+
 /// Open the menu on the tile under the cursor on a right click, or on a scripted request.
 #[allow(clippy::too_many_arguments)]
 pub fn open_menu(
@@ -56,11 +65,14 @@ pub fn open_menu(
             Option<&DisplayName>,
             &Visibility,
             Has<OwnPlayer>,
+            Option<&PixelOffset>,
         ),
         Without<Hidden>,
     >,
     menus: Query<Entity, With<ContextMenu>>,
     hud: Query<&Hovered>,
+    maps: Query<&MapLayer>,
+    sight: Res<Sight>,
 ) {
     let Ok(me) = own.single() else { return };
     let (tile, at) = if let Some((dx, dy)) = request.open_at.take() {
@@ -80,13 +92,21 @@ pub fn open_menu(
 
     let mut here: Vec<_> = things
         .iter()
-        .filter(|(_, pos, a, _, visible, _)| {
-            (pos.0.x, pos.0.y, pos.0.z) == (tile.0, tile.1, me.0.z)
+        .filter(|(_, pos, a, _, visible, _, offset)| {
+            pos.0.z == me.0.z
+                && drawn_tile(pos.0, *offset) == tile
                 && **visible != Visibility::Hidden
                 && !matches!(a.sprite.as_str(), "fire" | "laser-beam" | "sparks" | "water-puff")
         })
         .collect();
-    if here.is_empty() {
+    // The wall or floor itself, once it's in sight (BYOND lists the turf too).
+    let tile_pos = TilePos::new(tile.0, tile.1, me.0.z);
+    let turf = maps
+        .iter()
+        .find_map(|m| m.0.tile(tile_pos))
+        .filter(|_| sight.sees(tile_pos))
+        .map(|t| t.id.clone());
+    if here.is_empty() && turf.is_none() {
         return;
     }
     here.sort_by_key(|(id, _, a, ..)| (click_rank(a), id.0));
@@ -114,18 +134,19 @@ pub fn open_menu(
         .id();
     let text = |id: &str| loc.0.format(id, None).unwrap_or_default();
     let mut index = 0;
-    for (id, _, appearance, name, _, own) in here {
+    let noun_label = |noun: &str| {
+        let mut args = rs13_i18n::Args::new();
+        args.set("item", noun.to_owned());
+        loc.0
+            .format("menu-thing", Some(&args))
+            .ok()
+            .filter(|s| !s.contains('{'))
+            .unwrap_or_else(|| noun.to_owned())
+    };
+    for (id, _, appearance, name, _, own, _) in here {
         let label = match name {
             Some(name) => name.0.clone(),
-            None => {
-                let mut args = rs13_i18n::Args::new();
-                args.set("item", appearance.sprite.clone());
-                loc.0
-                    .format("menu-thing", Some(&args))
-                    .ok()
-                    .filter(|s| !s.contains('{'))
-                    .unwrap_or_else(|| appearance.sprite.clone())
-            }
+            None => noun_label(&appearance.sprite),
         };
         let row = commands
             .spawn((
@@ -165,6 +186,35 @@ pub fn open_menu(
         for (label, action) in choices {
             index += 1;
             choice(&mut commands, row, text(&label), MenuChoice { index, action });
+        }
+    }
+    if let Some(turf) = turf {
+        let row = commands
+            .spawn((
+                Node {
+                    column_gap: Val::Px(4.0),
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                ChildOf(menu),
+            ))
+            .id();
+        commands.spawn((
+            Text::new(noun_label(&turf)),
+            ui_text_font(13.0),
+            TextColor(Color::BLACK),
+            Node {
+                min_width: Val::Px(120.0),
+                ..default()
+            },
+            ChildOf(row),
+        ));
+        for (label, action) in [
+            ("menu-examine", ActionInput::ExamineTile(tile_pos)),
+            ("menu-use", ActionInput::UseOnTile(tile_pos)),
+        ] {
+            index += 1;
+            choice(&mut commands, row, text(label), MenuChoice { index, action });
         }
     }
 }
@@ -233,5 +283,19 @@ pub fn close_menu(
         for (menu, _) in &menus {
             commands.entity(menu).despawn();
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn something_hung_over_shows_on_the_tile_it_is_drawn_on() {
+        let at = TilePos::new(5, 5, 0);
+        assert_eq!(drawn_tile(at, None), (5, 5));
+        assert_eq!(drawn_tile(at, Some(&PixelOffset([24, 0]))), (6, 5));
+        assert_eq!(drawn_tile(at, Some(&PixelOffset([0, -32]))), (5, 4));
+        assert_eq!(drawn_tile(at, Some(&PixelOffset([8, -8]))), (5, 5), "only nudged");
     }
 }

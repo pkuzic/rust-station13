@@ -24,6 +24,8 @@ pub enum Action {
     Drop,
     SwapHands,
     Examine(Entity),
+    /// Look at a wall or floor.
+    ExamineTile(TilePos),
     SetIntent(Intent),
     /// Close the open container.
     CloseStorage,
@@ -643,6 +645,17 @@ pub fn process_actions(
                             visible.0.push((mob_pos.0, seen.arg("name", name), None));
                         }
                     }
+                }
+                Action::ExamineTile(at) => {
+                    commands.queue(move |world: &mut World| {
+                        let mut maps = world.query::<&rs13_world::MapLayer>();
+                        let id = maps.iter(world).find_map(|m| m.0.tile(at)).map(|t| t.id.clone());
+                        if let Some(id) = id
+                            && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                        {
+                            outbox.0.push(LocMsg::new("examine").arg("item", id));
+                        }
+                    });
                 }
                 Action::StopPulling => {
                     commands.entity(mob).remove::<crate::pulling::Pulling>();
