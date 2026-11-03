@@ -317,6 +317,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `comfy-chair-brown:north` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comfy-chair-brown:south` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comfy-chair-brown:west` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
+| `comms-console:comm` | `icons/obj/computer.dmi : "comm"` | CC-BY-SA 3.0 |
 | `connector:` | `icons/obj/atmospherics/portables_connector.dmi : "intact"` | CC-BY-SA 3.0 |
 | `console-screen:` | `icons/obj/stock_parts.dmi : "screen"` | CC-BY-SA 3.0 |
 | `conveyor:conveyor-1-east` | `icons/obj/recycling.dmi : "conveyor-1"` | CC-BY-SA 3.0 |

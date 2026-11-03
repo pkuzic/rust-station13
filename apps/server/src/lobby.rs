@@ -3,11 +3,12 @@
 
 use bevy::prelude::*;
 use rs13_classic::actions::Outbox;
+use rs13_classic::escape::{EscapePods, PodState};
 use rs13_classic::jobs::{free_post, next_start, open_posts, take_up};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::spawn_player_mob;
 use rs13_classic::rng::GameRng;
-use rs13_classic::round::{Phase, Round, pick_mode};
+use rs13_classic::round::{Phase, RESTART_DS, Round, pick_mode};
 use rs13_classic::time::WorldTime;
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::*;
@@ -130,7 +131,22 @@ pub fn run_round(world: &mut World) {
             }
             return;
         }
-        Phase::Playing { mode } => mode,
+        Phase::Finished { restart_at } => {
+            if now >= restart_at {
+                world.write_message(AppExit::from_code(crate::RESTART_CODE));
+            }
+            return;
+        }
+        Phase::Playing { mode } => {
+            if world.resource::<EscapePods>().state == PodState::Arrived {
+                world.resource_mut::<Round>().phase = Phase::Finished {
+                    restart_at: now + RESTART_DS,
+                };
+                info!("round over");
+                return;
+            }
+            mode
+        }
     };
     let joining: Vec<Entity> = links
         .iter(world)
@@ -153,7 +169,7 @@ pub fn send_lobby(world: &mut World) {
     let now = world.resource::<WorldTime>().deciseconds();
     let starts_in = match round.phase {
         Phase::Pregame { starts_at } => Some(((starts_at - now) / 10.0).ceil().max(0.0) as u32),
-        Phase::Playing { .. } => None,
+        Phase::Playing { .. } | Phase::Finished { .. } => None,
     };
     let jobs = open_posts(world);
     let mut links = world.query::<(Entity, &InLobby)>();

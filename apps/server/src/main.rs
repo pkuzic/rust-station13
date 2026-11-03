@@ -15,6 +15,7 @@ fn main() -> AppExit {
     // The whole station runs rounds; a map for trying things out starts you straight in it.
     let mut rounds: Option<bool> = None;
     let mut pregame = rs13_classic::round::PREGAME_SECONDS;
+    let mut pod_seconds: Option<u32> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -29,6 +30,10 @@ fn main() -> AppExit {
             _ => {}
         }
         match (arg.as_str(), args.next()) {
+            ("--pod-seconds", Some(value)) => match value.parse() {
+                Ok(p) => pod_seconds = Some(p),
+                Err(_) => return usage(),
+            },
             ("--pregame", Some(value)) => match value.parse() {
                 Ok(p) => pregame = p,
                 Err(_) => return usage(),
@@ -60,13 +65,30 @@ fn main() -> AppExit {
         decks.push(maps::ENGINEERING_CHAMBER);
     }
     let station = decks == maps::LUNA_STATION.to_vec();
-    let mut app = if rounds.unwrap_or(station) {
-        rs13_server::server_app_with_rounds(port, decks, pregame)
-    } else {
-        rs13_server::server_app_with_station(port, decks)
-    };
-    app.add_plugins(LogPlugin::default());
-    app.run()
+    let rounds = rounds.unwrap_or(station);
+    let mut logging = true;
+    // When a round is over, the server starts again with a clean station.
+    loop {
+        let mut app = if rounds {
+            rs13_server::server_app_with_rounds(port, decks.clone(), pregame)
+        } else {
+            rs13_server::server_app_with_station(port, decks.clone())
+        };
+        if let Some(seconds) = pod_seconds {
+            let mut pods = rs13_classic::escape::EscapePods::default();
+            pods.launch_ds = seconds as f32 * 10.0;
+            pods.transit_ds = seconds as f32 * 10.0;
+            app.insert_resource(pods);
+        }
+        if logging {
+            app.add_plugins(LogPlugin::default());
+            logging = false;
+        }
+        let exit = app.run();
+        if exit != AppExit::from_code(rs13_server::RESTART_CODE) {
+            return exit;
+        }
+    }
 }
 
 fn usage() -> AppExit {

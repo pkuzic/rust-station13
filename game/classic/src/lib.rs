@@ -31,6 +31,7 @@ pub mod disposals;
 pub mod doors;
 pub mod environment;
 pub mod equipment;
+pub mod escape;
 pub mod extinguishers;
 pub mod filing;
 pub mod firealarms;
@@ -141,6 +142,7 @@ pub struct ClassicPlugin;
 impl Plugin for ClassicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<time::WorldTime>()
+            .init_resource::<escape::EscapePods>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
             .init_resource::<pulling::PendingPulls>()
@@ -402,6 +404,8 @@ impl Plugin for ClassicPlugin {
                             records::run_records,
                             records::update_records_views,
                             hydroponics::run_pots,
+                            escape::run_escape,
+                            escape::update_comms_views,
                         )
                             .chain(),
                         autolathe::run_autolathes,

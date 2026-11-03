@@ -701,6 +701,7 @@
         (path: "/obj/item/weapon/seed/carrot", id: "seed-carrot"),
         (path: "/obj/item/weapon/seed/potato", id: "seed-potato"),
         (path: "/obj/machinery/deployable/barrier", id: "barrier"),
+        (path: "/obj/machinery/computer/communications", id: "comms-console"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

@@ -20,6 +20,7 @@ mod audio;
 mod brig_panel;
 mod camera_panel;
 mod chem_panel;
+mod comms_panel;
 mod context_menu;
 mod depth;
 mod fov;
@@ -133,6 +134,8 @@ enum UseStep {
     Job(u8),
     /// `jobstay`: stay in the job the window offers.
     JobStay,
+    /// `callpods`: call the escape pods on an open communications console.
+    CallPods,
     /// `ready`: ready for the round to start, in the lobby.
     Ready,
     /// `joinround`: start now, in the lobby, once the round is on.
@@ -176,6 +179,7 @@ impl UseStep {
             _ if s.starts_with("record:") => s["record:".len()..].trim().parse().ok().map(Self::Record),
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
+            "callpods" => Some(Self::CallPods),
             "joinround" => Some(Self::JoinRound),
             _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
@@ -350,6 +354,7 @@ fn main() {
         .init_resource::<job_panel::OpenJob>()
         .init_resource::<records_panel::OpenRecords>()
         .init_resource::<lobby_panel::OpenLobby>()
+        .init_resource::<comms_panel::OpenComms>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -414,6 +419,7 @@ fn main() {
                         (job_panel::receive_job, job_panel::show_job).chain(),
                         (records_panel::receive_records, records_panel::show_records).chain(),
                         (lobby_panel::receive_lobby, lobby_panel::show_lobby).chain(),
+                        (comms_panel::receive_comms, comms_panel::show_comms).chain(),
                         (id_panel::receive_id, id_panel::show_id).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
@@ -434,6 +440,7 @@ fn main() {
                 )
                     .chain(),
                 follow_own_player,
+                reconnect,
                 (
                     hud::update_hud,
                     update_tip_line,
@@ -631,6 +638,78 @@ fn spawn_panel(mut commands: Commands) {
 }
 
 /// Distinct per process without pulling in a random number generator.
+/// When the server goes (it restarts at the end of a round): forget the old world and connect
+/// again, every few seconds until it's back. Nothing happens before the first connection.
+fn reconnect(
+    time: Res<Time>,
+    server: Res<ServerAddr>,
+    connected: Query<(), (With<Client>, With<Connected>)>,
+    clients: Query<Entity, With<Client>>,
+    world: Query<Entity, With<Remote>>,
+    mut was_connected: Local<bool>,
+    mut retry_at: Local<Option<f32>>,
+    mut commands: Commands,
+) -> Result {
+    if !connected.is_empty() {
+        *was_connected = true;
+        *retry_at = None;
+        return Ok(());
+    }
+    if !*was_connected {
+        return Ok(());
+    }
+    let now = time.elapsed_secs();
+    let at = *retry_at.get_or_insert_with(|| {
+        for entity in &world {
+            commands.entity(entity).despawn();
+        }
+        commands.queue(close_every_panel);
+        now + RECONNECT_SECONDS
+    });
+    if now >= at {
+        for client in &clients {
+            commands.entity(client).despawn();
+        }
+        connect(&mut commands, server.0, unique_client_id())?;
+        *retry_at = Some(now + RECONNECT_SECONDS);
+    }
+    Ok(())
+}
+
+/// The new server won't know what the old one had open.
+fn close_every_panel(world: &mut World) {
+    world.resource_mut::<wire_panel::OpenPanel>().0 = None;
+    world.resource_mut::<alarm_panel::OpenAlarm>().0 = None;
+    world.resource_mut::<apc_panel::OpenApc>().0 = None;
+    world.resource_mut::<monitor_panel::OpenMonitor>().0 = None;
+    world.resource_mut::<laser_panel::OpenLaser>().0 = None;
+    world.resource_mut::<freezer_panel::OpenFreezer>().0 = None;
+    world.resource_mut::<gas_panel::OpenGas>().0 = None;
+    world.resource_mut::<vending_panel::OpenVending>().0 = None;
+    world.resource_mut::<camera_panel::OpenCameras>().0 = None;
+    world.resource_mut::<pick_panel::OpenPickList>().0 = None;
+    world.resource_mut::<heater_panel::OpenHeater>().0 = None;
+    world.resource_mut::<arcade_panel::OpenArcade>().0 = None;
+    world.resource_mut::<brig_panel::OpenBrig>().0 = None;
+    world.resource_mut::<sleeper_panel::OpenSleeper>().0 = None;
+    world.resource_mut::<master_panel::OpenMaster>().0 = None;
+    world.resource_mut::<lathe_panel::OpenLathe>().0 = None;
+    world.resource_mut::<scan_panel::OpenScan>().0 = None;
+    world.resource_mut::<job_panel::OpenJob>().0 = None;
+    world.resource_mut::<records_panel::OpenRecords>().0 = None;
+    world.resource_mut::<lobby_panel::OpenLobby>().0 = None;
+    world.resource_mut::<comms_panel::OpenComms>().0 = None;
+    world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
+    world.resource_mut::<chem_panel::OpenChem>().0 = None;
+    world.resource_mut::<paper_panel::OpenPaper>().0 = None;
+    world.resource_mut::<paper_panel::OpenClipboard>().0 = None;
+    world.resource_mut::<smes_panel::OpenSmes>().0 = None;
+    world.resource_mut::<storage_panel::OpenStorage>().0 = None;
+}
+
+/// How long between tries to reconnect.
+const RECONNECT_SECONDS: f32 = 3.0;
+
 fn unique_client_id() -> u64 {
     let nanos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -1569,7 +1648,7 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids): (
+    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1578,6 +1657,7 @@ fn scripted_use(
         Res<lathe_panel::OpenLathe>,
         Res<records_panel::OpenRecords>,
         Res<id_panel::OpenIdComputer>,
+        Res<comms_panel::OpenComms>,
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
@@ -1659,6 +1739,10 @@ fn scripted_use(
         }),
         UseStep::Job(line) => Some(ActionInput::ChooseJob { line: Some(line) }),
         UseStep::JobStay => Some(ActionInput::ChooseJob { line: None }),
+        UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
+            target: view.target,
+            call: true,
+        }),
         UseStep::Ready => Some(ActionInput::Ready(true)),
         UseStep::JoinRound => Some(ActionInput::JoinRound),
         UseStep::Lathe(line) => lathes.0.as_ref().map(|view| ActionInput::Autolathe {
