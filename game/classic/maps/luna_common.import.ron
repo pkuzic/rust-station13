@@ -654,6 +654,7 @@
         (path: "/obj/machinery/mininglaser", id: "mining-laser"),
         (path: "/obj/machinery/scanner", id: "scanner"),
         (path: "/obj/machinery/autolathe", id: "autolathe"),
+        (path: "/obj/machinery/door/unpowered/shuttle", id: "shuttle-door"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),
