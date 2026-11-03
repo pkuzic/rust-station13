@@ -382,6 +382,11 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if tool == Some(crate::explosions::DETONATOR) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| crate::explosions::use_detonator(world, target));
+                }
                 Action::UseOn(target) if tool == Some(crate::grabs::GRAB) => {
                     // Tightening a grab, or putting them on a table (`combat.md`).
                     if let Some(grab) = hands.active_item() {

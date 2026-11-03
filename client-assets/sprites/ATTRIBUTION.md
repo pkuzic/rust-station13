@@ -160,6 +160,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `bruise-pack:` | `icons/obj/items.dmi : "brutepack"` | CC-BY-SA 3.0 |
 | `bucket:` | `icons/obj/janitor.dmi : "bucket"` | CC-BY-SA 3.0 |
 | `burnt-mess:` | `icons/obj/food.dmi : "badrecipe"` | CC-BY-SA 3.0 |
+| `c4-detonator:c-4detonator_0` | `icons/obj/syndieweapons.dmi : "c-4detonator_0"` | CC-BY-SA 3.0 |
+| `c4-detonator:c-4detonator_1` | `icons/obj/syndieweapons.dmi : "c-4detonator_1"` | CC-BY-SA 3.0 |
+| `c4-large:c-4large_0` | `icons/obj/syndieweapons.dmi : "c-4large_0"` | CC-BY-SA 3.0 |
+| `c4-large:c-4large_1` | `icons/obj/syndieweapons.dmi : "c-4large_1"` | CC-BY-SA 3.0 |
+| `c4-small:c-4small_0` | `icons/obj/syndieweapons.dmi : "c-4small_0"` | CC-BY-SA 3.0 |
+| `c4-small:c-4small_1` | `icons/obj/syndieweapons.dmi : "c-4small_1"` | CC-BY-SA 3.0 |
 | `cable:0-1` | `icons/obj/power_cond.dmi : "0-1"` | CC-BY-SA 3.0 |
 | `cable:0-10` | `icons/obj/power_cond.dmi : "0-10"` | CC-BY-SA 3.0 |
 | `cable:0-2` | `icons/obj/power_cond.dmi : "0-2"` | CC-BY-SA 3.0 |

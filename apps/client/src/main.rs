@@ -142,6 +142,8 @@ enum UseStep {
     Manifest,
     /// `printmanifest`: print the crew manifest from an open identification computer.
     PrintManifest,
+    /// `drop`: put down what's in the active hand, as Q does.
+    Drop,
     /// `intent:N`: choose an intent, as the number keys do: 1 help, 2 disarm, 3 grab, 4 harm.
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
@@ -205,6 +207,7 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            "drop" => Some(Self::Drop),
             _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
             _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
             _ if s.starts_with("say:") => Some(Self::Say(Box::leak(
@@ -1875,6 +1878,7 @@ fn scripted_use(
             _ => Intent::Help,
         })),
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
+        UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Buy(line) => uplink.0.as_ref().map(|view| ActionInput::Uplink {
             target: view.target,
             line,

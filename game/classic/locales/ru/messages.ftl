@@ -562,6 +562,7 @@ grab-take-off = Сначала надо снять: { NOUN($item, "acc") }!
 armor-absorbs = Броня поглощает удар!
 armor-softens = Броня смягчает удар!
 slipped = Вы поскальзываетесь: { NOUN($item) }!
+explosion-heard = Станцию сотрясает взрыв!
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.
