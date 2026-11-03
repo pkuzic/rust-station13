@@ -29,6 +29,7 @@ fn run_bot(server: SocketAddr, dir: Dir, extra: Extra) -> thread::JoinHandle<Bot
             // Long enough to cross the room and stop.
             hold: Duration::from_secs(extra.hold_secs.unwrap_or(5)),
             examine: extra.examine.map(str::to_owned),
+            prefer_job: None,
             name: extra.name.map(str::to_owned),
             say: extra.say.map(str::to_owned),
             script: Vec::new(),

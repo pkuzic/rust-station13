@@ -213,8 +213,26 @@ pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
     Some(job)
 }
 
+/// Every job, and how many of its posts have nobody at them.
+pub fn open_posts(world: &mut World) -> Vec<(String, u16)> {
+    let mut mobs = world.query_filtered::<&GridPos, With<Mob>>();
+    let taken: Vec<TilePos> = mobs.iter(world).map(|p| p.0).collect();
+    let mut cards = world.query::<(&JobCard, &GridPos)>();
+    let waiting: Vec<(String, TilePos)> = cards.iter(world).map(|(j, p)| (j.0.clone(), p.0)).collect();
+    jobs()
+        .iter()
+        .map(|job| {
+            let open = waiting
+                .iter()
+                .filter(|(j, p)| *j == job.id && !taken.contains(p))
+                .count();
+            (job.id.clone(), open as u16)
+        })
+        .collect()
+}
+
 /// The first free post of a job.
-fn free_post(world: &mut World, job: &str) -> Option<TilePos> {
+pub fn free_post(world: &mut World, job: &str) -> Option<TilePos> {
     let mut mobs = world.query_filtered::<&GridPos, With<Mob>>();
     let taken: Vec<TilePos> = mobs.iter(world).map(|p| p.0).collect();
     let mut cards = world.query::<(&JobCard, &GridPos)>();

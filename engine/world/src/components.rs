@@ -442,6 +442,22 @@ pub struct RecordsPanelView {
     pub rows: Vec<RecordRow>,
 }
 
+/// The lobby, as one player sees it (Luna's `new_player` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LobbyView {
+    /// Seconds until the round starts, or `None` once it has.
+    pub starts_in: Option<u32>,
+    pub ready: bool,
+    pub ready_count: u16,
+    pub players: u16,
+    /// The name they've asked for, if any.
+    pub name: Option<String>,
+    /// The job they'd like, by id.
+    pub preference: Option<String>,
+    /// Every job, by id, and how many posts are free.
+    pub jobs: Vec<(String, u16)>,
+}
+
 /// The job window a new arrival sees (Luna's job choice).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct JobPanelView {

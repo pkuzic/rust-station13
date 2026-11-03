@@ -9,10 +9,10 @@ pub use components::{
     AutolatheRow, BodyScanView, BrigPanelView, CameraPanelView, CameraRow, CameraView, ChemMasterPanelView,
     ChemPanelView, ClipboardView, Dense, DisplayName, EnvAlert, Facing, FreezerPanelView, GasMachine,
     GasPanelView, Ghost, GridPos, Hand, HandsView, HeaterPanelView, Hidden, IdComputerView, Intent,
-    JobPanelView, LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperMode, PaperView,
-    PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView, Silhouette,
-    SleeperPanelView, Slot, SmesPanelView, StorageView, VendingPanelView, VendingRow, WirePanelView,
-    WornView,
+    JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperMode,
+    PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView,
+    Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, VendingPanelView, VendingRow,
+    WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

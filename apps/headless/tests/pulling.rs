@@ -71,6 +71,7 @@ fn a_crate_pulled_over_the_network_follows_and_lets_go() {
         dir: None,
         hold: Duration::from_secs(5),
         examine: None,
+        prefer_job: None,
         name: None,
         say: None,
         script,

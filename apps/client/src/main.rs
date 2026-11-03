@@ -35,6 +35,7 @@ mod job_panel;
 mod laser_panel;
 mod lathe_panel;
 mod lighting;
+mod lobby_panel;
 mod master_panel;
 mod monitor_panel;
 mod paper_panel;
@@ -132,6 +133,10 @@ enum UseStep {
     Job(u8),
     /// `jobstay`: stay in the job the window offers.
     JobStay,
+    /// `ready`: ready for the round to start, in the lobby.
+    Ready,
+    /// `joinround`: start now, in the lobby, once the round is on.
+    JoinRound,
     /// `record:N`: press line `N` of an open records computer's list.
     Record(u8),
     /// `assign:N`: give the card in an open identification computer line `N` of the job list.
@@ -170,6 +175,8 @@ impl UseStep {
             _ if s.starts_with("assign:") => s["assign:".len()..].trim().parse().ok().map(Self::Assign),
             _ if s.starts_with("record:") => s["record:".len()..].trim().parse().ok().map(Self::Record),
             "jobstay" => Some(Self::JobStay),
+            "ready" => Some(Self::Ready),
+            "joinround" => Some(Self::JoinRound),
             _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
             _ if s.starts_with("buffer:") => s["buffer:".len()..].trim().parse().ok().map(Self::Buffer),
@@ -342,6 +349,7 @@ fn main() {
         .init_resource::<scan_panel::OpenScan>()
         .init_resource::<job_panel::OpenJob>()
         .init_resource::<records_panel::OpenRecords>()
+        .init_resource::<lobby_panel::OpenLobby>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -405,6 +413,7 @@ fn main() {
                         (scan_panel::receive_scan, scan_panel::show_scan).chain(),
                         (job_panel::receive_job, job_panel::show_job).chain(),
                         (records_panel::receive_records, records_panel::show_records).chain(),
+                        (lobby_panel::receive_lobby, lobby_panel::show_lobby).chain(),
                         (id_panel::receive_id, id_panel::show_id).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
@@ -1571,10 +1580,15 @@ fn scripted_use(
         Res<id_panel::OpenIdComputer>,
     ),
     mut next_at: Local<Option<f32>>,
+    lobby: Res<lobby_panel::OpenLobby>,
 ) {
-    let (Some(step), Ok((me, hands))) = (plan.0.front().copied(), own.single()) else {
+    let Some(step) = plan.0.front().copied() else {
         return;
     };
+    // In the lobby there's no body yet, and only its own steps make sense.
+    if own.is_empty() && lobby.0.is_none() {
+        return;
+    }
     let now = time.elapsed_secs();
     if now < *next_at.get_or_insert(now + 2.0) {
         return;
@@ -1587,6 +1601,19 @@ fn scripted_use(
         *next_at = Some(now + seconds);
         return;
     }
+    let Ok((me, hands)) = own.single() else {
+        let input = match step {
+            UseStep::Ready => ActionInput::Ready(true),
+            UseStep::JoinRound => ActionInput::JoinRound,
+            UseStep::Job(line) => ActionInput::ChooseJob { line: Some(line) },
+            // The rest wait until there's a body to do them with.
+            _ => return,
+        };
+        sender.send::<IntentChannel>(input);
+        plan.0.pop_front();
+        *next_at = Some(now + 0.5);
+        return;
+    };
     match step {
         UseStep::Menu(dx, dy) => menu.open_at = Some((dx, dy)),
         UseStep::Pick(n) => menu.pick = Some(n),
@@ -1632,6 +1659,8 @@ fn scripted_use(
         }),
         UseStep::Job(line) => Some(ActionInput::ChooseJob { line: Some(line) }),
         UseStep::JobStay => Some(ActionInput::ChooseJob { line: None }),
+        UseStep::Ready => Some(ActionInput::Ready(true)),
+        UseStep::JoinRound => Some(ActionInput::JoinRound),
         UseStep::Lathe(line) => lathes.0.as_ref().map(|view| ActionInput::Autolathe {
             target: view.target,
             line,
@@ -1692,6 +1721,7 @@ fn take_screenshot(
     time: Res<Time>,
     mut plan: ResMut<ScreenshotPlan>,
     own: Query<(), With<OwnPlayer>>,
+    lobby: Res<lobby_panel::OpenLobby>,
     mut joined_at: Local<Option<f32>>,
     mut taken_at: Local<Option<f32>>,
     mut exit: MessageWriter<AppExit>,
@@ -1703,7 +1733,7 @@ fn take_screenshot(
         }
         return;
     }
-    if plan.0.is_none() || own.is_empty() {
+    if plan.0.is_none() || (own.is_empty() && lobby.0.is_none()) {
         return;
     }
     let joined = *joined_at.get_or_insert(now);

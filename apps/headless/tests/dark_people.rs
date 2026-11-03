@@ -46,6 +46,7 @@ fn run_bot(
             dir: None,
             hold,
             examine: None,
+            prefer_job: None,
             name: Some(name),
             say: None,
             script,

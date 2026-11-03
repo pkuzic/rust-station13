@@ -1,5 +1,6 @@
 //! The dedicated server as a library, so tests can run it in-process.
 
+mod lobby;
 mod sight;
 mod silhouettes;
 
@@ -135,6 +136,13 @@ pub fn server_app_with_map(port: u16, map: &'static str) -> App {
     server_app_with_station(port, vec![map])
 }
 
+/// A server running rounds: people wait in the lobby until the round starts (`round.md`).
+pub fn server_app_with_rounds(port: u16, decks: Vec<&'static str>, pregame_seconds: u32) -> App {
+    let mut app = server_app_with_station(port, decks);
+    app.insert_resource(rs13_classic::round::Round::starting_in(pregame_seconds));
+    app
+}
+
 /// A server for a station of several decks, bottom deck first.
 pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     let mut app = App::new();
@@ -157,6 +165,8 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
         (
             apply_move_inputs,
             queue_actions,
+            lobby::read_lobby_inputs,
+            lobby::send_lobby,
             respawn_ghosts.after(queue_actions),
             send_notices,
             send_sounds,
@@ -165,6 +175,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
             send_paper,
         ),
     )
+    .add_systems(FixedUpdate, lobby::run_round)
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
     // for a client that has just joined, before anything is sent to it.
     .add_systems(
@@ -229,11 +240,17 @@ fn spawn_player(
     trigger: On<Add<Connected>>,
     links: Query<&RemoteId, With<ClientOf>>,
     maps: Query<&MapLayer>,
+    round: Option<Res<rs13_classic::round::Round>>,
     mut commands: Commands,
 ) {
     let link = trigger.entity;
     let Ok(remote) = links.get(link) else { return };
     let client_id = remote.0.to_bits();
+    // On a server running rounds, the lobby comes first.
+    if round.is_some() {
+        commands.entity(link).insert(lobby::InLobby::default());
+        return;
+    }
 
     let starts: Vec<_> = maps.iter().flat_map(|m| m.0.spawns.iter().copied()).collect();
 
@@ -597,6 +614,8 @@ fn queue_actions(
                     }
                     None
                 }
+                // For the lobby: already in the world, there's nothing to do.
+                ActionInput::Ready(_) | ActionInput::JoinRound => None,
                 ActionInput::ChooseJob { line } => {
                     job_ops.0.push(line.map(usize::from));
                     None

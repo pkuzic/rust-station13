@@ -33,6 +33,8 @@ pub struct BotConfig {
     pub hold: Duration,
     /// Examine the first object with this sprite id once it is visible.
     pub examine: Option<String>,
+    /// On a server running rounds: the line of the job list it would like.
+    pub prefer_job: Option<u8>,
     /// Character name to ask for after connecting.
     pub name: Option<String>,
     /// Something to say one second before finishing.
@@ -161,6 +163,11 @@ fn send_input(
     if let Some(name) = &config.name {
         actions.send::<IntentChannel>(ActionInput::SetName(name.clone()));
     }
+    // On a server running rounds it starts in the lobby: ask for the job, and to join.
+    if let Some(line) = config.prefer_job {
+        actions.send::<IntentChannel>(ActionInput::ChooseJob { line: Some(line) });
+    }
+    actions.send::<IntentChannel>(ActionInput::JoinRound);
     moves.send::<IntentChannel>(MoveInput {
         dir: config.dir,
         run: true,

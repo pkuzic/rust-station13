@@ -42,6 +42,7 @@ fn run_bot(server: SocketAddr, script: Vec<Step>, hold: Duration) -> thread::Joi
             dir: None,
             hold,
             examine: None,
+            prefer_job: None,
             name: None,
             say: None,
             script,

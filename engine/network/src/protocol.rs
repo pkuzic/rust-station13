@@ -9,10 +9,10 @@ use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
     BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir,
     DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView,
-    HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, MapLayer,
-    MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView,
-    Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView,
-    WornView,
+    HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView,
+    MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
+    RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
+    VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -117,6 +117,10 @@ pub enum ActionInput {
         target: NetId,
         line: Option<u8>,
     },
+    /// In the lobby: ready for the round to start, or not.
+    Ready(bool),
+    /// In the lobby: start now if the round is on, or else be ready for it.
+    JoinRound,
     /// Press this line of an open records computer's list.
     Records {
         target: NetId,
@@ -414,6 +418,10 @@ pub struct ChemPanel(pub Option<ChemPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct IdComputerPanel(pub Option<IdComputerView>);
 
+/// Server → one client: the lobby, or `None` once they've left it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct LobbyPanel(pub Option<LobbyView>);
+
 /// Server → one client: the records computer it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct RecordsPanel(pub Option<RecordsPanelView>);
@@ -560,6 +568,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<ChemPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<IdComputerPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RecordsPanel>()
             .add_direction(NetworkDirection::ServerToClient);
