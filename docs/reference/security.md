@@ -37,3 +37,12 @@ and off.
 | The control's window, its lock, emags and the AI | One click on the panel, with access |
 | Turrets can be shot and destroyed | Not built |
 | A turret's cover animates as it rises | It just appears |
+
+## Deployable barriers (`barrier`)
+
+Source: `luna:code/game/objects/structures/barricade.dm`. They block the way. Clicking one with any ID card in
+hand locks or unlocks it, which shows on its light. Luna's access check is commented out, so any card works
+there too.
+
+In Luna an unlocked barrier can be pushed around, and it can be damaged and repaired with a welder. Here they
+can't be moved or broken yet, so the lock only changes the light.

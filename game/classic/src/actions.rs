@@ -180,6 +180,7 @@ pub fn process_actions(
                             records_consoles,
                             id_computers,
                             plant_pots,
+                            barriers,
                         ),
                     ),
                 ),
@@ -290,6 +291,7 @@ pub fn process_actions(
                             Query<(), With<crate::records::RecordsConsole>>,
                             Query<(), With<crate::id_computer::IdComputer>>,
                             Query<(), With<crate::hydroponics::PlantPot>>,
+                            Query<(), With<crate::security::Barrier>>,
                         ),
                     ),
                 ),
@@ -374,6 +376,14 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if barriers.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Deployable barriers (`security.md`).
+                    commands
+                        .queue(move |world: &mut World| crate::security::click_barrier(world, mob, target));
+                }
                 Action::UseOn(target)
                     if plant_pots.contains(target)
                         && !tool.is_some_and(crate::chemistry::is_chem_tool)

@@ -436,6 +436,7 @@
     "carrot": (gender: neuter, sg: (nom: "carrot", indef: "a carrot"), pl: Some((nom: "carrots"))),
     "seed-potato": (gender: neuter, sg: (nom: "pack of potato seeds", indef: "a pack of potato seeds"), pl: Some((nom: "packs of potato seeds"))),
     "potato": (gender: neuter, sg: (nom: "potato", indef: "a potato"), pl: Some((nom: "potatoes"))),
+    "barrier": (gender: neuter, sg: (nom: "deployable barrier", indef: "a deployable barrier"), pl: Some((nom: "deployable barriers"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

@@ -390,3 +390,49 @@ pub fn run_turrets(world: &mut World) {
         launch(world, entity, at, to, fires);
     }
 }
+
+/// A deployable barrier (Luna's `deployable/barrier`). Locked, it stays where it is.
+#[derive(Component, Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Barrier {
+    pub locked: bool,
+}
+
+pub const BARRIER: &str = "barrier";
+
+pub fn spawn_barrier(world: &mut World, pos: TilePos, id: NetId) -> Entity {
+    world
+        .spawn((
+            GridPos(pos),
+            id,
+            Appearance::new(BARRIER, "barrier0"),
+            rs13_world::Dense,
+            Barrier::default(),
+        ))
+        .id()
+}
+
+/// Swiping any ID card locks or unlocks it: Luna's `req_access` is commented out (`barrier/attackby`).
+pub fn click_barrier(world: &mut World, mob: Entity, barrier: Entity) {
+    let held = world
+        .get::<crate::hands::Hands>(mob)
+        .and_then(crate::hands::Hands::active_item);
+    if !held.is_some_and(|item| world.get::<IdCard>(item).is_some()) {
+        return;
+    }
+    let Some(mut state) = world.get_mut::<Barrier>(barrier) else {
+        return;
+    };
+    state.locked = !state.locked;
+    let locked = state.locked;
+    if let Some(mut look) = world.get_mut::<Appearance>(barrier) {
+        look.state = if locked { "barrier1" } else { "barrier0" }.to_owned();
+    }
+    let id = if locked {
+        "barrier-locked"
+    } else {
+        "barrier-unlocked"
+    };
+    if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
+        outbox.0.push(LocMsg::new(id));
+    }
+}
