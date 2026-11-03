@@ -72,6 +72,7 @@ pub mod pulling;
 pub mod radio;
 pub mod reagent_tanks;
 pub mod rng;
+pub mod scenery;
 pub mod security;
 pub mod shields;
 pub mod smes_panel;
