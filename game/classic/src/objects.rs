@@ -659,6 +659,8 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             (
                 crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
                 (
+                    crate::jobs::PendingJobOps::default(),
+                    crate::jobs::JobPanelOut::default(),
                     crate::autolathe::PendingLatheOps::default(),
                     crate::autolathe::LathePanelOut::default(),
                     crate::chem_master::PendingMasterOps::default(),

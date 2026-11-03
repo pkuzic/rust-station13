@@ -410,6 +410,15 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// The job window a new arrival sees (Luna's job choice).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct JobPanelView {
+    /// The job they have, by id.
+    pub current: String,
+    /// Every job, by id, and how many posts are free.
+    pub rows: Vec<(String, u16)>,
+}
+
 /// An open body scanner console's window, as shown to the player (Luna's `scanconsole` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BodyScanView {

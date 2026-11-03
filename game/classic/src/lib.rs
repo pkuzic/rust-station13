@@ -390,6 +390,8 @@ impl Plugin for ClassicPlugin {
                         medbay::run_medbay,
                         medbay::update_sleeper_views,
                         medbay::update_scan_views,
+                        jobs::run_job_choices,
+                        jobs::update_job_views,
                         autolathe::run_autolathes,
                         autolathe::update_lathe_views,
                         chem_master::run_chem_masters,

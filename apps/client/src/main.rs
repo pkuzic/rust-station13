@@ -30,6 +30,7 @@ mod glow;
 mod heat;
 mod heater_panel;
 mod hud;
+mod job_panel;
 mod laser_panel;
 mod lathe_panel;
 mod lighting;
@@ -125,6 +126,8 @@ enum UseStep {
     MakePill,
     /// `lathe:N`: make line `N` of an open autolathe's list.
     Lathe(u8),
+    /// `job:N`: take line `N` of the job window's list.
+    Job(u8),
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -156,6 +159,7 @@ impl UseStep {
             "brig" => Some(Self::BrigStart),
             _ if s.starts_with("dispense:") => s["dispense:".len()..].trim().parse().ok().map(Self::Dispense),
             "makepill" => Some(Self::MakePill),
+            _ if s.starts_with("job:") => s["job:".len()..].trim().parse().ok().map(Self::Job),
             _ if s.starts_with("lathe:") => s["lathe:".len()..].trim().parse().ok().map(Self::Lathe),
             _ if s.starts_with("buffer:") => s["buffer:".len()..].trim().parse().ok().map(Self::Buffer),
             _ if s.starts_with("inject:") => s["inject:".len()..].trim().parse().ok().map(Self::Inject),
@@ -325,6 +329,7 @@ fn main() {
         .init_resource::<master_panel::OpenMaster>()
         .init_resource::<lathe_panel::OpenLathe>()
         .init_resource::<scan_panel::OpenScan>()
+        .init_resource::<job_panel::OpenJob>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
@@ -385,6 +390,7 @@ fn main() {
                         (master_panel::receive_master, master_panel::show_master).chain(),
                         (lathe_panel::receive_lathe, lathe_panel::show_lathe).chain(),
                         (scan_panel::receive_scan, scan_panel::show_scan).chain(),
+                        (job_panel::receive_job, job_panel::show_job).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                         (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
@@ -1599,6 +1605,7 @@ fn scripted_use(
             target: view.target,
             command: rs13_network::protocol::ChemMasterCommand::Add(line),
         }),
+        UseStep::Job(line) => Some(ActionInput::ChooseJob { line: Some(line) }),
         UseStep::Lathe(line) => lathes.0.as_ref().map(|view| ActionInput::Autolathe {
             target: view.target,
             line,
