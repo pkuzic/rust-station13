@@ -46,3 +46,12 @@ These are real machines or structures in Luna, and each will need its own work t
 | The operating table holds someone for surgery | No surgery |
 | Washers wash clothes, spikes hang meat, and mirrors change your hair | Nothing |
 | Holopads, doppler arrays, gas and airlock sensors, and party lights all do something | Nothing |
+
+## Shuttle doors (`shuttle-door`)
+
+Luna's `door/unpowered/shuttle`, which does have a use: click it to open or close it. It needs no power or
+access, and has no panel or wires, so it can't be hacked or cut off. Code: `game/classic/src/doors.rs`.
+Tests: `game/classic/tests/shuttle_doors.rs`.
+
+It's the airlock's code, so it also opens when walked into and closes itself, where Luna's stays as left
+and only opens on a click.

@@ -383,6 +383,7 @@
     "mining-laser": (gender: neuter, sg: (nom: "mining laser", indef: "a mining laser"), pl: Some((nom: "mining lasers"))),
     "scanner": (gender: neuter, sg: (nom: "scanner", indef: "a scanner"), pl: Some((nom: "scanners"))),
     "autolathe": (gender: neuter, sg: (nom: "autolathe", indef: "an autolathe"), pl: Some((nom: "autolathes"))),
+    "shuttle-door": (gender: neuter, sg: (nom: "shuttle door", indef: "a shuttle door"), pl: Some((nom: "shuttle doors"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

@@ -1056,6 +1056,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shot:bullet` | `icons/obj/projectiles.dmi : "bullet"` | CC-BY-SA 3.0 |
 | `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
 | `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |
+| `shuttle-door:closed` | `icons/turf/shuttle.dmi : "door1"` | CC-BY-SA 3.0 |
+| `shuttle-door:closing` | `icons/turf/shuttle.dmi : "doorc1"` | CC-BY-SA 3.0 |
+| `shuttle-door:deny` | `icons/turf/shuttle.dmi : "door1"` | CC-BY-SA 3.0 |
+| `shuttle-door:open` | `icons/turf/shuttle.dmi : "door0"` | CC-BY-SA 3.0 |
+| `shuttle-door:opening` | `icons/turf/shuttle.dmi : "doorc0"` | CC-BY-SA 3.0 |
 | `shuttle-engine:` | `icons/turf/shuttle.dmi : "propulsion"` | CC-BY-SA 3.0 |
 | `shuttle-engine-left:` | `icons/turf/shuttle.dmi : "burst_l"` | CC-BY-SA 3.0 |
 | `shuttle-engine-right:` | `icons/turf/shuttle.dmi : "burst_r"` | CC-BY-SA 3.0 |

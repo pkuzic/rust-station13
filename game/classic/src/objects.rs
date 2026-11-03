@@ -475,11 +475,19 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         return Ok(entity.id());
     }
     let def = world.resource::<ItemProtos>().0.get(proto).cloned();
-    if proto != "airlock" && def.is_none() {
+    if proto != "airlock" && proto != crate::doors::SHUTTLE_DOOR && def.is_none() {
         return Err(format!("unknown prototype {proto:?} at {pos:?}"));
     }
 
     let id = world.resource_mut::<NetIds>().alloc();
+    // Luna's `door/unpowered`: no power, no panel, no wires (`doors.md`).
+    if proto == crate::doors::SHUTTLE_DOOR {
+        let airlock = Airlock::default();
+        let appearance = Appearance::new(proto, airlock.state.name());
+        return Ok(world
+            .spawn((GridPos(pos), id, appearance, airlock, Dense, Opaque))
+            .id());
+    }
     if proto == "airlock" {
         let airlock = Airlock {
             req_access: spec.access.clone(),

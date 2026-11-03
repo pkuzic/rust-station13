@@ -53,6 +53,9 @@ impl DoorState {
     }
 }
 
+/// A door on a shuttle: an airlock with no power or wires to it.
+pub const SHUTTLE_DOOR: &str = "shuttle-door";
+
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct Airlock {
     pub state: DoorState,

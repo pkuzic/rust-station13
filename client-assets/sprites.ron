@@ -2500,6 +2500,13 @@
             "autolathe": (dmi: "icons/obj/stationobjs.dmi", state: "autolathe"),
             "autolathe_n": (dmi: "icons/obj/stationobjs.dmi", state: "autolathe_n"),
         },
+        "shuttle-door": {
+            "closed": (dmi: "icons/turf/shuttle.dmi", state: "door1"),
+            "opening": (dmi: "icons/turf/shuttle.dmi", state: "doorc0"),
+            "open": (dmi: "icons/turf/shuttle.dmi", state: "door0"),
+            "closing": (dmi: "icons/turf/shuttle.dmi", state: "doorc1"),
+            "deny": (dmi: "icons/turf/shuttle.dmi", state: "door1"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
