@@ -167,6 +167,7 @@ pub fn process_actions(
                         turret_controls,
                         reagent_holders,
                         dispensers_chem,
+                        (medbay_sleepers, medbay_consoles, medbay_cells),
                     ),
                 ),
             ),
@@ -256,6 +257,11 @@ pub fn process_actions(
                         Query<(), With<crate::security::TurretControl>>,
                         Query<(), With<crate::chemistry::Reagents>>,
                         Query<(), With<crate::chem_dispenser::ChemDispenser>>,
+                        (
+                            Query<(), With<crate::medbay::Sleeper>>,
+                            Query<(), With<crate::medbay::SleeperConsole>>,
+                            Query<(), With<crate::medbay::CryoCell>>,
+                        ),
                     ),
                 ),
             ),
@@ -339,6 +345,25 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if (medbay_sleepers.contains(target)
+                        || medbay_consoles.contains(target)
+                        || medbay_cells.contains(target))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Sleepers and cryo cells (`medbay.md`).
+                    let (sleeper, console) =
+                        (medbay_sleepers.contains(target), medbay_consoles.contains(target));
+                    commands.queue(move |world: &mut World| {
+                        if sleeper {
+                            crate::medbay::click_sleeper(world, mob, target);
+                        } else if console {
+                            crate::medbay::click_console(world, mob, target);
+                        } else {
+                            crate::medbay::click_cryo(world, mob, target);
+                        }
+                    });
+                }
                 Action::UseOn(target)
                     if dispensers_chem.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>

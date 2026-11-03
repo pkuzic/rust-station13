@@ -135,6 +135,20 @@ pub fn click_scanner(world: &mut World, mob: Entity, scanner: Entity) {
     }
 }
 
+/// Luna `dna_scannernew/relaymove`: someone inside and awake walks out. True if this was a scanner.
+pub fn leave(world: &mut World, mob: Entity, machine: Entity) -> bool {
+    if world.get::<DnaScanner>(machine).is_none() {
+        return false;
+    }
+    let awake = world
+        .get::<crate::health::Vitals>(mob)
+        .is_none_or(|v| v.stat == rs13_world::MobStat::Conscious);
+    if awake {
+        release(world, machine, mob);
+    }
+    true
+}
+
 fn release(world: &mut World, scanner: Entity, person: Entity) {
     if let Ok(mut e) = world.get_entity_mut(person) {
         e.remove::<(InCloset, Hidden)>();

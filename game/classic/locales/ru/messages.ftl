@@ -190,6 +190,27 @@ dispenser-beaker = Стакан: { $value } из { $max } ед.
 dispenser-no-beaker = Стакан не вставлен.
 dispenser-eject = Вынуть стакан
 dispenser-occupied = В машине уже есть стакан.
+reagent-inaprovaline = Инапровалин
+reagent-stoxin = Снотворное
+reagent-dermaline = Дермалин
+reagent-bicaridine = Бикаридин
+reagent-dexalin = Дексалин
+medbay-put-in = { $name } помещает { $victim } внутрь.
+medbay-occupied = Там уже кто-то есть.
+medbay-beaker-full = Стакан уже вставлен.
+sleeper-numb = Вас окутывает прохладный воздух. Вы цепенеете, чувства притупляются.
+sleeper-empty = Капсула пуста.
+sleeper-occupant = { $name }: { $state ->
+    [conscious] в сознании
+    [unconscious] без сознания
+   *[dead] МЁРТВ
+}
+sleeper-readings = Здоровье: { $value }. Кислородный урон: { $oxy }. Токсины: { $tox }.
+sleeper-inject = Ввести: { $reagent } (сейчас { $value } ед.)
+sleeper-unstable = ОШИБКА: состояние пациента не позволяет автоматическую инъекцию.
+sleeper-cant-metabolise = ОШИБКА: организм пациента не усваивает препараты.
+cryo-on = Вы включаете криокамеру.
+cryo-off = Вы выключаете криокамеру.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

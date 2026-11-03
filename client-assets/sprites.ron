@@ -2379,6 +2379,16 @@
             "i15": (dmi: "icons/obj/syringe.dmi", state: "i15"),
         },
         "chem-dispenser": { "dispenser": (dmi: "icons/obj/chemical.dmi", state: "dispenser") },
+        "sleeper": {
+            "sleeper": (dmi: "icons/obj/Cryogenic2.dmi", state: "sleeper"),
+            "sleeper-open": (dmi: "icons/obj/Cryogenic2.dmi", state: "sleeper-open"),
+        },
+        "sleeper-console": { "console": (dmi: "icons/obj/Cryogenic2.dmi", state: "console") },
+        "cryo-cell": {
+            "celltop-p": (dmi: "icons/obj/Cryogenic2.dmi", state: "celltop-p"),
+            "celltop": (dmi: "icons/obj/Cryogenic2.dmi", state: "celltop"),
+            "celltop_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "celltop_1"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

@@ -10,7 +10,7 @@ use rs13_world::{
     CameraView, ChemPanelView, ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
     GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource,
     MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette,
-    Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -108,6 +108,11 @@ pub enum ActionInput {
     Chem {
         target: NetId,
         command: ChemCommand,
+    },
+    /// Inject this line of an open sleeper console's list.
+    Sleeper {
+        target: NetId,
+        line: u8,
     },
     /// A button on an open brig door timer.
     Brig {
@@ -364,6 +369,10 @@ pub struct HeaterPanel(pub Option<HeaterPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChemPanel(pub Option<ChemPanelView>);
 
+/// Server → one client: the sleeper console it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct SleeperPanel(pub Option<SleeperPanelView>);
+
 /// Server → one client: the door timer it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BrigPanel(pub Option<BrigPanelView>);
@@ -484,6 +493,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<HeaterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ChemPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<SleeperPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BrigPanel>()
             .add_direction(NetworkDirection::ServerToClient);

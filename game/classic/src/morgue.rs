@@ -207,6 +207,10 @@ pub fn close_tray(world: &mut World, morgue: Entity) {
 /// Someone inside trying to get out, awake: the tray comes out (Luna `morgue/relaymove`),
 /// unless the crematorium is burning.
 pub fn leave(world: &mut World, mob: Entity, morgue: Entity) {
+    // Or one of the machines people lie in (`medbay.md`, `cloning.md`).
+    if crate::medbay::leave(world, mob, morgue) || crate::cloning::leave(world, mob, morgue) {
+        return;
+    }
     if world.get::<Morgue>(morgue).is_none() {
         return;
     }
