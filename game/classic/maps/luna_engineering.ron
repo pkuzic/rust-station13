@@ -5,17 +5,9 @@
 // Skipped (no prototype yet):
 //      1 /obj/effect/landmark/disk_spawn
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      2 /obj/item/stack/sheet/plasteel
-//      2 /obj/item/stack/sheet/rglass
-//      1 /obj/item/weapon/cartridge/engineering
-//      2 /obj/item/weapon/folder/yellow
-//      1 /obj/item/weapon/hand_labeler
 //      1 /obj/item/weapon/reagent_containers/food/drinks/soda/rootbeer
 //      1 /obj/item/weapon/reagent_containers/food/snacks/burger/fishburger
 //      1 /obj/item/weapon/reagent_containers/food/snacks/candycane
-//      1 /obj/item/weapon/reagent_containers/spray/cleaner
-//      1 /obj/item/weapon/reagent_containers/spray/pepper
-//      1 /obj/item/weapon/stamp/ce
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
 //      1 /obj/machinery/air_sensor
 //      1 /obj/machinery/airlock_sensor
@@ -160,7 +152,7 @@
         'ë': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "firedoor", dir: South), (id: "window-pane", dir: East), (id: "window-pane", dir: West)]),
         'ì': (tile: (id: "floor"), objects: [(id: "comfy-chair-brown", dir: East)]),
         'í': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), (id: "fire-alarm", dir: South, vars: {"pixel_y": "26"}), "first-aid-kit"]),
-        'î': (tile: (id: "floor"), objects: ["paper-bin", "pen", (id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
+        'î': (tile: (id: "floor"), objects: ["paper-bin", "pen", "folder-yellow", (id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
         'ï': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_y": "20"}), (id: "scrubber", dir: East), (id: "comfy-chair-brown", dir: West)]),
         'ð': (tile: (id: "wall", solid: true), objects: [(id: "manifold", dir: East)]),
         'ñ': (tile: (id: "floor"), objects: [(id: "airlock", access: ["engine_equip"]), (id: "cable", ends: [North, South])]),
@@ -181,7 +173,7 @@
         'ā': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: SouthWest)]),
         'Ă': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("table_1tileendtable")), "insulated-gloves", "utility-belt-loaded"]),
         'ă': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"})]),
-        'Ą': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir"))]),
+        'Ą': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "space-cleaner"]),
         'ą': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir"))]),
         'Ć': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "light", dir: East)]),
         'ć': (tile: (id: "wall", solid: true), objects: [(id: "pipe", dir: NorthEast)]),
@@ -246,7 +238,7 @@
         'ł': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "airlock", access: ["engine_equip"]), (id: "pipe", dir: North), (id: "pipe", dir: East)]),
         'Ń': (tile: (id: "floor"), objects: [(id: "pipe", dir: East, above_floor: true), "meter"]),
         'ń': (tile: (id: "floor"), objects: [(id: "carbon-dioxide-pressure-tank", dir: North)]),
-        'Ņ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthEast, state: Some("tabledir"))]),
+        'Ņ': (tile: (id: "floor"), objects: [(id: "table", dir: NorthEast, state: Some("tabledir")), (id: "plasteel-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "rglass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"}), (id: "plasteel-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), (id: "rglass-sheet", vars: {"pixel_x": "2", "pixel_y": "2"})]),
         'ņ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "cable", ends: [North, South]), (id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North), (id: "pipe", dir: North)]),
         'Ň': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthWest, above_floor: true)]),
         'ň': (tile: (id: "floor"), objects: [(id: "nitrogen-pressure-tank", dir: East)]),
@@ -277,7 +269,7 @@
         'Ν': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "cable", ends: [East, West])]),
         'Ξ': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West])]),
         'Ο': (tile: (id: "floor"), objects: [(id: "pipe", dir: South)]),
-        'Π': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("tabledir")), "recharger"]),
+        'Π': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("tabledir")), "recharger", (id: "pepper-spray", vars: {"pixel_x": "8"})]),
         'Ρ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West)]),
         'Σ': (tile: (id: "floor"), objects: ["disposal-bin", (id: "disposal-pipe", dir: South, state: Some("pipe-t"))]),
         'Τ': (tile: (id: "floor"), objects: [(id: "access-button", vars: {"master_tag": "eng_access_console", "command": "cycle_interior", "pixel_x": "-22"})]),
@@ -319,11 +311,11 @@
         'Е': (tile: (id: "floor"), objects: [(id: "vent", dir: East)]),
         'Ж': (tile: (id: "r-wall", solid: true), objects: [(id: "manifold", dir: East), (id: "cable", ends: [North, South])]),
         'З': (tile: (id: "floor"), objects: ["power-monitor", (id: "cable", ends: [North])]),
-        'И': (tile: (id: "floor"), objects: [(id: "vent", dir: South), (id: "table", dir: NorthWest, state: Some("tabledir")), "paper-bin"]),
-        'Й': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "toolbox-electrical"]),
+        'И': (tile: (id: "floor"), objects: [(id: "vent", dir: South), (id: "table", dir: NorthWest, state: Some("tabledir")), "paper-bin", "stamp-ce"]),
+        'Й': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "toolbox-electrical", "cartridge-engineering"]),
         'К': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), (id: "door-button", vars: {"id": "963852"}), (id: "window-pane", dir: South)]),
         'Л': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table", dir: North, state: Some("tabledir")), "circuit-board", "circuit-board", "circuit-board", "circuit-board"]),
-        'М': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "table", dir: North, state: Some("tabledir"))]),
+        'М': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "table", dir: North, state: Some("tabledir")), "folder-yellow", "hand-labeler"]),
         'Н': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "cell-charger", "high-power-cell"]),
         'О': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "cable-coil"]),
         'П': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: North)]),
