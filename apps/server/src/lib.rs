@@ -619,6 +619,13 @@ fn queue_actions(
                     }
                     None
                 }
+                ActionInput::IdManifest { target, print } => {
+                    if let Some(machine) = resolve(target) {
+                        let op = if print { IdOp::Print } else { IdOp::Manifest };
+                        id_ops.0.push((machine, op));
+                    }
+                    None
+                }
                 ActionInput::Records { target, line } => {
                     if let Some(machine) = resolve(target) {
                         record_ops.0.push((machine, usize::from(line)));

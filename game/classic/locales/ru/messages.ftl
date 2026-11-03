@@ -482,6 +482,14 @@ round-died = { $name }, { $job ->
     [mime] Мим
    *[assistant] Ассистент
 }: погиб.
+id-manifest-open = Открыть список экипажа
+id-manifest-title = Список экипажа:
+id-manifest-hint = Менять записи можно на компьютере охраны.
+id-manifest-row = { $name } - { $job }
+id-manifest-print = Распечатать
+id-manifest-printing = Идёт печать...
+id-manifest-back = Назад
+id-manifest-paper = бумага - «Список экипажа»
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

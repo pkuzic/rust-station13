@@ -56,6 +56,64 @@ fn click(app: &mut App, mob: Entity, target: Entity) {
     app.world_mut().run_schedule(FixedUpdate);
 }
 
+#[test]
+fn the_manifest_lists_the_crew_and_prints_on_paper() {
+    let (mut app, mob, machine, _) = setup(&[]);
+    app.world_mut().entity_mut(mob).insert((
+        rs13_classic::jobs::HasJob("clown".to_owned()),
+        DisplayName("Ann Other".to_owned()),
+    ));
+    press(&mut app, mob, machine, IdOp::Manifest);
+    app.world_mut().run_schedule(FixedUpdate);
+    let view = app.world().get::<IdPanelOut>(mob).unwrap().0.clone().unwrap();
+    assert_eq!(
+        view.manifest,
+        Some(vec![("Ann Other".to_owned(), "clown".to_owned())])
+    );
+
+    // Back to the card, as anyone may.
+    press(&mut app, mob, machine, IdOp::Manifest);
+    app.world_mut().run_schedule(FixedUpdate);
+    assert_eq!(
+        app.world()
+            .get::<IdPanelOut>(mob)
+            .unwrap()
+            .0
+            .clone()
+            .unwrap()
+            .manifest,
+        None
+    );
+
+    press(&mut app, mob, machine, IdOp::Print);
+    press(&mut app, mob, machine, IdOp::Print);
+    app.world_mut().run_schedule(FixedUpdate);
+    assert!(
+        app.world()
+            .get::<IdPanelOut>(mob)
+            .unwrap()
+            .0
+            .clone()
+            .unwrap()
+            .printing
+    );
+    let mut papers = app
+        .world_mut()
+        .query::<(&rs13_classic::paperwork::Paper, &GridPos)>();
+    assert_eq!(papers.iter(app.world()).count(), 0, "it takes time");
+    for _ in 0..120 {
+        app.world_mut().run_schedule(FixedUpdate);
+    }
+    let printed: Vec<_> = papers.iter(app.world()).collect();
+    assert_eq!(printed.len(), 1, "pressing it twice prints one");
+    assert_eq!(printed[0].1.0, AT);
+    assert!(
+        printed[0].0.text.contains("[b]Ann Other[/b] - [job:clown]"),
+        "{}",
+        printed[0].0.text
+    );
+}
+
 fn press(app: &mut App, mob: Entity, machine: Entity, op: IdOp) {
     app.world_mut()
         .get_mut::<PendingIdOps>(mob)

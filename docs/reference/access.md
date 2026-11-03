@@ -52,7 +52,13 @@ Examining a job's card says whose it is and what job it's for.
 
 Differences from Luna: you can only give a card a whole job's access, not tick off single accesses, or type a
 custom title or name. Your own card has to be worn, not put in a second slot. It doesn't change what the
-person's job is in the records, only their card. A crew manifest isn't built.
+person's job is in the records, only their card.
+
+The window also switches to the crew manifest, listing everyone's name and job, with a button that prints it on a
+sheet after 5 seconds. Anyone can do that with no card (Luna's `mode`, `print`). A printed sheet names its jobs and
+heading as `[job:ID]` and `[msg:ID]`, which each reader's client shows in their own language. The manifest is everyone
+now aboard: Luna's is taken at the start of the round, and late joiners and cards don't change it. Writing on a printed
+sheet shows those markers. The manifest on PDAs waits for PDAs (3.21).
 
 ## How a person's access is checked
 

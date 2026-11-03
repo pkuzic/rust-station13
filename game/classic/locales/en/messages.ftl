@@ -486,6 +486,14 @@ round-died = { $name }, { $job ->
     [mime] Mime
    *[assistant] Assistant
 }, died.
+id-manifest-open = Access Crew Manifest
+id-manifest-title = Crew Manifest:
+id-manifest-hint = Please use security record computer to modify entries.
+id-manifest-row = { $name } - { $job }
+id-manifest-print = Print
+id-manifest-printing = Printing...
+id-manifest-back = Back
+id-manifest-paper = paper- 'Crew Manifest'
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

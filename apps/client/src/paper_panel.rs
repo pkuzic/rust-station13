@@ -12,6 +12,7 @@ use rs13_network::protocol::{ActionInput, ClipboardCommand, ClipboardPanel, Inte
 use rs13_world::{ClipboardView, PaperMode, PaperView};
 
 use crate::{ChatInput, Loc, ui_text_font};
+use rs13_i18n::Localizer;
 
 /// The sheet the server has opened for us.
 #[derive(Resource, Default)]
@@ -46,6 +47,37 @@ pub const MAX_LABEL: usize = 31;
 const FACE: Color = Color::srgb(0.96, 0.95, 0.88);
 const EDGE: Color = Color::srgb(0.45, 0.45, 0.45);
 const INK: Color = Color::srgb(0.05, 0.05, 0.2);
+
+/// What a printed sheet says in the reader's language: `[msg:ID]` is that message, and `[job:ID]`
+/// that job's name. Anything else in brackets stays as it is.
+fn filled_in(loc: &Localizer, text: &str) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    while let Some(start) = rest.find('[') {
+        out.push_str(&rest[..start]);
+        rest = &rest[start..];
+        let id = rest.find(']').and_then(|end| {
+            let inside = &rest[1..end];
+            let id = inside
+                .strip_prefix("msg:")
+                .map(str::to_owned)
+                .or_else(|| inside.strip_prefix("job:").map(|job| format!("job-{job}")))?;
+            Some((id, end))
+        });
+        match id.and_then(|(id, end)| Some((loc.format(&id, None).ok()?, end))) {
+            Some((said, end)) => {
+                out.push_str(&said);
+                rest = &rest[end + 1..];
+            }
+            None => {
+                out.push('[');
+                rest = &rest[1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out
+}
 
 /// Luna's paper markup, shown as plain text: [b], [i] and [u] tags are dropped.
 pub fn plain(text: &str) -> String {
@@ -125,9 +157,9 @@ pub fn show_paper(
     let line = |commands: &mut Commands, s: String| {
         commands.spawn((Text::new(s), ui_text_font(14.0), TextColor(INK), ChildOf(window)));
     };
-    line(&mut commands, view.title.clone());
+    line(&mut commands, filled_in(&loc.0, &view.title));
     match view.mode {
-        PaperMode::Read => line(&mut commands, plain(&view.text)),
+        PaperMode::Read => line(&mut commands, plain(&filled_in(&loc.0, &view.text))),
         PaperMode::Write => {
             line(&mut commands, text("paper-write-prompt"));
             line(&mut commands, format!("{}_", chat.buffer));
@@ -340,5 +372,26 @@ mod tests {
     #[test]
     fn markup_is_dropped_for_reading() {
         assert_eq!(plain("[b]Hello[/b] [i]there[/i]"), "Hello there");
+    }
+
+    #[test]
+    fn a_printed_sheet_is_filled_in_for_its_reader() {
+        use rs13_classic::locales;
+        use rs13_i18n::{Lexicon, langid};
+        let lexicon = Lexicon::from_ron(locales::RU_NOUNS).unwrap();
+        let ru = Localizer::new(langid!("ru"), &[locales::RU_MESSAGES], lexicon).unwrap();
+        assert_eq!(
+            filled_in(
+                &ru,
+                "[msg:id-manifest-title]
+[b]Ann[/b] - [job:clown] [b"
+            ),
+            "Список экипажа:
+[b]Ann[/b] - Клоун [b"
+        );
+        assert_eq!(
+            filled_in(&ru, "[msg:nothing-like-this] [job:nor-this]"),
+            "[msg:nothing-like-this] [job:nor-this]"
+        );
     }
 }

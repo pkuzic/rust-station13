@@ -122,6 +122,11 @@ pub enum ActionInput {
         target: NetId,
         call: bool,
     },
+    /// On an identification computer: print the crew manifest, or switch to it and back.
+    IdManifest {
+        target: NetId,
+        print: bool,
+    },
     /// In the lobby: ready for the round to start, or not.
     Ready(bool),
     /// In the lobby: start now if the round is on, or else be ready for it.
