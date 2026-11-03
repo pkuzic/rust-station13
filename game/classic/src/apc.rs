@@ -109,7 +109,7 @@ impl ApcWork<'_, '_> {
             return Some(ClickOutcome::told("apc-cell-inserted"));
         }
         if active.is_some() {
-            return None;
+            return Some(ClickOutcome::told("apc-hand-full"));
         }
         if apc.opened {
             let (charge, capacity) = apc.cell.take()?;

@@ -128,6 +128,10 @@ and **Pull** (as Ctrl-click), then its own verbs; yourself with Examine only. Th
 elsewhere or Escape closes the menu without doing anything else. Code:
 `apps/client/src/context_menu.rs`.
 
+It goes by where things are drawn, so something hung far enough over to show on the next tile, such as a wall APC,
+is listed on that tile rather than its own. The wall or floor itself comes last, once it's in sight, to examine or
+use like a click on it.
+
 | Luna | Here |
 |---|---|
 | Every verb of every object (an item's Move to Top, the jetpack's stabiliser, reading an ID card, a window's Rotate) | The verbs above |

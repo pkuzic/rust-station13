@@ -93,6 +93,9 @@ made-up two-deck world.
   corner, with no face to see, takes the light at its corner.
 - **Dimmer than the level:** the drawn light is the level to the power of 1.3, times 0.85, so rooms have more
   shade than Luna's. This is only how it looks: game rules such as who counts as in the dark go by the level.
+- **The dark closes in:** with no light you can still make things out close by: as light as the dark gets for 2
+  tiles around you, fading to nothing at 5.5, so anything further off needs a light on it. This is also only how
+  it's drawn. Luna's dark is the same everywhere you can see.
 - **Changes fade:** when a light goes on or off, a door opens or the player moves, the
   drawn light eases to the new levels over about a third of a second instead of snapping.
 - **Fire flickers:** the light of a burning tile wavers between three quarters and full

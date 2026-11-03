@@ -191,6 +191,8 @@ pub enum ActionInput {
     CloseStorage,
     /// Click on a tile with nothing on it to click: lay cable from a coil.
     UseOnTile(TilePos),
+    /// Look at a wall or floor (the right-click menu).
+    ExamineTile(TilePos),
 }
 
 /// Air alarm window buttons.

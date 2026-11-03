@@ -359,6 +359,7 @@ barrier-unlocked = Barrier lock toggled off.
 barrier-repaired = You repair the barrier.
 barrier-hit = You hit the barrier.
 barrier-broken = The barrier falls apart.
+apc-hand-full = You need an empty hand to work the APC.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

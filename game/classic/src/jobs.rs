@@ -5,7 +5,7 @@ use std::sync::OnceLock;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{GridPos, Hidden, JobPanelView, ObjectSpec, Slot, TilePos};
+use rs13_world::{GridPos, Hand, Hidden, JobPanelView, ObjectSpec, Slot, TilePos};
 use serde::Deserialize;
 
 use crate::access::IdCard;
@@ -195,9 +195,14 @@ pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
         let Some(mut hands) = world.get_mut::<Hands>(mob) else {
             continue;
         };
-        let active = hands.active;
-        if hands.slot_mut(active).is_none() {
-            *hands.slot_mut(active) = Some(item);
+        // Luna's kits go in the left hand and people start with the right active: the hand that does
+        // things stays free, as machines want an empty one.
+        let free = match hands.active {
+            Hand::Left => Hand::Right,
+            Hand::Right => Hand::Left,
+        };
+        if hands.slot_mut(free).is_none() {
+            *hands.slot_mut(free) = Some(item);
             world.entity_mut(item).remove::<GridPos>().insert(HeldBy(mob));
         }
     }

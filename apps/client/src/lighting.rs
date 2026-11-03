@@ -30,6 +30,9 @@ const LIGHT_Z: f32 = 20.0;
 /// The darkest a tile gets: dim but readable, so a dark room still shows its shape (what
 /// stands in it may be only a silhouette), slightly cool, as darkness reads.
 const MIN_LIGHT: [f32; 3] = [0.22, 0.22, 0.27];
+/// See `eye_level`: out to here, in tiles, it's as light as the dark gets.
+const EYE_CLEAR: f32 = 2.0;
+const EYE_FULL_DARK: f32 = 5.5;
 /// See `shown_light`.
 const LIGHT_SCALE: f32 = 0.85;
 const LIGHT_CURVE: f32 = 1.3;
@@ -147,19 +150,27 @@ struct LightCache {
 /// How fast shown light eases to a change, per second: about a third of a second to settle.
 const FADE_RATE: f32 = 10.0;
 
+/// With no light at all you can still make things out close by, less and less with distance, and
+/// nothing past `EYE_FULL_DARK`. The level that shows as that, for each colour, `distance` tiles
+/// from the eye.
+fn eye_level(distance: f32) -> [f32; 3] {
+    let near = ((EYE_FULL_DARK - distance) / (EYE_FULL_DARK - EYE_CLEAR)).clamp(0.0, 1.0);
+    MIN_LIGHT.map(|min| (min * near / LIGHT_SCALE).powf(1.0 / LIGHT_CURVE))
+}
+
 /// How light looks: a little dimmer than the game's level, falling away faster from its source, so
 /// rooms have more shade. It's only how it's drawn: what counts as dark doesn't change.
 fn shown_light(level: f32) -> f32 {
     level.powf(LIGHT_CURVE) * LIGHT_SCALE
 }
 
-/// The texture's bytes: light per texel (no darker than `MIN_LIGHT`), and in alpha whether
+/// The texture's bytes: light per texel, and in alpha whether
 /// the tile gives light to the picture (`lighting.wgsl`).
 fn texture_data(texels: impl Iterator<Item = ([f32; 3], bool)>) -> Vec<u8> {
     let mut data = Vec::new();
     for (light, in_sight) in texels {
-        for (c, min) in light.into_iter().zip(MIN_LIGHT) {
-            data.push((shown_light(c).max(min) * 255.0).round() as u8);
+        for c in light {
+            data.push((shown_light(c) * 255.0).round() as u8);
         }
         data.push(if in_sight { 255 } else { 0 });
     }
@@ -418,7 +429,7 @@ fn update_lighting(
         for x in 0..width as i32 {
             let tile = TilePos::new(x, y, map.z);
             // Walls and closed doors show the light on the side the player sees.
-            target.push(if blocks(tile) {
+            let (light, in_sight) = if blocks(tile) {
                 let at_point = |p: [f32; 2]| level(p[0].round() as i32, p[1].round() as i32);
                 match wall_light(tile, eye, at_point, blocks, seen) {
                     Some(light) => (light, true),
@@ -426,7 +437,16 @@ fn update_lighting(
                 }
             } else {
                 (level(x, y), seen(tile))
+            };
+            // Before our player arrives there's no eye to see from: as light as the dark gets.
+            let dark = eye.map_or(eye_level(0.0), |e| {
+                eye_level((e[0] - x as f32).hypot(e[1] - y as f32))
             });
+            let mut light = light;
+            for c in 0..3 {
+                light[c] = light[c].max(dark[c]);
+            }
+            target.push((light, in_sight));
         }
     }
     cache.target = target;
@@ -620,5 +640,21 @@ mod tests {
             wall_light(TilePos::new(0, 0, 0), None, light_at, blocks, ours),
             Some([0.1; 3])
         );
+    }
+}
+
+#[cfg(test)]
+mod eye_tests {
+    use super::*;
+
+    #[test]
+    fn the_dark_closes_in_with_distance() {
+        let shown = |d: f32| shown_light(eye_level(d)[0]);
+        assert!((shown(0.0) - MIN_LIGHT[0]).abs() < 1e-3);
+        assert!((shown(EYE_CLEAR) - MIN_LIGHT[0]).abs() < 1e-3, "clear close by");
+        assert!(shown(3.5) < shown(2.5));
+        assert!(shown(4.5) < shown(3.5));
+        assert!(shown(EYE_FULL_DARK) < 1e-3, "nothing further out");
+        assert!(shown(20.0) < 1e-3);
     }
 }
