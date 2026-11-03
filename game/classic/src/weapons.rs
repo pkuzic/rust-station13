@@ -216,7 +216,11 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
         .arg("name", name_of(world, mob))
         .arg("item", item);
     world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
-    // On along the same line, past what was aimed at, to the end of its reach.
+    launch(world, mob, at, to, gun.fires);
+}
+
+/// Send a shot from `at` through `to`, on along the same line to the end of its reach.
+pub fn launch(world: &mut World, firer: Entity, at: TilePos, to: TilePos, fires: Fires) {
     let (dx, dy) = (to.x - at.x, to.y - at.y);
     let longest = dx.abs().max(dy.abs()).max(1);
     let far = TilePos::new(
@@ -226,7 +230,7 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
     );
     let path: Vec<TilePos> = crate::speech::line(at, far).skip(1).collect();
     let id = world.resource_mut::<crate::objects::NetIds>().alloc();
-    let look = match gun.fires {
+    let look = match fires {
         Fires::Beam => "laser",
         Fires::Electrode => "spark",
     };
@@ -235,8 +239,8 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
         id,
         Appearance::new(SHOT, look),
         Shot {
-            firer: mob,
-            fires: gun.fires,
+            firer,
+            fires,
             path,
             next: 0,
             aimed_at: to,

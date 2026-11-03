@@ -1104,6 +1104,10 @@ fn send_hotkeys(
     if keys.just_pressed(KeyCode::KeyR) {
         sender.send::<IntentChannel>(ActionInput::Respawn);
     }
+    // Struggle out of handcuffs (`security.md`).
+    if keys.just_pressed(KeyCode::KeyB) {
+        sender.send::<IntentChannel>(ActionInput::Resist);
+    }
     if keys.just_pressed(KeyCode::KeyX) {
         sender.send::<IntentChannel>(ActionInput::SwapHands);
     }

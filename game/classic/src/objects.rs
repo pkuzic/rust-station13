@@ -206,6 +206,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if crate::security::is_turret_part(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::security::spawn_turret_part(world, spec, pos, id));
+    }
     if proto == crate::weapons::RECHARGER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::weapons::spawn_recharger(world, pos, id));

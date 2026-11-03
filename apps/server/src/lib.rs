@@ -51,8 +51,8 @@ use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ClipboardView,
     DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView,
-    MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap,
-    TilePos, VendingPanelView, WirePanelView,
+    MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, Slot, SmesPanelView, StorageView,
+    TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -465,6 +465,8 @@ fn queue_actions(
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::Face(dir) => Some(Action::Face(dir)),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
+                // Cuffs come off by being taken off, not as clothes do.
+                ActionInput::Unequip(Slot::Cuffs) | ActionInput::Equip(Slot::Cuffs) => None,
                 ActionInput::Equip(slot) => {
                     equipment.0.push(EquipAction::Equip(slot));
                     None
@@ -667,6 +669,12 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn => None,
+                ActionInput::Resist => {
+                    commands
+                        .entity(controls.0)
+                        .insert(rs13_classic::security::WantsResist(true));
+                    None
+                }
                 ActionInput::Say(text) => {
                     speech.0.push(text);
                     None

@@ -426,7 +426,8 @@ mod tests {
 pub struct Dressed(Vec<String>);
 
 /// Order clothing is drawn over the body, bottom to top (Luna's overlays).
-const DRAW_ORDER: [Slot; 11] = [
+const DRAW_ORDER: [Slot; 12] = [
+    Slot::Cuffs,
     Slot::Uniform,
     Slot::Id,
     Slot::Shoes,

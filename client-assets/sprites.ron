@@ -2342,6 +2342,12 @@
         "atmos-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "atmos") },
         "forensic-scanner": { "": (dmi: "icons/obj/device.dmi", state: "forensic0") },
         "infra-sensor": { "": (dmi: "icons/obj/device.dmi", state: "infra_sensor") },
+        "worn:handcuffs": {
+            "": (dmi: "icons/mob/mob.dmi", state: "handcuff1"),
+            "lying": (dmi: "icons/mob/mob.dmi", state: "handcuff2"),
+        },
+        "turret": { "grey_target_prism": (dmi: "icons/obj/turrets.dmi", state: "grey_target_prism") },
+        "turret-control": { "motion3": (dmi: "icons/obj/device.dmi", state: "motion3") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

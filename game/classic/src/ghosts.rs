@@ -51,7 +51,12 @@ pub fn leave_body(world: &mut World, body: Entity) -> Option<Entity> {
     let sprite = world.get::<Appearance>(body)?.sprite.clone();
     let worn: Vec<_> = world
         .get::<Equipment>(body)
-        .map(|e| e.0.iter().map(|(slot, item)| (*slot, *item)).collect::<Vec<_>>())
+        .map(|e| {
+            e.0.iter()
+                .filter(|(slot, _)| **slot != rs13_world::Slot::Cuffs)
+                .map(|(slot, item)| (*slot, *item))
+                .collect::<Vec<_>>()
+        })
         .unwrap_or_default()
         .into_iter()
         .filter_map(|(slot, item)| Some((slot, world.get::<Appearance>(item)?.clone())))

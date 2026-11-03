@@ -291,6 +291,8 @@
     "atmos-analyzer": (gender: neuter, sg: (nom: "air analyzer", indef: "an air analyzer"), pl: Some((nom: "air analyzers"))),
     "forensic-scanner": (gender: neuter, sg: (nom: "forensic scanner", indef: "a forensic scanner"), pl: Some((nom: "forensic scanners"))),
     "infra-sensor": (gender: neuter, sg: (nom: "infrared sensor", indef: "an infrared sensor"), pl: Some((nom: "infrared sensors"))),
+    "turret": (gender: neuter, sg: (nom: "turret", indef: "a turret"), pl: Some((nom: "turrets"))),
+    "turret-control": (gender: neuter, sg: (nom: "turret control", indef: "a turret control"), pl: Some((nom: "turret controls"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

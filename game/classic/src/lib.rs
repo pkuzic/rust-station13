@@ -67,6 +67,7 @@ pub mod power_monitor;
 pub mod pulling;
 pub mod radio;
 pub mod rng;
+pub mod security;
 pub mod shields;
 pub mod smes_panel;
 pub mod smoking;
@@ -361,6 +362,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    security::run_cuffs,
+                    security::run_turrets,
                     weapons::run_shots,
                     weapons::run_rechargers,
                     brig::run_brig,

@@ -559,6 +559,8 @@
         (path: "/obj/item/device/analyzer", id: "atmos-analyzer"),
         (path: "/obj/item/device/detective_scanner", id: "forensic-scanner"),
         (path: "/obj/item/device/infra_sensor", id: "infra-sensor"),
+        (path: "/obj/machinery/turret", id: "turret"),
+        (path: "/obj/machinery/turretid", id: "turret-control"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),
