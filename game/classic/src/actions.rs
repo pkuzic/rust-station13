@@ -179,6 +179,7 @@ pub fn process_actions(
                             scan_consoles,
                             records_consoles,
                             id_computers,
+                            plant_pots,
                         ),
                     ),
                 ),
@@ -288,6 +289,7 @@ pub fn process_actions(
                             Query<(), With<crate::medbay::ScannerConsole>>,
                             Query<(), With<crate::records::RecordsConsole>>,
                             Query<(), With<crate::id_computer::IdComputer>>,
+                            Query<(), With<crate::hydroponics::PlantPot>>,
                         ),
                     ),
                 ),
@@ -372,6 +374,14 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if plant_pots.contains(target)
+                        && !tool.is_some_and(crate::chemistry::is_chem_tool)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Plant pots (`hydroponics.md`). Glassware pours water into them instead.
+                    commands.queue(move |world: &mut World| crate::hydroponics::click(world, mob, target));
+                }
                 Action::UseOn(target)
                     if id_computers.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
@@ -683,6 +693,11 @@ pub fn process_actions(
                         }
                         if shield_parts.contains(target) {
                             commands.queue(move |world: &mut World| {
+                                if let Some(more) = crate::hydroponics::examine(world, target)
+                                    && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                                {
+                                    outbox.0.push(more);
+                                }
                                 if let Some(more) = crate::id_computer::examine(world, target)
                                     && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
                                 {

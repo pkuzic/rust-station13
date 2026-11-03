@@ -345,6 +345,15 @@ examine-card = It belongs to { $name }, { $job ->
     [mime] Mime
    *[assistant] Assistant
 }.
+pot-occupied = Something is already growing in it.
+pot-planted = You plant the seed.
+pot-cleared = You clear away the dead plant.
+pot-harvested = You harvest { $value } from the plant.
+pot-not-ready = It isn't ready to harvest yet.
+examine-pot-empty = Nothing is growing in it. It holds { $value } units of water.
+examine-pot-dead = The plant in it is dead.
+examine-pot-ripe = The plant in it is ready to harvest. It holds { $value } units of water.
+examine-pot-growing = Something is growing in it. It holds { $value } units of water.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

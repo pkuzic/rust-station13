@@ -49,6 +49,7 @@ pub mod ghosts;
 pub mod hands;
 pub mod health;
 pub mod heaters;
+pub mod hydroponics;
 pub mod id_computer;
 pub mod igniters;
 pub mod jetpacks;
@@ -399,6 +400,7 @@ impl Plugin for ClassicPlugin {
                             id_computer::update_id_views,
                             records::run_records,
                             records::update_records_views,
+                            hydroponics::run_pots,
                         )
                             .chain(),
                         autolathe::run_autolathes,
