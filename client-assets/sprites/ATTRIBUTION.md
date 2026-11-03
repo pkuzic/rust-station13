@@ -54,6 +54,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `autolathe:autolathe_n` | `icons/obj/stationobjs.dmi : "autolathe_n"` | CC-BY-SA 3.0 |
 | `backpack:` | `icons/obj/storage.dmi : "backpack"` | CC-BY-SA 3.0 |
 | `banana:` | `icons/obj/items.dmi : "banana"` | CC-BY-SA 3.0 |
+| `barrier:barrier0` | `icons/obj/objects.dmi : "barrier0"` | CC-BY-SA 3.0 |
+| `barrier:barrier1` | `icons/obj/objects.dmi : "barrier1"` | CC-BY-SA 3.0 |
 | `barstool:` | `icons/obj/objects.dmi : "barstool"` | CC-BY-SA 3.0 |
 | `bartender-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "ba_suit"` | CC-BY-SA 3.0 |
 | `beaker:` | `icons/obj/chemical.dmi : "beaker"` | CC-BY-SA 3.0 |

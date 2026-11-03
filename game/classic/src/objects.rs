@@ -215,6 +215,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::security::BARRIER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::security::spawn_barrier(world, pos, id));
+    }
     if proto == crate::hydroponics::PLANT_POT {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::hydroponics::spawn_pot(world, pos, id));

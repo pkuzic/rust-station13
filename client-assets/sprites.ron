@@ -2705,6 +2705,10 @@
         "carrot": { "": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "carrot") },
         "seed-potato": { "": (dmi: "icons/GoonHydroPort/hydromisc.dmi", state: "seed-br") },
         "potato": { "": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "potato") },
+        "barrier": {
+            "barrier0": (dmi: "icons/obj/objects.dmi", state: "barrier0"),
+            "barrier1": (dmi: "icons/obj/objects.dmi", state: "barrier1"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
