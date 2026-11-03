@@ -10,7 +10,6 @@
 //      1 /obj/effect/landmark/nuke_spawn
 //      4 /obj/effect/landmark/synbomb
 //      5 /obj/effect/landmark/synd_spawn
-//      3 /obj/item/ammo_magazine/external/m12mm
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      1 /obj/item/toy/minisingulo
 //      1 /obj/item/weapon/camera_test
@@ -86,7 +85,7 @@
         'O': (tile: (id: "floor"), objects: ["canister", (id: "light", dir: South)]),
         'P': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "intercom"]),
         'Q': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: South, state: Some("reinf_tabledir")), "clipboard", (id: "paper", vars: {"pixel_y": "4"}), (id: "pen", vars: {"pixel_x": "-5", "pixel_y": "5"})]),
-        'R': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir"))]),
+        'R': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir")), "magazine-12mm", "magazine-12mm", "magazine-12mm"]),
         'S': (tile: (id: "floor"), objects: ["vending-cigarette"]),
         'T': (tile: (id: "floor"), objects: [(id: "light", dir: South), "toolbox-syndicate"]),
         'U': (tile: (id: "floor"), objects: [(id: "door-button", vars: {"id": "synpriv", "pixel_x": "23"})]),

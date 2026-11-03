@@ -7,9 +7,7 @@
 //     21 /obj/effect/landmark/crew_spawn
 //      1 /obj/effect/landmark/disk_spawn
 //     15 /obj/effect/landmark/hostile_spawn
-//      1 /obj/item/ammo_magazine/box/shotgun/bean
 //      1 /obj/item/clothing/gloves/fyellow
-//      1 /obj/item/weapon/gun/projectile/revolver/doublebarrel
 //      1 /obj/item/weapon/gun/syringe
 //      2 /obj/item/weapon/plantanalyzer
 //      1 /obj/item/weapon/platform
@@ -133,8 +131,8 @@
         'K': (tile: (id: "floor"), objects: [(id: "light", dir: West), "locker-booze"]),
         'L': (tile: (id: "floor"), objects: [(id: "scrubber", dir: South), "locker-booze"]),
         'M': (tile: (id: "floor"), objects: ["disposal-bin", (id: "disposal-pipe", dir: South, state: Some("pipe-t"))]),
-        'N': (tile: (id: "floor"), objects: [(id: "table-wood", dir: South, state: Some("wood_table"))]),
-        'O': (tile: (id: "floor"), objects: ["wardrobe-bar", "waiter-outfit", "waistcoat"]),
+        'N': (tile: (id: "floor"), objects: [(id: "table-wood", dir: South, state: Some("wood_table")), "double-barrel"]),
+        'O': (tile: (id: "floor"), objects: ["wardrobe-bar", "waiter-outfit", "waistcoat", "beanbag-box"]),
         'P': (tile: (id: "floor"), objects: ["stool"]),
         'Q': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "table", dir: South, state: Some("table_1tilethick"))]),
         'R': (tile: (id: "floor"), objects: [(id: "pipe", dir: SouthEast), (id: "chair", dir: East)]),

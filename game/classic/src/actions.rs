@@ -167,7 +167,14 @@ pub fn process_actions(
                         turret_controls,
                         reagent_holders,
                         dispensers_chem,
-                        (medbay_sleepers, medbay_consoles, medbay_cells, chem_masters, fill_tanks),
+                        (
+                            medbay_sleepers,
+                            medbay_consoles,
+                            medbay_cells,
+                            chem_masters,
+                            bullet_guns,
+                            fill_tanks,
+                        ),
                     ),
                 ),
             ),
@@ -262,6 +269,7 @@ pub fn process_actions(
                             Query<(), With<crate::medbay::SleeperConsole>>,
                             Query<(), With<crate::medbay::CryoCell>>,
                             Query<(), With<crate::chem_master::ChemMaster>>,
+                            Query<(), With<crate::weapons::Caliber>>,
                             Query<
                                 (),
                                 Or<(
@@ -354,6 +362,16 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if bullet_guns.contains(target)
+                        && tool.is_some_and(crate::weapons::is_ammo)
+                        && (hands.left == Some(target)
+                            || hands.right == Some(target)
+                            || places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))) =>
+                {
+                    // Loading a bullet gun (`weapons.md`).
+                    commands.queue(move |world: &mut World| crate::weapons::load(world, mob, target));
+                }
                 Action::UseOn(target)
                     if fill_tanks.contains(target)
                         && tool.is_some_and(crate::chemistry::is_glass)

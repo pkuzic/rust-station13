@@ -1,4 +1,4 @@
-# Energy guns and stun batons
+# Guns and stun batons
 
 Sources: `luna:code/modules/projectiles/gun.dm`, `guns/energy.dm`, `guns/energy/laser.dm`, `stun.dm`,
 `nuclear.dm`, `projectile.dm`, `projectile/beams.dm`, `projectile/energy.dm`,
@@ -28,6 +28,29 @@ electrode, and beams go through them.
 - **Beam:** 20 burn on a random part, mostly the chest.
 - **Electrode:** no damage, and knocked down for 20 s (`flashes.md`).
 
+## Bullet guns
+
+They come loaded and fire the same way, with rounds instead of charge. Click a gun with ammunition to
+load as many rounds as fit, whether the gun is on the floor in reach or in your other hand. A gun takes
+one kind of round at a time. Rechargers don't take them.
+
+| Gun | Caliber | Holds | Starts with |
+|---|---|---|---|
+| **Stechtkin pistol** (`pistol`) | 9mm | 8 | 9mm |
+| **Revolver** (`revolver`) | .38 | 6 | .38 |
+| **Combat shotgun** (`combat-shotgun`) | .12 | 8 | slugs |
+| **Double-barreled shotgun** (`double-barrel`) | .12 | 2 | beanbags |
+
+| Ammunition | Caliber | Rounds | Brute | Knocks down for |
+|---|---|---|---|---|
+| `magazine-9mm` | 9mm | 8 | 30 | |
+| `magazine-12mm` | 12mm | 20 | 25 | 6 s |
+| `speed-loader-38` | .38 | 6 | 10 | 20 s |
+| `slug-box` | .12 | 8 | 60 | |
+| `beanbag-box` | .12 | 8 | 10 | 20 s |
+
+No gun on the decks takes 12mm yet.
+
 ## Stun baton (`stun-baton`)
 
 Force 10. Click it in hand to turn it on or off; with 1000 units or less it stays off. Its cell holds
@@ -53,5 +76,6 @@ out. Every 2 seconds it adds 100 to a gun or 250 to a baton, and shows when it's
 | Stutter and blurred eyes | Not built |
 | A baton's cell can be swapped, and an EMP drains them | Not built |
 | Wrenching a recharger loose | Not built |
-| Bullet guns, shotguns, syringe guns and laser tag | Not built |
+| A gun holds a row of casings, ejects them, and a pistol takes a whole magazine | A count of one kind of round, moved across one click at a time, and the magazine stays in your hand |
+| Other bullet guns, syringe guns and laser tag | Not built |
 | Clumsy shooters | Not built |

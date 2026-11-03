@@ -5,18 +5,11 @@
 // Skipped (no prototype yet):
 //      4 /obj/effect/landmark/alterations/nopath
 //      2 /obj/effect/landmark/disk_spawn
-//      3 /obj/item/ammo_magazine/box/c38
-//      2 /obj/item/ammo_magazine/box/shotgun
-//      2 /obj/item/ammo_magazine/box/shotgun/bean
-//      4 /obj/item/ammo_magazine/external/mc9mm
 //      3 /obj/item/clothing/mask/cigarette/cigar
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      4 /obj/item/weapon/anobattery
 //      2 /obj/item/weapon/anodevice
 //      2 /obj/item/weapon/camera_test
-//      2 /obj/item/weapon/gun/projectile/automatic/pistol
-//      1 /obj/item/weapon/gun/projectile/revolver/detective
-//      1 /obj/item/weapon/gun/projectile/shotgun/combat
 //      1 /obj/item/weapon/secstorage/ssafe
 //      4 /obj/item/weapon/storage/box/grenades/flashbang
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
@@ -811,9 +804,9 @@
         '佢': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: East), (id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),
         '佣': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North), (id: "table-wood", dir: South, state: Some("wood_1tilethick")), "fingerprint-case", "voice-disk", "voice-recorder"]),
         '佤': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_x": "27"}), (id: "disposal-pipe", dir: South, state: Some("pipe-t")), "disposal-bin"]),
-        '佥': (tile: (id: "floor"), objects: [(id: "table-wood", dir: East, state: Some("wood_1tileendtable"))]),
+        '佥': (tile: (id: "floor"), objects: [(id: "table-wood", dir: East, state: Some("wood_1tileendtable")), "revolver"]),
         '佦': (tile: (id: "floor"), objects: [(id: "table-wood", dir: West, state: Some("wood_1tilethick")), "coffee"]),
-        '佧': (tile: (id: "floor"), objects: [(id: "table-wood", dir: NorthWest, state: Some("wood_1tilethick"))]),
+        '佧': (tile: (id: "floor"), objects: [(id: "table-wood", dir: NorthWest, state: Some("wood_1tilethick")), "speed-loader-38", "speed-loader-38", "speed-loader-38"]),
         '佨': (tile: (id: "plating"), objects: [(id: "manifold", dir: West), (id: "light-small", dir: East), (id: "cable", ends: [North, South]), (id: "cable", ends: [East])]),
         '佩': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: South), (id: "pipe", dir: East), (id: "cable", ends: [North, West])]),
         '佪': (tile: (id: "floor"), objects: [(id: "scrubber", dir: West), (id: "camera", dir: East, vars: {"c_tag": "Security HQ West Entrance", "network": "Luna"})]),
@@ -1003,8 +996,8 @@
         '倢': (tile: (id: "floor"), objects: [(id: "light-small", dir: East), (id: "camera", dir: West, vars: {"c_tag": "Brig Cell B"}), (id: "flasher", vars: {"id": "Cell 2", "pixel_x": "24"})]),
         '倣': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_1tileendtable")), (id: "camera", dir: East, vars: {"c_tag": "Secure Storage"})]),
         '値': (tile: (id: "floor"), objects: ["shield-plate"]),
-        '倥': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [South, East]), "rack"]),
-        '倦': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "rack"]),
+        '倥': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [South, East]), "rack", "combat-shotgun"]),
+        '倦': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "rack", "pistol", "pistol"]),
         '倧': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "secure_storage"}), (id: "cable", ends: [East, West])]),
         '倨': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "shield-plate"]),
         '倩': (tile: (id: "floor"), objects: ["rack", "armor-vest", "helmet", "armor-vest", "helmet", "armor-vest", "helmet", (id: "cable", ends: [East, West])]),
@@ -1020,9 +1013,9 @@
         '倳': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), (id: "handcuffs", vars: {"pixel_x": "1", "pixel_y": "4"}), (id: "pipe", dir: East), "flashlight"]),
         '倴': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir")), (id: "pipe", dir: East), "first-aid-kit", "first-aid-kit"]),
         '倵': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: West), (id: "manifold", dir: East), (id: "id-card", access: ["security", "laboratories_doors", "incinerator", "brig", "maint_tunnels", "medical", "security_passthrough", "maintenance_hall", "shield_generator"])]),
-        '倶': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: NorthWest, state: Some("reinf_tabledir"))]),
-        '倷': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir"))]),
-        '倸': (tile: (id: "floor"), objects: [(id: "vent", dir: North), (id: "table-reinforced", dir: NorthEast, state: Some("reinf_tabledir"))]),
+        '倶': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: NorthWest, state: Some("reinf_tabledir")), "slug-box", "slug-box"]),
+        '倷': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table-reinforced", dir: North, state: Some("reinf_tabledir")), "beanbag-box", "beanbag-box"]),
+        '倸': (tile: (id: "floor"), objects: [(id: "vent", dir: North), (id: "table-reinforced", dir: NorthEast, state: Some("reinf_tabledir")), "magazine-9mm", "magazine-9mm", "magazine-9mm", "magazine-9mm"]),
         '倹': (tile: (id: "floor"), objects: ["rack", "armor-rig-vest", "armor-rig-vest", "armor-rig-vest", "armor-rig-vest", (id: "light", dir: South)]),
         '债': (tile: (id: "floor"), objects: ["rack", "ablative-vest", "ablative-vest"]),
         '倻': (tile: (id: "floor"), objects: ["closet-bio-security", (id: "vent", dir: North), "oxygen-tank", "gas-mask", (id: "light", dir: South)]),

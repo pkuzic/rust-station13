@@ -67,6 +67,7 @@ pub const DING: &str = "ding";
 pub const FLASH: &str = "flash";
 pub const HANDCUFFS_SOUND: &str = "handcuffs";
 pub const LASER: &str = "laser";
+pub const GUNSHOT: &str = "gunshot";
 pub const TASER: &str = "taser";
 pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// Every sound id the game plays.
@@ -94,6 +95,7 @@ pub const ALL_SOUNDS: &[&str] = &[
     FLASH,
     HANDCUFFS_SOUND,
     LASER,
+    GUNSHOT,
     TASER,
     BATON_HIT_SOUND,
 ];
