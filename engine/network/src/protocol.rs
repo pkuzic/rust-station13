@@ -132,6 +132,8 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// Anywhere: say something to everyone on the server, out of character.
+    Ooc(String),
     /// Anywhere: start a vote, or vote.
     Vote(VoteAction),
     /// In the lobby: ready for the round to start, or not.

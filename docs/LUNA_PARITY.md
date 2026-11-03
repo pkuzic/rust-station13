@@ -23,7 +23,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 1.6 Objectives and the end-of-round report | S-M | `newobjective`, `intercept_report` | `traitor.md`. Intercept report left out |
 | [x] | 1.7 Votes: restart and mode | S | `game/vote`, `datums/vote` | `round.md`. Custom votes wait for admins |
 | [~] | 1.8 Traitor mode and uplink | M | `gamemodes/traitor`, `Abi79/uplinks` | `traitor.md`. Sells only what works: more as those systems arrive |
-| [ ] | 1.9 Chat: OOC, whisper, dead chat, emotes | M | `say`, `chat_tabs/ooc`, `Whisper`, `Me` | Speech and radio exist |
+| [x] | 1.9 Chat: OOC, whisper, dead chat, emotes | M | `say`, `chat_tabs/ooc`, `Whisper`, `Me` | `speech.md`. Emotes with a target left out |
 | [ ] | 1.10 Radio channels and department headsets | M | `items/devices/radio` | One channel now |
 | [ ] | 1.11 Combat: body part aiming, armour, disarm, grabs, knockouts | L | `NewMobs/Damagesystem`, `organs`, `human_defense` | Chest only now |
 | [ ] | 1.12 Clothing effects: armour, heat, no-slip, filtering | M | `clothing/*` | Wearing only now |

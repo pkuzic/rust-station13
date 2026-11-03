@@ -12,7 +12,7 @@ use rs13_classic::round::{Phase, RESTART_DS, Round, pick_mode};
 use rs13_classic::time::WorldTime;
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, LobbyPanel, NoticeChannel, Player};
+use rs13_network::protocol::{ActionInput, LobbyPanel, Notice, NoticeChannel, Player};
 use rs13_world::{DisplayName, LobbyView, MapLayer, TilePos};
 
 use crate::{Controls, NameChosen, SentPanel, SentStatus};
@@ -34,12 +34,14 @@ pub struct InLobby {
 pub fn read_lobby_inputs(
     mut links: Query<(Entity, &mut InLobby, &mut MessageReceiver<ActionInput>), Without<Controls>>,
     mut votes: ResMut<crate::vote::VoteInbox>,
+    mut ooc: ResMut<OocInbox>,
 ) {
     for (link, mut lobby, mut receiver) in &mut links {
         for input in receiver.receive() {
             match input {
                 ActionInput::Ready(ready) => lobby.ready = ready,
                 ActionInput::Vote(action) => votes.0.push((link, action)),
+                ActionInput::Ooc(text) => ooc.0.push((link, text)),
                 ActionInput::JoinRound => {
                     lobby.ready = true;
                     lobby.joining = true;
@@ -52,6 +54,46 @@ pub fn read_lobby_inputs(
                 }
                 _ => {}
             }
+        }
+    }
+}
+
+/// What people said out of character this tick, by link.
+#[derive(Resource, Debug, Default)]
+pub struct OocInbox(pub Vec<(Entity, String)>);
+
+/// Pass on what's said out of character to every client, in the lobby or not (Luna `ooc`). Those who've
+/// given no name yet are "someone": there are no accounts to show instead.
+pub fn send_ooc(
+    mut inbox: ResMut<OocInbox>,
+    speakers: Query<(Option<&Controls>, Option<&InLobby>)>,
+    names: Query<&DisplayName>,
+    mut links: Query<&mut MessageSender<Notice>, With<RemoteId>>,
+) {
+    for (link, typed) in inbox.0.drain(..) {
+        let Ok((controls, lobby)) = speakers.get(link) else {
+            continue;
+        };
+        let cleaned: String = typed
+            .chars()
+            .filter(|c| !c.is_control())
+            .take(rs13_classic::speech::MAX_MESSAGE_LEN)
+            .collect();
+        let text = cleaned.trim();
+        if text.is_empty() {
+            continue;
+        }
+        let name = controls
+            .and_then(|c| names.get(c.0).ok())
+            .map(|n| n.0.clone())
+            .or_else(|| lobby.and_then(|l| l.name.clone()));
+        let msg = LocMsg::new("ooc-say").arg("text", text);
+        let msg = match name {
+            Some(name) => msg.arg("name", name),
+            None => msg.msg("name", "ooc-unnamed"),
+        };
+        for mut sender in &mut links {
+            sender.send::<NoticeChannel>(Notice(msg.clone()));
         }
     }
 }

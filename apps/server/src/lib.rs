@@ -178,6 +178,9 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
             lobby::send_lobby,
             respawn_ghosts.after(queue_actions),
             send_notices,
+            lobby::send_ooc
+                .after(queue_actions)
+                .after(lobby::read_lobby_inputs),
             send_sounds,
             send_status,
             send_panels,
@@ -186,6 +189,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     )
     .init_resource::<vote::Votes>()
     .init_resource::<vote::VoteInbox>()
+    .init_resource::<lobby::OocInbox>()
     .add_systems(FixedUpdate, (lobby::run_round, vote::run_votes, vote::send_votes))
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
     // for a client that has just joined, before anything is sent to it.
@@ -402,6 +406,7 @@ fn queue_actions(
     mut links: Query<(Entity, &Controls, &mut MessageReceiver<ActionInput>)>,
     mut respawns: MessageWriter<RespawnRequest>,
     mut votes: ResMut<vote::VoteInbox>,
+    mut ooc: ResMut<lobby::OocInbox>,
     mut mobs: Query<
         (
             &mut PendingActions,
@@ -496,6 +501,10 @@ fn queue_actions(
                     }
                     ActionInput::Vote(action) => {
                         votes.0.push((link, action));
+                        None
+                    }
+                    ActionInput::Ooc(text) => {
+                        ooc.0.push((link, text));
                         None
                     }
                     ActionInput::Respawn => {
@@ -814,6 +823,10 @@ fn queue_actions(
                 ActionInput::Respawn => None,
                 ActionInput::Vote(action) => {
                     votes.0.push((link, action));
+                    None
+                }
+                ActionInput::Ooc(text) => {
+                    ooc.0.push((link, text));
                     None
                 }
                 ActionInput::Resist => {

@@ -69,6 +69,8 @@ pub enum RadioMode {
     Intercom,
     /// The headset on the ears (Luna `;`).
     Headset,
+    /// Not into a radio at all (Luna `:w`).
+    Whisper,
 }
 
 /// Split a radio prefix (`:r`, `#l`, `.i`, or the same keys on a Russian layout) off the
@@ -88,6 +90,7 @@ pub fn split_mode(text: &str) -> (Option<RadioMode>, &str) {
         Some('r' | 'к') => RadioMode::RightHand,
         Some('l' | 'д') => RadioMode::LeftHand,
         Some('i' | 'ш') => RadioMode::Intercom,
+        Some('w' | 'ц') => RadioMode::Whisper,
         _ => return (None, text),
     };
     (Some(mode), chars.as_str().trim_start())
