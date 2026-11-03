@@ -5,9 +5,6 @@
 // Skipped (no prototype yet):
 //      1 /obj/effect/landmark/disk_spawn
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      1 /obj/item/weapon/reagent_containers/food/drinks/soda/rootbeer
-//      1 /obj/item/weapon/reagent_containers/food/snacks/burger/fishburger
-//      1 /obj/item/weapon/reagent_containers/food/snacks/candycane
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
 //      1 /obj/machinery/air_sensor
 //      1 /obj/machinery/airlock_sensor
@@ -150,7 +147,7 @@
         'ë': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "carbon-dioxide-pressure-tank", dir: West)]),
         'ì': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "firedoor", dir: South), (id: "window-pane", dir: East), (id: "window-pane", dir: West)]),
         'í': (tile: (id: "floor"), objects: [(id: "comfy-chair-brown", dir: East)]),
-        'î': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), (id: "fire-alarm", dir: South, vars: {"pixel_y": "26"}), "first-aid-kit"]),
+        'î': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), (id: "fire-alarm", dir: South, vars: {"pixel_y": "26"}), "candy-cane", "first-aid-kit"]),
         'ï': (tile: (id: "floor"), objects: ["paper-bin", "pen", "folder-yellow", (id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
         'ð': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_y": "20"}), (id: "scrubber", dir: East), (id: "comfy-chair-brown", dir: West)]),
         'ñ': (tile: (id: "wall", solid: true), objects: [(id: "manifold", dir: East)]),
@@ -173,7 +170,7 @@
         'ă': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("table_1tileendtable")), "insulated-gloves", "utility-belt-loaded"]),
         'Ą': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"})]),
         'ą': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "space-cleaner"]),
-        'Ć': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir"))]),
+        'Ć': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir")), "fishburger", (id: "rootbeer", vars: {"pixel_x": "-5"})]),
         'ć': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "light", dir: East)]),
         'Ĉ': (tile: (id: "wall", solid: true), objects: [(id: "pipe", dir: NorthEast)]),
         'ĉ': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "air-alarm", dir: East, vars: {"pixel_x": "-22"}), (id: "scrubber", dir: West, above_floor: true)]),

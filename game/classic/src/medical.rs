@@ -23,6 +23,8 @@ pub fn heals(proto: &str) -> Option<(f32, f32)> {
     match proto {
         "bruise-pack" => Some((30.0, 0.0)),
         "ointment" => Some((0.0, 20.0)),
+        "advanced-trauma-kit" => Some((60.0, 0.0)),
+        "advanced-burn-kit" => Some((0.0, 40.0)),
         _ => None,
     }
 }

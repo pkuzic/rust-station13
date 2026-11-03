@@ -98,6 +98,25 @@ pub fn spawn_food(entity: &mut EntityWorldMut, proto: &str) {
         crate::microwaves::BURNT_MESS => {
             entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT, None));
         }
+        // Each is its reagents plus the 8 every snack starts with.
+        "banana" => {
+            entity.insert(snack(13.0, 2.0, 13.0 * NUTRIMENT, None));
+        }
+        "plump-helmet" => {
+            entity.insert(snack(14.0, 2.0, 14.0 * NUTRIMENT, None));
+        }
+        "waffles" => {
+            entity.insert(snack(16.0, 2.0, 16.0 * NUTRIMENT, None));
+        }
+        "noodles" => {
+            entity.insert(snack(12.0, 2.0, 12.0 * NUTRIMENT, None));
+        }
+        "candy-cane" => {
+            entity.insert(snack(12.0, 2.0, 8.0 * NUTRIMENT + 4.0 * SUGAR, None));
+        }
+        "fishburger" => {
+            entity.insert(snack(14.0, 2.0, 14.0 * NUTRIMENT, None));
+        }
         "chips" => {
             entity.insert(snack(11.0, 1.0, 11.0 * NUTRIMENT, Some("trash-chips")));
         }

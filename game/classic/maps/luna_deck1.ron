@@ -12,13 +12,9 @@
 //      5 /obj/effect/landmark/synd_spawn
 //      3 /obj/item/ammo_magazine/external/m12mm
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      1 /obj/item/stack/medical/advanced/bruise_pack
-//      1 /obj/item/stack/medical/advanced/ointment
 //      1 /obj/item/toy/minisingulo
 //      1 /obj/item/weapon/camera_test
 //      1 /obj/item/weapon/card/id/captains_spare
-//      1 /obj/item/weapon/coin/diamond
-//      1 /obj/item/weapon/coin/plasma
 //      1 /obj/item/weapon/melee/energy/sword
 //      3 /obj/item/weapon/shield/energy
 //      3 /obj/item/weapon/storage/belt/syndie
@@ -81,7 +77,7 @@
         'F': (tile: (id: "floor"), objects: [(id: "blast-door", vars: {"id": "syndicate", "density": "0"})]),
         'G': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "paper-bin"]),
         'H': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_middle"))]),
-        'I': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir"))]),
+        'I': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir")), "advanced-trauma-kit", "advanced-burn-kit"]),
         'J': (tile: (id: "floor"), objects: [(id: "light", dir: South)]),
         'K': (tile: (id: "floor"), objects: [(id: "chair", dir: East)]),
         'L': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "clipboard", (id: "paper", vars: {"pixel_y": "4"}), (id: "pen", vars: {"pixel_x": "-5", "pixel_y": "5"})]),
@@ -247,7 +243,7 @@
         'Υ': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: East, vars: {"pixel_x": "24"}), (id: "camera", dir: West, vars: {"c_tag": "Bridge East", "network": "Luna"})]),
         'Φ': (tile: (id: "floor"), objects: [(id: "stairs-entry", dir: South), (id: "light", dir: West)]),
         'Χ': (tile: (id: "floor"), objects: [(id: "stairs-entry", dir: South)]),
-        'Ψ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table-reinforced", dir: South, state: Some("reinf_1tilethick"))]),
+        'Ψ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table-reinforced", dir: South, state: Some("reinf_1tilethick")), "coin-diamond"]),
         'Ω': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: South, state: Some("reinf_1tilethick")), (id: "camera", dir: North, vars: {"c_tag": "Bridge Command", "network": "Luna"}), "shields-button"]),
         'α': (tile: (id: "floor"), objects: [(id: "stairs-down", dir: South)]),
         'β': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: South), (id: "window-pane", dir: West), (id: "window-pane", dir: East), (id: "window-pane", dir: North), (id: "cable", ends: [North, South])]),
@@ -294,7 +290,7 @@
         'С': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "radio"]),
         'Т': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: South, state: Some("reinf_tabledir")), "clipboard", "pen"]),
         'У': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "table-reinforced", dir: South, state: Some("reinf_tabledir")), "cartridge-head", (id: "cable", ends: [North, South])]),
-        'Ф': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "table-reinforced", dir: South, state: Some("reinf_tabledir"))]),
+        'Ф': (tile: (id: "floor"), objects: [(id: "cable", ends: [South, West]), (id: "table-reinforced", dir: South, state: Some("reinf_tabledir")), "coin-plasma"]),
         'Х': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "table-reinforced", dir: South, state: Some("reinf_tabledir")), (id: "pepper-spray", vars: {"pixel_x": "3", "pixel_y": "3"}), (id: "pepper-spray", vars: {"pixel_x": "-3", "pixel_y": "3"}), "pepper-spray"]),
         'Ц': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s")), (id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir")), "first-aid-kit"]),
         'Ч': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "table-wood", dir: NorthWest, state: Some("wood_tabledir")), "chain-of-command"]),
