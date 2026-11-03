@@ -17,6 +17,7 @@ pub mod cables;
 pub mod cameras;
 pub mod cells;
 pub mod chairs;
+pub mod chemistry;
 pub mod cloning;
 pub mod closets;
 pub mod combat;
@@ -362,6 +363,7 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    chemistry::run_chemistry,
                     security::run_cuffs,
                     security::run_turrets,
                     weapons::run_shots,

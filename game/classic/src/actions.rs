@@ -158,7 +158,15 @@ pub fn process_actions(
                     microwaves,
                     arcades,
                     airlock_parts,
-                    (scanners, cloning_consoles, door_timers, rechargers, cuffed, turret_controls),
+                    (
+                        scanners,
+                        cloning_consoles,
+                        door_timers,
+                        rechargers,
+                        cuffed,
+                        turret_controls,
+                        reagent_holders,
+                    ),
                 ),
             ),
         ),
@@ -245,6 +253,7 @@ pub fn process_actions(
                         Query<(), With<crate::weapons::Recharger>>,
                         Query<(), With<crate::security::Cuffed>>,
                         Query<(), With<crate::security::TurretControl>>,
+                        Query<(), With<crate::chemistry::Reagents>>,
                     ),
                 ),
             ),
@@ -328,6 +337,31 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // Syringes, pills, hyposprays and glassware (`chemistry.md`).
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::chemistry::is_chem_tool)
+                        && (reagent_holders.contains(target) || people.contains(target))
+                        && (hands.active_item() == Some(target)
+                            || places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))
+                            || target == mob) =>
+                {
+                    let proto = tool.unwrap_or_default().to_owned();
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        let Some(held) = held else { return };
+                        if crate::chemistry::is_syringe(&proto) {
+                            crate::chemistry::use_syringe(world, mob, held, target);
+                        } else if target == held {
+                            // Pills are for people; the rest have nothing to do by themselves.
+                        } else if crate::chemistry::is_pill(&proto) {
+                            crate::chemistry::use_pill(world, mob, held, target);
+                        } else if crate::chemistry::is_hypo(&proto) {
+                            crate::chemistry::use_hypo(world, mob, held, target);
+                        } else {
+                            crate::chemistry::pour(world, mob, held, target);
+                        }
+                    });
+                }
                 Action::UseOn(target)
                     if tool == Some(crate::security::HANDCUFFS)
                         && people.contains(target)
@@ -517,6 +551,15 @@ pub fn process_actions(
                                     .arg("lighting", mode(Channel::Lighting))
                                     .arg("environment", mode(Channel::Environment)),
                             );
+                        }
+                        if reagent_holders.contains(target) {
+                            commands.queue(move |world: &mut World| {
+                                if let Some(more) = crate::chemistry::examine(world, target)
+                                    && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                                {
+                                    outbox.0.push(more);
+                                }
+                            });
                         }
                         if shield_parts.contains(target) {
                             commands.queue(move |world: &mut World| {
