@@ -210,6 +210,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if crate::scenery::is_scenery(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::scenery::spawn_scenery(world, proto, pos, id));
+    }
     if crate::reagent_tanks::is_tank(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         if let Some(tank) = crate::reagent_tanks::spawn_tank(world, proto, pos, id) {

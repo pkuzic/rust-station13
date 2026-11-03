@@ -1,0 +1,48 @@
+# Scenery
+
+Fixtures on `NSV_Luna.dmm` that nothing else needs yet. They stand where the map puts them, so the decks
+look as they should and block what they should, and they can be examined. Clicking them does nothing.
+
+Code: `game/classic/src/scenery.rs`. Tests: `game/classic/tests/scenery.rs`.
+
+| Prototype | Luna type | Dense | Blocks the view |
+|---|---|---|---|
+| `shuttle-engine` | `machinery/shuttle/engine/propulsion` | yes | yes |
+| `shuttle-engine-left` | `machinery/shuttle/engine/propulsion/burst/left` | yes | yes |
+| `shuttle-engine-right` | `machinery/shuttle/engine/propulsion/burst/right` | yes | yes |
+| `pod-engine` | `machinery/shuttle/engine/propulsion/pod` | yes | yes |
+| `shuttle-heater` | `machinery/shuttle/engine/heater` | yes |  |
+| `holopad` | `machinery/hologram_ai` |  |  |
+| `plastic-flaps` | `structure/plasticflaps` |  | yes |
+| `mirror` | `structure/mirror` |  |  |
+| `noticeboard` | `structure/noticeboard` |  |  |
+| `mop-bucket` | `structure/mopbucket` | yes |  |
+| `sign-deathsposal` | `structure/sign/deathsposal` |  |  |
+| `sign-nosmoking` | `structure/sign/nosmoking_1` |  |  |
+| `sign-fire` | `structure/sign/fire` |  |  |
+| `meat-spike` | `structure/kitchenspike` | yes |  |
+| `display-case` | `structure/displaycase` | yes |  |
+| `washer` | `machinery/washer` | yes |  |
+| `bookcase` | `machinery/bookcase` | yes |  |
+| `operating-table` | `machinery/optable` | yes |  |
+| `laser-machine` | `machinery/party/lasermachine` |  |  |
+| `turntable` | `machinery/party/turntable` |  |  |
+| `air-sensor` | `machinery/air_sensor` |  |  |
+| `airlock-sensor` | `machinery/airlock_sensor` |  |  |
+| `doppler-array` | `machinery/doppler_array` | yes |  |
+| `party-button` | `machinery/partyalarm` |  |  |
+| `mining-laser` | `machinery/mininglaser` | yes |  |
+| `scanner` | `machinery/scanner` | yes |  |
+
+## Differences from Luna
+
+These are real machines or structures in Luna, and each will need its own work to do what it does there:
+
+| Luna | Here |
+|---|---|
+| Shuttle engines belong to a shuttle's flight | Shuttles don't fly yet |
+| Bookcases hold books to read | No books |
+| Plastic flaps stop people but let crates and those crawling through | They block the view and anyone can walk through |
+| The operating table holds someone for surgery | No surgery |
+| Washers wash clothes, spikes hang meat, and mirrors change your hair | Nothing |
+| Holopads, doppler arrays, gas and airlock sensors, and party lights all do something | Nothing |
