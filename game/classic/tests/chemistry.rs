@@ -215,3 +215,64 @@ fn the_dead_dont_metabolise() {
     ticks(&mut app, 3 * MACHINE_TICKS);
     assert_eq!(amount(&app, mob, "kelotane"), 1.0);
 }
+
+#[test]
+fn reagents_mix_as_they_arrive() {
+    let (mut app, mob) = setup();
+    let beaker = hold(&mut app, mob, "beaker");
+    let other = spawn_object(app.world_mut(), &ObjectSpec::new("beaker"), NEXT).unwrap();
+    app.world_mut()
+        .get_mut::<Reagents>(beaker)
+        .unwrap()
+        .add("silicon", 10.0);
+    app.world_mut()
+        .get_mut::<Reagents>(other)
+        .unwrap()
+        .add("carbon", 10.0);
+    click(&mut app, mob, other);
+    let mixed = app.world().get::<Reagents>(other).unwrap();
+    assert_eq!(mixed.get("silicon"), 0.0);
+    assert_eq!(mixed.get("carbon"), 0.0);
+    assert_eq!(mixed.get("kelotane"), 20.0);
+}
+
+#[test]
+fn a_dispenser_fills_a_loaded_beaker_on_its_energy() {
+    use rs13_classic::chem_dispenser::{ChemDispenser, ChemOp, ChemPanelOut, PendingChemOps};
+    let (mut app, mob) = setup();
+    let machine = spawn_object(app.world_mut(), &ObjectSpec::new("chem-dispenser"), NEXT).unwrap();
+    let beaker = hold(&mut app, mob, "beaker");
+    click(&mut app, mob, machine);
+    assert_eq!(
+        app.world().get::<ChemDispenser>(machine).unwrap().beaker,
+        Some(beaker)
+    );
+    ticks(&mut app, 1);
+    let view = app
+        .world()
+        .get::<ChemPanelOut>(mob)
+        .unwrap()
+        .0
+        .clone()
+        .expect("open");
+    assert_eq!(view.beaker, Some((0, 50)));
+    let carbon = view.reagents.iter().position(|r| r == "carbon").unwrap();
+    let silicon = view.reagents.iter().position(|r| r == "silicon").unwrap();
+    {
+        let mut ops = app.world_mut().get_mut::<PendingChemOps>(mob).unwrap();
+        ops.0.push((machine, ChemOp::Amount(10)));
+        ops.0.push((machine, ChemOp::Dispense(carbon)));
+        ops.0.push((machine, ChemOp::Dispense(silicon)));
+    }
+    ticks(&mut app, 1);
+    assert_eq!(amount(&app, beaker, "kelotane"), 20.0);
+    assert_eq!(app.world().get::<ChemDispenser>(machine).unwrap().energy, 98.0);
+    app.world_mut()
+        .get_mut::<PendingChemOps>(mob)
+        .unwrap()
+        .0
+        .push((machine, ChemOp::Eject));
+    ticks(&mut app, 1);
+    assert_eq!(app.world().get::<GridPos>(beaker).unwrap().0, NEXT);
+    assert_eq!(app.world().get::<ChemDispenser>(machine).unwrap().beaker, None);
+}
