@@ -3,6 +3,8 @@
 //!
 //! Positions here are in tiles, with tile centres on whole numbers.
 
+use std::collections::HashSet;
+
 use crate::{Dir, TilePos};
 
 /// How far a person sees, in tiles: Luna's 15 × 15 view.
@@ -64,6 +66,48 @@ pub fn sees(eye: [f32; 2], tile: TilePos, opaque: impl Fn(TilePos) -> bool) -> b
     line_clear(eye, [tile.x as f32, tile.y as f32], |x, y| {
         (x == tile.x && y == tile.y) || !opaque(TilePos::new(x, y, tile.z))
     })
+}
+
+/// Whether a wall or closed door at `tile`, whose own centre isn't in sight, still shows: a floor
+/// tile beside it is in sight, or one touching it at the corner of a room. `sees` answers for the
+/// centres of other tiles.
+pub fn borders_seen(
+    tile: TilePos,
+    blocks: impl Fn(TilePos) -> bool,
+    mut sees: impl FnMut(TilePos) -> bool,
+) -> bool {
+    let n = |dx: i32, dy: i32| TilePos::new(tile.x + dx, tile.y + dy, tile.z);
+    let beside = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        .into_iter()
+        .any(|(dx, dy)| !blocks(n(dx, dy)) && sees(n(dx, dy)));
+    beside
+        || [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+            .into_iter()
+            .any(|(dx, dy)| !blocks(n(dx, dy)) && blocks(n(dx, 0)) && blocks(n(0, dy)) && sees(n(dx, dy)))
+}
+
+/// The tiles seen from `eye` within `range`: those whose centre is in sight, and walls and closed
+/// doors (`blocks`) that `borders_seen` lets show. Everything on a seen tile is seen, so the server
+/// sends and the client draws by this same test.
+pub fn seen_tiles(eye: TilePos, range: i32, blocks: impl Fn(TilePos) -> bool) -> HashSet<TilePos> {
+    let centre = [eye.x as f32, eye.y as f32];
+    let around: Vec<TilePos> = (-range..=range)
+        .flat_map(|dy| (-range..=range).map(move |dx| (dx, dy)))
+        .map(|(dx, dy)| TilePos::new(eye.x + dx, eye.y + dy, eye.z))
+        .collect();
+    let mut seen: HashSet<TilePos> = around
+        .iter()
+        .copied()
+        .filter(|t| sees(centre, *t, &blocks))
+        .collect();
+    let walls: Vec<TilePos> = around
+        .iter()
+        .copied()
+        .filter(|t| blocks(*t) && !seen.contains(t))
+        .filter(|t| borders_seen(*t, &blocks, |p| seen.contains(&p)))
+        .collect();
+    seen.extend(walls);
+    seen
 }
 
 /// The unit vector a facing points along.

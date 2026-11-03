@@ -199,7 +199,8 @@ black, as the client draws it (`apps/client/src/shadows.rs`):
   floor plan without what lies on it.
 - **F4** (lighting off) shows everything, for debugging.
 - **Server side** (`apps/server/src/sight.rs`): each client is sent only the things on the
-  map its mob can see, by the same test (`rs13_world::sight`), out to one tile past the
+  map its mob can see, by the same test (`rs13_world::sight`), wall and door tiles that border
+  what's seen included, out to one tile past the
   view. Always sent: the player's own mob and what it holds and wears, closed doors and
   light sources (the client needs them to draw shadows and light). What other people hold
   and wear is sent while they are. What is inside a container (a backpack, a box, a first
