@@ -195,7 +195,7 @@ pub fn run_conveyors(
         ),
     >,
     pullable: crate::pulling::Pullable,
-    blockers: Query<&GridPos, (With<Dense>, Without<Mob>)>,
+    blockers: Query<&GridPos, (With<Dense>, Without<Mob>, Without<crate::scenery::PlasticFlaps>)>,
     mobs: Query<&GridPos, With<Mob>>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
     barriers: crate::windoors::EdgeBarriers,

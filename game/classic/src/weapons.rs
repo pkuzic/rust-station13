@@ -413,7 +413,7 @@ fn blocked(world: &mut World, decks: &[TilePosDeck], from: TilePos, at: TilePos,
         Has<crate::furniture::Table>,
         Has<crate::furniture::Rack>,
         Has<Body>,
-    ), With<Dense>>();
+    ), (With<Dense>, Without<crate::scenery::PlasticFlaps>)>();
     if things
         .iter(world)
         .any(|(p, table, rack, body)| p.0 == at && !table && !rack && !body)

@@ -13,7 +13,7 @@ Code: `game/classic/src/scenery.rs`. Tests: `game/classic/tests/scenery.rs`.
 | `pod-engine` | `machinery/shuttle/engine/propulsion/pod` | yes | yes |
 | `shuttle-heater` | `machinery/shuttle/engine/heater` | yes |  |
 | `holopad` | `machinery/hologram_ai` |  |  |
-| `plastic-flaps` | `structure/plasticflaps` |  | yes |
+| `plastic-flaps` | `structure/plasticflaps` | yes | yes |
 | `mirror` | `structure/mirror` |  |  |
 | `noticeboard` | `structure/noticeboard` |  |  |
 | `mop-bucket` | `structure/mopbucket` | yes |  |
@@ -42,7 +42,7 @@ These are real machines or structures in Luna, and each will need its own work t
 |---|---|
 | Shuttle engines belong to a shuttle's flight | Shuttles don't fly yet |
 | Bookcases hold books to read | No books |
-| Plastic flaps stop people but let crates and those crawling through | They block the view and anyone can walk through |
+| Plastic flaps let through someone lying down | They stop anyone walking, and nobody can crawl here yet. What a conveyor carries, what's pulled and shots do get through, and they block air and the view, as in Luna |
 | The operating table holds someone for surgery | No surgery |
 | Washers wash clothes, spikes hang meat, and mirrors change your hair | Nothing |
 | Holopads, doppler arrays, gas and airlock sensors, and party lights all do something | Nothing |
