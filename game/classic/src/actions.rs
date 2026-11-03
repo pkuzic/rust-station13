@@ -178,6 +178,7 @@ pub fn process_actions(
                             body_scanners,
                             scan_consoles,
                             records_consoles,
+                            id_computers,
                         ),
                     ),
                 ),
@@ -286,6 +287,7 @@ pub fn process_actions(
                             Query<(), With<crate::medbay::BodyScanner>>,
                             Query<(), With<crate::medbay::ScannerConsole>>,
                             Query<(), With<crate::records::RecordsConsole>>,
+                            Query<(), With<crate::id_computer::IdComputer>>,
                         ),
                     ),
                 ),
@@ -370,6 +372,13 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if id_computers.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // The identification computer (`access.md`).
+                    commands.queue(move |world: &mut World| crate::id_computer::click(world, mob, target));
+                }
                 Action::UseOn(target)
                     if records_consoles.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
@@ -674,6 +683,11 @@ pub fn process_actions(
                         }
                         if shield_parts.contains(target) {
                             commands.queue(move |world: &mut World| {
+                                if let Some(more) = crate::id_computer::examine(world, target)
+                                    && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                                {
+                                    outbox.0.push(more);
+                                }
                                 if let Some(more) = crate::shields::examine(world, target)
                                     && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
                                 {

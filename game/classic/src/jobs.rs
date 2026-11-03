@@ -19,6 +19,8 @@ use crate::storage::{InStorage, Storage};
 #[derive(Debug, Deserialize)]
 pub struct Job {
     pub id: String,
+    /// What its ID card opens (Luna `get_access`).
+    pub access: Vec<String>,
     /// Put on when they arrive.
     pub wears: Vec<String>,
     /// In their hands.
@@ -43,6 +45,13 @@ pub struct JobCard(pub String);
 /// The job someone has.
 #[derive(Component, Debug, Clone, PartialEq, Eq)]
 pub struct HasJob(pub String);
+
+/// Whose a card is and the job on it (Luna `registered`, `assignment`).
+#[derive(Component, Debug, Clone, PartialEq, Eq)]
+pub struct CardOwner {
+    pub owner: Option<Entity>,
+    pub job: String,
+}
 
 /// Where someone took up their job, for when they swap it for another.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
@@ -118,7 +127,13 @@ pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
         .iter(world)
         .find(|(_, _, p)| p.0 == at)
         .map(|(e, j, _)| (e, j.0.clone()))?;
-    world.entity_mut(card).remove::<(JobCard, Hidden)>();
+    world
+        .entity_mut(card)
+        .remove::<(JobCard, Hidden)>()
+        .insert(CardOwner {
+            owner: Some(mob),
+            job: job.clone(),
+        });
     wear(world, mob, card);
     let kit = jobs().iter().find(|j| j.id == job)?;
     for proto in &kit.wears {
@@ -217,6 +232,7 @@ fn change_job(world: &mut World, mob: Entity, line: usize) -> bool {
         world
             .entity_mut(card)
             .remove::<WornBy>()
+            .remove::<CardOwner>()
             .insert((GridPos(post), JobCard(old), Hidden));
     }
     world.entity_mut(mob).insert(GridPos(at));

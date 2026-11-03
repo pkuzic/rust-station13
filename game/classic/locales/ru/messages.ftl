@@ -321,6 +321,38 @@ record-released = Освобождён
 record-active = Активен
 record-unconscious = *Без сознания*
 record-deceased = *Мёртв*
+id-computer-empty = Вставьте карту: нажмите на компьютер, держа её в руке.
+id-computer-card = Карта: { $name }. Должность: { $job }.
+id-computer-no-job = нет
+id-computer-eject = Извлечь карту
+examine-card = Владелец: { $name }, { $job ->
+    [captain] Капитан
+    [hop] Глава персонала
+    [hos] Глава службы безопасности
+    [chief-engineer] Главный инженер
+    [research-director] Директор исследований
+    [security-officer] Сотрудник службы безопасности
+    [warden] Надзиратель
+    [forensic-technician] Криминалист
+    [engineer] Инженер
+    [atmos-technician] Атмосферный техник
+    [medical-doctor] Врач
+    [chemist] Химик
+    [geneticist] Генетик
+    [scientist] Учёный
+    [roboticist] Робототехник
+    [hydroponicist] Гидропонист
+    [barman] Бармен
+    [chef] Повар
+    [janitor] Уборщик
+    [quartermaster] Завхоз
+    [cargo-technician] Грузчик
+    [shaft-miner] Шахтёр
+    [counselor] Советник
+    [clown] Клоун
+    [mime] Мим
+   *[assistant] Ассистент
+}.
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

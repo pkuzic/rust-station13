@@ -11,7 +11,6 @@
 //      2 /obj/machinery/computer/atmosphere/alerts
 //      1 /obj/machinery/computer/atmosphere/monitor
 //      1 /obj/machinery/computer/atmosphere/siphonswitch
-//      1 /obj/machinery/computer/card
 //      1 /obj/machinery/computer/cargo/ordercomp
 //      1 /obj/machinery/computer/cargo/supplycomp
 //      2 /obj/machinery/computer/general_air_control
@@ -195,7 +194,7 @@
         'ė': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "table-reinforced", dir: South, state: Some("reinf_1tilethick"))]),
         'Ę': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),
         'ę': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [East, West]), (id: "chair", dir: East)]),
-        'Ě': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "light", dir: East), (id: "camera", dir: West, vars: {"c_tag": "Arrivals Computers"})]),
+        'Ě': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "id-computer", (id: "light", dir: East), (id: "camera", dir: West, vars: {"c_tag": "Arrivals Computers"})]),
         'ě': (tile: (id: "r-wall", solid: true), objects: ["status-display", (id: "cable", ends: [East, West])]),
         'Ĝ': (tile: (id: "plating"), objects: [(id: "light-small", dir: West), (id: "cable", ends: [East, West])]),
         'ĝ': (tile: (id: "plating"), objects: [(id: "cable", ends: [South, West]), (id: "apc", dir: East), (id: "cable", ends: [West])]),

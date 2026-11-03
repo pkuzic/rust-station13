@@ -215,6 +215,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::id_computer::ID_COMPUTER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::id_computer::spawn_id_computer(world, pos, id));
+    }
     if crate::records::is_records(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::records::spawn_records(world, proto, pos, id));
@@ -663,6 +667,10 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             (
                 crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
                 (
+                    (
+                        crate::id_computer::PendingIdOps::default(),
+                        crate::id_computer::IdPanelOut::default(),
+                    ),
                     crate::records::PendingRecordOps::default(),
                     crate::records::RecordsPanelOut::default(),
                     crate::jobs::PendingJobOps::default(),
