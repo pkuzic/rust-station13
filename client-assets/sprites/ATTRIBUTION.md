@@ -559,6 +559,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `generator-input:` | `icons/obj/atmospherics/heat_exchanger.dmi : "intact"` | CC-BY-SA 3.0 |
 | `geneticist-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "genetics"` | CC-BY-SA 3.0 |
 | `genetics-analyzer:` | `icons/obj/device.dmi : "genetics"` | CC-BY-SA 3.0 |
+| `girder:girder` | `icons/obj/structures.dmi : "girder"` | CC-BY-SA 3.0 |
+| `girder-reinforced:reinforced` | `icons/obj/structures.dmi : "reinforced"` | CC-BY-SA 3.0 |
 | `gladiator-uniform:` | `icons/obj/clothing/uniforms.dmi : "gladiator"` | CC-BY-SA 3.0 |
 | `glass-sheet:` | `icons/obj/items.dmi : "sheet-glass"` | CC-BY-SA 3.0 |
 | `glasses:` | `icons/obj/clothing/glasses.dmi : "glasses"` | CC-BY-SA 3.0 |
@@ -1115,6 +1117,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `riot-shield:` | `icons/obj/weapons.dmi : "riot"` | CC-BY-SA 3.0 |
 | `riot-suit:` | `icons/obj/clothing/suits.dmi : "riot"` | CC-BY-SA 3.0 |
 | `roboticist-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "robotics"` | CC-BY-SA 3.0 |
+| `rods:` | `icons/obj/items.dmi : "rods"` | CC-BY-SA 3.0 |
 | `rootbeer:` | `icons/obj/drinks.dmi : "cola-brown"` | CC-BY-SA 3.0 |
 | `rubber-ducky:` | `icons/obj/watercloset.dmi : "rubberducky"` | CC-BY-SA 3.0 |
 | `sandals:` | `icons/obj/clothing/shoes.dmi : "wizard"` | CC-BY-SA 3.0 |

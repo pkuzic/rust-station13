@@ -7,12 +7,12 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
-    BrigPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView,
-    CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos,
-    HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource,
-    LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
-    RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
-    UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
+    BrigPanelView, BuildPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView,
+    ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost,
+    GridPos, HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView,
+    LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset,
+    PowerMonitorView, RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView,
+    TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -131,6 +131,11 @@ pub enum ActionInput {
     },
     /// On a Syndicate uplink: buy this line of what it sells.
     Uplink {
+        target: NetId,
+        line: u8,
+    },
+    /// On a stack of sheets: make this line of what it makes.
+    Build {
         target: NetId,
         line: u8,
     },
@@ -460,6 +465,10 @@ pub enum VoteAction {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct VotePanel(pub VoteView);
 
+/// Server → one client: the stack of sheets it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct BuildPanel(pub Option<BuildPanelView>);
+
 /// Server → one client: the lobby, or `None` once they've left it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LobbyPanel(pub Option<LobbyView>);
@@ -616,6 +625,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<UplinkPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<VotePanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<BuildPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);

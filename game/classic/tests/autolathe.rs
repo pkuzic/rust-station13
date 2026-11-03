@@ -41,7 +41,7 @@ fn click(app: &mut App, mob: Entity, target: Entity) {
 }
 
 fn feed(app: &mut App, mob: Entity, lathe: Entity, proto: &str) {
-    let sheet = spawn_object(app.world_mut(), &ObjectSpec::new(proto), NEAR).unwrap();
+    let sheet = rs13_classic::objects::spawn_stack(app.world_mut(), proto, NEAR, 1).unwrap();
     app.world_mut().run_schedule(FixedUpdate);
     click(app, mob, sheet);
     click(app, mob, lathe);

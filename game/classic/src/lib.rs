@@ -24,6 +24,7 @@ pub mod chemistry;
 pub mod cloning;
 pub mod closets;
 pub mod combat;
+pub mod construction;
 pub mod conveyors;
 pub mod decks;
 pub mod dispensers;
@@ -420,6 +421,7 @@ impl Plugin for ClassicPlugin {
                             hydroponics::run_pots,
                             escape::run_escape,
                             escape::update_comms_views,
+                            (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,
                         )

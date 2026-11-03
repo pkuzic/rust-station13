@@ -18,6 +18,7 @@ mod apc_panel;
 mod arcade_panel;
 mod audio;
 mod brig_panel;
+mod build_panel;
 mod camera_panel;
 mod chem_panel;
 mod comms_panel;
@@ -159,6 +160,8 @@ enum UseStep {
     VoteMode,
     /// `votefor:N`: vote for line `N`.
     VoteFor(u8),
+    /// `build:N`: make line `N` of what an open stack of sheets makes.
+    Build(u8),
     /// `buy:N`: buy line `N` of what an open Syndicate uplink sells.
     Buy(u8),
     /// `callpods`: call the escape pods on an open communications console.
@@ -220,6 +223,7 @@ impl UseStep {
             "voterestart" => Some(Self::VoteRestart),
             "votemode" => Some(Self::VoteMode),
             _ if s.starts_with("votefor:") => s["votefor:".len()..].trim().parse().ok().map(Self::VoteFor),
+            _ if s.starts_with("build:") => s["build:".len()..].trim().parse().ok().map(Self::Build),
             _ if s.starts_with("buy:") => s["buy:".len()..].trim().parse().ok().map(Self::Buy),
             "manifest" => Some(Self::Manifest),
             "printmanifest" => Some(Self::PrintManifest),
@@ -411,6 +415,7 @@ fn main() {
         .init_resource::<comms_panel::OpenComms>()
         .init_resource::<vote_panel::OpenVote>()
         .init_resource::<uplink_panel::OpenUplink>()
+        .init_resource::<build_panel::OpenBuild>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -478,6 +483,7 @@ fn main() {
                         (
                             (comms_panel::receive_comms, comms_panel::show_comms).chain(),
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
+                            (build_panel::receive_build, build_panel::show_build).chain(),
                             (
                                 vote_panel::receive_vote,
                                 vote_panel::toggle_vote,
@@ -767,6 +773,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<comms_panel::OpenComms>().0 = None;
     world.resource_mut::<vote_panel::OpenVote>().open = false;
     world.resource_mut::<uplink_panel::OpenUplink>().0 = None;
+    world.resource_mut::<build_panel::OpenBuild>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
     world.resource_mut::<paper_panel::OpenPaper>().0 = None;
@@ -1740,7 +1747,7 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink): (
+    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink, builds): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1751,6 +1758,7 @@ fn scripted_use(
         Res<id_panel::OpenIdComputer>,
         Res<comms_panel::OpenComms>,
         Res<uplink_panel::OpenUplink>,
+        Res<build_panel::OpenBuild>,
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
@@ -1879,6 +1887,10 @@ fn scripted_use(
         })),
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
+        UseStep::Build(line) => builds.0.as_ref().map(|view| ActionInput::Build {
+            target: view.target,
+            line,
+        }),
         UseStep::Buy(line) => uplink.0.as_ref().map(|view| ActionInput::Uplink {
             target: view.target,
             line,

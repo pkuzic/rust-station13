@@ -458,6 +458,9 @@
         "toolbox-electrical": { "": (dmi: "icons/obj/storage.dmi", state: "yellow") },
         "toolbox-emergency": { "": (dmi: "icons/obj/storage.dmi", state: "red") },
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
+        "rods": { "": (dmi: "icons/obj/items.dmi", state: "rods") },
+        "girder": { "girder": (dmi: "icons/obj/structures.dmi", state: "girder") },
+        "girder-reinforced": { "reinforced": (dmi: "icons/obj/structures.dmi", state: "reinforced") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         // Power cells: the meter overlay is cell-o1 part full, cell-o2 full.
         "power-cell": {

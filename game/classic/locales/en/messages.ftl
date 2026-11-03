@@ -567,6 +567,23 @@ armor-absorbs = Your armor absorbs the blow!
 armor-softens = Your armor softens the blow!
 slipped = You slipped on the { NOUN($item) }!
 explosion-heard = An explosion rocks the station!
+build-title = What to make, of { $value } sheets:
+build-recipe = { NOUN($item) } ({ $cost } { $cost ->
+    [one] sheet
+   *[other] sheets
+})
+build-recipe-many = { $made } x { NOUN($item) } ({ $cost } { $cost ->
+    [one] sheet
+   *[other] sheets
+})
+build-need-more = You don't have enough.
+build-no-room = There's no room for it here.
+build-too-many-panes = There are too many windows here.
+build-need-fuel = You need more welding fuel to do that.
+build-unwelding = Now disassembling the outer wall plating.
+build-unwelded = You disassembled the outer wall plating.
+build-too-tough = This wall is too tough to take apart yet.
+build-interrupted = You stop what you were doing.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
