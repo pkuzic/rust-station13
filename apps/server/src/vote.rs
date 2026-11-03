@@ -10,7 +10,7 @@ use rs13_classic::round::{MODES, Round};
 use rs13_classic::time::WorldTime;
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{NoticeChannel, VoteAction, VotePanel};
+use rs13_network::protocol::{Notice, NoticeChannel, VoteAction, VotePanel};
 use rs13_world::VoteView;
 
 /// How long a vote stays open, and the least time between them, ds (Luna's `config.txt`).
@@ -124,6 +124,11 @@ fn tell_everyone(world: &mut World, msg: LocMsg) {
     let mut people = world.query::<&mut Outbox>();
     for mut outbox in people.iter_mut(world) {
         outbox.0.push(msg.clone());
+    }
+    // Those in the lobby have no mob to tell.
+    let mut lobby = world.query_filtered::<&mut MessageSender<Notice>, With<crate::lobby::InLobby>>();
+    for mut sender in lobby.iter_mut(world) {
+        sender.send::<NoticeChannel>(Notice(msg.clone()));
     }
 }
 

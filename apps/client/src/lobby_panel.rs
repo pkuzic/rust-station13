@@ -67,7 +67,8 @@ pub fn show_lobby(
                 position_type: PositionType::Absolute,
                 left: Val::Px(0.0),
                 top: Val::Px(0.0),
-                width: Val::Percent(100.0),
+                // The chat stays in view, beside the map.
+                width: Val::VMin(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,

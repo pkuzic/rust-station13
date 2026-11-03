@@ -252,6 +252,16 @@ struct ChatInput {
     open: bool,
     buffer: String,
     paper: Option<(NetId, rs13_world::PaperMode)>,
+    /// What the line is for: T to say, O out of character, M to do something.
+    kind: ChatKind,
+}
+
+#[derive(Default, Clone, Copy, PartialEq, Eq)]
+enum ChatKind {
+    #[default]
+    Say,
+    Ooc,
+    Me,
 }
 
 impl ChatInput {
@@ -1176,8 +1186,15 @@ fn chat_typing(
             continue;
         }
         if !chat.open {
-            if key.key_code == KeyCode::KeyT && !key.repeat {
+            let kind = match key.key_code {
+                KeyCode::KeyT => Some(ChatKind::Say),
+                KeyCode::KeyO => Some(ChatKind::Ooc),
+                KeyCode::KeyM => Some(ChatKind::Me),
+                _ => None,
+            };
+            if let Some(kind) = kind.filter(|_| !key.repeat) {
                 chat.open = true;
+                chat.kind = kind;
                 chat.buffer.clear();
             }
             continue;
@@ -1189,7 +1206,11 @@ fn chat_typing(
                 if !line.trim().is_empty()
                     && let Ok(mut sender) = sender.single_mut()
                 {
-                    sender.send::<IntentChannel>(ActionInput::Say(line));
+                    sender.send::<IntentChannel>(match chat.kind {
+                        ChatKind::Say => ActionInput::Say(line),
+                        ChatKind::Ooc => ActionInput::Ooc(line),
+                        ChatKind::Me => ActionInput::Say(format!("*me {line}")),
+                    });
                 }
             }
             KeyCode::Escape => {
@@ -1667,7 +1688,12 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
         return;
     }
     text.0 = if chat.open && chat.paper.is_none() {
-        let prompt = loc.0.format("hud-say", None).unwrap_or_default();
+        let prompt = match chat.kind {
+            ChatKind::Say => "hud-say",
+            ChatKind::Ooc => "chat-prompt-ooc",
+            ChatKind::Me => "chat-prompt-me",
+        };
+        let prompt = loc.0.format(prompt, None).unwrap_or_default();
         format!("{prompt} {}_", chat.buffer)
     } else {
         String::new()

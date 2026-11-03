@@ -43,7 +43,32 @@ the name. At least 2 letters are required. "space", "floor", "wall", "r-wall", "
 | Speech text is the player's own words in any language; only the frame ("says") is localised | keep |
 | Examining a person: "That's John Smith." | keep |
 
+## Whispers, emotes and OOC
+
+Sources: `luna:code/modules/mob/living/carbon/human/whisper.dm`, `human/emote.dm`, `luna:code/modules/mob/say.dm`,
+`luna:code/WorkInProgress/Uristqwerty/chat_tabs/ooc.dm`. Tests: `game/classic/tests/speech.rs`,
+`apps/headless/tests/chat.rs`.
+
+- **Whisper:** `:w text` (or `#w`, `.w`, and `:ц` on a Russian layout) is heard whole within 1 tile. Within 2, about half
+  the words become "...". Within 5, you only see that they're whispering.
+- **Emotes:** `*smile` and 40 others, or `*me` and your own words, which the M key types for you. Seen as far as speech
+  is heard. An unknown one tells only the one who typed it.
+- **OOC:** the O key, in the lobby or the world, alive or dead. Everyone on the server reads it. It shows the name of your
+  character, or the name you typed in the lobby, or "Someone".
+- **Dead chat:** ghosts talk among the dead, as `ghosts.md` says.
+
+The chat shows in the lobby too, beside the job list.
+
+| Luna | Here |
+|---|---|
+| OOC shows the player's account | There are no accounts |
+| (Un)Mute OOC, and admins can turn it off | Not built |
+| Emotes that take a target (`*bow Bob`, `*salute`, `*glare`, `*handshake`), `*signal`, and `*help` | Not built |
+| `*faint` and `*collapse` knock you down, `*vomit`, needs like `*hungry` | Words only, or not built |
+| Emotes are only in English keys | The same here, with the lines translated |
+| A radio with its microphone on picks up whispers within a tile | It doesn't |
+| Muzzles and mute stop whispers and emotes | They don't stop anything yet |
+
 ## Not implemented yet
 
-Emotes, headsets (radios and intercoms are in `radio.md`), whispering, stuttering and brain damage, languages
-(understood or not), deafness, rate limiting, logging.
+Stuttering and brain damage, languages (understood or not), deafness, rate limiting, logging.

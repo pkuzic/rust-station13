@@ -31,6 +31,46 @@ pub fn sanitize_speech(input: &str) -> Option<String> {
     Some(first.to_uppercase().chain(chars).collect())
 }
 
+/// What can be done with `*` (Luna's `human/emote`, those that take no one to do them to).
+pub const EMOTES: [&str; 41] = [
+    "blink", "blink-r", "wave", "choke", "clap", "drool", "eyebrow", "chuckle", "twitch", "twitch-s",
+    "faint", "cough", "frown", "nod", "blush", "gasp", "giggle", "grin", "cry", "sigh", "laugh", "mumble",
+    "grumble", "groan", "howl", "moan", "raise", "shrug", "smile", "shiver", "pale", "tremble", "sneeze",
+    "sniff", "snore", "whimper", "wink", "yawn", "collapse", "scream", "point",
+];
+
+/// Luna's whisper: heard whole from this far, in part from here, and only seen from here.
+pub const WHISPER_RANGE: i32 = 1;
+pub const EAVESDROP_RANGE: i32 = 2;
+pub const WHISPER_SEEN_RANGE: i32 = 5;
+
+/// What `*something` comes to: the line everyone sees, or `None` if there's no such emote. `*me` and
+/// `*custom` are in the player's own words.
+pub fn emote(name: &str, typed: &str) -> Option<LocMsg> {
+    let (act, rest) = typed.split_once(' ').unwrap_or((typed, ""));
+    let act = act.to_lowercase().replace('_', "-");
+    if act == "me" || act == "custom" {
+        let text: String = rest
+            .chars()
+            .filter(|c| !c.is_control())
+            .take(MAX_MESSAGE_LEN)
+            .collect();
+        let text = text.trim();
+        return (!text.is_empty()).then(|| LocMsg::new("emote-me").arg("name", name).arg("text", text));
+    }
+    EMOTES
+        .contains(&act.as_str())
+        .then(|| LocMsg::new(format!("emote-{act}")).arg("name", name))
+}
+
+/// What's caught of a whisper from a little too far: about half the words (Luna `Ellipsis`).
+pub fn half_heard(text: &str, rng: &mut crate::rng::GameRng) -> String {
+    text.split_whitespace()
+        .map(|word| if rng.prob(50.0) { "..." } else { word })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// Luna's `say_quote`: the verb comes from the last character.
 pub fn speech_verb(text: &str) -> &'static str {
     match text.chars().last() {
@@ -144,6 +184,7 @@ pub fn speak(
     >,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
     radios: RadioSets,
+    mut rng: ResMut<crate::rng::GameRng>,
 ) {
     use crate::radio::{RADIO_TALK_RANGE, RadioMode, format_frequency, split_mode};
 
@@ -160,16 +201,42 @@ pub fn speak(
 
     // (speaker, where, range heard directly, message, radio message and its frequencies)
     let mut said: Vec<(Entity, TilePos, i32, LocMsg, Vec<(u16, LocMsg)>)> = Vec::new();
+    // (speaker, where, whole, as caught from a little further, as seen from further still)
+    let mut whispers: Vec<(Entity, TilePos, LocMsg, LocMsg, LocMsg)> = Vec::new();
     for (speaker, pos, name, mut pending, vitals, hands, equipment) in &mut speakers {
         if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
         }
         for raw in pending.0.drain(..) {
+            if let Some(typed) = raw.trim_start().strip_prefix('*') {
+                // Only the one who typed it hears that there's no such thing.
+                match emote(&name.0, typed) {
+                    Some(msg) => said.push((speaker, pos.0, HEARING_RANGE, msg, Vec::new())),
+                    None => said.push((speaker, pos.0, -1, LocMsg::new("emote-unknown"), Vec::new())),
+                }
+                continue;
+            }
             let (mode, rest) = split_mode(&raw);
             let Some(text) = sanitize_speech(rest) else {
                 continue;
             };
+            if mode == Some(RadioMode::Whisper) {
+                let line = |text: &str| {
+                    LocMsg::new("whisper")
+                        .arg("name", name.0.clone())
+                        .arg("text", text)
+                };
+                let part = half_heard(&text, &mut rng);
+                whispers.push((
+                    speaker,
+                    pos.0,
+                    line(&text),
+                    line(&part),
+                    LocMsg::new("whisper-seen").arg("name", name.0.clone()),
+                ));
+                continue;
+            }
             let verb = speech_verb(&text);
             let msg = LocMsg::new("say")
                 .arg("name", name.0.clone())
@@ -197,7 +264,7 @@ pub fn speak(
                         })
                         .map(|(e, ..)| e),
                 ),
-                None => {}
+                Some(RadioMode::Whisper) | None => {}
             }
             into.extend(
                 radios
@@ -227,6 +294,21 @@ pub fn speak(
                 })
                 .collect();
             said.push((speaker, pos.0, range, msg, on_air));
+        }
+    }
+    for (speaker, from, whole, part, seen) in whispers {
+        for (listener, to, mut outbox, vitals, _) in &mut listeners {
+            if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+                continue;
+            }
+            let sees = |range: i32| can_see(map.at(from.z), &opaque, from, to.0, range);
+            if listener == speaker || sees(WHISPER_RANGE) {
+                outbox.0.push(whole.clone());
+            } else if sees(EAVESDROP_RANGE) {
+                outbox.0.push(part.clone());
+            } else if sees(WHISPER_SEEN_RANGE) {
+                outbox.0.push(seen.clone());
+            }
         }
     }
     for (speaker, from, range, msg, on_air) in said {

@@ -69,6 +69,56 @@ fn airlock(app: &mut App) -> Entity {
         .0
 }
 
+fn ids(app: &mut App, who: Entity) -> Vec<String> {
+    let mut outbox = app.world_mut().get_mut::<Outbox>(who).unwrap();
+    let lines = outbox.0.iter().map(|m| m.id.clone()).collect();
+    outbox.0.clear();
+    lines
+}
+
+#[test]
+fn a_whisper_is_heard_close_caught_in_part_and_seen_from_further() {
+    let mut app = setup();
+    let alice = mob(&mut app, 3, 3, "Alice Abbott");
+    let near = mob(&mut app, 4, 3, "Near");
+    let close = mob(&mut app, 5, 3, "Close");
+    let seeing = mob(&mut app, 7, 3, "Seeing");
+    let far = mob(&mut app, 9, 3, "Far");
+    say(&mut app, alice, ":w the code is one two three four five six");
+    let text = |app: &mut App, who: Entity| {
+        let outbox = app.world_mut().get_mut::<Outbox>(who).unwrap();
+        let line = outbox.0.iter().find(|m| m.id == "whisper").cloned();
+        line.map(|m| m.args.into_iter().find(|(k, _)| k == "text").unwrap().1)
+    };
+    let whole = Some(LocArg::Str("The code is one two three four five six".to_owned()));
+    assert_eq!(text(&mut app, alice), whole);
+    assert_eq!(text(&mut app, near), whole);
+    let part = text(&mut app, close).unwrap();
+    assert_ne!(Some(part.clone()), whole);
+    assert!(format!("{part:?}").contains("..."), "{part:?}");
+    assert_eq!(ids(&mut app, seeing), ["whisper-seen"]);
+    assert!(ids(&mut app, far).is_empty(), "too far even to notice");
+}
+
+#[test]
+fn emotes_are_seen_and_a_wrong_one_is_only_for_the_one_who_typed_it() {
+    let mut app = setup();
+    let alice = mob(&mut app, 3, 3, "Alice Abbott");
+    let bob = mob(&mut app, 8, 4, "Bob Barnes");
+    say(&mut app, alice, "*smile");
+    assert_eq!(ids(&mut app, bob), ["emote-smile"]);
+    assert_eq!(ids(&mut app, alice), ["emote-smile"]);
+    say(&mut app, alice, "*me does a little dance");
+    assert_eq!(ids(&mut app, bob), ["emote-me"]);
+    ids(&mut app, alice);
+    say(&mut app, alice, "*nonsense");
+    assert_eq!(ids(&mut app, alice), ["emote-unknown"]);
+    assert!(ids(&mut app, bob).is_empty());
+    say(&mut app, alice, "*me");
+    assert_eq!(ids(&mut app, alice), ["emote-unknown"], "nothing to do");
+    assert!(ids(&mut app, bob).is_empty());
+}
+
 #[test]
 fn people_in_sight_hear_and_the_speaker_hears_themselves() {
     let mut app = setup();
