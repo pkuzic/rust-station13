@@ -34,6 +34,7 @@ use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
 use rs13_classic::paperwork::{ClipboardOut, PaperOp, PaperOut, PendingPaperOps};
 use rs13_classic::power_monitor::PowerMonitorOut;
+use rs13_classic::records::{PendingRecordOps, RecordsPanelOut};
 use rs13_classic::smes_panel::{Level, PendingSmesOps, SmesOp, SmesPanelOut};
 use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
@@ -51,16 +52,16 @@ use rs13_network::protocol::{
     ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand,
     FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, JobPanel, LaserCommand, LaserPanel,
     MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel,
-    SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel,
-    WirePanel,
+    RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
+    VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, AutolathePanelView, BodyScanView, BrigPanelView,
     CameraPanelView, ChemMasterPanelView, ChemPanelView, ClipboardView, DisplayName, FreezerPanelView,
     GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, JobPanelView, LaserPanelView, MapLayer, MobStat,
-    NetId, PaperView, PickListView, PowerMonitorView, SleeperPanelView, Slot, SmesPanelView, StorageView,
-    TileMap, TilePos, VendingPanelView, WirePanelView,
+    NetId, PaperView, PickListView, PowerMonitorView, RecordsPanelView, SleeperPanelView, Slot,
+    SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -114,6 +115,7 @@ struct SentPanel(
     Option<AutolathePanelView>,
     Option<BodyScanView>,
     Option<JobPanelView>,
+    Option<RecordsPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -401,6 +403,7 @@ fn queue_actions(
                 &mut PendingMasterOps,
                 &mut PendingLatheOps,
                 &mut PendingJobOps,
+                &mut PendingRecordOps,
             ),
             Has<NameChosen>,
         ),
@@ -442,6 +445,7 @@ fn queue_actions(
                 mut master_ops,
                 mut lathe_ops,
                 mut job_ops,
+                mut record_ops,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -571,6 +575,12 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Records { target, line } => {
+                    if let Some(machine) = resolve(target) {
+                        record_ops.0.push((machine, usize::from(line)));
                     }
                     None
                 }
@@ -899,6 +909,7 @@ fn send_panels(
             &mut MessageSender<AutolathePanel>,
             &mut MessageSender<BodyScanPanel>,
             &mut MessageSender<JobPanel>,
+            &mut MessageSender<RecordsPanel>,
         ),
     )>,
     panels: Query<(
@@ -925,6 +936,7 @@ fn send_panels(
             &LathePanelOut,
             &ScanPanelOut,
             &JobPanelOut,
+            &RecordsPanelOut,
         ),
     )>,
 ) {
@@ -954,6 +966,7 @@ fn send_panels(
             mut lathe_panels,
             mut scan_panels,
             mut job_panels,
+            mut record_panels,
         ),
     ) in &mut links
     {
@@ -971,7 +984,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job),
+            (heater, arcade, brig, chem, sleeper, master, lathe, scan, job, record),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -1063,6 +1076,10 @@ fn send_panels(
         if sent.21 != job.0 {
             job_panels.send::<NoticeChannel>(JobPanel(job.0.clone()));
             sent.21 = job.0.clone();
+        }
+        if sent.22 != record.0 {
+            record_panels.send::<NoticeChannel>(RecordsPanel(record.0.clone()));
+            sent.22 = record.0.clone();
         }
     }
 }

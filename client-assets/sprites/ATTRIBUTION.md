@@ -367,6 +367,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:on` | `icons/obj/lighting.dmi : "lampgreen-on"` | CC-BY-SA 3.0 |
+| `detective-records:messyfiles` | `icons/obj/computer.dmi : "messyfiles"` | CC-BY-SA 3.0 |
 | `dispatcher-uniform:` | `icons/obj/clothing/uniforms.dmi : "dispatch"` | CC-BY-SA 3.0 |
 | `display-case:` | `icons/obj/stationobjs.dmi : "glassbox1"` | CC-BY-SA 3.0 |
 | `disposal-bin:disposal` | `icons/obj/pipes/disposal.dmi : "disposal"` | CC-BY-SA 3.0 |
@@ -860,6 +861,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `matter-bin:` | `icons/obj/stock_parts.dmi : "matter_bin"` | CC-BY-SA 3.0 |
 | `meat-spike:` | `icons/obj/kitchen.dmi : "spike"` | CC-BY-SA 3.0 |
 | `medical-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "medical"` | CC-BY-SA 3.0 |
+| `medical-records:medical` | `icons/obj/computer.dmi : "medical"` | CC-BY-SA 3.0 |
 | `meson-glasses:` | `icons/obj/clothing/glasses.dmi : "meson"` | CC-BY-SA 3.0 |
 | `metal-sheet:` | `icons/obj/items.dmi : "sheet-metal"` | CC-BY-SA 3.0 |
 | `meter:meter0` | `icons/obj/meter.dmi : "meter0"` | CC-BY-SA 3.0 |
@@ -1056,6 +1058,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `security-console:seccam` | `icons/obj/computer.dmi : "seccam"` | CC-BY-SA 3.0 |
 | `security-console:seccam0` | `icons/obj/computer.dmi : "seccam0"` | CC-BY-SA 3.0 |
 | `security-hud:` | `icons/obj/clothing/glasses.dmi : "securityhud"` | CC-BY-SA 3.0 |
+| `security-records:security` | `icons/obj/computer.dmi : "security"` | CC-BY-SA 3.0 |
 | `sensible-suit:` | `icons/obj/clothing/uniforms.dmi : "red_suit"` | CC-BY-SA 3.0 |
 | `shaker:` | `icons/obj/drinks.dmi : "shaker"` | CC-BY-SA 3.0 |
 | `shield:shieldsparkles0` | `icons/effects/effects.dmi : "shieldsparkles0"` | CC-BY-SA 3.0 |

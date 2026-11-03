@@ -2657,6 +2657,9 @@
             "": (dmi: "icons/mob/feet.dmi", state: "galoshes"),
             "lying": (dmi: "icons/mob/feet.dmi", state: "galoshes2"),
         },
+        "security-records": { "security": (dmi: "icons/obj/computer.dmi", state: "security") },
+        "detective-records": { "messyfiles": (dmi: "icons/obj/computer.dmi", state: "messyfiles") },
+        "medical-records": { "medical": (dmi: "icons/obj/computer.dmi", state: "medical") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
