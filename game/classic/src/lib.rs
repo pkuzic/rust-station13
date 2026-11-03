@@ -70,6 +70,7 @@ pub mod power;
 pub mod power_monitor;
 pub mod pulling;
 pub mod radio;
+pub mod reagent_tanks;
 pub mod rng;
 pub mod security;
 pub mod shields;

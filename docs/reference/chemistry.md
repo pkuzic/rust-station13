@@ -35,6 +35,20 @@ appears under the machine. Ejecting the beaker clears the buffer.
 Differences from Luna: you can't name what you make or pick amounts, a line moves 10 units, removing
 always goes back to the beaker, it doesn't fill pill bottles, and an empty buffer makes nothing.
 
+## Tanks to fill from
+
+Click one with a beaker or bottle to fill it (Luna `reagent_dispensers`).
+
+| Prototype | Holds | A click takes |
+|---|---|---|
+| `pepper-tank` | 1000 condensed capsaicin | 50 |
+| `water-cooler` | 500 water | 5 |
+| `beer-keg` | 1000 beer | 10 |
+| `water-tank`, `fuel-tank` | their own water and fuel, also used by extinguishers and welders | 10 |
+
+Differences from Luna: you can't set how much a click takes, and tanks don't explode or spill. Beer and
+capsaicin do nothing yet, because glasses can't be drunk from and there's no pepper spray.
+
 ## Mixing
 
 Whenever reagents arrive in a container or someone's blood, whatever can mix does:

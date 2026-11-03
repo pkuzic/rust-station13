@@ -2,9 +2,15 @@
 //! the one picked drops out onto the machine's tile. Spec: `docs/reference/vending.md`.
 
 use bevy_ecs::prelude::*;
-use rs13_world::{Appearance, GridPos, MobStat, NetId, ObjectSpec, TilePos, VendingPanelView, VendingRow};
+use rs13_i18n::LocMsg;
+use rs13_world::{
+    Appearance, GridPos, MobStat, NetId, ObjectSpec, Slot, TilePos, VendingPanelView, VendingRow,
+};
 
-use crate::actions::in_reach;
+use crate::access::{IdCard, allowed};
+use crate::actions::{Outbox, in_reach};
+use crate::equipment::Equipment;
+use crate::hands::Hands;
 use crate::health::Vitals;
 use crate::power::{Channel, PowerUser};
 use crate::time::WorldTime;
@@ -18,15 +24,97 @@ pub struct VendingKind {
     pub look: &'static str,
     pub delay_ds: f32,
     pub products: &'static [(&'static str, u16)],
+    /// The access it wants, if any (Luna `req_access_txt`).
+    pub access: Option<&'static str>,
+    /// Hung on a wall, so nothing bumps into it.
+    pub wall: bool,
 }
 
-/// The four kinds on NSV Luna.
-pub const KINDS: [VendingKind; 5] = [
+/// The kinds on NSV Luna.
+pub const KINDS: [VendingKind; 9] = [
+    VendingKind {
+        id: "vending-medical",
+        look: "med",
+        delay_ds: 10.0,
+        products: &[
+            ("white-shoes", 4),
+            ("health-analyzer", 4),
+            ("bruise-pack", 4),
+            ("ointment", 4),
+            ("bottle-antitoxin", 4),
+            ("bottle-inaprovaline", 4),
+            ("syringe", 4),
+            ("latex-gloves", 4),
+            ("first-aid-kit", 4),
+            ("first-aid-kit-toxin", 4),
+            ("first-aid-kit-fire", 4),
+            ("first-aid-kit-o2", 4),
+        ],
+        access: Some("medical"),
+        wall: false,
+    },
+    VendingKind {
+        id: "vending-wallmed",
+        look: "wallmed",
+        delay_ds: 10.0,
+        products: &[
+            ("bruise-pack", 3),
+            ("ointment", 3),
+            ("syringe-inaprovaline", 4),
+            ("syringe-antitoxin", 4),
+            ("health-analyzer", 2),
+        ],
+        access: None,
+        wall: true,
+    },
+    VendingKind {
+        id: "vending-toxins",
+        look: "generic",
+        delay_ds: 10.0,
+        products: &[
+            ("screwdriver", 4),
+            ("wrench", 4),
+            ("wirecutters", 4),
+            ("transfer-valve", 4),
+            ("igniter-device", 4),
+            ("timer", 4),
+            ("prox-sensor", 4),
+        ],
+        access: Some("tox"),
+        wall: false,
+    },
+    VendingKind {
+        id: "vending-engineering",
+        look: "engi",
+        delay_ds: 10.0,
+        products: &[
+            ("hardhat", 4),
+            ("utility-belt", 4),
+            ("meson-glasses", 4),
+            ("insulated-gloves", 4),
+            ("screwdriver", 4),
+            ("crowbar", 4),
+            ("wirecutters", 4),
+            ("multitool", 4),
+            ("wrench", 4),
+            ("t-ray-scanner", 4),
+            ("cable-coil", 4),
+            ("power-cell", 4),
+            ("welder", 4),
+            ("welding-helmet", 4),
+            ("light-tube", 4),
+            ("firesuit", 4),
+        ],
+        access: Some("engine"),
+        wall: false,
+    },
     VendingKind {
         id: "vending-coffee",
         look: "coffee",
         delay_ds: 34.0,
         products: &[("coffee", 25), ("tea", 25), ("hot-chocolate", 25)],
+        access: None,
+        wall: false,
     },
     VendingKind {
         id: "vending-snack",
@@ -41,24 +129,32 @@ pub const KINDS: [VendingKind; 5] = [
             ("space-twinkie", 6),
             ("cheesie-honkers", 6),
         ],
+        access: None,
+        wall: false,
     },
     VendingKind {
         id: "vending-cola",
         look: "Cola_Machine",
         delay_ds: 10.0,
         products: COLA,
+        access: None,
+        wall: false,
     },
     VendingKind {
         id: "vending-soda",
         look: "soda",
         delay_ds: 10.0,
         products: COLA,
+        access: None,
+        wall: false,
     },
     VendingKind {
         id: "vending-cigarette",
         look: "cigs",
         delay_ds: 34.0,
         products: &[("cigarette-packet", 10), ("matchbox", 10), ("lighter", 4)],
+        access: None,
+        wall: false,
     },
 ];
 
@@ -93,20 +189,21 @@ pub struct VendingPanelOut(pub Option<VendingPanelView>);
 
 /// Spawn one, full.
 pub fn spawn_vending(world: &mut World, kind: &'static VendingKind, pos: TilePos, id: NetId) -> Entity {
-    world
-        .spawn((
-            GridPos(pos),
-            id,
-            Appearance::new(kind.id, kind.look),
-            Vending {
-                kind,
-                stock: kind.products.iter().map(|(_, n)| *n).collect(),
-                vending: None,
-            },
-            PowerUser::new(Channel::Equipment, 0.0),
-            rs13_world::Dense,
-        ))
-        .id()
+    let mut machine = world.spawn((
+        GridPos(pos),
+        id,
+        Appearance::new(kind.id, kind.look),
+        Vending {
+            kind,
+            stock: kind.products.iter().map(|(_, n)| *n).collect(),
+            vending: None,
+        },
+        PowerUser::new(Channel::Equipment, 0.0),
+    ));
+    if !kind.wall {
+        machine.insert(rs13_world::Dense);
+    }
+    machine.id()
 }
 
 /// Clicking one in reach opens its window, if it has power (Luna `attack_hand`).
@@ -128,11 +225,19 @@ pub fn open(
 /// awake; it drops out after the machine's delay.
 pub fn process_vend_ops(
     time: Res<WorldTime>,
-    mut mobs: Query<(&GridPos, &mut PendingVendOps, Option<&Vitals>)>,
+    mut mobs: Query<(
+        &GridPos,
+        &mut PendingVendOps,
+        Option<&Vitals>,
+        Option<&Hands>,
+        Option<&Equipment>,
+        Option<&mut Outbox>,
+    )>,
     mut machines: Query<(&GridPos, &mut Vending, &PowerUser)>,
+    cards: Query<&IdCard>,
 ) {
     let now = time.deciseconds();
-    for (pos, mut pending, vitals) in &mut mobs {
+    for (pos, mut pending, vitals, hands, equipment, mut outbox) in &mut mobs {
         let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
         for (target, line) in pending.0.drain(..) {
             let Ok((at, mut machine, power)) = machines.get_mut(target) else {
@@ -140,6 +245,20 @@ pub fn process_vend_ops(
             };
             if !awake || !in_reach(pos.0, at.0) || !power.powered || machine.vending.is_some() {
                 continue;
+            }
+            if let Some(access) = machine.kind.access {
+                let held = hands.and_then(Hands::active_item);
+                let worn = equipment.and_then(|e| e.get(Slot::Id));
+                let card = [held, worn]
+                    .into_iter()
+                    .flatten()
+                    .find_map(|item| cards.get(item).ok());
+                if !allowed(&[access.to_owned()], card) {
+                    if let Some(outbox) = outbox.as_mut() {
+                        outbox.0.push(LocMsg::new("vending-denied"));
+                    }
+                    continue;
+                }
             }
             let Some(left) = machine.stock.get_mut(line).filter(|n| **n > 0) else {
                 continue;
