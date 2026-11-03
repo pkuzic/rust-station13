@@ -147,6 +147,7 @@
     "dna-scanner": (gender: neuter, sg: (nom: "DNA scanner", indef: "a DNA scanner"), pl: Some((nom: "DNA scanners"))),
     "cloning-console": (gender: neuter, sg: (nom: "cloning console", indef: "a cloning console"), pl: Some((nom: "cloning consoles"))),
     "clone-pod": (gender: neuter, sg: (nom: "cloning pod", indef: "a cloning pod"), pl: Some((nom: "cloning pods"))),
+    "door-timer": (gender: neuter, sg: (nom: "door timer", indef: "a door timer"), pl: Some((nom: "door timers"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

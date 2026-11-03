@@ -12,6 +12,7 @@ use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::alarms::{AlarmPanelOut, PendingAlarmOps};
 use rs13_classic::apc::{ApcPanelOut, PendingApcOps};
 use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
+use rs13_classic::brig::{BrigOp, BrigPanelOut, PendingBrigOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::cloning::Arrivals;
 use rs13_classic::combat::CombatIntent;
@@ -41,17 +42,17 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
-    ArcadePanel, CameraPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand,
-    GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel,
-    PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel,
-    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
+    ArcadePanel, BrigCommand, BrigPanel, CameraPanel, ClipboardCommand, ClipboardPanel, FreezerCommand,
+    FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput,
+    Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, SmesCommand,
+    SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, ArcadePanelView, CameraPanelView, ClipboardView, DisplayName,
-    FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView, MapLayer,
-    MobStat, NetId, PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap, TilePos,
-    VendingPanelView, WirePanelView,
+    AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ClipboardView,
+    DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent, LaserPanelView,
+    MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, SmesPanelView, StorageView, TileMap,
+    TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -98,6 +99,7 @@ struct SentPanel(
     Option<PickListView>,
     Option<HeaterPanelView>,
     Option<ArcadePanelView>,
+    Option<BrigPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -381,6 +383,7 @@ fn queue_actions(
                 &mut PendingPicks,
                 &mut PendingHeaterOps,
                 &mut PendingArcadeOps,
+                &mut PendingBrigOps,
             ),
             Has<NameChosen>,
         ),
@@ -409,7 +412,15 @@ fn queue_actions(
             mut freezer_ops,
             mut smes_ops,
             mut gas_ops,
-            (mut vend_ops, mut camera_ops, mut paper_ops, mut picks, mut heater_ops, mut arcade_ops),
+            (
+                mut vend_ops,
+                mut camera_ops,
+                mut paper_ops,
+                mut picks,
+                mut heater_ops,
+                mut arcade_ops,
+                mut brig_ops,
+            ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
         else {
@@ -523,6 +534,19 @@ fn queue_actions(
                 ActionInput::LabelPaper { target, label } => {
                     if let Some(sheet) = resolve(target) {
                         paper_ops.0.push(PaperOp::Label(sheet, label));
+                    }
+                    None
+                }
+                ActionInput::Brig { target, command } => {
+                    if let Some(machine) = resolve(target) {
+                        brig_ops.0.push((
+                            machine,
+                            match command {
+                                BrigCommand::Toggle => BrigOp::Toggle,
+                                BrigCommand::Adjust(by) => BrigOp::Adjust(i32::from(by)),
+                                BrigCommand::Flash => BrigOp::Flash,
+                            },
+                        ));
                     }
                     None
                 }
@@ -794,6 +818,7 @@ fn send_panels(
             &mut MessageSender<PickListPanel>,
             &mut MessageSender<HeaterPanel>,
             &mut MessageSender<ArcadePanel>,
+            &mut MessageSender<BrigPanel>,
         ),
     )>,
     panels: Query<(
@@ -810,7 +835,7 @@ fn send_panels(
         &CameraPanelOut,
         &ClipboardOut,
         &PickListOut,
-        (&HeaterPanelOut, &ArcadePanelOut),
+        (&HeaterPanelOut, &ArcadePanelOut, &BrigPanelOut),
     )>,
 ) {
     for (
@@ -828,7 +853,7 @@ fn send_panels(
         mut vendings,
         mut camera_panels,
         mut clipboard_panels,
-        (mut pick_panels, mut heater_panels, mut arcade_panels),
+        (mut pick_panels, mut heater_panels, mut arcade_panels, mut brig_panels),
     ) in &mut links
     {
         let Ok((
@@ -845,7 +870,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade),
+            (heater, arcade, brig),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -909,6 +934,10 @@ fn send_panels(
         if sent.14 != arcade.0 {
             arcade_panels.send::<NoticeChannel>(ArcadePanel(arcade.0.clone()));
             sent.14 = arcade.0.clone();
+        }
+        if sent.15 != brig.0 {
+            brig_panels.send::<NoticeChannel>(BrigPanel(brig.0.clone()));
+            sent.15 = brig.0.clone();
         }
     }
 }

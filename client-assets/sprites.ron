@@ -2014,6 +2014,7 @@
             "pod_0": (dmi: "icons/obj/cloning.dmi", state: "pod_0"),
             "pod_1": (dmi: "icons/obj/cloning.dmi", state: "pod_1"),
         },
+        "door-timer": { "frame": (dmi: "icons/obj/status_display.dmi", state: "frame") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

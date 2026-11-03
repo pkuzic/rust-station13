@@ -33,7 +33,7 @@ moment. It needs power, and rests 15 s between flashes.
 - **Wirecutters** disconnect or reconnect its bulb.
 - **Portable:** dense. It starts loose and does nothing until wrenched down, shown by a light on
   it. Then it goes off when anyone runs next to it; walking past doesn't set it off.
-- **Mounted:** Luna's brig cell timers set these off. Those timers aren't built, so for now nothing does.
+- **Mounted:** the brig cell's door timer sets these off (`brig.md`).
 
 ## Differences from Luna
 

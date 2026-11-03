@@ -6,10 +6,10 @@ use bevy_ecs::component::Component;
 use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, CameraPanelView, CameraView,
-    ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost, GridPos,
-    HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat, NetId,
-    Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
+    AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, BrigPanelView, CameraPanelView,
+    CameraView, ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost,
+    GridPos, HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource, MapLayer, MobStat,
+    NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette, Slot, SmesPanelView,
     StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
@@ -101,6 +101,11 @@ pub enum ActionInput {
     LabelPaper {
         target: NetId,
         label: String,
+    },
+    /// A button on an open brig door timer.
+    Brig {
+        target: NetId,
+        command: BrigCommand,
     },
     /// A button on an open arcade machine.
     Arcade {
@@ -201,6 +206,15 @@ pub enum GasCommand {
     Adjust(i32),
     /// Take the held tank out.
     RemoveTank,
+}
+
+/// Door timer window buttons (Luna's `door_timer` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum BrigCommand {
+    Toggle,
+    /// Seconds to add, or to take off.
+    Adjust(i16),
+    Flash,
 }
 
 /// Arcade window buttons (Luna's `arcade` links).
@@ -329,6 +343,10 @@ pub struct ClipboardPanel(pub Option<ClipboardView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct HeaterPanel(pub Option<HeaterPanelView>);
 
+/// Server → one client: the door timer it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct BrigPanel(pub Option<BrigPanelView>);
+
 /// Server → one client: the arcade game it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ArcadePanel(pub Option<ArcadePanelView>);
@@ -443,6 +461,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<PickListPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<HeaterPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<BrigPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ArcadePanel>()
             .add_direction(NetworkDirection::ServerToClient);

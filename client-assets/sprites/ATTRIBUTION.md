@@ -345,6 +345,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `door-button:doorctrl00` | `icons/obj/stationobjs.dmi : "doorctrl00"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl01` | `icons/obj/stationobjs.dmi : "doorctrl01"` | CC-BY-SA 3.0 |
 | `door-button:doorctrl1` | `icons/obj/stationobjs.dmi : "doorctrl1"` | CC-BY-SA 3.0 |
+| `door-timer:frame` | `icons/obj/status_display.dmi : "frame"` | CC-BY-SA 3.0 |
 | `dr-gibb:` | `icons/obj/drinks.dmi : "dr_gibb"` | CC-BY-SA 3.0 |
 | `dry-ramen:` | `icons/obj/drinks.dmi : "ramen"` | CC-BY-SA 3.0 |
 | `earmuffs:` | `icons/obj/items.dmi : "earmuffs"` | CC-BY-SA 3.0 |
