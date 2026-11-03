@@ -198,12 +198,12 @@ fn they_launch_and_arrive_and_the_round_says_who_got_away() {
     assert!(format!("{:?}", line("round-stranded")).contains("Left Behind"));
 }
 
-/// Luna's own pods, on decks 2 and 4, start bolted.
+/// Luna's own pods, on decks 2 and 4 (`LUNA_STATION` runs from deck 4 up), start bolted.
 #[test]
 fn the_stations_pods_have_doors_that_start_bolted() {
     let mut app = App::new();
     app.add_plugins(ClassicPlugin);
-    for z in [1, 3] {
+    for z in [0, 2] {
         let map = TileMap::from_ron(rs13_classic::maps::LUNA_STATION[z as usize], z).unwrap();
         spawn_map(app.world_mut(), map);
     }
