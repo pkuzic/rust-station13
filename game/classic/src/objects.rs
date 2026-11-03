@@ -555,6 +555,11 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             space: def.space,
             internals: def.internals,
             siemens: def.siemens,
+            covers: def.covers,
+            armor: def.armor,
+            heat: def.heat,
+            protect_k: def.protect_k,
+            no_slip: def.no_slip,
             magnetic: def.magnetic,
         });
     }

@@ -7,7 +7,7 @@ Sources: `luna:code/WorkInProgress/NewMobs and etc/Damagesystem.dm` (`attack_han
 ## Aiming
 
 The doll at the top of the right bar chooses a body part. A blow aimed at the chest lands there 90% of the time, and one
-aimed anywhere else about two times in three, or else on the chest. Medical packs and guns don't follow it yet.
+aimed anywhere else about two times in three, or else on the chest. Shots follow it too. Medical packs don't yet.
 
 ## Intents
 
@@ -48,6 +48,22 @@ The grab sits in your hand like an item, and dropping it lets go. Click the pers
 
 A grab ends if you go down or lose them. Clicking a table with a grab puts them on it, down for 10 seconds.
 
+## Clothing
+
+Sources: `luna:code/modules/mob/mob.dm` (`bullet_act`), `luna:code/modules/projectiles/human_defense.dm`,
+`living_defense.dm`, `luna:code/Aryn/ZAS Plasma.dm` (`FireBurn`), `luna:code/modules/mob/living/carbon/life.dm`
+(`add_fire_protection`), `clown_items.dm`. Each item's numbers are Luna's, in `content/items.ron`. Tests:
+`game/classic/tests/clothing.rs`.
+
+- **Shots** go at the part the shooter has aimed at. What's on the head, the face, the body and under it adds up, for
+  what covers that part. Two rolls against that: one success halves the damage or the knockdown, and two stop it. Bullets,
+  lasers and electrodes each have their own number, and many of Luna's armours are good against only some.
+- **Fire:** standing in a burning tile burns every 4 seconds, the head and chest most. Clothes made for hotter than that fire
+  reduce it a lot, the suit most of all, and each part also takes only the share that what covers it lets through. A
+  firesuit makes you nearly safe, and a jumpsuit does little.
+- **Slipping:** stepping on soap or a banana peel puts you down for 12 seconds and lets go of what you pull, unless your shoes
+  don't slip, like galoshes.
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -58,5 +74,8 @@ A grab ends if you go down or lose them. Clicking a table with a grab puts them 
 | Blood on the weapon, the attacker and the floor | Not built (3.3, 3.19) |
 | Broken and robotic arms change a punch, hulks and stun gloves | Not built (3.3, 3.5) |
 | Throwing someone from a grab, into closets, onto spikes and into gibbers | Not built (4.2, 3.7) |
+| Suits with `reflectchance` turn lasers back | Not built |
+| A slip also carries you a tile on | It doesn't |
+| Eating a banana leaves a peel, and a wet floor slips too | Not built (3.7, 4.15) |
 | A grab on someone at both hands stops anyone else tightening theirs | It doesn't |
 | Blows at the groin can't knock anyone down unless they're a zombie, which looks like a bug | Kept: no knockdown |

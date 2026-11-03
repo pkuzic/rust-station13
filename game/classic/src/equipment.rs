@@ -18,6 +18,15 @@ pub struct TankSpec {
     pub gas: String,
 }
 
+/// How much of an attack of each kind a piece of clothing turns aside, % (Luna's `armor`).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Deserialize)]
+pub struct Armor {
+    pub melee: u8,
+    pub bullet: u8,
+    pub laser: u8,
+    pub energy: u8,
+}
+
 /// An item prototype from `content/items.ron`.
 #[derive(Debug, Clone, Deserialize)]
 pub struct ItemDef {
@@ -36,6 +45,20 @@ pub struct ItemDef {
     /// Gloves: how much of an electric shock gets through (Luna `siemens_coefficient`).
     #[serde(default = "one")]
     pub siemens: f32,
+    /// Clothing: the body parts it covers, as Luna's `body_parts_covered` flags.
+    #[serde(default)]
+    pub covers: u16,
+    #[serde(default)]
+    pub armor: Armor,
+    /// Clothing: the share of a fire's heat that gets through (Luna `heat_transfer_coefficient`).
+    #[serde(default = "one")]
+    pub heat: f32,
+    /// Clothing: the hottest fire it's any use against, K (Luna `protective_temperature`).
+    #[serde(default)]
+    pub protect_k: f32,
+    /// Shoes that don't slip (Luna `NOSLIP`).
+    #[serde(default)]
+    pub no_slip: bool,
     /// Luna `w_class`: 1 tiny … 5 huge. Luna's default is 3.
     #[serde(default = "normal_size")]
     pub size: u8,
@@ -81,6 +104,14 @@ pub struct Wearable {
     pub internals: bool,
     /// Share of an electric shock that gets through (gloves).
     pub siemens: f32,
+    /// The body parts it covers, as Luna's `body_parts_covered` flags.
+    pub covers: u16,
+    pub armor: Armor,
+    /// The share of a fire's heat that gets through.
+    pub heat: f32,
+    /// The hottest fire it's any use against, K.
+    pub protect_k: f32,
+    pub no_slip: bool,
     /// Magnetic boots: the wearer isn't moved by space wind.
     pub magnetic: bool,
 }
@@ -211,6 +242,11 @@ mod tests {
             space: false,
             internals: false,
             siemens: 1.0,
+            covers: 0,
+            armor: Armor::default(),
+            heat: 1.0,
+            protect_k: 0.0,
+            no_slip: false,
             magnetic: false,
         }
     }

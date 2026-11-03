@@ -381,6 +381,52 @@ pub fn resolve_attacks(
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArmorKind {
+    Bullet,
+    Laser,
+    Energy,
+}
+
+/// How much armour someone has on this part against this, % (Luna's `checkarmor`, which only counts
+/// what's on the head, the face, the body and under it).
+pub fn armour_on(world: &World, mob: Entity, zone: Zone, kind: ArmorKind) -> f32 {
+    let Some(equipment) = world.get::<Equipment>(mob) else {
+        return 0.0;
+    };
+    [Slot::Head, Slot::Mask, Slot::Suit, Slot::Uniform]
+        .into_iter()
+        .filter_map(|slot| equipment.get(slot))
+        .filter_map(|item| world.get::<crate::equipment::Wearable>(item))
+        .filter(|worn| worn.covers & zone.cover_bit() != 0)
+        .map(|worn| {
+            f32::from(match kind {
+                ArmorKind::Bullet => worn.armor.bullet,
+                ArmorKind::Laser => worn.armor.laser,
+                ArmorKind::Energy => worn.armor.energy,
+            })
+        })
+        .sum()
+}
+
+/// Two rolls against someone's armour (Luna `run_armor_check`): 0 is no help, 1 halves it, 2 stops it.
+pub fn armour_check(world: &mut World, mob: Entity, zone: Zone, kind: ArmorKind) -> u8 {
+    let armour = armour_on(world, mob, zone, kind);
+    let absorbed = {
+        let mut rng = world.resource_mut::<GameRng>();
+        u8::from(rng.prob(armour)) + u8::from(rng.prob(armour))
+    };
+    let told = match absorbed {
+        2 => Some("armor-absorbs"),
+        1 => Some("armor-softens"),
+        _ => None,
+    };
+    if let (Some(told), Some(mut outbox)) = (told, world.get_mut::<crate::actions::Outbox>(mob)) {
+        outbox.0.push(LocMsg::new(told));
+    }
+    absorbed
+}
+
 /// Those knocked out come round.
 pub fn come_round(time: Res<WorldTime>, out: Query<(Entity, &Paralyzed)>, mut commands: Commands) {
     let now = time.deciseconds();

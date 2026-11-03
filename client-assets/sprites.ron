@@ -2361,6 +2361,7 @@
         "hand-tele": { "": (dmi: "icons/obj/device.dmi", state: "hand_tele") },
         "genetics-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "genetics") },
         "wrapping-paper": { "": (dmi: "icons/obj/items.dmi", state: "wrap_paper") },
+        "banana-peel": { "": (dmi: "icons/obj/items.dmi", state: "banana_peel") },
         "soap": { "": (dmi: "icons/obj/items.dmi", state: "soapnt") },
         "hypospray": { "": (dmi: "icons/obj/syringe.dmi", state: "hypo") },
         "chain-of-command": { "": (dmi: "icons/obj/weapons.dmi", state: "chain") },
