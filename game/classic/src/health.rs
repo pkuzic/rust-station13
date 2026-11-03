@@ -53,6 +53,23 @@ impl Zone {
         }
     }
 
+    /// Its bit in Luna's `body_parts_covered`.
+    pub fn cover_bit(self) -> u16 {
+        match self {
+            Zone::Head => 1,
+            Zone::Chest => 2,
+            Zone::Groin => 4,
+            Zone::LLeg => 8,
+            Zone::RLeg => 16,
+            Zone::LFoot => 32,
+            Zone::RFoot => 64,
+            Zone::LArm => 128,
+            Zone::RArm => 256,
+            Zone::LHand => 512,
+            Zone::RHand => 1024,
+        }
+    }
+
     /// Noun id in the locales, e.g. `zone-l_arm`.
     pub fn noun_id(self) -> &'static str {
         match self {

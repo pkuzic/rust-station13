@@ -11,7 +11,7 @@ use crate::actions::Outbox;
 use crate::atmos::StationAtmos;
 use crate::equipment::{Equipment, TankGas, Wearable, WornBy, sealed};
 use crate::hands::HeldBy;
-use crate::health::{Body, Vitals};
+use crate::health::{Body, Vitals, Zone};
 use crate::time::WorldTime;
 
 /// A body's life cycle runs every this many ticks (2 s).
@@ -99,6 +99,68 @@ pub fn sense_surroundings(atmos: Option<Res<StationAtmos>>, mut mobs: Query<(&Gr
             },
             oxygen: air.partial_pressure(Gas::Oxygen, TILE_VOLUME) as f32,
         });
+    }
+}
+
+/// Luna's `BURN_DMG`, and a fire's share of a tile (its hotspot's starting volume over a tile's).
+const BURN_DAMAGE: f32 = 6.0;
+const FIRE_SHARE: f32 = 0.05;
+
+/// How well what someone has on stands up to a fire this hot (Luna `add_fire_protection`). Anything
+/// made for hotter than this helps, the suit most.
+fn fire_protection(equipment: &Equipment, wearables: &Query<&Wearable>, temperature: f32) -> f32 {
+    [
+        (Slot::Head, 30.0),
+        (Slot::Mask, 40.0),
+        (Slot::Glasses, 60.0),
+        (Slot::Suit, 10.0),
+        (Slot::Uniform, 20.0),
+        (Slot::Gloves, 40.0),
+        (Slot::Shoes, 40.0),
+    ]
+    .into_iter()
+    .filter_map(|(slot, share)| {
+        let worn = wearables.get(equipment.get(slot)?).ok()?;
+        (worn.protect_k > temperature).then_some(worn.protect_k / share)
+    })
+    .sum()
+}
+
+/// Standing in a fire burns, each part according to what's over it (Luna `FireBurn`).
+pub fn burn_in_fires(
+    time: Res<WorldTime>,
+    atmos: Option<Res<StationAtmos>>,
+    mut mobs: Query<(&GridPos, &mut Body, &Vitals, Option<&Equipment>)>,
+    wearables: Query<&Wearable>,
+) {
+    let Some(atmos) = atmos else { return };
+    if !time.tick.0.is_multiple_of(LIFE_TICKS) {
+        return;
+    }
+    for (pos, mut body, vitals, equipment) in &mut mobs {
+        if vitals.stat == MobStat::Dead || !atmos.0.burning_at(pos.0) {
+            continue;
+        }
+        let temperature = atmos.0.air_at(pos.0).temperature as f32;
+        let protection = equipment.map_or(0.0, |e| fire_protection(e, &wearables, temperature));
+        let intensity = FIRE_SHARE / protection.max(0.5) * BURN_DAMAGE * 10.0;
+        for zone in Zone::ALL {
+            let share = match zone {
+                Zone::Head | Zone::Chest => 2.5,
+                Zone::Groin => 2.0,
+                Zone::LLeg | Zone::RLeg => 0.6,
+                Zone::LArm | Zone::RArm => 0.4,
+                _ => 0.25,
+            };
+            let exposure: f32 = equipment.map_or(1.0, |e| {
+                e.0.values()
+                    .filter_map(|item| wearables.get(*item).ok())
+                    .filter(|worn| worn.covers & zone.cover_bit() != 0)
+                    .map(|worn| worn.heat)
+                    .product()
+            });
+            body.take_damage(zone, 0.0, share * intensity * exposure);
+        }
     }
 }
 

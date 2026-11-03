@@ -83,6 +83,7 @@ pub mod round;
 pub mod scenery;
 pub mod security;
 pub mod shields;
+pub mod slips;
 pub mod smes_panel;
 pub mod smoking;
 pub mod sound;
@@ -236,6 +237,7 @@ impl Plugin for ClassicPlugin {
                     pulling::start_pulls,
                     grabs::struggle,
                     movement::move_mobs,
+                    slips::slip,
                     pulling::follow_pullers,
                     pulling::drop_lost_pulls,
                     closets::leave_closets,
@@ -264,7 +266,7 @@ impl Plugin for ClassicPlugin {
                     atmos::space_wind,
                     atmos::drift,
                     environment::sense_surroundings,
-                    environment::life,
+                    (environment::life, environment::burn_in_fires),
                     health::update_vitals,
                     atmos::publish_atmos_view,
                 )

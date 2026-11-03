@@ -148,6 +148,8 @@ pub struct Shot {
     pub next: usize,
     /// Where it was aimed: someone lying here is hit as well, not stepped over.
     pub aimed_at: TilePos,
+    /// The body part it was aimed at (Luna `def_zone`).
+    pub zone: Zone,
 }
 
 /// A recharger, and what is charging in it.
@@ -406,6 +408,9 @@ pub fn launch(world: &mut World, firer: Entity, at: TilePos, to: TilePos, fires:
             path,
             next: 0,
             aimed_at: to,
+            zone: world
+                .get::<crate::combat::AimZone>(firer)
+                .map_or(Zone::Chest, |aim| aim.0),
         },
     ));
 }
@@ -460,39 +465,47 @@ fn victim(world: &mut World, shot: &Shot, at: TilePos) -> Option<Entity> {
 
 fn hit(world: &mut World, shot: &Shot, person: Entity, at: TilePos) {
     let name = name_of(world, person);
+    let zone = {
+        let mut rng = world.resource_mut::<GameRng>();
+        ran_zone(shot.zone, &mut rng)
+    };
     match shot.fires {
         Fires::Beam => {
-            let zone = {
-                let mut rng = world.resource_mut::<GameRng>();
-                ran_zone(Zone::Chest, &mut rng)
-            };
-            if let Some(mut body) = world.get_mut::<Body>(person) {
-                body.take_damage(zone, 0.0, BEAM_BURN);
-            }
+            let absorbed = crate::combat::armour_check(world, person, zone, crate::combat::ArmorKind::Laser);
             let msg = LocMsg::new("shot-hit-laser").arg("name", name);
             world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+            if absorbed < 2
+                && let Some(mut body) = world.get_mut::<Body>(person)
+            {
+                body.take_damage(zone, 0.0, BEAM_BURN / (absorbed as f32 + 1.0));
+            }
         }
         Fires::Bullet(round) => {
+            let absorbed = crate::combat::armour_check(world, person, zone, crate::combat::ArmorKind::Bullet);
             let (brute, weaken) = round.effect();
-            let zone = {
-                let mut rng = world.resource_mut::<GameRng>();
-                ran_zone(Zone::Chest, &mut rng)
-            };
-            if let Some(mut body) = world.get_mut::<Body>(person) {
-                body.take_damage(zone, brute, 0.0);
-            }
-            if weaken > 0.0 {
-                let until = world.resource::<WorldTime>().deciseconds() + weaken;
-                world.entity_mut(person).insert(Weakened(until));
-            }
             let msg = LocMsg::new("shot-hit-bullet").arg("name", name);
             world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+            if absorbed >= 2 {
+                return;
+            }
+            let share = absorbed as f32 + 1.0;
+            if let Some(mut body) = world.get_mut::<Body>(person) {
+                body.take_damage(zone, brute / share, 0.0);
+            }
+            if weaken > 0.0 {
+                let until = world.resource::<WorldTime>().deciseconds() + weaken / share;
+                world.entity_mut(person).insert(Weakened(until));
+            }
         }
         Fires::Electrode => {
-            let until = world.resource::<WorldTime>().deciseconds() + ELECTRODE_WEAKEN_DS;
-            world.entity_mut(person).insert(Weakened(until));
+            let absorbed = crate::combat::armour_check(world, person, zone, crate::combat::ArmorKind::Energy);
             let msg = LocMsg::new("shot-hit-electrode").arg("name", name);
             world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+            if absorbed < 2 {
+                let down = ELECTRODE_WEAKEN_DS / (absorbed as f32 + 1.0);
+                let until = world.resource::<WorldTime>().deciseconds() + down;
+                world.entity_mut(person).insert(Weakened(until));
+            }
         }
     }
 }

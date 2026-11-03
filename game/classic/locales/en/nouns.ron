@@ -465,6 +465,7 @@
     "headset-cargo": (gender: neuter, sg: (nom: "supply radio headset", indef: "a supply radio headset"), pl: Some((nom: "supply radio headsets"))),
     "headset-syndicate": (gender: neuter, sg: (nom: "radio headset", indef: "a radio headset"), pl: Some((nom: "radio headsets"))),
     "grab": (gender: neuter, sg: (nom: "grab", indef: "a grab"), pl: Some((nom: "grabs"))),
+    "banana-peel": (gender: neuter, sg: (nom: "banana peel", indef: "a banana peel"), pl: Some((nom: "banana peels"))),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),
