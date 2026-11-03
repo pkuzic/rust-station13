@@ -60,6 +60,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `bedsheet-rd:` | `icons/obj/items.dmi : "sheetrd"` | CC-BY-SA 3.0 |
 | `bedsheet-rd:spread` | `icons/obj/items.dmi : "sheetrd"` | CC-BY-SA 3.0 |
 | `beef-jerky:` | `icons/obj/food.dmi : "sosjerky"` | CC-BY-SA 3.0 |
+| `beer-keg:beertankTEMP` | `icons/obj/objects.dmi : "beertankTEMP"` | CC-BY-SA 3.0 |
 | `belt-medical:` | `icons/obj/clothing/belts.dmi : "medicalbelt"` | CC-BY-SA 3.0 |
 | `belt-security:` | `icons/obj/clothing/belts.dmi : "securitybelt"` | CC-BY-SA 3.0 |
 | `beret:` | `icons/obj/clothing/hats.dmi : "beret"` | CC-BY-SA 3.0 |
@@ -871,6 +872,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `penlight:` | `icons/obj/lighting.dmi : "penlight"` | CC-BY-SA 3.0 |
 | `penlight:on` | `icons/obj/lighting.dmi : "penlight-on"` | CC-BY-SA 3.0 |
 | `pepper-spray:` | `icons/obj/weapons.dmi : "pepperspray"` | CC-BY-SA 3.0 |
+| `pepper-tank:peppertank` | `icons/obj/objects.dmi : "peppertank"` | CC-BY-SA 3.0 |
 | `photo-album:` | `icons/obj/items.dmi : "album"` | CC-BY-SA 3.0 |
 | `pill-antitox:` | `icons/obj/chemical.dmi : "pill17"` | CC-BY-SA 3.0 |
 | `pill-bottle-box:` | `icons/obj/storage.dmi : "pillbottle"` | CC-BY-SA 3.0 |
@@ -1370,12 +1372,20 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `vending-cola:Cola_Machine` | `icons/obj/vending.dmi : "Cola_Machine"` | CC-BY-SA 3.0 |
 | `vending-cola:Cola_Machine-broken` | `icons/obj/vending.dmi : "Cola_Machine-broken"` | CC-BY-SA 3.0 |
 | `vending-cola:Cola_Machine-off` | `icons/obj/vending.dmi : "Cola_Machine-off"` | CC-BY-SA 3.0 |
+| `vending-engineering:engi` | `icons/obj/vending.dmi : "engi"` | CC-BY-SA 3.0 |
+| `vending-engineering:engi-off` | `icons/obj/vending.dmi : "engi-off"` | CC-BY-SA 3.0 |
+| `vending-medical:med` | `icons/obj/vending.dmi : "med"` | CC-BY-SA 3.0 |
+| `vending-medical:med-off` | `icons/obj/vending.dmi : "med-off"` | CC-BY-SA 3.0 |
 | `vending-snack:snack` | `icons/obj/vending.dmi : "snack"` | CC-BY-SA 3.0 |
 | `vending-snack:snack-broken` | `icons/obj/vending.dmi : "snack-broken"` | CC-BY-SA 3.0 |
 | `vending-snack:snack-off` | `icons/obj/vending.dmi : "snack-off"` | CC-BY-SA 3.0 |
 | `vending-soda:soda` | `icons/obj/vending.dmi : "soda"` | CC-BY-SA 3.0 |
 | `vending-soda:soda-broken` | `icons/obj/vending.dmi : "soda-broken"` | CC-BY-SA 3.0 |
 | `vending-soda:soda-off` | `icons/obj/vending.dmi : "soda-off"` | CC-BY-SA 3.0 |
+| `vending-toxins:generic` | `icons/obj/vending.dmi : "generic"` | CC-BY-SA 3.0 |
+| `vending-toxins:generic-off` | `icons/obj/vending.dmi : "generic-off"` | CC-BY-SA 3.0 |
+| `vending-wallmed:wallmed` | `icons/obj/vending.dmi : "wallmed"` | CC-BY-SA 3.0 |
+| `vending-wallmed:wallmed-off` | `icons/obj/vending.dmi : "wallmed-off"` | CC-BY-SA 3.0 |
 | `vent:off` | `icons/obj/atmospherics/vent_pump.dmi : "off"` | CC-BY-SA 3.0 |
 | `vent:on` | `icons/obj/atmospherics/vent_pump.dmi : "out"` | CC-BY-SA 3.0 |
 | `voice-recorder:` | `icons/obj/items.dmi : "implantpad-0"` | CC-BY-SA 3.0 |
@@ -1405,6 +1415,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `wardrobe-red:red` | `icons/obj/closet.dmi : "red"` | CC-BY-SA 3.0 |
 | `wardrobe-toxins:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `wardrobe-toxins:white` | `icons/obj/closet.dmi : "white"` | CC-BY-SA 3.0 |
+| `water-cooler:water_cooler` | `icons/obj/vending.dmi : "water_cooler"` | CC-BY-SA 3.0 |
 | `water-puff:` | `icons/effects/effects.dmi : "extinguish"` | CC-BY-SA 3.0 |
 | `water-tank:` | `icons/obj/objects.dmi : "watertank"` | CC-BY-SA 3.0 |
 | `welder:` | `icons/obj/items.dmi : "welder"` | CC-BY-SA 3.0 |

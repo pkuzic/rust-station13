@@ -167,7 +167,7 @@ pub fn process_actions(
                         turret_controls,
                         reagent_holders,
                         dispensers_chem,
-                        (medbay_sleepers, medbay_consoles, medbay_cells, chem_masters),
+                        (medbay_sleepers, medbay_consoles, medbay_cells, chem_masters, fill_tanks),
                     ),
                 ),
             ),
@@ -262,6 +262,14 @@ pub fn process_actions(
                             Query<(), With<crate::medbay::SleeperConsole>>,
                             Query<(), With<crate::medbay::CryoCell>>,
                             Query<(), With<crate::chem_master::ChemMaster>>,
+                            Query<
+                                (),
+                                Or<(
+                                    With<crate::reagent_tanks::ReagentTank>,
+                                    With<crate::extinguishers::WaterTank>,
+                                    With<crate::welding::FuelTank>,
+                                )>,
+                            >,
                         ),
                     ),
                 ),
@@ -346,6 +354,14 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target)
+                    if fill_tanks.contains(target)
+                        && tool.is_some_and(crate::chemistry::is_glass)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Tanks to fill a beaker from (`chemistry.md`).
+                    commands.queue(move |world: &mut World| crate::reagent_tanks::fill(world, mob, target));
+                }
                 Action::UseOn(target)
                     if chem_masters.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>

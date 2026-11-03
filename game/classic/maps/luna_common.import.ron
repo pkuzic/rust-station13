@@ -146,6 +146,9 @@
         (path: "/obj/item/device/flashlight/lantern", id: "lantern"),
         (path: "/obj/item/device/flashlight/lamp", id: "desk-lamp"),
         (path: "/obj/item/device/flashlight/lamp/green", id: "desk-lamp-green"),
+        (path: "/obj/structure/reagent_dispensers/peppertank", id: "pepper-tank"),
+        (path: "/obj/structure/reagent_dispensers/water_cooler", id: "water-cooler"),
+        (path: "/obj/structure/reagent_dispensers/beerkeg", id: "beer-keg"),
         (path: "/obj/structure/reagent_dispensers/fueltank", id: "fuel-tank"),
         (path: "/obj/structure/reagent_dispensers/watertank", id: "water-tank"),
         // Paperwork (`paperwork.md`) and status displays (`status-displays.md`).
@@ -187,6 +190,10 @@
         (path: "/obj/machinery/camera", id: "camera", dir: true, vars: ["c_tag", "network"]),
         (path: "/obj/machinery/computer/security", id: "security-console"),
         // Vending machines (`vending.md`).
+        (path: "/obj/machinery/vending/medical", id: "vending-medical"),
+        (path: "/obj/machinery/vending_tg/wallmed", id: "vending-wallmed", vars: ["pixel_x", "pixel_y"]),
+        (path: "/obj/machinery/vending/toxins", id: "vending-toxins"),
+        (path: "/obj/machinery/vending/engineering", id: "vending-engineering"),
         (path: "/obj/machinery/vending_tg/coffee", id: "vending-coffee"),
         (path: "/obj/machinery/vending_tg/snack", id: "vending-snack"),
         (path: "/obj/machinery/vending_tg/cola", id: "vending-cola"),

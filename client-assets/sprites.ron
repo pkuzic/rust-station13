@@ -2396,6 +2396,25 @@
         },
         "pill-made": { "": (dmi: "icons/obj/chemical.dmi", state: "pill1") },
         "bottle-made": { "": (dmi: "icons/obj/chemical.dmi", state: "bottle1") },
+        "vending-medical": {
+            "med": (dmi: "icons/obj/vending.dmi", state: "med"),
+            "med-off": (dmi: "icons/obj/vending.dmi", state: "med-off"),
+        },
+        "vending-wallmed": {
+            "wallmed": (dmi: "icons/obj/vending.dmi", state: "wallmed"),
+            "wallmed-off": (dmi: "icons/obj/vending.dmi", state: "wallmed-off"),
+        },
+        "vending-toxins": {
+            "generic": (dmi: "icons/obj/vending.dmi", state: "generic"),
+            "generic-off": (dmi: "icons/obj/vending.dmi", state: "generic-off"),
+        },
+        "vending-engineering": {
+            "engi": (dmi: "icons/obj/vending.dmi", state: "engi"),
+            "engi-off": (dmi: "icons/obj/vending.dmi", state: "engi-off"),
+        },
+        "pepper-tank": { "peppertank": (dmi: "icons/obj/objects.dmi", state: "peppertank") },
+        "beer-keg": { "beertankTEMP": (dmi: "icons/obj/objects.dmi", state: "beertankTEMP") },
+        "water-cooler": { "water_cooler": (dmi: "icons/obj/vending.dmi", state: "water_cooler") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),

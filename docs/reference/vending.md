@@ -18,6 +18,14 @@ Dense, on the equipment channel of their area's APC, and full when the round sta
 | `vending-cola` | `cola` | `Cola_Machine` | 1 s | Space Cola, Space Mountain Wind, Dr. Gibb, Star-kist, Space-Up: 10 each |
 | `vending-soda` | `cola/soda` | `soda` | 1 s | as `vending-cola` |
 | `vending-cigarette` | `cigarette` | `cigs` | 3.4 s | cigarette packets and matchboxes: 10 each; cheap lighters: 4 |
+| `vending-medical` | `vending/medical` | `med` | 1 s | medical supplies and first-aid kits: 4 each. Needs `medical` access |
+| `vending-wallmed` | `vending_tg/wallmed` | `wallmed` | 1 s | bruise packs, ointment, syringes and a health analyzer. Hung on a wall, so not dense |
+| `vending-toxins` | `vending/toxins` | `generic` | 1 s | tools and bomb parts: 4 each. Needs `tox` access |
+| `vending-engineering` | `vending/engineering` | `engi` | 1 s | tools, parts and protective gear: 4 each. Needs `engine` access |
+
+Luna's medical, toxins and engineering machines spend one shared store of points, with some products
+costing more. Here each product has its own stock of 4. Products that aren't in the game yet are left out,
+mainly uniforms, and bio suits on the toxins machine.
 
 ## Using one
 
