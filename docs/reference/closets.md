@@ -97,3 +97,7 @@ A crate holds items like a closet, with these differences:
   - secure crates;
   - the other closet kinds: fire, radiation, bomb suit, wardrobes and the rest;
   - sounds other than the open and close click (`sound.md`).
+
+## The rest of Luna's closets
+
+The wardrobes, lockers and biohazard closets on Luna's decks are all here with their looks and access, and hold what we have of their contents. What they'd hold beyond that isn't built yet, so some are nearly empty.
