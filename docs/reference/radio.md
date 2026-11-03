@@ -30,5 +30,31 @@ Sources: `luna:code/game/objects/radio/radio.dm`, `luna:code/game/objects/radio/
 | Receiving | every listening radio on the frequency plays it within 1 tile (radio) or 7 (intercom) in sight; a mob hears each message once | keep |
 | Format | `[145.9] John Smith says, "Hello."` | keep, with the frequency first |
 | Speaker switch, frequency, wires, two-a-second limit | none | need the radio window; the limit drops messages |
-| Headsets | the engineering headset, worn on the ears: `;` talks into it (heard directly within a tile), and it plays the common channel to its wearer and anyone beside them. Engineer spawn points get one, as Luna's engineers start with one | keep |
-| Department channels | none | Luna's humans can't use them either: its say code only handles `:e` and the rest for robots |
+| Headsets | every job wears one on the ears, as in Luna: `;` talks into it on the common channel (heard directly within a tile), and it plays what it hears to its wearer and anyone beside them | keep |
+| Department channels | below | keep |
+
+## Department channels
+
+Sources: `luna:code/game/objects/items/devices/radio/headset.dm`, `encryptionkey.dm`, `luna:code/game/communications.dm`,
+`luna:code/game/jobs/jobprocs.dm`, `luna:code/modules/mob/living/say.dm`. Tests: `game/classic/tests/radio_channels.rs`.
+
+| Key | Channel | Frequency |
+|---|---|---|
+| `:h` | the headset's first | |
+| `:c` | Command | 135.3 |
+| `:n` | Science | 135.1 |
+| `:m` | Medical | 135.5 |
+| `:e` | Engineering | 135.7 |
+| `:s` | Security | 135.9 |
+| `:q` | Supply | 134.7 |
+| `:t` | Syndicate | 121.3 |
+
+`#` and `.` work as `:` does, and so does the same key on a Russian layout. A headset without the channel sends nothing,
+and the speaker is still heard within a tile. A channel's line says its name in place of the frequency.
+
+What each headset has follows Luna's keys. The captain's can talk on all of Command, Security, Engineering, Science,
+Medical and Supply, and hears only the first two until the headset's window can switch the others on. The Head of
+Personnel's is the same with Security.
+
+Differences from Luna: encryption keys are part of the headset, not swapped with a screwdriver. There's no binary key.
+Chat isn't coloured by channel. The window for the listening switches isn't built, so the ones Luna starts off stay off.

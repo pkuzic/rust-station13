@@ -579,8 +579,11 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if let Some(cell) = crate::cells::kind(proto) {
         item.insert(cell);
     }
-    if proto == crate::radio::RADIO || proto == crate::radio::HEADSET {
+    if proto == crate::radio::RADIO {
         item.insert(crate::radio::Radio::handheld());
+    }
+    if let Some(channels) = crate::radio::headset_channels(proto) {
+        item.insert(crate::radio::Radio::headset(channels));
     }
     if proto == crate::traitor::UPLINK {
         item.insert(crate::traitor::Uplink::default());

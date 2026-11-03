@@ -264,8 +264,16 @@ pub fn speak(
                         })
                         .map(|(e, ..)| e),
                 ),
-                Some(RadioMode::Whisper) | None => {}
+                Some(RadioMode::Whisper | RadioMode::Channel(_)) | None => {}
             }
+            // A department channel, if the headset they're wearing has it.
+            let channel = match mode {
+                Some(RadioMode::Channel(wanted)) => equipment
+                    .and_then(|e| e.get(rs13_world::Slot::Ears))
+                    .and_then(|ear| radios.get(ear).ok())
+                    .and_then(|(_, radio, ..)| radio.channel(wanted)),
+                _ => None,
+            };
             into.extend(
                 radios
                     .iter()
@@ -280,16 +288,19 @@ pub fn speak(
                 .filter_map(|e| radios.get(*e).ok())
                 .map(|(_, radio, ..)| radio.frequency)
                 .collect();
+            frequencies.extend(channel);
             frequencies.sort_unstable();
             frequencies.dedup();
             let on_air = frequencies
                 .into_iter()
                 .map(|f| {
-                    let msg = LocMsg::new("radio-say")
-                        .arg("name", name.0.clone())
-                        .arg("frequency", format_frequency(f))
-                        .arg("verb", verb)
-                        .arg("text", text.clone());
+                    let msg = LocMsg::new("radio-say").arg("name", name.0.clone());
+                    // A department channel goes by its name.
+                    let msg = match crate::radio::CHANNELS.iter().find(|c| c.0 == f) {
+                        Some((_, id, ..)) => msg.msg("frequency", format!("channel-{id}")),
+                        None => msg.arg("frequency", format_frequency(f)),
+                    };
+                    let msg = msg.arg("verb", verb).arg("text", text.clone());
                     (f, msg)
                 })
                 .collect();
@@ -316,7 +327,7 @@ pub fn speak(
         let mut tuned: Vec<(Entity, LocMsg)> = Vec::new();
         for (frequency, radio_msg) in on_air {
             for (radio_entity, radio, ..) in &radios {
-                if radio.frequency != frequency || !radio.listening {
+                if !radio.hears(frequency) {
                     continue;
                 }
                 let Some(at) = radio_at(radio_entity) else {
