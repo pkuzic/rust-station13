@@ -210,6 +210,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::chem_master::CHEM_MASTER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::chem_master::spawn_chem_master(world, pos, id));
+    }
     if proto == crate::chem_dispenser::CHEM_DISPENSER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::chem_dispenser::spawn_chem_dispenser(world, pos, id));
@@ -627,6 +631,10 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             ),
             (
                 crate::chemistry::Reagents::new(crate::chemistry::BLOODSTREAM),
+                (
+                    crate::chem_master::PendingMasterOps::default(),
+                    crate::chem_master::MasterPanelOut::default(),
+                ),
                 crate::medbay::PendingSleeperOps::default(),
                 crate::medbay::SleeperPanelOut::default(),
                 crate::chem_dispenser::PendingChemOps::default(),

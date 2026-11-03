@@ -83,6 +83,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `bone-gel:` | `icons/obj/surgery.dmi : "bone-gel"` | CC-BY-SA 3.0 |
 | `bottle-antitoxin:` | `icons/obj/chemical.dmi : "bottle17"` | CC-BY-SA 3.0 |
 | `bottle-inaprovaline:` | `icons/obj/chemical.dmi : "bottle16"` | CC-BY-SA 3.0 |
+| `bottle-made:` | `icons/obj/chemical.dmi : "bottle1"` | CC-BY-SA 3.0 |
 | `bowler-hat:` | `icons/obj/clothing/hats.dmi : "bowler"` | CC-BY-SA 3.0 |
 | `boxing-gloves:` | `icons/obj/clothing/gloves.dmi : "boxing"` | CC-BY-SA 3.0 |
 | `boxing-gloves-blue:` | `icons/obj/clothing/gloves.dmi : "boxingblue"` | CC-BY-SA 3.0 |
@@ -214,6 +215,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `chair:west` | `icons/obj/objects.dmi : "chair"` | CC-BY-SA 3.0 |
 | `cheesie-honkers:` | `icons/obj/food.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |
 | `chem-dispenser:dispenser` | `icons/obj/chemical.dmi : "dispenser"` | CC-BY-SA 3.0 |
+| `chem-master:mixer0` | `icons/obj/chemical.dmi : "mixer0"` | CC-BY-SA 3.0 |
+| `chem-master:mixer1` | `icons/obj/chemical.dmi : "mixer1"` | CC-BY-SA 3.0 |
+| `chem-master:mixers` | `icons/obj/chemical.dmi : "mixers"` | CC-BY-SA 3.0 |
 | `chest-drawer:chestdrawer` | `icons/obj/bureaucracy.dmi : "chestdrawer"` | CC-BY-SA 3.0 |
 | `chest-drawer:chestdrawer-open` | `icons/obj/bureaucracy.dmi : "chestdrawer-open"` | CC-BY-SA 3.0 |
 | `chicken-head:` | `icons/obj/clothing/hats.dmi : "chickenhead"` | CC-BY-SA 3.0 |
@@ -872,6 +876,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pill-bottle-box:` | `icons/obj/storage.dmi : "pillbottle"` | CC-BY-SA 3.0 |
 | `pill-gold:` | `icons/obj/chemical.dmi : "pill7"` | CC-BY-SA 3.0 |
 | `pill-inaprovaline:` | `icons/obj/chemical.dmi : "pill20"` | CC-BY-SA 3.0 |
+| `pill-made:` | `icons/obj/chemical.dmi : "pill1"` | CC-BY-SA 3.0 |
 | `pill-silver:` | `icons/obj/chemical.dmi : "pill9"` | CC-BY-SA 3.0 |
 | `pinpointer:` | `icons/obj/device.dmi : "pinoff"` | CC-BY-SA 3.0 |
 | `pipe:1-2` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |

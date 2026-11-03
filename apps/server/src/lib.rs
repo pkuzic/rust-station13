@@ -15,6 +15,7 @@ use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
 use rs13_classic::brig::{BrigOp, BrigPanelOut, PendingBrigOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
 use rs13_classic::chem_dispenser::{ChemOp, ChemPanelOut, PendingChemOps};
+use rs13_classic::chem_master::{MasterOp, MasterPanelOut, PendingMasterOps};
 use rs13_classic::cloning::Arrivals;
 use rs13_classic::combat::CombatIntent;
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
@@ -44,18 +45,19 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
-    ArcadePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemPanel, ClipboardCommand,
-    ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
-    LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
-    PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
-    StoragePanel, VendingPanel, WirePanel,
+    ArcadePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemMasterCommand, ChemMasterPanel,
+    ChemPanel, ClipboardCommand, ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel,
+    HeaterCommand, HeaterPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel,
+    PickListPanel, PlaySound, Player, PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
+    SoundChannel, StatusUpdate, StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
-    AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ChemPanelView,
-    ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent,
-    LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, SleeperPanelView,
-    Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ChemMasterPanelView,
+    ChemPanelView, ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos,
+    HeaterPanelView, Intent, LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView,
+    PowerMonitorView, SleeperPanelView, Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView,
+    WirePanelView,
 };
 
 #[derive(Resource)]
@@ -105,6 +107,7 @@ struct SentPanel(
     Option<BrigPanelView>,
     Option<ChemPanelView>,
     Option<SleeperPanelView>,
+    Option<ChemMasterPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -391,6 +394,7 @@ fn queue_actions(
                 &mut PendingBrigOps,
                 &mut PendingChemOps,
                 &mut PendingSleeperOps,
+                &mut PendingMasterOps,
             ),
             Has<NameChosen>,
         ),
@@ -429,6 +433,7 @@ fn queue_actions(
                 mut brig_ops,
                 mut chem_ops,
                 mut sleeper_ops,
+                mut master_ops,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -556,6 +561,21 @@ fn queue_actions(
                                 ChemCommand::Dispense(line) => ChemOp::Dispense(usize::from(line)),
                                 ChemCommand::Amount(amount) => ChemOp::Amount(amount),
                                 ChemCommand::Eject => ChemOp::Eject,
+                            },
+                        ));
+                    }
+                    None
+                }
+                ActionInput::ChemMaster { target, command } => {
+                    if let Some(machine) = resolve(target) {
+                        master_ops.0.push((
+                            machine,
+                            match command {
+                                ChemMasterCommand::Add(line) => MasterOp::Add(usize::from(line)),
+                                ChemMasterCommand::Remove(line) => MasterOp::Remove(usize::from(line)),
+                                ChemMasterCommand::Pill => MasterOp::Pill,
+                                ChemMasterCommand::Bottle => MasterOp::Bottle,
+                                ChemMasterCommand::Eject => MasterOp::Eject,
                             },
                         ));
                     }
@@ -857,6 +877,7 @@ fn send_panels(
             &mut MessageSender<BrigPanel>,
             &mut MessageSender<ChemPanel>,
             &mut MessageSender<SleeperPanel>,
+            &mut MessageSender<ChemMasterPanel>,
         ),
     )>,
     panels: Query<(
@@ -879,6 +900,7 @@ fn send_panels(
             &BrigPanelOut,
             &ChemPanelOut,
             &SleeperPanelOut,
+            &MasterPanelOut,
         ),
     )>,
 ) {
@@ -904,6 +926,7 @@ fn send_panels(
             mut brig_panels,
             mut chem_panels,
             mut sleeper_panels,
+            mut master_panels,
         ),
     ) in &mut links
     {
@@ -921,7 +944,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem, sleeper),
+            (heater, arcade, brig, chem, sleeper, master),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -997,6 +1020,10 @@ fn send_panels(
         if sent.17 != sleeper.0 {
             sleeper_panels.send::<NoticeChannel>(SleeperPanel(sleeper.0.clone()));
             sent.17 = sleeper.0.clone();
+        }
+        if sent.18 != master.0 {
+            master_panels.send::<NoticeChannel>(ChemMasterPanel(master.0.clone()));
+            sent.18 = master.0.clone();
         }
     }
 }

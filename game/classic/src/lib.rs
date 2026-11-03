@@ -18,6 +18,7 @@ pub mod cameras;
 pub mod cells;
 pub mod chairs;
 pub mod chem_dispenser;
+pub mod chem_master;
 pub mod chemistry;
 pub mod cloning;
 pub mod closets;
@@ -384,6 +385,8 @@ impl Plugin for ClassicPlugin {
                     (
                         medbay::run_medbay,
                         medbay::update_sleeper_views,
+                        chem_master::run_chem_masters,
+                        chem_master::update_master_views,
                         microwaves::run_microwaves,
                         monkeys::run_monkeys,
                         flashes::run_flashers,

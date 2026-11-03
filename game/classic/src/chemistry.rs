@@ -184,6 +184,8 @@ fn holds(proto: &str) -> Option<(f32, &'static [(&'static str, f32)])> {
         "bottle-antitoxin" => (30.0, &[("anti_toxin", 30.0)]),
         "bottle-toxin" => (30.0, &[("toxin", 30.0)]),
         "bottle-stoxin" => (30.0, &[("stoxin", 30.0)]),
+        "bottle-made" => (30.0, &[]),
+        "pill-made" => (100.0, &[]),
         "pill-inaprovaline" => (100.0, &[("inaprovaline", 30.0)]),
         "pill-antitox" => (100.0, &[("anti_toxin", 25.0)]),
         "pill-gold" => (100.0, &[("gold", 20.0)]),

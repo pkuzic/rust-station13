@@ -568,6 +568,7 @@
         (path: "/obj/machinery/sleeper", id: "sleeper"),
         (path: "/obj/machinery/sleep_console", id: "sleeper-console"),
         (path: "/obj/machinery/atmospherics/unary/cryo_cell", id: "cryo-cell"),
+        (path: "/obj/machinery/chem_master", id: "chem-master"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

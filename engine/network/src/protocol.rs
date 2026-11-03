@@ -7,10 +7,11 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, BrigPanelView, CameraPanelView,
-    CameraView, ChemPanelView, ClipboardView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
-    GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, Intent, LaserPanelView, LightSource,
-    MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, Silhouette,
-    SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, VendingPanelView, WirePanelView, WornView,
+    CameraView, ChemMasterPanelView, ChemPanelView, ClipboardView, Dir, DisplayName, EnvAlert, Facing,
+    FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, Intent,
+    LaserPanelView, LightSource, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset,
+    PowerMonitorView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
+    VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -108,6 +109,11 @@ pub enum ActionInput {
     Chem {
         target: NetId,
         command: ChemCommand,
+    },
+    /// A button on an open CheMaster.
+    ChemMaster {
+        target: NetId,
+        command: ChemMasterCommand,
     },
     /// Inject this line of an open sleeper console's list.
     Sleeper {
@@ -218,6 +224,18 @@ pub enum GasCommand {
     Adjust(i32),
     /// Take the held tank out.
     RemoveTank,
+}
+
+/// CheMaster window buttons (Luna's `chem_master` links).
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChemMasterCommand {
+    /// Move this line of the beaker's list into the buffer.
+    Add(u8),
+    /// Move this line of the buffer's list back into the beaker.
+    Remove(u8),
+    Pill,
+    Bottle,
+    Eject,
 }
 
 /// Chem dispenser window buttons (Luna's `chem_dispenser` links).
@@ -369,6 +387,10 @@ pub struct HeaterPanel(pub Option<HeaterPanelView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChemPanel(pub Option<ChemPanelView>);
 
+/// Server → one client: the CheMaster it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ChemMasterPanel(pub Option<ChemMasterPanelView>);
+
 /// Server → one client: the sleeper console it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SleeperPanel(pub Option<SleeperPanelView>);
@@ -493,6 +515,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<HeaterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ChemPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ChemMasterPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<SleeperPanel>()
             .add_direction(NetworkDirection::ServerToClient);

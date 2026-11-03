@@ -410,6 +410,17 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// An open CheMaster's window, as shown to the player (Luna's `chemmaster` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ChemMasterPanelView {
+    /// The machine.
+    pub target: NetId,
+    /// What's in its beaker, by reagent id, if it has one.
+    pub beaker: Option<Vec<(String, u16)>>,
+    /// What's in its buffer.
+    pub buffer: Vec<(String, u16)>,
+}
+
 /// An open sleeper console's window, as shown to the player (Luna's `sleep_console` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SleeperPanelView {

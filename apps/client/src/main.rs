@@ -32,6 +32,7 @@ mod heater_panel;
 mod hud;
 mod laser_panel;
 mod lighting;
+mod master_panel;
 mod monitor_panel;
 mod paper_panel;
 mod pick_panel;
@@ -116,6 +117,10 @@ enum UseStep {
     Dispense(u8),
     /// `inject:N`: inject line `N` of the open sleeper console's list.
     Inject(u8),
+    /// `buffer:N`: move line `N` of an open CheMaster's beaker into its buffer.
+    Buffer(u8),
+    /// `makepill`: make a pill on an open CheMaster.
+    MakePill,
     /// `held`: click the item in the other hand (an empty hand on a held container opens it).
     Held,
     /// `self`: click the item in the active hand, as `Z` does (Luna `attack_self`).
@@ -146,6 +151,8 @@ impl UseStep {
             "arcade" => Some(Self::ArcadeAttack),
             "brig" => Some(Self::BrigStart),
             _ if s.starts_with("dispense:") => s["dispense:".len()..].trim().parse().ok().map(Self::Dispense),
+            "makepill" => Some(Self::MakePill),
+            _ if s.starts_with("buffer:") => s["buffer:".len()..].trim().parse().ok().map(Self::Buffer),
             _ if s.starts_with("inject:") => s["inject:".len()..].trim().parse().ok().map(Self::Inject),
             "held" => Some(Self::Held),
             "self" => Some(Self::InHand),
@@ -310,6 +317,7 @@ fn main() {
         .init_resource::<arcade_panel::OpenArcade>()
         .init_resource::<brig_panel::OpenBrig>()
         .init_resource::<sleeper_panel::OpenSleeper>()
+        .init_resource::<master_panel::OpenMaster>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
         .init_resource::<paper_panel::OpenClipboard>()
@@ -364,6 +372,7 @@ fn main() {
                     (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
                     (brig_panel::receive_brig, brig_panel::show_brig).chain(),
                     (sleeper_panel::receive_sleeper, sleeper_panel::show_sleeper).chain(),
+                    (master_panel::receive_master, master_panel::show_master).chain(),
                     (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                     (paper_panel::receive_paper, paper_panel::show_paper).chain(),
                     (paper_panel::receive_clipboard, paper_panel::show_clipboard).chain(),
@@ -1517,11 +1526,12 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers): (
+    (arcades, timers, dispensers, sleepers, masters): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
         Res<sleeper_panel::OpenSleeper>,
+        Res<master_panel::OpenMaster>,
     ),
     mut next_at: Local<Option<f32>>,
 ) {
@@ -1571,6 +1581,14 @@ fn scripted_use(
         }
         UseStep::Swap => Some(ActionInput::SwapHands),
         UseStep::Respawn => Some(ActionInput::Respawn),
+        UseStep::Buffer(line) => masters.0.as_ref().map(|view| ActionInput::ChemMaster {
+            target: view.target,
+            command: rs13_network::protocol::ChemMasterCommand::Add(line),
+        }),
+        UseStep::MakePill => masters.0.as_ref().map(|view| ActionInput::ChemMaster {
+            target: view.target,
+            command: rs13_network::protocol::ChemMasterCommand::Pill,
+        }),
         UseStep::Inject(line) => sleepers.0.as_ref().map(|view| ActionInput::Sleeper {
             target: view.target,
             line,
