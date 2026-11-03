@@ -38,7 +38,7 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
     --use SPRITE --use-held --wait SECONDS …` runs a short script (pick up and use things) to set a
     scene up for a client screenshot, such as lighting a fire.
   - `rs13-server --map-file PATH`: a small map of your own for the case at hand.
-  - `rs13-client [--server ADDR] --size 1400x900 --use DX,DY|pull:DX,DY|floor:DX,DY|swap|respawn|arcade|brig|dispense:N|inject:N|buffer:N|makepill|lathe:N|job:N|jobstay|ready|joinround|callpods|buy:N|vote|voterestart|votemode|votefor:N|manifest|printmanifest|record:N|assign:N|held|self|wait:S|menu:DX,DY|pick:N|camera:N … --screenshot PATH
+  - `rs13-client [--server ADDR] --size 1400x900 --use DX,DY|pull:DX,DY|floor:DX,DY|swap|respawn|arcade|brig|dispense:N|inject:N|buffer:N|makepill|lathe:N|job:N|jobstay|ready|joinround|callpods|buy:N|say:TEXT|ooc:TEXT|vote|voterestart|votemode|votefor:N|manifest|printmanifest|record:N|assign:N|held|self|wait:S|menu:DX,DY|pick:N|camera:N … --screenshot PATH
     [--shot-after SECONDS]`: clicks and keys a player would do, then a screenshot to look at.
   If a path can't be driven yet, build the means to drive it first.
 - Deliver: code, tests, a short summary, known limits, and any interface changes.

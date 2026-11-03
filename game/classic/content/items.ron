@@ -31,6 +31,22 @@
     (id: "radio", force: 0.0, size: 2, slot: "belt", conducts: true),
     // Luna `radio/headset/headset_eng`: a radio worn on the ears; `;` talks into it.
     (id: "headset-eng", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-sec", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-rob", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-med", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-sci", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-medsci", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-com", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-captain", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-rd", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-hos", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-ce", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-cmo", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-hop", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-mine", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-cargo", force: 0.0, size: 1, slot: "ears", conducts: true),
+    (id: "headset-syndicate", force: 0.0, size: 1, slot: "ears", conducts: true),
     // Luna `glasses/meson`.
     (id: "meson-glasses", force: 0.0, size: 1, slot: "glasses"),
     // Luna `weapon/cell`: 2 500 units, or 10 000 for the high-capacity one (`cells.md`).

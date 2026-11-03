@@ -19,8 +19,56 @@ pub const RADIO_TALK_RANGE: i32 = 1;
 /// The handheld radio and the wall intercom prototypes.
 pub const RADIO: &str = "radio";
 pub const INTERCOM: &str = "intercom";
-/// The engineering headset prototype.
-pub const HEADSET: &str = "headset-eng";
+/// Department channels: their frequencies (Luna's `radiochannels`).
+pub const SCIENCE: u16 = 1351;
+pub const COMMAND: u16 = 1353;
+pub const MEDICAL: u16 = 1355;
+pub const ENGINEERING: u16 = 1357;
+pub const SECURITY: u16 = 1359;
+pub const SYNDICATE: u16 = 1213;
+pub const SUPPLY: u16 = 1347;
+/// Each channel's frequency, name in messages, and key after `:`, on both layouts.
+pub const CHANNELS: [(u16, &str, char, char); 7] = [
+    (SCIENCE, "science", 'n', 'т'),
+    (COMMAND, "command", 'c', 'с'),
+    (MEDICAL, "medical", 'm', 'ь'),
+    (ENGINEERING, "engineering", 'e', 'у'),
+    (SECURITY, "security", 's', 'ы'),
+    (SYNDICATE, "syndicate", 't', 'е'),
+    (SUPPLY, "supply", 'q', 'й'),
+];
+
+/// The channels a headset's keys give it, the first being `:h`, and whether it's listening to each
+/// (Luna's `encryptionkey`s). `None` if it isn't a headset. The engineer's is as before.
+pub fn headset_channels(proto: &str) -> Option<&'static [(u16, bool)]> {
+    Some(match proto {
+        "headset-eng" => &[(ENGINEERING, true)],
+        "headset" => &[],
+        "headset-sec" => &[(SECURITY, true)],
+        "headset-rob" => &[(ENGINEERING, true), (SCIENCE, true), (MEDICAL, true)],
+        "headset-med" => &[(MEDICAL, true)],
+        "headset-sci" => &[(SCIENCE, true)],
+        "headset-medsci" => &[(MEDICAL, true), (SCIENCE, true)],
+        "headset-com" => &[(COMMAND, true)],
+        "headset-captain" => &[
+            (COMMAND, true),
+            (SECURITY, true),
+            (ENGINEERING, false),
+            (SCIENCE, false),
+            (MEDICAL, false),
+            (SUPPLY, false),
+        ],
+        "headset-rd" => &[(SCIENCE, true), (COMMAND, true)],
+        "headset-hos" => &[(SECURITY, true), (COMMAND, true)],
+        "headset-ce" => &[(ENGINEERING, true), (COMMAND, true)],
+        "headset-cmo" => &[(MEDICAL, true), (COMMAND, true)],
+        "headset-hop" => &[(SUPPLY, true), (COMMAND, true), (SECURITY, false)],
+        "headset-mine" => &[(SUPPLY, true)],
+        "headset-cargo" => &[(SUPPLY, true)],
+        "headset-syndicate" => &[(SYNDICATE, true)],
+        _ => return None,
+    })
+}
 
 /// On a wall-mounted intercom: what `:i` talks into.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
@@ -36,6 +84,8 @@ pub struct Radio {
     pub listening: bool,
     /// How far its speaker carries.
     pub range: i32,
+    /// Department channels, with whether it's listening to each: a headset's.
+    pub channels: &'static [(u16, bool)],
 }
 
 impl Radio {
@@ -45,6 +95,28 @@ impl Radio {
             broadcasting: false,
             listening: true,
             range: RADIO_RANGE,
+            channels: &[],
+        }
+    }
+
+    pub fn headset(channels: &'static [(u16, bool)]) -> Self {
+        Self {
+            channels,
+            ..Self::handheld()
+        }
+    }
+
+    /// Whether it plays what comes in on this frequency.
+    pub fn hears(&self, frequency: u16) -> bool {
+        self.listening
+            && (self.frequency == frequency || self.channels.iter().any(|(f, on)| *f == frequency && *on))
+    }
+
+    /// The frequency for talking on this channel, or its first if none is named (Luna `:h`).
+    pub fn channel(&self, wanted: Option<u16>) -> Option<u16> {
+        match wanted {
+            Some(wanted) => self.channels.iter().map(|(f, _)| *f).find(|f| *f == wanted),
+            None => self.channels.first().map(|(f, _)| *f),
         }
     }
 
@@ -71,6 +143,8 @@ pub enum RadioMode {
     Headset,
     /// Not into a radio at all (Luna `:w`).
     Whisper,
+    /// A department channel on the headset, or its first one (Luna `:h`, `:e`, and so on).
+    Channel(Option<u16>),
 }
 
 /// Split a radio prefix (`:r`, `#l`, `.i`, or the same keys on a Russian layout) off the
@@ -91,7 +165,12 @@ pub fn split_mode(text: &str) -> (Option<RadioMode>, &str) {
         Some('l' | 'д') => RadioMode::LeftHand,
         Some('i' | 'ш') => RadioMode::Intercom,
         Some('w' | 'ц') => RadioMode::Whisper,
-        _ => return (None, text),
+        Some('h' | 'р') => RadioMode::Channel(None),
+        Some(key) => match CHANNELS.iter().find(|(.., en, ru)| key == *en || key == *ru) {
+            Some((frequency, ..)) => RadioMode::Channel(Some(*frequency)),
+            None => return (None, text),
+        },
+        None => return (None, text),
     };
     (Some(mode), chars.as_str().trim_start())
 }

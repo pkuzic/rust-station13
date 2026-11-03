@@ -142,6 +142,10 @@ enum UseStep {
     Manifest,
     /// `printmanifest`: print the crew manifest from an open identification computer.
     PrintManifest,
+    /// `say:TEXT`: say it, as if typed, prefixes and all.
+    Say(&'static str),
+    /// `ooc:TEXT`: say it out of character.
+    Ooc(&'static str),
     /// `vote`: open the vote window, as V does.
     VoteOpen,
     /// `voterestart`, `votemode`: start a vote.
@@ -197,6 +201,12 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            _ if s.starts_with("say:") => Some(Self::Say(Box::leak(
+                s["say:".len()..].to_owned().into_boxed_str(),
+            ))),
+            _ if s.starts_with("ooc:") => Some(Self::Ooc(Box::leak(
+                s["ooc:".len()..].to_owned().into_boxed_str(),
+            ))),
             "vote" => Some(Self::VoteOpen),
             "voterestart" => Some(Self::VoteRestart),
             "votemode" => Some(Self::VoteMode),
@@ -1759,6 +1769,17 @@ fn scripted_use(
         UseStep::VoteFor(line) => Some(VoteAction::Cast(line)),
         _ => None,
     };
+    let typed = match step {
+        UseStep::Say(text) => Some(ActionInput::Say(text.to_owned())),
+        UseStep::Ooc(text) => Some(ActionInput::Ooc(text.to_owned())),
+        _ => None,
+    };
+    if let Some(typed) = typed {
+        sender.send::<IntentChannel>(typed);
+        plan.0.pop_front();
+        *next_at = Some(now + 0.5);
+        return;
+    }
     if let Some(vote) = vote {
         sender.send::<IntentChannel>(ActionInput::Vote(vote));
         plan.0.pop_front();
@@ -1832,7 +1853,12 @@ fn scripted_use(
             line,
         }),
         // Dealt with above.
-        UseStep::VoteOpen | UseStep::VoteRestart | UseStep::VoteMode | UseStep::VoteFor(_) => None,
+        UseStep::VoteOpen
+        | UseStep::VoteRestart
+        | UseStep::VoteMode
+        | UseStep::VoteFor(_)
+        | UseStep::Say(_)
+        | UseStep::Ooc(_) => None,
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,
             call: true,
@@ -1958,6 +1984,8 @@ mod tests {
         assert_eq!(UseStep::parse("camera:1"), Some(UseStep::Camera(1)));
         assert_eq!(UseStep::parse("take:0"), Some(UseStep::Take(0)));
         assert_eq!(UseStep::parse("pull:-1,0"), Some(UseStep::Pull(-1, 0)));
+        assert_eq!(UseStep::parse("say::e hello"), Some(UseStep::Say(":e hello")));
+        assert_eq!(UseStep::parse("ooc:hi"), Some(UseStep::Ooc("hi")));
         assert_eq!(UseStep::parse("nope"), None);
     }
 }
