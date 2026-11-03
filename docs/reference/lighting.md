@@ -91,6 +91,8 @@ made-up two-deck world.
   towards you: the brightest of the open tiles beside them that you see. Light from a room
   behind a wall, or on a window beside a door, never shows on the face you see. A room's
   corner, with no face to see, takes the light at its corner.
+- **Dimmer than the level:** the drawn light is the level to the power of 1.3, times 0.85, so rooms have more
+  shade than Luna's. This is only how it looks: game rules such as who counts as in the dark go by the level.
 - **Changes fade:** when a light goes on or off, a door opens or the player moves, the
   drawn light eases to the new levels over about a third of a second instead of snapping.
 - **Fire flickers:** the light of a burning tile wavers between three quarters and full

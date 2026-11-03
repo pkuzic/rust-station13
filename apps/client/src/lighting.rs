@@ -30,6 +30,9 @@ const LIGHT_Z: f32 = 20.0;
 /// The darkest a tile gets: dim but readable, so a dark room still shows its shape (what
 /// stands in it may be only a silhouette), slightly cool, as darkness reads.
 const MIN_LIGHT: [f32; 3] = [0.22, 0.22, 0.27];
+/// See `shown_light`.
+const LIGHT_SCALE: f32 = 0.85;
+const LIGHT_CURVE: f32 = 1.3;
 
 pub struct LightingPlugin;
 
@@ -144,13 +147,19 @@ struct LightCache {
 /// How fast shown light eases to a change, per second: about a third of a second to settle.
 const FADE_RATE: f32 = 10.0;
 
+/// How light looks: a little dimmer than the game's level, falling away faster from its source, so
+/// rooms have more shade. It's only how it's drawn: what counts as dark doesn't change.
+fn shown_light(level: f32) -> f32 {
+    level.powf(LIGHT_CURVE) * LIGHT_SCALE
+}
+
 /// The texture's bytes: light per texel (no darker than `MIN_LIGHT`), and in alpha whether
 /// the tile gives light to the picture (`lighting.wgsl`).
 fn texture_data(texels: impl Iterator<Item = ([f32; 3], bool)>) -> Vec<u8> {
     let mut data = Vec::new();
     for (light, in_sight) in texels {
         for (c, min) in light.into_iter().zip(MIN_LIGHT) {
-            data.push((c.max(min) * 255.0).round() as u8);
+            data.push((shown_light(c).max(min) * 255.0).round() as u8);
         }
         data.push(if in_sight { 255 } else { 0 });
     }
