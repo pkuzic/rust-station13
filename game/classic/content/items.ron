@@ -322,6 +322,8 @@
     (id: "pill-bottle-box", force: 0.0, size: 3, storage: ()),
     (id: "belt-medical", force: 0.0, size: 3, slot: "belt", storage: ()),
     (id: "pill-silver", force: 0.0, size: 1),
+    (id: "pill-made", force: 0.0, size: 1),
+    (id: "bottle-made", force: 0.0, size: 1),
     (id: "pill-gold", force: 0.0, size: 1),
     (id: "pill-inaprovaline", force: 0.0, size: 1),
     (id: "pill-antitox", force: 0.0, size: 1),

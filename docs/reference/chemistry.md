@@ -4,7 +4,7 @@ Sources: `luna:code/modules/Chemistry/Chemistry-Holder.dm` (`trans_to`, `metabol
 `Chemistry-Reagents.dm` (`on_mob_life`), `reagent_containers/syringes.dm`, `pill.dm`, `hypospray.dm`,
 `glass.dm`, `glass/bottle.dm`.
 
-Code: `game/classic/src/chemistry.rs`. Tests: `game/classic/tests/chemistry.rs`.
+Code: `game/classic/src/chemistry.rs`, `chem_dispenser.rs`, `chem_master.rs`. Tests: `game/classic/tests/chemistry.rs`.
 
 Beakers, bottles, buckets, pills, syringes, hyposprays and people's blood all hold reagents. Examining
 a container says how many units are in it. Moving reagents takes an even share of everything in it.
@@ -24,6 +24,16 @@ a container says how many units are in it. Moving reagents takes an even share o
 Click it with a beaker to load it, or with an empty hand to open its window. The window gives 21 pure
 chemicals into the beaker, 5, 10 or 30 units at a time. Each 10 units takes 1 of its 100 energy, which
 comes back 1 per half a minute while it has power. Without power it gives nothing.
+
+## CheMaster (`chem-master`)
+
+Click it with a beaker or syringe to load it, or with an empty hand to open its window. It needs power.
+Its window lists what's in the beaker and in its 100-unit buffer. Clicking a line moves 10 units across.
+A pill takes up to 50 units of the buffer and a bottle up to 30, an even share of everything in it, and
+appears under the machine. Ejecting the beaker clears the buffer.
+
+Differences from Luna: you can't name what you make or pick amounts, a line moves 10 units, removing
+always goes back to the beaker, it doesn't fill pill bottles, and an empty buffer makes nothing.
 
 ## Mixing
 

@@ -2389,6 +2389,13 @@
             "celltop": (dmi: "icons/obj/Cryogenic2.dmi", state: "celltop"),
             "celltop_1": (dmi: "icons/obj/Cryogenic2.dmi", state: "celltop_1"),
         },
+        "chem-master": {
+            "mixer0": (dmi: "icons/obj/chemical.dmi", state: "mixer0"),
+            "mixer1": (dmi: "icons/obj/chemical.dmi", state: "mixer1"),
+            "mixers": (dmi: "icons/obj/chemical.dmi", state: "mixers"),
+        },
+        "pill-made": { "": (dmi: "icons/obj/chemical.dmi", state: "pill1") },
+        "bottle-made": { "": (dmi: "icons/obj/chemical.dmi", state: "bottle1") },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
