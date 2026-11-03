@@ -582,6 +582,9 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::radio::RADIO || proto == crate::radio::HEADSET {
         item.insert(crate::radio::Radio::handheld());
     }
+    if proto == crate::traitor::UPLINK {
+        item.insert(crate::traitor::Uplink::default());
+    }
     if crate::jetpacks::is_jetpack(proto) {
         item.insert(crate::jetpacks::Jetpack::default());
     }
@@ -686,6 +689,10 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
                     (
                         crate::escape::PendingCommsOps::default(),
                         crate::escape::CommsPanelOut::default(),
+                    ),
+                    (
+                        crate::traitor::PendingUplinkOps::default(),
+                        crate::traitor::UplinkPanelOut::default(),
                     ),
                     crate::records::PendingRecordOps::default(),
                     crate::records::RecordsPanelOut::default(),

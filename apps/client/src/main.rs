@@ -51,6 +51,7 @@ mod space;
 mod sprite_shadows;
 mod sprites;
 mod storage_panel;
+mod uplink_panel;
 mod vending_panel;
 mod wire_panel;
 mod world_view;
@@ -138,6 +139,8 @@ enum UseStep {
     Manifest,
     /// `printmanifest`: print the crew manifest from an open identification computer.
     PrintManifest,
+    /// `buy:N`: buy line `N` of what an open Syndicate uplink sells.
+    Buy(u8),
     /// `callpods`: call the escape pods on an open communications console.
     CallPods,
     /// `ready`: ready for the round to start, in the lobby.
@@ -184,6 +187,7 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            _ if s.starts_with("buy:") => s["buy:".len()..].trim().parse().ok().map(Self::Buy),
             "manifest" => Some(Self::Manifest),
             "printmanifest" => Some(Self::PrintManifest),
             "joinround" => Some(Self::JoinRound),
@@ -361,6 +365,7 @@ fn main() {
         .init_resource::<records_panel::OpenRecords>()
         .init_resource::<lobby_panel::OpenLobby>()
         .init_resource::<comms_panel::OpenComms>()
+        .init_resource::<uplink_panel::OpenUplink>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -425,7 +430,10 @@ fn main() {
                         (job_panel::receive_job, job_panel::show_job).chain(),
                         (records_panel::receive_records, records_panel::show_records).chain(),
                         (lobby_panel::receive_lobby, lobby_panel::show_lobby).chain(),
-                        (comms_panel::receive_comms, comms_panel::show_comms).chain(),
+                        (
+                            (comms_panel::receive_comms, comms_panel::show_comms).chain(),
+                            (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
+                        ),
                         (id_panel::receive_id, id_panel::show_id).chain(),
                         (chem_panel::receive_chem, chem_panel::show_chem).chain(),
                         (paper_panel::receive_paper, paper_panel::show_paper).chain(),
@@ -705,6 +713,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<records_panel::OpenRecords>().0 = None;
     world.resource_mut::<lobby_panel::OpenLobby>().0 = None;
     world.resource_mut::<comms_panel::OpenComms>().0 = None;
+    world.resource_mut::<uplink_panel::OpenUplink>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
     world.resource_mut::<paper_panel::OpenPaper>().0 = None;
@@ -1654,7 +1663,7 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms): (
+    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1664,6 +1673,7 @@ fn scripted_use(
         Res<records_panel::OpenRecords>,
         Res<id_panel::OpenIdComputer>,
         Res<comms_panel::OpenComms>,
+        Res<uplink_panel::OpenUplink>,
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
@@ -1748,6 +1758,10 @@ fn scripted_use(
         UseStep::Manifest | UseStep::PrintManifest => ids.0.as_ref().map(|view| ActionInput::IdManifest {
             target: view.target,
             print: matches!(step, UseStep::PrintManifest),
+        }),
+        UseStep::Buy(line) => uplink.0.as_ref().map(|view| ActionInput::Uplink {
+            target: view.target,
+            line,
         }),
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,

@@ -182,6 +182,7 @@ pub fn process_actions(
                             plant_pots,
                             barriers,
                             comms_consoles,
+                            uplinks,
                         ),
                     ),
                 ),
@@ -294,6 +295,7 @@ pub fn process_actions(
                             Query<(), With<crate::hydroponics::PlantPot>>,
                             Query<(), With<crate::security::Barrier>>,
                             Query<(), With<crate::escape::CommsConsole>>,
+                            Query<(), With<crate::traitor::Uplink>>,
                         ),
                     ),
                 ),
@@ -378,6 +380,10 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                Action::UseOn(target) if uplinks.contains(target) && !places.contains(target) => {
+                    // In the hand it's the uplink (`traitor.md`); on the floor it's picked up.
+                    commands.queue(move |world: &mut World| crate::traitor::use_uplink(world, mob, target));
+                }
                 Action::UseOn(target)
                     if comms_consoles.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>

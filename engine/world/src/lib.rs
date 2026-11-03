@@ -11,8 +11,8 @@ pub use components::{
     GasMachine, GasPanelView, Ghost, GridPos, Hand, HandsView, HeaterPanelView, Hidden, IdComputerView,
     Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque,
     PaperMode, PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow,
-    RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, VendingPanelView,
-    VendingRow, WirePanelView, WornView,
+    RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, UplinkPanelView,
+    VendingPanelView, VendingRow, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 

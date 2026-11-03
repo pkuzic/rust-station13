@@ -457,6 +457,16 @@ pub struct CommsPanelView {
     pub gone: bool,
 }
 
+/// An open Syndicate uplink's window, as shown to the player holding it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct UplinkPanelView {
+    /// The uplink.
+    pub target: NetId,
+    pub crystals: u8,
+    /// What it sells, by prototype, and for how many crystals.
+    pub goods: Vec<(String, u8)>,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {

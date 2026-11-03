@@ -184,6 +184,8 @@ pub struct LocMsg {
 pub enum LocArg {
     Str(String),
     Num(i64),
+    /// The text of another message, with no arguments of its own, such as a job's name.
+    Msg(String),
 }
 
 impl LocMsg {
@@ -201,6 +203,11 @@ impl LocMsg {
 
     pub fn num(mut self, name: impl Into<String>, value: i64) -> Self {
         self.args.push((name.into(), LocArg::Num(value)));
+        self
+    }
+
+    pub fn msg(mut self, name: impl Into<String>, id: impl Into<String>) -> Self {
+        self.args.push((name.into(), LocArg::Msg(id.into())));
         self
     }
 }
@@ -296,6 +303,10 @@ impl Localizer {
             match value {
                 LocArg::Str(s) => args.set(name.as_str(), s.as_str()),
                 LocArg::Num(n) => args.set(name.as_str(), *n),
+                LocArg::Msg(id) => {
+                    let said = self.format(id, None).unwrap_or_else(|_| format!("[{id}]"));
+                    args.set(name.as_str(), said);
+                }
             }
         }
         self.format(&msg.id, Some(&args))

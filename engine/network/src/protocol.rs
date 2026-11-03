@@ -12,7 +12,7 @@ use rs13_world::{
     HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource,
     LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
     RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
-    VendingPanelView, WirePanelView, WornView,
+    UplinkPanelView, VendingPanelView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -126,6 +126,11 @@ pub enum ActionInput {
     IdManifest {
         target: NetId,
         print: bool,
+    },
+    /// On a Syndicate uplink: buy this line of what it sells.
+    Uplink {
+        target: NetId,
+        line: u8,
     },
     /// In the lobby: ready for the round to start, or not.
     Ready(bool),
@@ -432,6 +437,10 @@ pub struct IdComputerPanel(pub Option<IdComputerView>);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct CommsPanel(pub Option<CommsPanelView>);
 
+/// Server → one client: the Syndicate uplink it has open, or `None` to close it.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct UplinkPanel(pub Option<UplinkPanelView>);
+
 /// Server → one client: the lobby, or `None` once they've left it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LobbyPanel(pub Option<LobbyView>);
@@ -584,6 +593,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<IdComputerPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<CommsPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<UplinkPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);

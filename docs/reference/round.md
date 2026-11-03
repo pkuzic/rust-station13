@@ -21,7 +21,7 @@ After 180 seconds a mode is picked at random, weighted by Luna's `config.txt`, a
 world, those with a job in mind first, in that job if a post is free and otherwise as in `jobs.md`. Someone not
 ready stays in the lobby, where **Join the game** puts them in at once. The chat says which mode it is.
 
-Only **extended** is built so far, with nothing special going on, so it's always that one for now.
+**Extended** and **traitor** (`traitor.md`) are built. `rs13-server --mode ID` always runs that one.
 
 ## Getting off the station
 

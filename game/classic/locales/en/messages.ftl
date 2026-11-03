@@ -402,90 +402,9 @@ pods-seconds = { $value } { $value ->
 } until escape pod launch.
 pods-launched = The escape pods have launched!
 round-over = The round is over. Restarting in 60 seconds.
-round-escaped = { $name }, { $job ->
-    [captain] Captain
-    [hop] Head of Personnel
-    [hos] Head of Security
-    [chief-engineer] Chief Engineer
-    [research-director] Research Director
-    [security-officer] Security Officer
-    [warden] Warden
-    [forensic-technician] Forensic Technician
-    [engineer] Engineer
-    [atmos-technician] Atmospheric Technician
-    [medical-doctor] Medical Doctor
-    [chemist] Chemist
-    [geneticist] Geneticist
-    [scientist] Scientist
-    [roboticist] Roboticist
-    [hydroponicist] Hydroponicist
-    [barman] Barman
-    [chef] Chef
-    [janitor] Janitor
-    [quartermaster] Quartermaster
-    [cargo-technician] Cargo Technician
-    [shaft-miner] Shaft Miner
-    [counselor] Counselor
-    [clown] Clown
-    [mime] Mime
-   *[assistant] Assistant
-}, escaped.
-round-stranded = { $name }, { $job ->
-    [captain] Captain
-    [hop] Head of Personnel
-    [hos] Head of Security
-    [chief-engineer] Chief Engineer
-    [research-director] Research Director
-    [security-officer] Security Officer
-    [warden] Warden
-    [forensic-technician] Forensic Technician
-    [engineer] Engineer
-    [atmos-technician] Atmospheric Technician
-    [medical-doctor] Medical Doctor
-    [chemist] Chemist
-    [geneticist] Geneticist
-    [scientist] Scientist
-    [roboticist] Roboticist
-    [hydroponicist] Hydroponicist
-    [barman] Barman
-    [chef] Chef
-    [janitor] Janitor
-    [quartermaster] Quartermaster
-    [cargo-technician] Cargo Technician
-    [shaft-miner] Shaft Miner
-    [counselor] Counselor
-    [clown] Clown
-    [mime] Mime
-   *[assistant] Assistant
-}, was left behind.
-round-died = { $name }, { $job ->
-    [captain] Captain
-    [hop] Head of Personnel
-    [hos] Head of Security
-    [chief-engineer] Chief Engineer
-    [research-director] Research Director
-    [security-officer] Security Officer
-    [warden] Warden
-    [forensic-technician] Forensic Technician
-    [engineer] Engineer
-    [atmos-technician] Atmospheric Technician
-    [medical-doctor] Medical Doctor
-    [chemist] Chemist
-    [geneticist] Geneticist
-    [scientist] Scientist
-    [roboticist] Roboticist
-    [hydroponicist] Hydroponicist
-    [barman] Barman
-    [chef] Chef
-    [janitor] Janitor
-    [quartermaster] Quartermaster
-    [cargo-technician] Cargo Technician
-    [shaft-miner] Shaft Miner
-    [counselor] Counselor
-    [clown] Clown
-    [mime] Mime
-   *[assistant] Assistant
-}, died.
+round-escaped = { $name }, { $job }, escaped.
+round-stranded = { $name }, { $job }, was left behind.
+round-died = { $name }, { $job }, died.
 id-manifest-open = Access Crew Manifest
 id-manifest-title = Crew Manifest:
 id-manifest-hint = Please use security record computer to modify entries.
@@ -494,6 +413,43 @@ id-manifest-print = Print
 id-manifest-printing = Printing...
 id-manifest-back = Back
 id-manifest-paper = paper- 'Crew Manifest'
+traitor-you = You are the traitor.
+traitor-repeat = REPEAT
+traitor-reminder = In case you missed it the first time - YOU ARE THE TRAITOR!
+traitor-uplink-pack = The Syndicate have hidden a ship bounced radio in your backpack. Use it in your hand for the uplink, and to go over your objectives again.
+traitor-uplink-hand = The Syndicate have put a ship bounced radio in your hand. Use it there for the uplink, and to go over your objectives again.
+traitor-uplink-floor = The Syndicate have left a ship bounced radio at your feet. Use it in your hand for the uplink, and to go over your objectives again.
+objective-steal = Objective #{ $value }: Steal the { NOUN($item) }.{ $done ->
+    [won] {" "}Success
+    [failed] {" "}Failed
+   *[none] {""}
+}
+objective-assassinate = Objective #{ $value }: Assassinate { $name }, the { $job }.{ $done ->
+    [won] {" "}Success
+    [failed] {" "}Failed
+   *[none] {""}
+}
+objective-protect = Objective #{ $value }: { $name }, the { $job }, is a relative of a high ranking Syndicate leader. Make sure they get off the station safely.{ $done ->
+    [won] {" "}Success
+    [failed] {" "}Failed
+   *[none] {""}
+}
+objective-escape = Objective #{ $value }: Escape on the pods alive, without being arrested.{ $done ->
+    [won] {" "}Success
+    [failed] {" "}Failed
+   *[none] {""}
+}
+objective-hijack = Objective #{ $value }: Hijack the escape pods by being the only one to get away.{ $done ->
+    [won] {" "}Success
+    [failed] {" "}Failed
+   *[none] {""}
+}
+uplink-title = Syndicate Uplink Console:
+uplink-crystals = Tele-Crystals left: { $value }
+uplink-good = { NOUN($item) } ({ $value })
+round-traitor = The syndicate traitor was { $name }.
+round-traitor-won = The traitor was successful!
+round-traitor-lost = The traitor has failed!
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
