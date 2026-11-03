@@ -27,6 +27,8 @@ pub enum Action {
     /// Look at a wall or floor.
     ExamineTile(TilePos),
     SetIntent(Intent),
+    /// Aim at this part of a body.
+    SetZone(crate::health::Zone),
     /// Close the open container.
     CloseStorage,
     /// Click on a tile itself, where nothing on it took the click: lay cable with a coil,
@@ -677,6 +679,9 @@ pub fn process_actions(
                 }
                 Action::CloseStorage => {
                     commands.entity(mob).remove::<crate::storage::OpenStorage>();
+                }
+                Action::SetZone(zone) => {
+                    commands.entity(mob).insert(crate::combat::AimZone(zone));
                 }
                 Action::SetIntent(new) => {
                     if let Some(intent) = intent.as_mut() {

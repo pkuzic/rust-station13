@@ -539,6 +539,9 @@ fn queue_actions(
                 ActionInput::SwapHands => Some(Action::SwapHands),
                 ActionInput::Face(dir) => Some(Action::Face(dir)),
                 ActionInput::SetIntent(intent) => Some(Action::SetIntent(intent)),
+                ActionInput::SetZone(line) => rs13_classic::health::Zone::ALL
+                    .get(usize::from(line))
+                    .map(|zone| Action::SetZone(*zone)),
                 // Cuffs come off by being taken off, not as clothes do.
                 ActionInput::Unequip(Slot::Cuffs) | ActionInput::Equip(Slot::Cuffs) => None,
                 ActionInput::Equip(slot) => {

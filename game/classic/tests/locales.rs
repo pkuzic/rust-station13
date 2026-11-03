@@ -86,6 +86,8 @@ fn every_message_formats_in_both_locales() {
     args.set("name", "Someone");
     args.set("done", "won");
     args.set("kind", "restart");
+    args.set("a", "bruised");
+    args.set("b", "numb");
     args.set("text", "something");
     args.set("choice", "Yes");
     args.set("mode", "extended");

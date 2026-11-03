@@ -117,15 +117,14 @@ fn empty_hand_needs_harm_intent_to_punch() {
     }
     // The attacker sees every attempt. 90% land; with this seed, well within 35..=50.
     let messages = ids(&app, alice);
-    assert_eq!(messages.len(), 50);
-    let landed = messages.iter().filter(|m| *m != "punch-missed").count();
+    // A hard enough one also says what it did (`combat.md`).
+    let attempts: Vec<&String> = messages
+        .iter()
+        .filter(|m| ["punched", "punched-face", "punch-missed"].contains(&m.as_str()))
+        .collect();
+    assert_eq!(attempts.len(), 50, "{messages:?}");
+    let landed = attempts.iter().filter(|m| **m != "punch-missed").count();
     assert!((35..=50).contains(&landed), "landed {landed}/50");
-    assert!(
-        messages
-            .iter()
-            .all(|m| ["punched", "punched-face", "punch-missed"].contains(&m.as_str())),
-        "{messages:?}"
-    );
 }
 
 #[test]

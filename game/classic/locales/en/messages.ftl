@@ -531,6 +531,28 @@ channel-engineering = Engineering
 channel-security = Security
 channel-syndicate = Syndicate
 channel-supply = Supply
+protected-head = You have been protected from a hit to the head.
+protected-chest = You have been protected from a hit to the chest.
+protected-groin = You have been protected from a hit to the groin.
+knocked-out = { $victim } has been knocked unconscious!
+knocked-down = { $victim } has been knocked down!
+stunned = { $victim } has been stunned!
+punch-weakened = { $attacker } has weakened { $victim }!
+punch-knocked-down = { $attacker } has knocked down { $victim }!
+punch-stunned = { $attacker } has stunned { $victim }!
+pushed-down = { $attacker } has pushed down { $victim }!
+disarmed = { $attacker } has disarmed { $victim }!
+disarm-missed = { $attacker } has attempted to disarm { $victim }!
+shakes-awake = { $attacker } shakes { $victim }, trying to wake them up!
+checks-self = { $name } looks themselves over.
+self-part-ok = My { NOUN($zone) } is OK.
+self-part-one = My { NOUN($zone) } is { $a }.
+self-part-two = My { NOUN($zone) } is { $a } and { $b }.
+status-bruised = bruised
+status-mangled = mangled
+status-numb = numb
+status-blistered = blistered
+status-peeling = peeling away
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
@@ -549,6 +571,8 @@ ghost-say = [DEAD] { $name } { $verb ->
    *[say] says
 }, "{ $text }"
 hud-intent = Intent: { $intent ->
+    [disarm] disarm
+    [grab] grab
         [harm] harm
        *[help] help
     }
@@ -618,6 +642,7 @@ hud-tip = { $what ->
         [swap] Swap hands
         [drop] Drop
         [pull] Stop pulling
+        [zone] Damage zone
         [intent] Intent
         [move] Run / walk
         [internals] Internals

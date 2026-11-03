@@ -122,6 +122,8 @@ pub enum Intent {
     #[default]
     Help,
     Harm,
+    Disarm,
+    Grab,
 }
 
 /// A danger the player's own HUD warns about.

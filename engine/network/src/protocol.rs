@@ -61,6 +61,8 @@ pub enum ActionInput {
     /// Choose a character name. Accepted once per session, if valid.
     SetName(String),
     SetIntent(Intent),
+    /// Aim at this line of the body parts (`Zone::ALL`).
+    SetZone(u8),
     /// Put the active-hand item on in this slot.
     Equip(Slot),
     /// Take off what is in this slot, into the empty active hand.

@@ -161,13 +161,14 @@ pub fn update_vitals(
         &mut Appearance,
         Has<crate::chairs::Resting>,
         Has<crate::flashes::Weakened>,
+        Has<crate::combat::Paralyzed>,
     )>,
 ) {
-    for (body, mut vitals, mut appearance, resting, weakened) in &mut mobs {
+    for (body, mut vitals, mut appearance, resting, weakened, paralyzed) in &mut mobs {
         let health = body.health();
         let stat = if vitals.stat == MobStat::Dead || health < DEATH_HEALTH {
             MobStat::Dead
-        } else if health < 0.0 {
+        } else if health < 0.0 || paralyzed {
             MobStat::Unconscious
         } else {
             MobStat::Conscious
