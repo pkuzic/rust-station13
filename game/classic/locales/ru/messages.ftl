@@ -368,6 +368,23 @@ barrier-repaired = Вы чините барьер.
 barrier-hit = Вы бьёте по барьеру.
 barrier-broken = Барьер разваливается.
 apc-hand-full = Чтобы работать с ЛКП, нужна свободная рука.
+round-mode = Текущий режим игры: { $mode ->
+    [traitor] Предатель
+    [meteor] Метеоры
+    [malfunction] Сбой ИИ
+    [nuclear] Ядерная угроза
+    [revolution] Революция
+   *[extended] Расширенный
+}. Приятной игры!
+lobby-title = Добро пожаловать в лобби!
+lobby-countdown = Раунд начнётся через { $value } с. Готовы: { $ready } из { $players }.
+lobby-ready = Я готов
+lobby-unready = Я не готов
+lobby-round-on = Раунд уже идёт.
+lobby-join = Войти в игру
+lobby-name = Ваше имя: { $name }. Нажмите T, чтобы изменить.
+lobby-no-name = Имя будет случайным. Нажмите T, чтобы ввести своё.
+lobby-prefer = Желаемая должность:
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

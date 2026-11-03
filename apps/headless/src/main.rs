@@ -57,6 +57,7 @@ fn parse_args() -> Result<BotConfig, String> {
         dir: None,
         hold: Duration::from_secs(3),
         examine: None,
+        prefer_job: None,
         name: None,
         say: None,
         script: Vec::new(),

@@ -77,6 +77,7 @@ pub mod radio;
 pub mod reagent_tanks;
 pub mod records;
 pub mod rng;
+pub mod round;
 pub mod scenery;
 pub mod security;
 pub mod shields;

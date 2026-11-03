@@ -15,8 +15,8 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
-| [ ] | 1.1 Round flow: pre-game timer, mode choice, restart | L | `gamemodes/gameticker`, `game_mode`, `setupgame` | |
-| [ ] | 1.2 Lobby: character setup, job preferences, ready-up, late join | M | `mob/new_player` | Job window on arrival exists |
+| [~] | 1.1 Round flow: pre-game timer, mode choice, restart | L | `gamemodes/gameticker`, `game_mode`, `setupgame` | Timer and mode choice done, `round.md`. Restart comes with 1.4 |
+| [~] | 1.2 Lobby: character setup, job preferences, ready-up, late join | M | `mob/new_player` | Ready, late join, name, one job choice, `round.md`. Left: looks, observe, 3-level preferences |
 | [ ] | 1.3 Crew manifest | S | `computer.dm` `datacore` | Records computers exist |
 | [ ] | 1.4 Escape shuttle: call, recall, transit, docking, round end | M-L | `shuttle_controller`, `computer/shuttle`, `spacetransit` | Engines and doors exist as scenery |
 | [ ] | 1.5 Communications console: alert levels, status displays | S-M | `computer/communications` | Status displays exist |

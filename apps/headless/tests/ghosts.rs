@@ -38,6 +38,7 @@ fn bot(server: SocketAddr, name: &str, hold: u64, script: Vec<Step>) -> BotResul
         dir: None,
         hold: Duration::from_secs(hold),
         examine: None,
+        prefer_job: None,
         name: Some(name.to_owned()),
         say: None,
         script,

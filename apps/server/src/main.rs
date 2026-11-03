@@ -12,9 +12,27 @@ use rs13_classic::maps;
 fn main() -> AppExit {
     let mut port = rs13_network::DEFAULT_PORT;
     let mut decks: Vec<&'static str> = Vec::new();
+    // The whole station runs rounds; a map for trying things out starts you straight in it.
+    let mut rounds: Option<bool> = None;
+    let mut pregame = rs13_classic::round::PREGAME_SECONDS;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
+        match arg.as_str() {
+            "--rounds" => {
+                rounds = Some(true);
+                continue;
+            }
+            "--no-rounds" => {
+                rounds = Some(false);
+                continue;
+            }
+            _ => {}
+        }
         match (arg.as_str(), args.next()) {
+            ("--pregame", Some(value)) => match value.parse() {
+                Ok(p) => pregame = p,
+                Err(_) => return usage(),
+            },
             ("--port", Some(value)) => match value.parse() {
                 Ok(p) => port = p,
                 Err(_) => return usage(),
@@ -41,7 +59,12 @@ fn main() -> AppExit {
     if decks.is_empty() {
         decks.push(maps::ENGINEERING_CHAMBER);
     }
-    let mut app = rs13_server::server_app_with_station(port, decks);
+    let station = decks == maps::LUNA_STATION.to_vec();
+    let mut app = if rounds.unwrap_or(station) {
+        rs13_server::server_app_with_rounds(port, decks, pregame)
+    } else {
+        rs13_server::server_app_with_station(port, decks)
+    };
     app.add_plugins(LogPlugin::default());
     app.run()
 }

@@ -75,6 +75,7 @@ fn a_player_walks_up_the_stairs_and_sees_the_upper_deck() {
             dir: None,
             hold: Duration::from_secs(5),
             examine: None,
+            prefer_job: None,
             name: None,
             say: None,
             script: vec![

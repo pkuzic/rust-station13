@@ -92,7 +92,7 @@ pub fn held_out_of_sight(
 /// is never sent what it can't see.
 #[allow(clippy::type_complexity)]
 pub fn update_sight<F: QueryFilter>(
-    mut links: Query<(Entity, &Controls, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
+    mut links: Query<(Entity, Option<&Controls>, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
     viewers: Query<(Option<&Facing>, Option<&OpenStorage>, Has<Ghost>)>,
     cameras: Query<&rs13_world::CameraView>,
     maps: Query<&MapLayer>,
@@ -141,6 +141,22 @@ pub fn update_sight<F: QueryFilter>(
         .collect();
     let place = |entity: Entity| things.get(entity).ok().and_then(|(_, pos, ..)| pos.map(|p| p.0));
     for (link, controls, out) in &mut links {
+        // In the lobby, with no body yet: nothing is seen at all (`round.md`).
+        let Some(controls) = controls else {
+            let all: HashSet<Entity> = things.iter().map(|(entity, ..)| entity).collect();
+            let empty = HashSet::new();
+            let before = out.as_ref().map_or(&empty, |o| &o.0);
+            for entity in all.difference(before) {
+                commands.lose_visibility(*entity, link);
+            }
+            match out {
+                Some(mut out) => out.0 = all,
+                None => {
+                    commands.entity(link).insert(OutOfSight(all));
+                }
+            }
+            continue;
+        };
         let me = controls.0;
         let Ok((facing, open, is_ghost)) = viewers.get(me) else {
             continue;

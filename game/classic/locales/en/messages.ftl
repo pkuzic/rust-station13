@@ -360,6 +360,23 @@ barrier-repaired = You repair the barrier.
 barrier-hit = You hit the barrier.
 barrier-broken = The barrier falls apart.
 apc-hand-full = You need an empty hand to work the APC.
+round-mode = The current game mode is { $mode ->
+    [traitor] Traitor
+    [meteor] Meteor
+    [malfunction] AI Malfunction
+    [nuclear] Nuclear Emergency
+    [revolution] Revolution
+   *[extended] Extended
+}. Enjoy the game!
+lobby-title = Welcome to the pre-game lobby!
+lobby-countdown = The round starts in { $value } seconds. Ready: { $ready } of { $players }.
+lobby-ready = Declare ready
+lobby-unready = Undeclare ready
+lobby-round-on = The round is under way.
+lobby-join = Join the game
+lobby-name = Your name: { $name }. Press T to change it.
+lobby-no-name = You'll get a random name. Press T to type one.
+lobby-prefer = The job you'd like:
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
