@@ -392,6 +392,19 @@ pub struct ClipboardView {
     pub papers: Vec<String>,
 }
 
+/// An open brig door timer's window, as shown to the player (Luna's `door_timer` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BrigPanelView {
+    /// The timer.
+    pub target: NetId,
+    pub timing: bool,
+    /// Seconds left, or the sentence set.
+    pub seconds: i32,
+    /// There's a flasher in the cell, and whether it is resting.
+    pub has_flash: bool,
+    pub flash_charging: bool,
+}
+
 /// An open arcade machine's window, as shown to the player (Luna's `arcade` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArcadePanelView {

@@ -41,7 +41,7 @@
         (path: "/obj/machinery/door/window", id: "windoor", dir: true, access_var: "req_access_txt",
             vars: ["base_state", "icon_state"], type_vars: {"base_state": "left", "icon_state": "left"}),
         (path: "/obj/machinery/door/window/brigdoor", id: "brig-windoor", dir: true, access_var: "req_access_txt",
-            vars: ["base_state", "icon_state"], type_vars: {"base_state": "leftsecure", "icon_state": "leftsecure"}),
+            vars: ["base_state", "icon_state", "id"], type_vars: {"base_state": "leftsecure", "icon_state": "leftsecure"}),
         (path: "/obj/machinery/door/window/northleft", id: "windoor", dir: true, access_var: "req_access_txt",
             vars: ["base_state", "icon_state"], type_vars: {"base_state": "left", "icon_state": "left", "dir": "1"}),
         (path: "/obj/machinery/door/window/northright", id: "windoor", dir: true, access_var: "req_access_txt",
@@ -412,6 +412,7 @@
         (path: "/obj/machinery/dna_scannernew", id: "dna-scanner"),
         (path: "/obj/machinery/computer/cloning", id: "cloning-console"),
         (path: "/obj/machinery/clonepod", id: "clone-pod"),
+        (path: "/obj/machinery/door_timer", id: "door-timer", vars: ["id"]),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),

@@ -12,6 +12,7 @@ pub mod arcade;
 pub mod atmos;
 pub mod bedsheets;
 pub mod blastdoors;
+pub mod brig;
 pub mod cables;
 pub mod cameras;
 pub mod cells;
@@ -359,6 +360,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    brig::run_brig,
+                    brig::update_brig_views,
                     cloning::run_cloning,
                     airlock_control::run_consoles,
                     arcade::run_arcades,

@@ -158,7 +158,7 @@ pub fn process_actions(
                     microwaves,
                     arcades,
                     airlock_parts,
-                    (scanners, cloning_consoles),
+                    (scanners, cloning_consoles, door_timers),
                 ),
             ),
         ),
@@ -241,6 +241,7 @@ pub fn process_actions(
                     (
                         Query<(), With<crate::cloning::DnaScanner>>,
                         Query<(), With<crate::cloning::CloningConsole>>,
+                        Query<(), With<crate::brig::DoorTimer>>,
                     ),
                 ),
             ),
@@ -674,6 +675,13 @@ pub fn process_actions(
                             }
                         });
                     }
+                }
+                Action::UseOn(target)
+                    if door_timers.contains(target)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    // Brig door timers (`brig.md`).
+                    commands.queue(move |world: &mut World| crate::brig::click(world, mob, target));
                 }
                 Action::UseOn(target)
                     if (scanners.contains(target) || cloning_consoles.contains(target))

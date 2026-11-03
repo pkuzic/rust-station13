@@ -138,6 +138,11 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
             .entity_mut(entity)
             .insert(crate::airlock_control::DoorTag(tag));
     }
+    if spec.id == crate::windoors::BRIG_WINDOOR
+        && let Some(tag) = tag("id")
+    {
+        world.entity_mut(entity).insert(crate::brig::CellDoor(tag));
+    }
     if spec.id == "vent"
         && let Some(tag) = tag("id")
     {
@@ -200,6 +205,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         if let Some(closet) = crate::closets::spawn_closet(world, spec, pos, id) {
             return closet;
         }
+    }
+    if proto == crate::brig::DOOR_TIMER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::brig::spawn_door_timer(world, spec, pos, id));
     }
     if crate::cloning::is_cloning_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
@@ -601,6 +610,8 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
             (
                 crate::arcade::PendingArcadeOps::default(),
                 crate::arcade::ArcadePanelOut::default(),
+                crate::brig::PendingBrigOps::default(),
+                crate::brig::BrigPanelOut::default(),
             ),
             // Machine windows and requests.
             (
