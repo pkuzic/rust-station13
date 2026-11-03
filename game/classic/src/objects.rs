@@ -674,7 +674,7 @@ pub(crate) fn spawn_bare_mob(world: &mut World, pos: TilePos, id: NetId) -> Enti
                     health: HEALTH_FULL,
                     stat: MobStat::Conscious,
                 },
-                CombatIntent::default(),
+                (CombatIntent::default(), crate::combat::AimZone::default()),
                 Lungs::default(),
                 crate::food::Nutrition::default(),
                 Surroundings::default(),

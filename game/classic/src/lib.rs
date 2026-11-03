@@ -210,7 +210,7 @@ impl Plugin for ClassicPlugin {
                     heaters::process_heater_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
-                    combat::resolve_attacks,
+                    (combat::resolve_attacks, combat::come_round).chain(),
                     medical::resolve_treatments,
                     speech::speak,
                     combat::deliver_visible,

@@ -25,7 +25,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [~] | 1.8 Traitor mode and uplink | M | `gamemodes/traitor`, `Abi79/uplinks` | `traitor.md`. Sells only what works: more as those systems arrive |
 | [x] | 1.9 Chat: OOC, whisper, dead chat, emotes | M | `say`, `chat_tabs/ooc`, `Whisper`, `Me` | `speech.md`. Emotes with a target left out |
 | [x] | 1.10 Radio channels and department headsets | M | `items/devices/radio` | `radio.md`. Swapping keys and the binary key left out |
-| [ ] | 1.11 Combat: body part aiming, armour, disarm, grabs, knockouts | L | `NewMobs/Damagesystem`, `organs`, `human_defense` | Chest only now |
+| [~] | 1.11 Combat: body part aiming, armour, disarm, grabs, knockouts | L | `NewMobs/Damagesystem`, `organs`, `human_defense` | `combat.md`. Left: grabs, guns following aim and armour |
 | [ ] | 1.12 Clothing effects: armour, heat, no-slip, filtering | M | `clothing/*` | Wearing only now |
 | [ ] | 1.13 Explosions: blasts, breakage, tank bombs, EMP | L | `explosion.dm`, `bomb`, `effect_system` | Many docs wait on this |
 | [ ] | 1.14 Construction: walls, girders, windows, frames, circuit boards | XL | `grille`, `window`, `turf`, `buildandrepair`, `machine_frame` | Floors and tables exist |

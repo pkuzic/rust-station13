@@ -527,6 +527,28 @@ channel-engineering = Инженерия
 channel-security = Охрана
 channel-syndicate = Синдикат
 channel-supply = Снабжение
+protected-head = Удар в голову не прошёл: вас защитило снаряжение.
+protected-chest = Удар в грудь не прошёл: вас защитило снаряжение.
+protected-groin = Удар в пах не прошёл: вас защитило снаряжение.
+knocked-out = { $victim }: без сознания!
+knocked-down = { $victim }: сбит с ног!
+stunned = { $victim }: оглушён!
+punch-weakened = { $attacker } ослабляет противника: { $victim }!
+punch-knocked-down = { $attacker } сбивает с ног: { $victim }!
+punch-stunned = { $attacker } оглушает: { $victim }!
+pushed-down = { $attacker } толкает на пол: { $victim }!
+disarmed = { $attacker } выбивает предмет из рук: { $victim }!
+disarm-missed = { $attacker } пытается выбить предмет из рук: { $victim }!
+shakes-awake = { $attacker } трясёт, пытаясь разбудить: { $victim }!
+checks-self = { $name } осматривает себя.
+self-part-ok = { NOUN($zone) }: в порядке.
+self-part-one = { NOUN($zone) }: { $a }.
+self-part-two = { NOUN($zone) }: { $a } и { $b }.
+status-bruised = ушиб
+status-mangled = тяжёлая рана
+status-numb = онемение
+status-blistered = волдыри
+status-peeling = кожа слезает
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.
@@ -545,6 +567,8 @@ ghost-say = [МЁРТВЫЕ] { $name } { $verb ->
    *[say] говорит
 }: «{ $text }»
 hud-intent = Намерение: { $intent ->
+    [disarm] обезоружить
+    [grab] схватить
         [harm] вред
        *[help] помощь
     }
@@ -614,6 +638,7 @@ hud-tip = { $what ->
         [swap] Сменить руку
         [drop] Бросить
         [pull] Отпустить
+        [zone] Зона удара
         [intent] Намерение
         [move] Бег / шаг
         [internals] Баллон

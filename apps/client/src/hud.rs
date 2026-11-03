@@ -8,6 +8,7 @@
 use bevy::picking::events::PointerClick;
 use bevy::picking::hover::Hovered;
 use bevy::prelude::*;
+use rs13_classic::health::Zone;
 use rs13_i18n::Case;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
@@ -38,10 +39,69 @@ pub enum Cell {
     Fire,
     Temperature,
     Health,
+    /// The doll for choosing a body part to aim at.
+    Zone,
 }
 
+/// Which body part the doll shows as chosen: a line of `Zone::ALL`. The server is told on a click.
+#[derive(Resource)]
+pub struct AimedZone(pub usize);
+
+impl Default for AimedZone {
+    fn default() -> Self {
+        Self(Zone::ALL.iter().position(|z| *z == Zone::Chest).unwrap_or(0))
+    }
+}
+
+/// The part of the doll under this spot, in the icon's 32 pixels from its lower left. A rough outline of
+/// Luna's `zone_sel` picture, with its eyes and mouth as the head. `None` is off the figure.
+pub fn zone_at(x: f32, y: f32) -> Option<Zone> {
+    let side = |right: Zone, left: Zone, middle: f32| if x < middle { right } else { left };
+    let within = |a: f32, b: f32| x >= a && x < b;
+    match y {
+        y if y < 2.0 => None,
+        y if y < 5.0 => within(10.0, 23.0).then(|| side(Zone::RFoot, Zone::LFoot, 16.0)),
+        y if y < 11.0 => within(12.0, 21.0).then(|| side(Zone::RLeg, Zone::LLeg, 16.0)),
+        y if y < 14.0 => within(8.0, 25.0).then_some({
+            if x < 12.0 {
+                Zone::RHand
+            } else if x < 21.0 {
+                Zone::Groin
+            } else {
+                Zone::LHand
+            }
+        }),
+        y if y < 16.0 => within(8.0, 25.0).then_some({
+            if x < 13.0 {
+                Zone::RHand
+            } else if x < 20.0 {
+                Zone::Chest
+            } else {
+                Zone::LHand
+            }
+        }),
+        y if y < 23.0 => within(8.0, 25.0).then_some({
+            if x < 12.0 {
+                Zone::RArm
+            } else if x < 21.0 {
+                Zone::Chest
+            } else {
+                Zone::LArm
+            }
+        }),
+        y if y < 24.0 => within(12.0, 21.0).then_some(Zone::Chest),
+        y if y < 29.0 => within(12.0, 21.0).then_some(Zone::Head),
+        _ => None,
+    }
+}
+
+/// The picture of the chosen part, over the doll.
+#[derive(Component)]
+pub struct ZoneOverlay;
+
 /// Luna's layout (`code/game/hud.dm` `ui_*`): cell, screen x, screen y.
-const LAYOUT: [(Cell, u8, u8); 24] = [
+const LAYOUT: [(Cell, u8, u8); 25] = [
+    (Cell::Zone, 16, 14),
     (Cell::Slot(Slot::Mask), 1, 2),
     (Cell::Slot(Slot::Head), 2, 2),
     (Cell::Slot(Slot::Back), 3, 2),
@@ -129,6 +189,8 @@ fn cell_state(
         Cell::Pull => format!("pull{}", flag(status.is_some_and(|s| s.pulling))),
         Cell::Intent => match status.map(|s| s.intent) {
             Some(Intent::Harm) => "harm".into(),
+            Some(Intent::Disarm) => "disarm".into(),
+            Some(Intent::Grab) => "grab".into(),
             _ => "help".into(),
         },
         Cell::MoveIntent => if walk { "walking" } else { "running" }.into(),
@@ -138,6 +200,7 @@ fn cell_state(
         Cell::Fire => format!("fire{}", flag(alert(rs13_world::EnvAlert::Hot))),
         Cell::Temperature => temperature_state(status.map_or(310, |s| s.body_temperature)).into(),
         Cell::Health => health_state(status).into(),
+        Cell::Zone => "zone-doll".into(),
     }
 }
 
@@ -225,6 +288,19 @@ pub fn spawn_hud(mut commands: Commands, atlas: Res<SpriteAtlas>) {
             Hovered::default(),
             ChildOf(root),
         ));
+        if cell == Cell::Zone {
+            e.insert(bevy::ui::RelativeCursorPosition::default());
+            e.with_child((
+                ZoneOverlay,
+                Node {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    ..default()
+                },
+                atlas.ui_image("hud", "zone-chest", 0).unwrap_or_default(),
+                Pickable::IGNORE,
+            ));
+        }
         if matches!(cell, Cell::Slot(_) | Cell::Hand(_)) {
             e.with_child((
                 CellItem(cell),
@@ -344,6 +420,7 @@ fn cell_name(loc: &Loc, cell: Cell) -> String {
         Cell::Fire => "fire",
         Cell::Temperature => "temperature",
         Cell::Health => "health",
+        Cell::Zone => "zone",
     };
     args.set("what", id);
     loc.0.format("hud-tip", Some(&args)).unwrap_or_default()
@@ -354,6 +431,8 @@ fn cell_name(loc: &Loc, cell: Cell) -> String {
 fn click_cell(
     click: On<PointerClick>,
     cells: Query<&HudCell>,
+    pointer: Query<&bevy::ui::RelativeCursorPosition>,
+    mut aimed: ResMut<AimedZone>,
     status: Res<OwnStatus>,
     mut walk: ResMut<WalkMode>,
     own: Query<(&HandsView, &WornView), With<OwnPlayer>>,
@@ -369,6 +448,15 @@ fn click_cell(
     let Ok(mut sender) = sender.single_mut() else {
         return;
     };
+    if *cell == Cell::Zone {
+        let spot = pointer.get(click.entity).ok().and_then(|p| p.normalized);
+        let part = spot.and_then(|at| zone_at((at.x + 0.5) * 32.0, (0.5 - at.y) * 32.0));
+        if let Some(line) = part.and_then(|part| Zone::ALL.iter().position(|z| *z == part)) {
+            aimed.0 = line;
+            sender.send::<IntentChannel>(ActionInput::SetZone(line as u8));
+        }
+        return;
+    }
     let (hands, worn) = own.single().ok().unzip();
     let holding = hands.is_some_and(|h| hand_item(h, h.active).is_some());
     let action = match *cell {
@@ -396,8 +484,11 @@ fn click_cell(
         Cell::Pull => Some(ActionInput::StopPulling),
         Cell::Intent => Some(ActionInput::SetIntent(
             match status.0.as_ref().map(|s| s.intent) {
+                // Round the four, in the order of the number keys.
+                Some(Intent::Help) | None => Intent::Disarm,
+                Some(Intent::Disarm) => Intent::Grab,
+                Some(Intent::Grab) => Intent::Harm,
                 Some(Intent::Harm) => Intent::Help,
-                _ => Intent::Harm,
             },
         )),
         Cell::Internals => Some(ActionInput::ToggleInternals),
@@ -408,9 +499,42 @@ fn click_cell(
     }
 }
 
+/// Show the chosen body part on the doll.
+pub fn show_aimed_zone(
+    aimed: Res<AimedZone>,
+    atlas: Res<SpriteAtlas>,
+    mut overlay: Query<&mut ImageNode, With<ZoneOverlay>>,
+) {
+    if !aimed.is_changed() {
+        return;
+    }
+    let Some(zone) = Zone::ALL.get(aimed.0) else {
+        return;
+    };
+    for mut image in &mut overlay {
+        if let Some(index) = atlas.index("hud", zone.noun_id(), 0) {
+            set_index(&mut image, index);
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_doll_knows_its_parts() {
+        assert_eq!(zone_at(16.0, 26.0), Some(Zone::Head));
+        assert_eq!(zone_at(16.0, 20.0), Some(Zone::Chest));
+        assert_eq!(zone_at(16.0, 13.0), Some(Zone::Groin));
+        assert_eq!(zone_at(9.0, 20.0), Some(Zone::RArm));
+        assert_eq!(zone_at(23.0, 20.0), Some(Zone::LArm));
+        assert_eq!(zone_at(9.0, 13.0), Some(Zone::RHand));
+        assert_eq!(zone_at(14.0, 8.0), Some(Zone::RLeg));
+        assert_eq!(zone_at(18.0, 3.0), Some(Zone::LFoot));
+        assert_eq!(zone_at(1.0, 26.0), None);
+        assert_eq!(zone_at(16.0, 31.0), None);
+    }
 
     #[test]
     fn luna_temperature_bands() {

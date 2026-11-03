@@ -142,6 +142,10 @@ enum UseStep {
     Manifest,
     /// `printmanifest`: print the crew manifest from an open identification computer.
     PrintManifest,
+    /// `intent:N`: choose an intent, as the number keys do: 1 help, 2 disarm, 3 grab, 4 harm.
+    Intent(u8),
+    /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
+    Zone(u8),
     /// `say:TEXT`: say it, as if typed, prefixes and all.
     Say(&'static str),
     /// `ooc:TEXT`: say it out of character.
@@ -201,6 +205,8 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
+            _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
             _ if s.starts_with("say:") => Some(Self::Say(Box::leak(
                 s["say:".len()..].to_owned().into_boxed_str(),
             ))),
@@ -376,6 +382,7 @@ fn main() {
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<hud::WalkMode>()
+        .init_resource::<hud::AimedZone>()
         .init_resource::<hud::HudTip>()
         .init_resource::<wire_panel::OpenPanel>()
         .init_resource::<alarm_panel::OpenAlarm>()
@@ -498,6 +505,7 @@ fn main() {
                 reconnect,
                 (
                     hud::update_hud,
+                    hud::show_aimed_zone,
                     update_tip_line,
                     update_log,
                     update_chat_line,
@@ -1335,9 +1343,15 @@ fn send_hotkeys(
     {
         sender.send::<IntentChannel>(ActionInput::UseOn(item));
     }
-    // Classic hotkeys: 1 help, 4 harm (2 disarm and 3 grab come later).
+    // Classic hotkeys: 1 help, 2 disarm, 3 grab, 4 harm.
     if keys.just_pressed(KeyCode::Digit1) {
         sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Help));
+    }
+    if keys.just_pressed(KeyCode::Digit2) {
+        sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Disarm));
+    }
+    if keys.just_pressed(KeyCode::Digit3) {
+        sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Grab));
     }
     if keys.just_pressed(KeyCode::Digit4) {
         sender.send::<IntentChannel>(ActionInput::SetIntent(Intent::Harm));
@@ -1467,6 +1481,8 @@ fn update_status_line(loc: Res<Loc>, own: Res<OwnStatus>, mut text: Single<&mut 
         match status.intent {
             Intent::Help => "help",
             Intent::Harm => "harm",
+            Intent::Disarm => "disarm",
+            Intent::Grab => "grab",
         },
     );
     let intent = loc.0.format("hud-intent", Some(&args)).unwrap_or_default();
@@ -1736,6 +1752,7 @@ fn scripted_use(
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
     mut vote_window: ResMut<vote_panel::OpenVote>,
+    mut aimed: ResMut<hud::AimedZone>,
 ) {
     let Some(step) = plan.0.front().copied() else {
         return;
@@ -1769,6 +1786,9 @@ fn scripted_use(
         UseStep::VoteFor(line) => Some(VoteAction::Cast(line)),
         _ => None,
     };
+    if let UseStep::Zone(line) = step {
+        aimed.0 = usize::from(line);
+    }
     let typed = match step {
         UseStep::Say(text) => Some(ActionInput::Say(text.to_owned())),
         UseStep::Ooc(text) => Some(ActionInput::Ooc(text.to_owned())),
@@ -1848,6 +1868,13 @@ fn scripted_use(
             target: view.target,
             print: matches!(step, UseStep::PrintManifest),
         }),
+        UseStep::Intent(number) => Some(ActionInput::SetIntent(match number {
+            2 => Intent::Disarm,
+            3 => Intent::Grab,
+            4 => Intent::Harm,
+            _ => Intent::Help,
+        })),
+        UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Buy(line) => uplink.0.as_ref().map(|view| ActionInput::Uplink {
             target: view.target,
             line,

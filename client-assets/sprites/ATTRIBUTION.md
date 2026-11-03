@@ -614,6 +614,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:block` | `icons/mob/screen1.dmi : "block"` | CC-BY-SA 3.0 |
 | `hud:center` | `icons/mob/screen1.dmi : "center"` | CC-BY-SA 3.0 |
 | `hud:close` | `icons/mob/screen1.dmi : "x"` | CC-BY-SA 3.0 |
+| `hud:disarm` | `icons/mob/screen1.dmi : "disarm"` | CC-BY-SA 3.0 |
 | `hud:drop` | `icons/mob/screen1.dmi : "act_drop"` | CC-BY-SA 3.0 |
 | `hud:ears` | `icons/mob/screen1.dmi : "ears"` | CC-BY-SA 3.0 |
 | `hud:equip-e` | `icons/mob/screen1.dmi : "equip"` | CC-BY-SA 3.0 |
@@ -626,6 +627,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:fire1` | `icons/mob/screen1.dmi : "fire1"` | CC-BY-SA 3.0 |
 | `hud:glasses` | `icons/mob/screen1.dmi : "glasses"` | CC-BY-SA 3.0 |
 | `hud:gloves` | `icons/mob/screen1.dmi : "gloves"` | CC-BY-SA 3.0 |
+| `hud:grab` | `icons/mob/screen1.dmi : "grab"` | CC-BY-SA 3.0 |
 | `hud:hair` | `icons/mob/screen1.dmi : "hair"` | CC-BY-SA 3.0 |
 | `hud:hand-l` | `icons/mob/screen1.dmi : "hand"` | CC-BY-SA 3.0 |
 | `hud:hand-r` | `icons/mob/screen1.dmi : "hand"` | CC-BY-SA 3.0 |
@@ -659,6 +661,18 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `hud:tox0` | `icons/mob/screen1.dmi : "tox0"` | CC-BY-SA 3.0 |
 | `hud:tox1` | `icons/mob/screen1.dmi : "tox1"` | CC-BY-SA 3.0 |
 | `hud:walking` | `icons/mob/screen1.dmi : "walking"` | CC-BY-SA 3.0 |
+| `hud:zone-chest` | `icons/mob/zone_sel.dmi : "chest"` | CC-BY-SA 3.0 |
+| `hud:zone-doll` | `icons/mob/zone_sel.dmi : ""` | CC-BY-SA 3.0 |
+| `hud:zone-groin` | `icons/mob/zone_sel.dmi : "diaper"` | CC-BY-SA 3.0 |
+| `hud:zone-head` | `icons/mob/zone_sel.dmi : "head"` | CC-BY-SA 3.0 |
+| `hud:zone-l_arm` | `icons/mob/zone_sel.dmi : "l_arm"` | CC-BY-SA 3.0 |
+| `hud:zone-l_foot` | `icons/mob/zone_sel.dmi : "l_foot"` | CC-BY-SA 3.0 |
+| `hud:zone-l_hand` | `icons/mob/zone_sel.dmi : "l_hand"` | CC-BY-SA 3.0 |
+| `hud:zone-l_leg` | `icons/mob/zone_sel.dmi : "l_leg"` | CC-BY-SA 3.0 |
+| `hud:zone-r_arm` | `icons/mob/zone_sel.dmi : "r_arm"` | CC-BY-SA 3.0 |
+| `hud:zone-r_foot` | `icons/mob/zone_sel.dmi : "r_foot"` | CC-BY-SA 3.0 |
+| `hud:zone-r_hand` | `icons/mob/zone_sel.dmi : "r_hand"` | CC-BY-SA 3.0 |
+| `hud:zone-r_leg` | `icons/mob/zone_sel.dmi : "r_leg"` | CC-BY-SA 3.0 |
 | `human:` | `icons/mob/human.dmi : "body_m_s"` | CC-BY-SA 3.0 |
 | `human:lying` | `icons/mob/human.dmi : "body_m_l"` | CC-BY-SA 3.0 |
 | `hydroponics-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "hydroponics"` | CC-BY-SA 3.0 |
