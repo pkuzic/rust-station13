@@ -19,11 +19,18 @@ jumpsuit and black shoes.
 
 Maps without jobs on their start points work as before: a grey jumpsuit, black shoes, and no card.
 
+## Choosing
+
+Someone who arrives at a post also sees a window listing every job and how many posts each has free, with
+the ones that have none greyed out. Staying or choosing closes it for good. Choosing another job takes
+away everything they were given, puts their card back at their post, and starts them at a free post of the
+new job with its card and kit. Things they picked up in the meantime go too, if they were worn or in hand.
+
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
-| Players set which jobs they prefer, and the round divides them up | No choice yet |
+| Players set which jobs they prefer before the round, and it divides them up | They're given one on arrival, and can swap it once for any that's free |
 | Every job has a PDA and most a department headset | Only engineers' headsets exist here |
 | Each job has its department's backpack, its own hat or armour, and some have grenades, implants and so on | Only what exists here. See `jobs.ron` |
 | A card and PDA carry the person's name and job title | The card only carries access |

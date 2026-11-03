@@ -297,6 +297,9 @@ job-assigned = You are the { $job ->
     [mime] Mime
    *[assistant] Assistant
 }.
+job-window-title = You've been given a job. You can stay, or take another that's open.
+job-keep = Stay in this job
+job-row = { $job } ({ $value } free)
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

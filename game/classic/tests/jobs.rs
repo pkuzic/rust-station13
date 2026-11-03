@@ -6,7 +6,9 @@ use rs13_classic::access::{IdCard, allowed};
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::equipment::Equipment;
 use rs13_classic::hands::Hands;
-use rs13_classic::jobs::{HasJob, JobCard, jobs, pick_start, take_up};
+use rs13_classic::jobs::{
+    ChoosingJob, HasJob, JobCard, JobPanelOut, PendingJobOps, jobs, pick_start, take_up,
+};
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_classic::storage::Storage;
 use rs13_classic::{ClassicPlugin, locales};
@@ -164,4 +166,89 @@ fn a_map_without_jobs_starts_people_as_before() {
     assert_eq!(take_up(app.world_mut(), mob, A), None);
     assert_eq!(sprite_in(&app, mob, Slot::Uniform), "grey-jumpsuit");
     assert!(app.world().get::<Equipment>(mob).unwrap().get(Slot::Id).is_none());
+}
+
+fn line_of(job: &str) -> usize {
+    jobs().iter().position(|j| j.id == job).unwrap()
+}
+
+fn answer(app: &mut App, mob: Entity, line: Option<usize>) {
+    app.world_mut()
+        .get_mut::<PendingJobOps>(mob)
+        .unwrap()
+        .0
+        .push(line);
+    app.world_mut().run_schedule(FixedUpdate);
+    app.world_mut().run_schedule(FixedUpdate);
+}
+
+#[test]
+fn a_new_arrival_can_swap_for_a_free_job_once() {
+    let mut app = setup();
+    let old_card = card_for(&mut app, A, "engineer", &["engine"]);
+    let new_card = card_for(&mut app, C, "medical-doctor", &["medical"]);
+    let mob = spawn_player_mob(app.world_mut(), A);
+    take_up(app.world_mut(), mob, A);
+    app.world_mut().run_schedule(FixedUpdate);
+    let view = app
+        .world()
+        .get::<JobPanelOut>(mob)
+        .unwrap()
+        .0
+        .clone()
+        .expect("offered");
+    assert_eq!(view.current, "engineer");
+    assert_eq!(view.rows[line_of("medical-doctor")].1, 1);
+    assert_eq!(
+        view.rows[line_of("engineer")].1,
+        0,
+        "their own card has left its post"
+    );
+    let toolbox = app.world().get::<Hands>(mob).unwrap().active_item().unwrap();
+
+    answer(&mut app, mob, Some(line_of("medical-doctor")));
+
+    assert_eq!(app.world().get::<HasJob>(mob).unwrap().0, "medical-doctor");
+    assert_eq!(app.world().get::<GridPos>(mob).unwrap().0, C);
+    assert_eq!(sprite_in(&app, mob, Slot::Uniform), "medical-jumpsuit");
+    assert_eq!(
+        app.world().get::<Equipment>(mob).unwrap().get(Slot::Id),
+        Some(new_card)
+    );
+    assert!(app.world().get_entity(toolbox).is_err(), "the old kit is gone");
+    assert_eq!(app.world().get::<JobCard>(old_card).unwrap().0, "engineer");
+    assert_eq!(app.world().get::<GridPos>(old_card).unwrap().0, A);
+    assert!(app.world().get::<Hidden>(old_card).is_some());
+    assert!(app.world().get::<JobPanelOut>(mob).unwrap().0.is_none());
+
+    answer(&mut app, mob, Some(line_of("engineer")));
+    assert_eq!(
+        app.world().get::<HasJob>(mob).unwrap().0,
+        "medical-doctor",
+        "only once"
+    );
+}
+
+#[test]
+fn staying_closes_the_window_and_a_full_job_changes_nothing() {
+    let mut app = setup();
+    card_for(&mut app, A, "engineer", &["engine"]);
+    let mob = spawn_player_mob(app.world_mut(), A);
+    take_up(app.world_mut(), mob, A);
+    answer(&mut app, mob, Some(line_of("captain")));
+    assert_eq!(
+        app.world().get::<HasJob>(mob).unwrap().0,
+        "engineer",
+        "no post for it"
+    );
+    assert_eq!(app.world().get::<GridPos>(mob).unwrap().0, A);
+    assert!(app.world().get::<ChoosingJob>(mob).is_none());
+
+    let mut app = setup();
+    card_for(&mut app, A, "engineer", &["engine"]);
+    let mob = spawn_player_mob(app.world_mut(), A);
+    take_up(app.world_mut(), mob, A);
+    answer(&mut app, mob, None);
+    assert_eq!(app.world().get::<HasJob>(mob).unwrap().0, "engineer");
+    assert!(app.world().get::<JobPanelOut>(mob).unwrap().0.is_none());
 }

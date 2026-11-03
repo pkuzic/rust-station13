@@ -1,7 +1,7 @@
 # Network protocol
 
 Defined in `engine/network/src/protocol.rs`. Client and server must register the same
-protocol; `rs13_network::PROTOCOL_VERSION` (currently **37**) is bumped on every
+protocol; `rs13_network::PROTOCOL_VERSION` (currently **38**) is bumped on every
 incompatible change and is part of the netcode protocol id, so mismatched builds cannot
 connect.
 
