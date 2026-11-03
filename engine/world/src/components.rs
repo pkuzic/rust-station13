@@ -410,6 +410,21 @@ pub struct ChemPanelView {
     pub reagents: Vec<String>,
 }
 
+/// An open sleeper console's window, as shown to the player (Luna's `sleep_console` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SleeperPanelView {
+    /// The console.
+    pub target: NetId,
+    /// Who is in its sleeper.
+    pub occupant: Option<String>,
+    pub stat: MobStat,
+    pub health: i16,
+    pub oxy: i16,
+    pub tox: i16,
+    /// What it can inject, by reagent id, and how much of each is in them.
+    pub reagents: Vec<(String, u16)>,
+}
+
 /// An open brig door timer's window, as shown to the player (Luna's `door_timer` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrigPanelView {

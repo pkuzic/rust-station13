@@ -179,6 +179,27 @@ dispenser-beaker = Beaker: { $value } of { $max } units
 dispenser-no-beaker = No beaker loaded.
 dispenser-eject = Eject beaker
 dispenser-occupied = A beaker is already loaded into the machine.
+reagent-inaprovaline = Inaprovaline
+reagent-stoxin = Sleep toxin
+reagent-dermaline = Dermaline
+reagent-bicaridine = Bicaridine
+reagent-dexalin = Dexalin
+medbay-put-in = { $name } puts { $victim } inside.
+medbay-occupied = It is already occupied.
+medbay-beaker-full = A beaker is already loaded.
+sleeper-numb = You feel cool air surround you. You go numb as your senses turn inward.
+sleeper-empty = Sleeper unoccupied.
+sleeper-occupant = { $name }: { $state ->
+    [conscious] conscious
+    [unconscious] unconscious
+   *[dead] DEAD
+}
+sleeper-readings = Health: { $value }. Oxygen damage: { $oxy }. Toxin damage: { $tox }.
+sleeper-inject = Inject { $reagent } ({ $value } units in them)
+sleeper-unstable = ERROR: Subject is not in stable condition for auto-injection.
+sleeper-cant-metabolise = ERROR: Subject cannot metabolise chemicals.
+cryo-on = You turn the cryo cell on.
+cryo-off = You turn the cryo cell off.
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

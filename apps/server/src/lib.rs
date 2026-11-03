@@ -25,6 +25,7 @@ use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
 use rs13_classic::ghosts::Departures;
 use rs13_classic::health::Vitals;
 use rs13_classic::heaters::{HeaterOp, HeaterPanelOut, PendingHeaterOps};
+use rs13_classic::medbay::{PendingSleeperOps, SleeperPanelOut};
 use rs13_classic::movement::{Mob, MoveIntent};
 use rs13_classic::names::sanitize_name;
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
@@ -46,15 +47,15 @@ use rs13_network::protocol::{
     ArcadePanel, BrigCommand, BrigPanel, CameraPanel, ChemCommand, ChemPanel, ClipboardCommand,
     ClipboardPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
     LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel, PlaySound, Player,
-    PowerMonitorPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
-    VendingPanel, WirePanel,
+    PowerMonitorPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate,
+    StoragePanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
     AlarmPanelView, ApcPanelView, ArcadePanelView, BrigPanelView, CameraPanelView, ChemPanelView,
     ClipboardView, DisplayName, FreezerPanelView, GasPanelView, Ghost, GridPos, HeaterPanelView, Intent,
-    LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, Slot, SmesPanelView,
-    StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
+    LaserPanelView, MapLayer, MobStat, NetId, PaperView, PickListView, PowerMonitorView, SleeperPanelView,
+    Slot, SmesPanelView, StorageView, TileMap, TilePos, VendingPanelView, WirePanelView,
 };
 
 #[derive(Resource)]
@@ -103,6 +104,7 @@ struct SentPanel(
     Option<ArcadePanelView>,
     Option<BrigPanelView>,
     Option<ChemPanelView>,
+    Option<SleeperPanelView>,
 );
 
 /// On a mob whose player has already chosen a name this session.
@@ -388,6 +390,7 @@ fn queue_actions(
                 &mut PendingArcadeOps,
                 &mut PendingBrigOps,
                 &mut PendingChemOps,
+                &mut PendingSleeperOps,
             ),
             Has<NameChosen>,
         ),
@@ -425,6 +428,7 @@ fn queue_actions(
                 mut arcade_ops,
                 mut brig_ops,
                 mut chem_ops,
+                mut sleeper_ops,
             ),
             name_chosen,
         )) = mobs.get_mut(controls.0)
@@ -554,6 +558,12 @@ fn queue_actions(
                                 ChemCommand::Eject => ChemOp::Eject,
                             },
                         ));
+                    }
+                    None
+                }
+                ActionInput::Sleeper { target, line } => {
+                    if let Some(console) = resolve(target) {
+                        sleeper_ops.0.push((console, usize::from(line)));
                     }
                     None
                 }
@@ -846,6 +856,7 @@ fn send_panels(
             &mut MessageSender<ArcadePanel>,
             &mut MessageSender<BrigPanel>,
             &mut MessageSender<ChemPanel>,
+            &mut MessageSender<SleeperPanel>,
         ),
     )>,
     panels: Query<(
@@ -862,7 +873,13 @@ fn send_panels(
         &CameraPanelOut,
         &ClipboardOut,
         &PickListOut,
-        (&HeaterPanelOut, &ArcadePanelOut, &BrigPanelOut, &ChemPanelOut),
+        (
+            &HeaterPanelOut,
+            &ArcadePanelOut,
+            &BrigPanelOut,
+            &ChemPanelOut,
+            &SleeperPanelOut,
+        ),
     )>,
 ) {
     for (
@@ -880,7 +897,14 @@ fn send_panels(
         mut vendings,
         mut camera_panels,
         mut clipboard_panels,
-        (mut pick_panels, mut heater_panels, mut arcade_panels, mut brig_panels, mut chem_panels),
+        (
+            mut pick_panels,
+            mut heater_panels,
+            mut arcade_panels,
+            mut brig_panels,
+            mut chem_panels,
+            mut sleeper_panels,
+        ),
     ) in &mut links
     {
         let Ok((
@@ -897,7 +921,7 @@ fn send_panels(
             camera,
             clipboard,
             pick_list,
-            (heater, arcade, brig, chem),
+            (heater, arcade, brig, chem, sleeper),
         )) = panels.get(controls.0)
         else {
             continue;
@@ -969,6 +993,10 @@ fn send_panels(
         if sent.16 != chem.0 {
             chem_panels.send::<NoticeChannel>(ChemPanel(chem.0.clone()));
             sent.16 = chem.0.clone();
+        }
+        if sent.17 != sleeper.0 {
+            sleeper_panels.send::<NoticeChannel>(SleeperPanel(sleeper.0.clone()));
+            sent.17 = sleeper.0.clone();
         }
     }
 }

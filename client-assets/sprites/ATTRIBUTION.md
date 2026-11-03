@@ -320,6 +320,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `crematorium-igniter:crema_switch` | `icons/obj/power.dmi : "crema_switch"` | CC-BY-SA 3.0 |
 | `crematorium-tray:cremat` | `icons/obj/stationobjs.dmi : "cremat"` | CC-BY-SA 3.0 |
 | `crowbar:` | `icons/obj/items.dmi : "crowbar"` | CC-BY-SA 3.0 |
+| `cryo-cell:celltop` | `icons/obj/Cryogenic2.dmi : "celltop"` | CC-BY-SA 3.0 |
+| `cryo-cell:celltop-p` | `icons/obj/Cryogenic2.dmi : "celltop-p"` | CC-BY-SA 3.0 |
+| `cryo-cell:celltop_1` | `icons/obj/Cryogenic2.dmi : "celltop_1"` | CC-BY-SA 3.0 |
 | `desk-lamp:` | `icons/obj/lighting.dmi : "lamp"` | CC-BY-SA 3.0 |
 | `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
@@ -981,6 +984,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shields-button:access_button_standby` | `icons/obj/airlock_machines.dmi : "access_button_standby"` | CC-BY-SA 3.0 |
 | `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
 | `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |
+| `sleeper:sleeper` | `icons/obj/Cryogenic2.dmi : "sleeper"` | CC-BY-SA 3.0 |
+| `sleeper:sleeper-open` | `icons/obj/Cryogenic2.dmi : "sleeper-open"` | CC-BY-SA 3.0 |
+| `sleeper-console:console` | `icons/obj/Cryogenic2.dmi : "console"` | CC-BY-SA 3.0 |
 | `smes:` | `icons/obj/power.dmi : "smes"` | CC-BY-SA 3.0 |
 | `smes:smes-oc0` | `icons/obj/power.dmi : "smes-oc0"` | CC-BY-SA 3.0 |
 | `smes:smes-oc1` | `icons/obj/power.dmi : "smes-oc1"` | CC-BY-SA 3.0 |

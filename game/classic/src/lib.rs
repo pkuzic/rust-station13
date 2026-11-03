@@ -52,6 +52,7 @@ pub mod jetpacks;
 pub mod lighting;
 pub mod lights;
 pub mod machines;
+pub mod medbay;
 pub mod medical;
 pub mod meters;
 pub mod microwaves;
@@ -381,6 +382,8 @@ impl Plugin for ClassicPlugin {
                     )
                         .chain(),
                     (
+                        medbay::run_medbay,
+                        medbay::update_sleeper_views,
                         microwaves::run_microwaves,
                         monkeys::run_monkeys,
                         flashes::run_flashers,
