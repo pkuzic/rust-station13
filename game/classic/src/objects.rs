@@ -206,6 +206,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
             return closet;
         }
     }
+    if proto == crate::weapons::RECHARGER {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::weapons::spawn_recharger(world, pos, id));
+    }
     if proto == crate::brig::DOOR_TIMER {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::brig::spawn_door_timer(world, spec, pos, id));
@@ -476,6 +480,7 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     let roll = world.resource_mut::<crate::rng::GameRng>().range(0, 3);
     let mut item = world.spawn((GridPos(pos), id, Appearance::new(look, ""), item));
     crate::food::spawn_food(&mut item, proto);
+    crate::weapons::fit_weapon(&mut item, proto);
     crate::smoking::spawn_smokable(&mut item, proto, roll);
     crate::paperwork::spawn_paperwork(&mut item, spec);
     crate::bedsheets::spawn_bedsheet(&mut item, spec);

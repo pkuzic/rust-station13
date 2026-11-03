@@ -351,6 +351,16 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `earmuffs:` | `icons/obj/items.dmi : "earmuffs"` | CC-BY-SA 3.0 |
 | `emergency-locker:` | `icons/obj/lockwall.dmi : "emerg"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
+| `energy-gun:energykill0` | `icons/obj/gun.dmi : "energykill0"` | CC-BY-SA 3.0 |
+| `energy-gun:energykill100` | `icons/obj/gun.dmi : "energykill100"` | CC-BY-SA 3.0 |
+| `energy-gun:energykill25` | `icons/obj/gun.dmi : "energykill25"` | CC-BY-SA 3.0 |
+| `energy-gun:energykill50` | `icons/obj/gun.dmi : "energykill50"` | CC-BY-SA 3.0 |
+| `energy-gun:energykill75` | `icons/obj/gun.dmi : "energykill75"` | CC-BY-SA 3.0 |
+| `energy-gun:energystun0` | `icons/obj/gun.dmi : "energystun0"` | CC-BY-SA 3.0 |
+| `energy-gun:energystun100` | `icons/obj/gun.dmi : "energystun100"` | CC-BY-SA 3.0 |
+| `energy-gun:energystun25` | `icons/obj/gun.dmi : "energystun25"` | CC-BY-SA 3.0 |
+| `energy-gun:energystun50` | `icons/obj/gun.dmi : "energystun50"` | CC-BY-SA 3.0 |
+| `energy-gun:energystun75` | `icons/obj/gun.dmi : "energystun75"` | CC-BY-SA 3.0 |
 | `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_closed` | `icons/obj/closet.dmi : "extinguisher_closed"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_empty` | `icons/obj/closet.dmi : "extinguisher_empty"` | CC-BY-SA 3.0 |
@@ -533,6 +543,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `laser-beam:west` | `icons/obj/projectiles.dmi : "u_laser"` | CC-BY-SA 3.0 |
 | `laser-computer:atmos` | `icons/obj/computer.dmi : "atmos"` | CC-BY-SA 3.0 |
 | `laser-computer:unpowered` | `icons/obj/computer.dmi : "c_unpowered"` | CC-BY-SA 3.0 |
+| `laser-gun:laser0` | `icons/obj/gun.dmi : "laser0"` | CC-BY-SA 3.0 |
+| `laser-gun:laser100` | `icons/obj/gun.dmi : "laser100"` | CC-BY-SA 3.0 |
+| `laser-gun:laser25` | `icons/obj/gun.dmi : "laser25"` | CC-BY-SA 3.0 |
+| `laser-gun:laser50` | `icons/obj/gun.dmi : "laser50"` | CC-BY-SA 3.0 |
+| `laser-gun:laser75` | `icons/obj/gun.dmi : "laser75"` | CC-BY-SA 3.0 |
 | `latex-gloves:` | `icons/obj/clothing/gloves.dmi : "latex"` | CC-BY-SA 3.0 |
 | `lawyer-suit:` | `icons/obj/clothing/uniforms.dmi : "black_suit_fem"` | CC-BY-SA 3.0 |
 | `light:tube-broken-east` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
@@ -762,6 +777,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `rainbow-gloves:` | `icons/obj/clothing/gloves.dmi : "rainbow"` | CC-BY-SA 3.0 |
 | `rainbow-shoes:` | `icons/obj/clothing/shoes.dmi : "rain_bow"` | CC-BY-SA 3.0 |
 | `recharger:recharger0` | `icons/obj/stationobjs.dmi : "recharger0"` | CC-BY-SA 3.0 |
+| `recharger:recharger1` | `icons/obj/stationobjs.dmi : "recharger1"` | CC-BY-SA 3.0 |
+| `recharger:recharger2` | `icons/obj/stationobjs.dmi : "recharger2"` | CC-BY-SA 3.0 |
 | `red-cap:` | `icons/obj/clothing/hats.dmi : "secsoft"` | CC-BY-SA 3.0 |
 | `red-shorts:` | `icons/obj/clothing/uniforms.dmi : "redshorts"` | CC-BY-SA 3.0 |
 | `red-tag-armor:` | `icons/obj/clothing/suits.dmi : "redtag"` | CC-BY-SA 3.0 |
@@ -804,6 +821,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shield-plate:plate` | `icons/obj/machines/shieldgen.dmi : "plate"` | CC-BY-SA 3.0 |
 | `shield-plate:plate-p` | `icons/obj/machines/shieldgen.dmi : "plate-p"` | CC-BY-SA 3.0 |
 | `shields-button:access_button_standby` | `icons/obj/airlock_machines.dmi : "access_button_standby"` | CC-BY-SA 3.0 |
+| `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
+| `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |
 | `smes:` | `icons/obj/power.dmi : "smes"` | CC-BY-SA 3.0 |
 | `smes:smes-oc0` | `icons/obj/power.dmi : "smes-oc0"` | CC-BY-SA 3.0 |
 | `smes:smes-oc1` | `icons/obj/power.dmi : "smes-oc1"` | CC-BY-SA 3.0 |
@@ -890,6 +909,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `status-glyph:~` | `icons/obj/status_display.dmi : "~"` | CC-BY-SA 3.0 |
 | `stool:` | `icons/obj/objects.dmi : "stool"` | CC-BY-SA 3.0 |
 | `straight-jacket:` | `icons/obj/clothing/suits.dmi : "straight_jacket"` | CC-BY-SA 3.0 |
+| `stun-baton:stunbaton` | `icons/obj/weapons.dmi : "stunbaton"` | CC-BY-SA 3.0 |
+| `stun-baton:stunbaton_active` | `icons/obj/weapons.dmi : "stunbaton_active"` | CC-BY-SA 3.0 |
 | `sundress:` | `icons/obj/clothing/uniforms.dmi : "sundress"` | CC-BY-SA 3.0 |
 | `sunglasses:` | `icons/obj/clothing/glasses.dmi : "sun"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
@@ -1050,6 +1071,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `tank-dispenser:oxygen-3` | `icons/obj/objects.dmi : "oxygen-3"` | CC-BY-SA 3.0 |
 | `tank-dispenser:oxygen-4` | `icons/obj/objects.dmi : "oxygen-4"` | CC-BY-SA 3.0 |
 | `tank-dispenser:oxygen-5` | `icons/obj/objects.dmi : "oxygen-5"` | CC-BY-SA 3.0 |
+| `taser:taser0` | `icons/obj/gun.dmi : "taser0"` | CC-BY-SA 3.0 |
+| `taser:taser100` | `icons/obj/gun.dmi : "taser100"` | CC-BY-SA 3.0 |
+| `taser:taser25` | `icons/obj/gun.dmi : "taser25"` | CC-BY-SA 3.0 |
+| `taser:taser50` | `icons/obj/gun.dmi : "taser50"` | CC-BY-SA 3.0 |
+| `taser:taser75` | `icons/obj/gun.dmi : "taser75"` | CC-BY-SA 3.0 |
 | `tea:` | `icons/obj/cup.dmi : "tea"` | CC-BY-SA 3.0 |
 | `teg:` | `icons/obj/power.dmi : "teg"` | CC-BY-SA 3.0 |
 | `teg:teg-op1` | `icons/obj/power.dmi : "teg-op1"` | CC-BY-SA 3.0 |

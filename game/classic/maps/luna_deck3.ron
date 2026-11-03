@@ -35,8 +35,6 @@
 //      5 /obj/item/weapon/folder/white
 //      1 /obj/item/weapon/gavel
 //      8 /obj/item/weapon/grenade/chem_grenade
-//      1 /obj/item/weapon/gun/energy/laser/bluetag
-//      1 /obj/item/weapon/gun/energy/laser/redtag
 //      1 /obj/item/weapon/gun/projectile/revolver/doublebarrel
 //      1 /obj/item/weapon/gun/syringe
 //      4 /obj/item/weapon/hand_labeler
@@ -1430,7 +1428,7 @@
         '儨': (tile: (id: "floor"), objects: [(id: "fire-alarm", dir: East, vars: {"pixel_x": "24"}), (id: "pipe", dir: South)]),
         '儩': (tile: (id: "floor"), objects: [(id: "table", dir: South, state: Some("table")), "first-aid-kit"]),
         '優': (tile: (id: "floor"), objects: [(id: "chair", dir: North), (id: "light", dir: South)]),
-        '儫': (tile: (id: "floor"), objects: [(id: "camera", dir: North, vars: {"c_tag": "null"}), "red-tag-armor", "blue-tag-armor"]),
+        '儫': (tile: (id: "floor"), objects: [(id: "camera", dir: North, vars: {"c_tag": "null"}), "red-tag-armor", "blue-tag-armor", "laser-gun", "laser-gun"]),
         '儬': (tile: (id: "floor"), objects: ["boxing-gloves", "boxing-gloves-blue", "boxing-gloves-green", "boxing-gloves-yellow", "blue-shorts", "green-shorts", "grey-shorts", "red-shorts", "black-shorts"]),
         '儭': (tile: (id: "plating"), objects: [(id: "firedoor", dir: South), "airlock", (id: "pipe", dir: East)]),
         '儮': (tile: (id: "plating"), objects: [(id: "cable", ends: [North, South]), (id: "pipe", dir: SouthWest)]),

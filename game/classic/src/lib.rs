@@ -81,6 +81,7 @@ pub mod time;
 pub mod vending;
 pub mod verbs;
 pub mod walllockers;
+pub mod weapons;
 pub mod welding;
 pub mod windoors;
 pub mod windows;
@@ -360,6 +361,8 @@ impl Plugin for ClassicPlugin {
                 FixedUpdate,
                 (
                     shields::run_shields,
+                    weapons::run_shots,
+                    weapons::run_rechargers,
                     brig::run_brig,
                     brig::update_brig_views,
                     cloning::run_cloning,

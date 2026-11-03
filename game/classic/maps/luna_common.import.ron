@@ -413,6 +413,10 @@
         (path: "/obj/machinery/computer/cloning", id: "cloning-console"),
         (path: "/obj/machinery/clonepod", id: "clone-pod"),
         (path: "/obj/machinery/door_timer", id: "door-timer", vars: ["id"]),
+        (path: "/obj/item/weapon/gun/energy/laser", id: "laser-gun"),
+        (path: "/obj/item/weapon/gun/energy/gun", id: "energy-gun"),
+        (path: "/obj/item/weapon/gun/energy/taser", id: "taser"),
+        (path: "/obj/item/weapon/melee/baton", id: "stun-baton"),
         // The shield generator (`shields.md`).
         (path: "/obj/machinery/shielding/emitter/plate", id: "shield-plate"),
         (path: "/obj/machinery/shielding/capacitor", id: "shield-capacitor"),
@@ -446,6 +450,9 @@
         "/obj/effect/decal",
         "/obj/effect/landmark/derelict",
         "/obj/structure/lattice",
+        // Laser tag guns aren't built, and would otherwise be real lasers.
+        "/obj/item/weapon/gun/energy/laser/redtag",
+        "/obj/item/weapon/gun/energy/laser/bluetag",
     ],
 
     // Luna's job start points. Until jobs exist, an ID card with the job's access lies on

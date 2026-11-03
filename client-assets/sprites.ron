@@ -1496,7 +1496,11 @@
         "crematorium-tray": { "cremat": (dmi: "icons/obj/stationobjs.dmi", state: "cremat") },
         // Waiting for bots, construction and energy weapons (`navbeacons.md`).
         "navbeacon": { "navbeacon0": (dmi: "icons/obj/objects.dmi", state: "navbeacon0") },
-        "recharger": { "recharger0": (dmi: "icons/obj/stationobjs.dmi", state: "recharger0") },
+        "recharger": {
+            "recharger0": (dmi: "icons/obj/stationobjs.dmi", state: "recharger0"),
+            "recharger1": (dmi: "icons/obj/stationobjs.dmi", state: "recharger1"),
+            "recharger2": (dmi: "icons/obj/stationobjs.dmi", state: "recharger2"),
+        },
         "circuit-board": { "": (dmi: "icons/obj/module.dmi", state: "id_mod") },
         "flash": {
             "": (dmi: "icons/obj/device.dmi", state: "flash"),
@@ -2015,6 +2019,40 @@
             "pod_1": (dmi: "icons/obj/cloning.dmi", state: "pod_1"),
         },
         "door-timer": { "frame": (dmi: "icons/obj/status_display.dmi", state: "frame") },
+        "laser-gun": {
+            "laser0": (dmi: "icons/obj/gun.dmi", state: "laser0"),
+            "laser25": (dmi: "icons/obj/gun.dmi", state: "laser25"),
+            "laser50": (dmi: "icons/obj/gun.dmi", state: "laser50"),
+            "laser75": (dmi: "icons/obj/gun.dmi", state: "laser75"),
+            "laser100": (dmi: "icons/obj/gun.dmi", state: "laser100"),
+        },
+        "energy-gun": {
+            "energystun0": (dmi: "icons/obj/gun.dmi", state: "energystun0"),
+            "energystun25": (dmi: "icons/obj/gun.dmi", state: "energystun25"),
+            "energystun50": (dmi: "icons/obj/gun.dmi", state: "energystun50"),
+            "energystun75": (dmi: "icons/obj/gun.dmi", state: "energystun75"),
+            "energystun100": (dmi: "icons/obj/gun.dmi", state: "energystun100"),
+            "energykill0": (dmi: "icons/obj/gun.dmi", state: "energykill0"),
+            "energykill25": (dmi: "icons/obj/gun.dmi", state: "energykill25"),
+            "energykill50": (dmi: "icons/obj/gun.dmi", state: "energykill50"),
+            "energykill75": (dmi: "icons/obj/gun.dmi", state: "energykill75"),
+            "energykill100": (dmi: "icons/obj/gun.dmi", state: "energykill100"),
+        },
+        "taser": {
+            "taser0": (dmi: "icons/obj/gun.dmi", state: "taser0"),
+            "taser25": (dmi: "icons/obj/gun.dmi", state: "taser25"),
+            "taser50": (dmi: "icons/obj/gun.dmi", state: "taser50"),
+            "taser75": (dmi: "icons/obj/gun.dmi", state: "taser75"),
+            "taser100": (dmi: "icons/obj/gun.dmi", state: "taser100"),
+        },
+        "stun-baton": {
+            "stunbaton": (dmi: "icons/obj/weapons.dmi", state: "stunbaton"),
+            "stunbaton_active": (dmi: "icons/obj/weapons.dmi", state: "stunbaton_active"),
+        },
+        "shot": {
+            "laser": (dmi: "icons/obj/projectiles.dmi", state: "laser"),
+            "spark": (dmi: "icons/obj/projectiles.dmi", state: "spark"),
+        },
         // The shield generator: plates, capacitors with charge lights, converters with rate lights.
         "shield-plate": {
             "plate": (dmi: "icons/obj/machines/shieldgen.dmi", state: "plate"),
