@@ -192,7 +192,9 @@ fn scan(world: &mut World, person: Entity) -> &'static str {
     let Some(name) = world.get::<DisplayName>(person).cloned() else {
         return "cloning-no-genes";
     };
-    if world.get::<crate::monkeys::Monkey>(person).is_some() {
+    if world.get::<crate::monkeys::Monkey>(person).is_some()
+        || world.get::<crate::changeling::Husked>(person).is_some()
+    {
         return "cloning-no-genes";
     }
     let mut records = world.resource_mut::<CloneRecords>();

@@ -366,6 +366,7 @@ round-mode = The current game mode is { $mode ->
     [malfunction] AI Malfunction
     [nuclear] Nuclear Emergency
     [revolution] Revolution
+    [changeling] Changeling
     [rp-revolution] RP Revolution
     [sandbox] Sandbox
    *[extended] Extended
@@ -765,6 +766,96 @@ rev-alive = survived
 verb-rev-convert = Rev-Convert
 vote-choice-revolution = Revolution
 vote-choice-rp-revolution = RP Revolution
+ling-power-absorb = Absorb DNA
+ling-power-transform = Transform
+ling-power-stasis = Regenerative Stasis
+ling-power-hive-channel = Hive Channel
+ling-power-hive-absorb = Hive Absorb
+ling-power-lesser-form = Lesser Form
+ling-power-panacea = Anatomic Panacea
+ling-power-deaf-sting = Deaf Sting
+ling-power-blind-sting = Blind Sting
+ling-power-silence-sting = Silence Sting
+ling-power-mimic-voice = Mimic Voice
+ling-power-extract-dna = Extract DNA Sting
+ling-power-transformation-sting = Transformation Sting
+ling-power-paralysis-sting = Paralysis Sting
+ling-power-death-sting = Death Sting
+ling-power-boost-range = Ranged Sting
+ling-power-epinephrine = Epinephrine Sacs
+ling-power-chem-synth = Rapid Chemical-Synthesis
+ling-power-adv-chem-synth = Advanced Chemical-Synthesis
+ling-power-engorged-glands = Engorged Chemical Glands
+ling-power-digital-camo = Digital Camouflage
+ling-power-rapid-regen = Rapid Regeneration
+ling-title = Changeling
+ling-stats = Chemicals: { $value }/{ $storage }. Genome points: { $points }. Genomes absorbed: { $absorbed }. Genetic damage: { $damage }.
+ling-mimicking = Mimicking: { $name }
+ling-give-up = Give up and leave your body
+ling-choose = Choose:
+ling-cancel = Cancel
+ling-evolve = Evolve { $name } ({ $value })
+ling-use = { $name } ({ $value })
+chat-prompt-mimic = Voice to mimic:
+ling-you = You are a changeling!
+ling-howto = F6 opens your powers. Grab someone and use Absorb DNA to take their genome. Start a line with :g to speak on the hive channel.
+ling-incapacitated = We are incapacitated.
+ling-need-chems = We require at least { $value } units of chemicals to do that!
+ling-genes = Our genomes are still reassembling. We need time to recover first.
+ling-need-grab = We must be grabbing a creature in our active hand to absorb them.
+ling-incompatible = This creature is not compatible with our biology.
+ling-ruined = This creature's DNA is ruined beyond usability!
+ling-busy = We are already absorbing!
+ling-absorb-1 = This creature is compatible. We must hold still...
+ling-absorb-2 = We extend a proboscis.
+ling-absorb-3 = We stab them with the proboscis.
+ling-proboscis = { $name } extends a proboscis!
+ling-stabs = { $name } stabs { $victim } with the proboscis!
+ling-stab-pain = You feel a sharp stabbing pain!
+ling-interrupted = Our absorption has been interrupted!
+ling-absorbed = We have absorbed { $name }!
+ling-you-absorbed = You have been absorbed by the changeling!
+ling-sucks = { $name } sucks the fluids from { $victim }!
+ling-transforms = Someone transforms into { $name }!
+ling-genes-cry = Our genes cry out!
+ling-stasis = We will attempt to regenerate our form.
+ling-stasis-failed = We lack the chemicals to regenerate.
+ling-regenerated = We have regenerated.
+ling-wakes = { $name } appears to wake from the dead, having healed all wounds.
+ling-hive-has = The airwaves already have that DNA.
+ling-hive-sent = We channel the DNA of { $name } to the air.
+ling-hive-none = There's no new DNA to absorb from the air.
+ling-hive-got = We absorb the DNA of { $name } from the air.
+ling-hive-say = { $name }: { $text }
+ling-cleansed = We cleanse impurities from our form.
+ling-range = Our throat adjusts to launch the sting.
+ling-arise = We arise.
+ling-camo-on = We distort our form to prevent AI tracking.
+ling-camo-off = We return to normal.
+ling-voice = We shape our glands to take the voice of { $name }. This will use up chemicals until we stop.
+ling-voice-back = We return our vocal glands to their original location.
+ling-stung = We stealthily sting { $name }.
+ling-prick = You feel a tiny prick.
+ling-ears-pop = Your ears pop and begin ringing loudly!
+ling-eyes-burn = Your eyes burn horrifically!
+ling-muscles = Your muscles begin to painfully tighten.
+ling-chest = You feel a tiny prick and your chest becomes tight...
+ling-sting-useless = Our sting appears ineffective against its DNA.
+ling-was = The changeling was { $name }.
+ling-genomes = Genomes absorbed: { $value }
+ling-won = The changeling was successful!
+ling-lost = The changeling has failed!
+objective-absorb = Objective #{ $value }: extract { $goal } compatible genomes. { $done ->
+    [won] Success
+    [failed] Failed
+   *[none] { "" }
+}
+objective-survive = Objective #{ $value }: stay alive until the end. { $done ->
+    [won] Success
+    [failed] Failed
+   *[none] { "" }
+}
+vote-choice-changeling = Changeling
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

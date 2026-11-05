@@ -18,6 +18,7 @@ pub mod cables;
 pub mod cameras;
 pub mod cells;
 pub mod chairs;
+pub mod changeling;
 pub mod chem_dispenser;
 pub mod chem_master;
 pub mod chemistry;
@@ -154,6 +155,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<construction::WallProgress>()
             .init_resource::<escape::StationAlert>()
             .init_resource::<nuke::NukeState>()
+            .init_resource::<changeling::LingState>()
+            .init_resource::<changeling::HiveLines>()
             .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
@@ -435,6 +438,11 @@ impl Plugin for ClassicPlugin {
                             escape::update_comms_views,
                             (nuke::run_nuke, nuke::update_pinpointers, nuke::update_nuke_views),
                             revolution::run_revolution,
+                            (
+                                changeling::run_changelings,
+                                changeling::update_ling_views,
+                                changeling::clear_closed_views,
+                            ),
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,

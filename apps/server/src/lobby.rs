@@ -234,6 +234,9 @@ pub fn run_round(world: &mut World) {
             if mode == "nuclear" {
                 rs13_classic::nuke::setup_round(world);
             }
+            if mode == "changeling" {
+                rs13_classic::changeling::setup_round(world);
+            }
             if mode == "revolution" || mode == "rp-revolution" {
                 let rp = mode == "rp-revolution";
                 if !rs13_classic::revolution::setup_round(world, rp) {
@@ -251,7 +254,7 @@ pub fn run_round(world: &mut World) {
         Phase::Playing { mode } => {
             // A sandbox round never finishes by itself (Luna's `check_finished`). A nuclear blast ends any.
             let pods_home = mode != "sandbox" && world.resource::<EscapePods>().state == PodState::Arrived;
-            let decided = rs13_classic::revolution::over(world);
+            let decided = rs13_classic::revolution::over(world) || rs13_classic::changeling::over(world);
             if pods_home || decided || world.resource::<rs13_classic::nuke::NukeState>().detonated {
                 world.resource_mut::<Round>().phase = Phase::Finished {
                     restart_at: now + RESTART_DS,

@@ -582,6 +582,41 @@ pub struct CharacterPrefs {
     pub be_nuke: bool,
 }
 
+/// A line of the changeling's window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ChangelingPower {
+    /// A message `ling-power-<id>` names it.
+    pub id: String,
+    /// In genome points.
+    pub cost: u8,
+    /// In chemicals, to use.
+    pub chems: u8,
+    pub owned: bool,
+    pub passive: bool,
+    pub needs_target: bool,
+    pub needs_dna: bool,
+    pub needs_text: bool,
+}
+
+/// The changeling's window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ChangelingPanelView {
+    pub chems: u16,
+    pub storage: u16,
+    pub points: u16,
+    pub genetic_damage: u16,
+    pub absorbed: u16,
+    pub powers: Vec<ChangelingPower>,
+    /// Who we can look like.
+    pub dna: Vec<String>,
+    /// Who's on the hive channel that we can't look like yet.
+    pub hive: Vec<String>,
+    /// Who a sting reaches.
+    pub nearby: Vec<(NetId, String)>,
+    pub mimic: Option<String>,
+    pub dead: bool,
+}
+
 /// An open nuclear bomb's window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NukePanelView {

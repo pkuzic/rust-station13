@@ -7,13 +7,13 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
-    BrigPanelView, BuildPanelView, CameraPanelView, CameraView, CharacterPrefs, ChemMasterPanelView,
-    ChemPanelView, ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
-    GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent,
-    JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, NukePanelView, Opaque,
-    PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, SandboxPanelView, Silhouette,
-    SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView,
-    WirePanelView, WornView,
+    BrigPanelView, BuildPanelView, CameraPanelView, CameraView, ChangelingPanelView, CharacterPrefs,
+    ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing,
+    FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook,
+    IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
+    NukePanelView, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView,
+    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
+    UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -140,6 +140,8 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// Asked of the changeling's window.
+    Changeling(ChangelingCommand),
     /// An answer to being asked to join an RP revolution.
     RevAnswer(bool),
     /// A button on a nuclear bomb's window.
@@ -502,6 +504,25 @@ pub struct VotePanel(pub VoteView);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BuildPanel(pub Option<BuildPanelView>);
 
+/// What's asked of the changeling's window.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum ChangelingCommand {
+    /// Open it, or close it.
+    Open,
+    Buy(u8),
+    Use {
+        power: u8,
+        target: Option<NetId>,
+        dna: Option<u8>,
+    },
+    Mimic(String),
+    GiveUp,
+}
+
+/// Server → one changeling: their window, or `None` when it's closed.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ChangelingPanel(pub Option<ChangelingPanelView>);
+
 /// Server → one revolutionary: who's in on it, and whether each leads.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct RevIcons(pub Vec<(NetId, bool)>);
@@ -698,6 +719,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<VotePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BuildPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<ChangelingPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RevIcons>()
             .add_direction(NetworkDirection::ServerToClient);

@@ -70,6 +70,10 @@ pub enum Objective {
     Escape,
     /// Be the only one to get away.
     Hijack,
+    /// Take this many genomes, as a changeling.
+    Absorb(u32),
+    /// Stay alive.
+    Survive,
 }
 
 impl Objective {
@@ -84,7 +88,7 @@ impl Objective {
     }
 
     /// Its line in a briefing or the report. `done`: `none`, `won` or `failed`.
-    fn line(&self, number: usize, done: &str) -> LocMsg {
+    pub(crate) fn line(&self, number: usize, done: &str) -> LocMsg {
         let msg = |id: &str| LocMsg::new(id).num("value", number as i64).arg("done", done);
         match self {
             Objective::Steal(item) => msg("objective-steal").arg("item", *item),
@@ -96,6 +100,8 @@ impl Objective {
                 .msg("job", format!("job-{job}")),
             Objective::Escape => msg("objective-escape"),
             Objective::Hijack => msg("objective-hijack"),
+            Objective::Absorb(goal) => msg("objective-absorb").num("goal", i64::from(*goal)),
+            Objective::Survive => msg("objective-survive"),
         }
     }
 }
@@ -139,6 +145,48 @@ pub fn how_many(players: usize, roll: usize) -> usize {
 
 /// What one traitor is to do (Luna `SelectObjectives`): theft, murder and protection until the
 /// work adds up, then how to leave.
+/// A changeling's work: thefts and kills, then genomes, then getting away or surviving (Luna's
+/// `SelectChangelingObjectives`). `others` is everyone else: name and job.
+pub(crate) fn select_changeling_objectives(
+    rng: &mut GameRng,
+    others: &[(Entity, String, String)],
+) -> Vec<Objective> {
+    let mut thefts: Vec<&'static str> = THEFTS.to_vec();
+    let mut kills: Vec<&(Entity, String, String)> = others.iter().collect();
+    let mut chosen: Vec<Objective> = Vec::new();
+    // The absorbing counts for 20 of the 100.
+    let mut work = 20;
+    while work < 100 {
+        let kill = !kills.is_empty() && rng.range(1, 100) > 50;
+        let objective = if kill {
+            let i = rng.range(0, kills.len() as i32 - 1) as usize;
+            let (target, name, job) = kills.remove(i);
+            Objective::Assassinate {
+                target: *target,
+                name: name.clone(),
+                job: job.clone(),
+            }
+        } else {
+            if thefts.is_empty() {
+                break;
+            }
+            let i = rng.range(0, thefts.len() as i32 - 1) as usize;
+            Objective::Steal(thefts.remove(i))
+        };
+        work += objective.weight();
+        chosen.push(objective);
+    }
+    // Between four and six, and no more than there are others to take them from.
+    let goal = rng.range(4, 6) as u32;
+    chosen.push(Objective::Absorb(goal.min(others.len() as u32 + 1)));
+    chosen.push(if rng.prob(70.0) {
+        Objective::Escape
+    } else {
+        Objective::Survive
+    });
+    chosen
+}
+
 fn select_objectives(rng: &mut GameRng, others: &[(Entity, String, String)]) -> Vec<Objective> {
     let mut thefts: Vec<&'static str> = THEFTS.to_vec();
     let mut kills: Vec<&(Entity, String, String)> = others.iter().collect();
@@ -395,7 +443,7 @@ fn got_away(world: &mut World, mob: Entity) -> bool {
     alive(world, mob) && at.is_some_and(|at| in_pod(world, at))
 }
 
-fn achieved(world: &mut World, traitor: Entity, objective: &Objective) -> bool {
+pub(crate) fn achieved(world: &mut World, traitor: Entity, objective: &Objective) -> bool {
     match objective {
         Objective::Steal(item) => {
             let on_them = carried(world, traitor);
@@ -406,6 +454,10 @@ fn achieved(world: &mut World, traitor: Entity, objective: &Objective) -> bool {
         Objective::Assassinate { target, .. } => !alive(world, *target),
         Objective::Protect { target, .. } => got_away(world, *target),
         Objective::Escape => got_away(world, traitor) && world.get::<Cuffed>(traitor).is_none(),
+        Objective::Absorb(goal) => world
+            .get::<crate::changeling::Changeling>(traitor)
+            .is_some_and(|ling| ling.absorbed >= *goal),
+        Objective::Survive => alive(world, traitor),
         Objective::Hijack => {
             let mut mobs = world.query_filtered::<Entity, With<Mob>>();
             let everyone: Vec<Entity> = mobs.iter(world).collect();

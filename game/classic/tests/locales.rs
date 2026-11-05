@@ -88,6 +88,11 @@ fn every_message_formats_in_both_locales() {
     args.set("kind", "restart");
     args.set("what", "something");
     args.set("pages", 2);
+    args.set("storage", 50);
+    args.set("points", 5);
+    args.set("absorbed", 1);
+    args.set("damage", 30);
+    args.set("goal", 4);
     args.set("names", "Someone, Someone Else");
     args.set("code", "12345");
     args.set("deck", "up");

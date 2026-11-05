@@ -170,9 +170,11 @@ pub fn speak(
             Option<&crate::hands::Hands>,
             Option<&crate::equipment::Equipment>,
             Has<crate::combat::Muted>,
+            Option<&crate::changeling::Changeling>,
         ),
         With<Mob>,
     >,
+    mut hive: ResMut<crate::changeling::HiveLines>,
     mut listeners: Query<
         (
             Entity,
@@ -204,12 +206,21 @@ pub fn speak(
     let mut said: Vec<(Entity, TilePos, i32, LocMsg, Vec<(u16, LocMsg)>)> = Vec::new();
     // (speaker, where, whole, as caught from a little further, as seen from further still)
     let mut whispers: Vec<(Entity, TilePos, LocMsg, LocMsg, LocMsg)> = Vec::new();
-    for (speaker, pos, name, mut pending, vitals, hands, equipment, muted) in &mut speakers {
+    for (speaker, pos, name, mut pending, vitals, hands, equipment, muted, ling) in &mut speakers {
+        // A changeling's mimicked voice (Luna's `GetVoice`).
+        let voice = ling.and_then(|l| l.mimic.clone()).map(DisplayName);
+        let name = voice.as_ref().unwrap_or(name);
         if muted || vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
         }
         for raw in pending.0.drain(..) {
+            if let Some(ling) = ling
+                && let Some(text) = crate::changeling::hive_text(&raw).and_then(sanitize_speech)
+            {
+                hive.0.push(crate::changeling::hive_line(ling, &text));
+                continue;
+            }
             if let Some(typed) = raw.trim_start().strip_prefix('*') {
                 // Only the one who typed it hears that there's no such thing.
                 match emote(&name.0, typed) {

@@ -16,7 +16,7 @@ pub struct Mode {
     pub built: bool,
 }
 
-pub const MODES: [Mode; 10] = [
+pub const MODES: [Mode; 11] = [
     Mode {
         id: "extended",
         probability: 5,
@@ -60,6 +60,11 @@ pub const MODES: [Mode; 10] = [
     Mode {
         id: "revolution",
         probability: 5,
+        built: true,
+    },
+    Mode {
+        id: "changeling",
+        probability: 0,
         built: true,
     },
     Mode {
