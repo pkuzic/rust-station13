@@ -42,6 +42,21 @@ impl Default for AimZone {
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct Paralyzed(pub f32);
 
+/// Can't be hurt (Luna's `nodamage`, from the admin verb).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Godmode;
+
+/// Can't speak (Luna's `muted`, from the admin verb).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Muted;
+
+/// Whoever can't be hurt is made whole again each tick.
+pub fn keep_gods_whole(mut gods: Query<&mut Body, With<Godmode>>) {
+    for mut body in &mut gods {
+        *body = Body::default();
+    }
+}
+
 /// How long one of Luna's stun counts lasts, ds: its mobs count down once every 2 seconds.
 pub const COUNT_DS: f32 = 20.0;
 /// Hats that stop a weapon (Luna's `head/helmet`).

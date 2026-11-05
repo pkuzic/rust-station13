@@ -12,6 +12,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+sha2 = "0.11"
 rs13-core.workspace = true
 rs13-world.workspace = true
 rs13-i18n.workspace = true

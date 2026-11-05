@@ -29,7 +29,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 1.12 Clothing effects: armour, heat, no-slip | M | `clothing/*` | `combat.md`. Masks filter nothing in Luna either |
 | [~] | 1.13 Explosions: blasts, breakage, tank bombs, EMP | L | `explosion.dm`, `bomb`, `effect_system` | Blasts, bursting tanks, C4, `explosions.md`. Left: EMP, tank bombs (with 3.20), sound |
 | [~] | 1.14 Construction: walls, girders, windows, frames, circuit boards | XL | `grille`, `window`, `turf`, `buildandrepair`, `machine_frame` | Sheets, girders, walls, grilles, panes, computer frames, `construction.md`. Left: reinforced wall steps. Machine frames go with 3.11 |
-| [ ] | 1.15 Admin: kick, ban, jump, spawn, adminhelp | L | `modules/admin`, `NewBan` | |
+| [x] | 1.15 Admin: kick, ban, jump, spawn, adminhelp | L | `modules/admin`, `NewBan` | `admin.md`. The verbs that matter; job bans and the many niche ones left out |
 
 ## 2. Game modes
 

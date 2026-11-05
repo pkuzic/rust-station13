@@ -139,6 +139,12 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// As it connects: the secret that makes this client's key. Only ever sent to the server.
+    Hello(String),
+    /// Anywhere: ask the admins for help.
+    AdminHelp(String),
+    /// Anywhere: an admin verb, as words.
+    Admin(String),
     /// Anywhere: say something to everyone on the server, out of character.
     Ooc(String),
     /// Anywhere: start a vote, or vote.

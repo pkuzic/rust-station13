@@ -3,3 +3,5 @@
 .DS_Store
 /data/
 *.bak
+/config/admins.txt
+/data/

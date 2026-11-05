@@ -100,6 +100,8 @@ struct Args {
     server: SocketAddr,
     russian: bool,
     name: Option<String>,
+    /// Where this client's secret is kept (`admin.md`), if not the usual place.
+    key_file: Option<String>,
     /// Save a screenshot here a few seconds after joining, then quit (for checking).
     screenshot: Option<String>,
     /// Seconds after joining to take it (`--shot-after`, default 4).
@@ -149,6 +151,10 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `admin:TEXT`: an admin verb, as typed on the F2 line.
+    Admin(&'static str),
+    /// `ahelp:TEXT`: ask the admins, as typed on the F1 line.
+    AdminHelp(&'static str),
     /// `say:TEXT`: say it, as if typed, prefixes and all.
     Say(&'static str),
     /// `ooc:TEXT`: say it out of character.
@@ -213,6 +219,12 @@ impl UseStep {
             "drop" => Some(Self::Drop),
             _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
             _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
+            _ if s.starts_with("admin:") => Some(Self::Admin(Box::leak(
+                s["admin:".len()..].to_owned().into_boxed_str(),
+            ))),
+            _ if s.starts_with("ahelp:") => Some(Self::AdminHelp(Box::leak(
+                s["ahelp:".len()..].to_owned().into_boxed_str(),
+            ))),
             _ if s.starts_with("say:") => Some(Self::Say(Box::leak(
                 s["say:".len()..].to_owned().into_boxed_str(),
             ))),
@@ -285,6 +297,59 @@ enum ChatKind {
     Say,
     Ooc,
     Me,
+    /// F1: ask the admins.
+    AdminHelp,
+    /// F2: an admin verb.
+    Admin,
+}
+
+/// The secret that gives this client its key on any server (`admin.md`). Kept in a file so the key
+/// lasts, and never shown or sent anywhere else.
+#[derive(Resource)]
+struct PlayerSecret(String);
+
+/// Set once a server has told this client to stay away: it doesn't come back by itself.
+#[derive(Resource, Default)]
+struct ToldToLeave(bool);
+
+fn secret_path(given: Option<String>) -> std::path::PathBuf {
+    if let Some(given) = given {
+        return given.into();
+    }
+    let home = std::env::var_os("APPDATA").or_else(|| std::env::var_os("HOME"));
+    home.map_or_else(std::path::PathBuf::new, std::path::PathBuf::from)
+        .join("rs13-key.txt")
+}
+
+/// The saved secret, or a new one. `RandomState` is seeded from the operating system's randomness.
+fn load_secret(path: &std::path::Path) -> String {
+    if let Ok(saved) = std::fs::read_to_string(path)
+        && !saved.trim().is_empty()
+    {
+        return saved.trim().to_owned();
+    }
+    use std::hash::{BuildHasher, Hasher};
+    let mut secret = String::new();
+    for _ in 0..4 {
+        let word = std::collections::hash_map::RandomState::new()
+            .build_hasher()
+            .finish();
+        secret.push_str(&format!("{word:016x}"));
+    }
+    if let Err(error) = std::fs::write(path, &secret) {
+        warn!(%error, "couldn't save this client's key");
+    }
+    secret
+}
+
+/// Say who this is, each time a connection is made.
+fn send_hello(
+    secret: Res<PlayerSecret>,
+    mut links: Query<&mut MessageSender<ActionInput>, (With<Client>, Added<Connected>)>,
+) {
+    for mut sender in &mut links {
+        sender.send::<IntentChannel>(ActionInput::Hello(secret.0.clone()));
+    }
 }
 
 impl ChatInput {
@@ -388,6 +453,8 @@ fn main() {
         .insert_resource(ScriptedUse(args.use_at.into()))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
+        .init_resource::<ToldToLeave>()
+        .insert_resource(PlayerSecret(load_secret(&secret_path(args.key_file.clone()))))
         .init_resource::<hud::WalkMode>()
         .init_resource::<hud::AimedZone>()
         .init_resource::<hud::HudTip>()
@@ -511,6 +578,7 @@ fn main() {
                 )
                     .chain(),
                 follow_own_player,
+                send_hello,
                 reconnect,
                 (
                     hud::update_hud,
@@ -537,6 +605,7 @@ fn parse_args() -> Args {
         server: SocketAddr::from(([127, 0, 0, 1], rs13_network::DEFAULT_PORT)),
         russian: false,
         name: None,
+        key_file: None,
         screenshot: None,
         shot_after: 4.0,
         size: None,
@@ -553,6 +622,7 @@ fn parse_args() -> Args {
             "--lang" => args.russian = it.next().as_deref() == Some("ru"),
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
+            "--key-file" => args.key_file = it.next(),
             "--shot-after" => {
                 if let Some(secs) = it.next().and_then(|s| s.parse().ok()) {
                     args.shot_after = secs;
@@ -720,8 +790,12 @@ fn reconnect(
     world: Query<Entity, With<Remote>>,
     mut was_connected: Local<bool>,
     mut retry_at: Local<Option<f32>>,
+    told: Res<ToldToLeave>,
     mut commands: Commands,
 ) -> Result {
+    if told.0 {
+        return Ok(());
+    }
     if !connected.is_empty() {
         *was_connected = true;
         *retry_at = None;
@@ -1218,6 +1292,8 @@ fn chat_typing(
                 KeyCode::KeyT => Some(ChatKind::Say),
                 KeyCode::KeyO => Some(ChatKind::Ooc),
                 KeyCode::KeyM => Some(ChatKind::Me),
+                KeyCode::F1 => Some(ChatKind::AdminHelp),
+                KeyCode::F2 => Some(ChatKind::Admin),
                 _ => None,
             };
             if let Some(kind) = kind.filter(|_| !key.repeat) {
@@ -1238,6 +1314,8 @@ fn chat_typing(
                         ChatKind::Say => ActionInput::Say(line),
                         ChatKind::Ooc => ActionInput::Ooc(line),
                         ChatKind::Me => ActionInput::Say(format!("*me {line}")),
+                        ChatKind::AdminHelp => ActionInput::AdminHelp(line),
+                        ChatKind::Admin => ActionInput::Admin(line),
                     });
                 }
             }
@@ -1615,10 +1693,14 @@ fn update_overlay(
 fn receive_notices(
     loc: Res<Loc>,
     mut log: ResMut<MessageLog>,
+    mut told: ResMut<ToldToLeave>,
     mut receivers: Query<&mut MessageReceiver<Notice>, With<Client>>,
 ) {
     for mut receiver in &mut receivers {
         for Notice(msg) in receiver.receive() {
+            if msg.id == "admin-kicked" || msg.id == "admin-banned" {
+                told.0 = true;
+            }
             log.0.push_back(loc.0.format_msg(&msg));
             while log.0.len() > LOG_LINES {
                 log.0.pop_front();
@@ -1728,6 +1810,8 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
             ChatKind::Say => "hud-say",
             ChatKind::Ooc => "chat-prompt-ooc",
             ChatKind::Me => "chat-prompt-me",
+            ChatKind::AdminHelp => "chat-prompt-ahelp",
+            ChatKind::Admin => "chat-prompt-admin",
         };
         let prompt = loc.0.format(prompt, None).unwrap_or_default();
         format!("{prompt} {}_", chat.buffer)
@@ -1803,6 +1887,8 @@ fn scripted_use(
     let typed = match step {
         UseStep::Say(text) => Some(ActionInput::Say(text.to_owned())),
         UseStep::Ooc(text) => Some(ActionInput::Ooc(text.to_owned())),
+        UseStep::Admin(text) => Some(ActionInput::Admin(text.to_owned())),
+        UseStep::AdminHelp(text) => Some(ActionInput::AdminHelp(text.to_owned())),
         _ => None,
     };
     if let Some(typed) = typed {
@@ -1901,6 +1987,8 @@ fn scripted_use(
         | UseStep::VoteMode
         | UseStep::VoteFor(_)
         | UseStep::Say(_)
+        | UseStep::Admin(_)
+        | UseStep::AdminHelp(_)
         | UseStep::Ooc(_) => None,
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,
