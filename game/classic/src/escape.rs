@@ -69,9 +69,40 @@ impl Default for EscapePods {
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct CommsConsole;
 
-/// What a mob asked of a console this tick: to call the pods, or to stop them.
+/// A button on a console.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CommsOp {
+    Call,
+    Stop,
+    /// Declare red alert, or cancel it.
+    RedAlert,
+    Display(DisplayMode),
+}
+
+/// What every ordinary status display shows (Luna's `setstat`).
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub enum DisplayMode {
+    /// The countdown to the pods, blank until they're called.
+    #[default]
+    Pods,
+    Blank,
+    Message(String, String),
+    Picture(&'static str),
+}
+
+/// The pictures a display can show (Luna's alert states).
+pub const PICTURES: [&str; 4] = ["default", "redalert", "lockdown", "biohazard"];
+
+/// The station's alert: whether every light is red, and what the displays say.
+#[derive(Resource, Debug, Clone, Default, PartialEq, Eq)]
+pub struct StationAlert {
+    pub red: bool,
+    pub display: DisplayMode,
+}
+
+/// What a mob asked of a console this tick.
 #[derive(Component, Debug, Default)]
-pub struct PendingCommsOps(pub Vec<(Entity, bool)>);
+pub struct PendingCommsOps(pub Vec<(Entity, CommsOp)>);
 
 /// What a mob's open console window shows.
 #[derive(Component, Debug, Clone, Default, PartialEq)]
@@ -140,7 +171,7 @@ fn set_bolts(world: &mut World, on: bool) {
 }
 
 /// Call the pods, or stop them (Luna `call_shuttle_proc`, `cancel_call_proc`).
-fn apply(world: &mut World, mob: Entity, call: bool, now: f32) {
+fn apply(world: &mut World, mob: Entity, op: CommsOp, now: f32) {
     if !Shown::of_mob(world, mob).opens(&[COMMS_ACCESS.to_owned()]) {
         if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
             outbox.0.push(LocMsg::new("comms-denied"));
@@ -148,8 +179,17 @@ fn apply(world: &mut World, mob: Entity, call: bool, now: f32) {
         return;
     }
     let pods = *world.resource::<EscapePods>();
-    match (call, pods.state) {
-        (true, PodState::Docked) => {
+    match (op, pods.state) {
+        (CommsOp::RedAlert, _) => {
+            let mut alert = world.resource_mut::<StationAlert>();
+            alert.red = !alert.red;
+        }
+        (CommsOp::Display(mode), _) => {
+            world.resource_mut::<StationAlert>().display = mode;
+        }
+        (CommsOp::Call, PodState::Docked) => {
+            // Luna's launch control puts the station on red alert.
+            world.resource_mut::<StationAlert>().red = true;
             world.resource_mut::<EscapePods>().state = PodState::Launching {
                 at: now + pods.launch_ds,
                 told_at_left: pods.launch_ds,
@@ -158,12 +198,12 @@ fn apply(world: &mut World, mob: Entity, call: bool, now: f32) {
             let minutes = (pods.launch_ds / 600.0).round() as i64;
             tell_everyone(world, &LocMsg::new("pods-called").num("value", minutes));
         }
-        (true, PodState::Launching { .. }) => {
+        (CommsOp::Call, PodState::Launching { .. }) => {
             if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
                 outbox.0.push(LocMsg::new("pods-already-called"));
             }
         }
-        (false, PodState::Launching { at, .. }) if at - now >= NO_RECALL_DS => {
+        (CommsOp::Stop, PodState::Launching { at, .. }) if at - now >= NO_RECALL_DS => {
             world.resource_mut::<EscapePods>().state = PodState::Docked;
             set_bolts(world, true);
             tell_everyone(world, &LocMsg::new("pods-recalled"));
@@ -192,17 +232,17 @@ pub fn run_escape(world: &mut World) {
         world.resource_mut::<EscapePods>().bolted = true;
     }
     let mut askers = world.query::<(Entity, &GridPos, &mut PendingCommsOps)>();
-    let asked: Vec<(Entity, TilePos, Vec<(Entity, bool)>)> = askers
+    let asked: Vec<(Entity, TilePos, Vec<(Entity, CommsOp)>)> = askers
         .iter_mut(world)
         .filter(|(.., ops)| !ops.0.is_empty())
         .map(|(e, at, mut ops)| (e, at.0, std::mem::take(&mut ops.0)))
         .collect();
     for (mob, at, ops) in asked {
-        for (console, call) in ops {
+        for (console, op) in ops {
             let near = world.get::<GridPos>(console).is_some_and(|p| in_reach(at, p.0));
             let powered = world.get::<PowerUser>(console).is_some_and(|p| p.powered);
             if near && powered {
-                apply(world, mob, call, now);
+                apply(world, mob, op, now);
             }
         }
     }
@@ -288,6 +328,7 @@ fn declare_completion(world: &mut World) {
 #[allow(clippy::type_complexity)]
 pub fn update_comms_views(
     pods: Res<EscapePods>,
+    alert: Res<StationAlert>,
     time: Res<WorldTime>,
     mut viewers: Query<(
         Entity,
@@ -314,6 +355,7 @@ pub fn update_comms_views(
                 target: *id,
                 launch_in,
                 gone,
+                red_alert: alert.red,
             })
         });
         if view.is_none() && target.is_some() {

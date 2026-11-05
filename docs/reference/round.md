@@ -39,6 +39,13 @@ station, and clients reconnect and find themselves in the lobby.
 
 `rs13-server --pod-seconds N` shortens the launch and the trip, for trying it out.
 
+## Red alert and the displays
+
+With `heads` access the console also declares and cancels red alert, which turns every light on the station red and back.
+Calling the pods declares it too. It sets what ordinary status displays show: the countdown to the pods ("ETL" over minutes
+and seconds, then "ETA"), nothing, a message of two lines, or one of Luna's pictures (none, red alert, lockdown, biohazard).
+Supply displays aren't changed. Long messages are cut to 5 characters a line, where Luna's scroll.
+
 ## Votes
 
 Sources: `luna:code/game/vote.dm`, `config/config.txt`. Code: `apps/server/src/vote.rs`, `apps/client/src/vote_panel.rs`.
@@ -68,9 +75,9 @@ running rounds, to change the mode. It's open for a minute, and the next can sta
 | Roles are given before anyone appears | Same, but with no antagonists yet |
 | The pods fly: their contents move to a transit area and then CentCom, leaving hull behind | They stay where they are with their doors bolted, and whoever's aboard has escaped |
 | The prison shuttle and its console | Not built |
-| Red alert in every area and sounds while launching; status displays show it | Only chat messages |
+| Sounds while launching | Only chat messages |
 | Modes can forbid or delay the call | No mode needs that yet |
 | Clients idle for 2 minutes don't count in a vote | They do |
 | A voted mode is saved to disk | It lasts as long as `rs13-server` runs |
 | Admins can start a custom vote | Not built: no admins yet (1.15) |
-| The console also has messages, alert levels and status display settings | Only the call and the stop |
+| The console has a message list, with printed reports and intercepts from Central Command, and an AI interface | Not built: nothing sends it messages yet, and there's no AI (3.9) |

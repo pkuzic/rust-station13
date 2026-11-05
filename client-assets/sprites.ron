@@ -550,6 +550,10 @@
         // Status displays: the frame, and each character of its lines (`status-displays.md`).
         "status-display": { "frame": (dmi: "icons/obj/status_display.dmi", state: "frame") },
         "status-glyph": {
+            "default": (dmi: "icons/obj/status_display.dmi", state: "default"),
+            "redalert": (dmi: "icons/obj/status_display.dmi", state: "redalert"),
+            "lockdown": (dmi: "icons/obj/status_display.dmi", state: "lockdown"),
+            "biohazard": (dmi: "icons/obj/status_display.dmi", state: "biohazard"),
             "~": (dmi: "icons/obj/status_display.dmi", state: "~"),
             ":": (dmi: "icons/obj/status_display.dmi", state: ":"),
             "'": (dmi: "icons/obj/status_display.dmi", state: "'"),

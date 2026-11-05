@@ -25,7 +25,7 @@ use rs13_classic::combat::CombatIntent;
 use rs13_classic::construction::{BuildPanelOut, PendingBuildOps};
 use rs13_classic::environment::{Lungs, Surroundings, alerts};
 use rs13_classic::equipment::{EquipAction, PendingEquipment};
-use rs13_classic::escape::{CommsPanelOut, PendingCommsOps};
+use rs13_classic::escape::{CommsOp, CommsPanelOut, DisplayMode, PICTURES, PendingCommsOps};
 use rs13_classic::filing::{PendingPicks, PickListOut};
 use rs13_classic::freezers::{FreezerOp, FreezerPanelOut, PendingFreezerOps};
 use rs13_classic::gas_panel::{GasOp, GasPanelOut, PendingGasOps};
@@ -56,11 +56,11 @@ use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
     ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, BuildPanel, CameraPanel, ChemCommand,
-    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsPanel,
-    FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel,
-    JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel, PickListPanel,
-    PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
-    SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
+    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsCommand,
+    CommsPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
+    IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel,
+    PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel,
+    SmesPanel, SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -672,9 +672,22 @@ fn queue_actions(
                     }
                     None
                 }
-                ActionInput::Comms { target, call } => {
-                    if let Some(console) = resolve(target) {
-                        comms_ops.0.push((console, call));
+                ActionInput::Comms { target, command } => {
+                    let op = match command {
+                        CommsCommand::Call => Some(CommsOp::Call),
+                        CommsCommand::Stop => Some(CommsOp::Stop),
+                        CommsCommand::RedAlert => Some(CommsOp::RedAlert),
+                        CommsCommand::DisplayPods => Some(CommsOp::Display(DisplayMode::Pods)),
+                        CommsCommand::DisplayBlank => Some(CommsOp::Display(DisplayMode::Blank)),
+                        CommsCommand::DisplayMessage(one, two) => {
+                            Some(CommsOp::Display(DisplayMode::Message(one, two)))
+                        }
+                        CommsCommand::DisplayPicture(line) => PICTURES
+                            .get(usize::from(line))
+                            .map(|picture| CommsOp::Display(DisplayMode::Picture(picture))),
+                    };
+                    if let (Some(console), Some(op)) = (resolve(target), op) {
+                        comms_ops.0.push((console, op));
                     }
                     None
                 }

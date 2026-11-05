@@ -1297,6 +1297,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `status-glyph:X` | `icons/obj/status_display.dmi : "X"` | CC-BY-SA 3.0 |
 | `status-glyph:Y` | `icons/obj/status_display.dmi : "Y"` | CC-BY-SA 3.0 |
 | `status-glyph:Z` | `icons/obj/status_display.dmi : "Z"` | CC-BY-SA 3.0 |
+| `status-glyph:biohazard` | `icons/obj/status_display.dmi : "biohazard"` | CC-BY-SA 3.0 |
+| `status-glyph:default` | `icons/obj/status_display.dmi : "default"` | CC-BY-SA 3.0 |
+| `status-glyph:lockdown` | `icons/obj/status_display.dmi : "lockdown"` | CC-BY-SA 3.0 |
+| `status-glyph:redalert` | `icons/obj/status_display.dmi : "redalert"` | CC-BY-SA 3.0 |
 | `status-glyph:~` | `icons/obj/status_display.dmi : "~"` | CC-BY-SA 3.0 |
 | `stool:` | `icons/obj/objects.dmi : "stool"` | CC-BY-SA 3.0 |
 | `straight-jacket:` | `icons/obj/clothing/suits.dmi : "straight_jacket"` | CC-BY-SA 3.0 |

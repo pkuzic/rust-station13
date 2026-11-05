@@ -278,10 +278,21 @@ pub fn update_light_looks(
 /// A lit fixture gives off its light; an unlit one none (Luna `ul_SetLuminosity`).
 pub fn update_light_sources(
     mut commands: Commands,
-    lights: Query<(Entity, &Light, Option<&LightSource>), Changed<Light>>,
+    lights: Query<(Entity, &Light, Option<&LightSource>)>,
+    changed: Query<(), Changed<Light>>,
+    alert: Res<crate::escape::StationAlert>,
 ) {
     for (entity, light, source) in &lights {
-        let wanted = light.on.then_some(LightSource(light.color));
+        if !alert.is_changed() && !changed.contains(entity) {
+            continue;
+        }
+        // Red alert turns every light red (Luna's `isalert`), as bright as it was.
+        let colour = if alert.red {
+            [light.color.into_iter().max().unwrap_or(0), 0, 0]
+        } else {
+            light.color
+        };
+        let wanted = light.on.then_some(LightSource(colour));
         if source.copied() == wanted {
             continue;
         }

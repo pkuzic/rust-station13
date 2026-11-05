@@ -6,10 +6,12 @@ use rs13_classic::ClassicPlugin;
 use rs13_classic::access::IdCard;
 use rs13_classic::actions::{Action, Outbox, PendingActions};
 use rs13_classic::doors::{Airlock, DoorState};
-use rs13_classic::escape::{CommsPanelOut, EscapePods, PendingCommsOps, PodState};
+use rs13_classic::escape::{
+    CommsOp, CommsPanelOut, DisplayMode, EscapePods, PendingCommsOps, PodState, StationAlert,
+};
 use rs13_classic::jobs::HasJob;
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
-use rs13_world::{DisplayName, ObjectSpec, TileMap, TilePos};
+use rs13_world::{Appearance, DisplayName, LightSource, ObjectSpec, TileMap, TilePos};
 
 /// A pod with a door, and a room with a console, joined up.
 const MAP: &str = r#"(
@@ -79,7 +81,7 @@ fn press(app: &mut App, mob: Entity, console: Entity, call: bool) {
         .get_mut::<PendingCommsOps>(mob)
         .unwrap()
         .0
-        .push((console, call));
+        .push((console, if call { CommsOp::Call } else { CommsOp::Stop }));
     app.world_mut().run_schedule(FixedUpdate);
 }
 
@@ -215,4 +217,88 @@ fn the_stations_pods_have_doors_that_start_bolted() {
         .map(|(door, _)| door.bolted)
         .collect();
     assert!(bolted.iter().filter(|b| **b).count() >= 2, "{bolted:?}");
+}
+
+fn op(app: &mut App, mob: Entity, console: Entity, op: CommsOp) {
+    app.world_mut()
+        .get_mut::<PendingCommsOps>(mob)
+        .unwrap()
+        .0
+        .push((console, op));
+    app.world_mut().run_schedule(FixedUpdate);
+}
+
+#[test]
+fn red_alert_and_the_displays_are_for_heads() {
+    let (mut app, mob, console, _) = setup("kitchen");
+    op(&mut app, mob, console, CommsOp::RedAlert);
+    assert!(!app.world().resource::<StationAlert>().red);
+    op(&mut app, mob, console, CommsOp::Display(DisplayMode::Blank));
+    assert_eq!(app.world().resource::<StationAlert>().display, DisplayMode::Pods);
+}
+
+#[test]
+fn red_alert_turns_the_lights_red_and_back() {
+    let (mut app, mob, console, _) = setup("heads");
+    let light = spawn_object(app.world_mut(), &ObjectSpec::new("light"), NEAR).unwrap();
+    for _ in 0..80 {
+        app.world_mut().run_schedule(FixedUpdate);
+    }
+    let was = app.world().get::<LightSource>(light).expect("lit").0;
+    op(&mut app, mob, console, CommsOp::RedAlert);
+    ticks(&mut app, 2);
+    let red = app.world().get::<LightSource>(light).unwrap().0;
+    assert_eq!((red[1], red[2]), (0, 0), "{red:?}");
+    assert!(red[0] > 0);
+    op(&mut app, mob, console, CommsOp::RedAlert);
+    ticks(&mut app, 2);
+    assert_eq!(app.world().get::<LightSource>(light).unwrap().0, was);
+}
+
+#[test]
+fn calling_the_pods_declares_red_alert() {
+    let (mut app, mob, console, _) = setup("heads");
+    press(&mut app, mob, console, true);
+    assert!(app.world().resource::<StationAlert>().red);
+}
+
+fn glyphs(app: &mut App) -> Vec<String> {
+    let mut q = app
+        .world_mut()
+        .query::<(&Appearance, &rs13_classic::status_displays::Glyph)>();
+    let mut all: Vec<String> = q.iter(app.world()).map(|(a, _)| a.state.clone()).collect();
+    all.sort();
+    all
+}
+
+#[test]
+fn displays_show_the_countdown_a_message_or_a_picture() {
+    let (mut app, mob, console, _) = setup("heads");
+    spawn_object(app.world_mut(), &ObjectSpec::new("status-display"), NEAR).unwrap();
+    ticks(&mut app, 40);
+    assert!(glyphs(&mut app).is_empty(), "blank till they're called");
+    press(&mut app, mob, console, true);
+    ticks(&mut app, 4);
+    assert!(glyphs(&mut app).contains(&"E".to_owned()), "ETL");
+    assert!(glyphs(&mut app).contains(&":".to_owned()), "and a time");
+
+    op(
+        &mut app,
+        mob,
+        console,
+        CommsOp::Display(DisplayMode::Message("hi".to_owned(), String::new())),
+    );
+    ticks(&mut app, 2);
+    assert_eq!(glyphs(&mut app), ["H", "I"], "in capitals");
+    op(
+        &mut app,
+        mob,
+        console,
+        CommsOp::Display(DisplayMode::Picture("biohazard")),
+    );
+    ticks(&mut app, 2);
+    assert_eq!(glyphs(&mut app), ["biohazard"]);
+    op(&mut app, mob, console, CommsOp::Display(DisplayMode::Blank));
+    ticks(&mut app, 2);
+    assert!(glyphs(&mut app).is_empty());
 }
