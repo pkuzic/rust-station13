@@ -437,7 +437,13 @@ pub fn process_actions(
                         });
                     }
                 }
-                Action::UseOnTile(tile) if matches!(tool, Some("wirecutters" | "welder")) => {
+                Action::UseOnTile(tile)
+                    if matches!(tool, Some("wirecutters" | "welder"))
+                        || (matches!(
+                            tool,
+                            Some("screwdriver" | "crowbar" | "wrench" | crate::construction::METAL)
+                        ) && cable.floors.reinforced_wall(tile)) =>
+                {
                     if let Some(held) = hands.active_item() {
                         commands.queue(move |world: &mut World| {
                             crate::construction::use_on_tile(world, mob, held, tile);

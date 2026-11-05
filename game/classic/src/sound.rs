@@ -71,7 +71,15 @@ pub const GUNSHOT: &str = "gunshot";
 pub const TASER: &str = "taser";
 pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// Every sound id the game plays.
+/// A blast, up close and from anywhere on the station; and an EMP.
+pub const EXPLOSION: &str = "explosion";
+pub const EXPLOSION_FAR: &str = "explosion-far";
+pub const EMP: &str = "emp";
+
 pub const ALL_SOUNDS: &[&str] = &[
+    EXPLOSION,
+    EXPLOSION_FAR,
+    EMP,
     AIRLOCK,
     DOOR_DENY,
     CLOSET_CLICK,

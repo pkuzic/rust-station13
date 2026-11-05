@@ -22,6 +22,9 @@ Anything that takes time needs you to stay where you are holding the same thing,
   seconds: reinforced. Another, 5 seconds: a reinforced wall.
 - **Wall:** a lit welding tool with fuel, 10 seconds: taken apart, leaving a girder and 2 sheets. A blast does the same, or leaves 4
   sheets and no girder.
+- **Reinforced wall:** comes apart in Luna's order: wirecutters, a screwdriver (4 s), a lit welding tool (6 s), a crowbar (10 s), a
+  wrench (4 s), the welding tool (10 s), a crowbar (10 s). It gives rods at the first and sixth, and ends as a reinforced girder and
+  a plasteel sheet. A metal sheet (10 s) mends it at any point.
 - **Rods** used in hand: 2 make a grille on your tile. Wirecutters on it: gone, for 2 rods. A grille lets air through.
 - **Glass** used in hand: a pane on your tile, on the side you face or the next free one. A wrench on it: back to a sheet.
 
@@ -48,7 +51,7 @@ the power monitor. Nothing sells or makes spare boards yet, so they come from ta
 
 | Luna | Here |
 |---|---|
-| Reinforced walls come apart in several steps, with wirecutters, a screwdriver, a welder, a crowbar and a wrench | Can't be taken apart yet |
+| A reinforced wall looks different at each step | It looks whole until it comes down |
 | Panes are fastened and unfastened with a screwdriver, reinforced glass has more steps, and a full-tile window is two panes | One step, plain glass, single panes |
 | A grille is an object, can be unfastened, and windows go on it | It's a tile (`windows.md`) |
 | Girders can be dislodged, to make false walls that open | Not built |

@@ -263,7 +263,7 @@ fn needs(verb: &str) -> Option<i32> {
         "help" | "who" | "asay" | "pm" | "dsay" | "announce" | "startnow" | "toggleooc" | "jump"
         | "jumpto" | "kick" | "ban" | "unban" | "bans" => 0,
         "restart" => 1,
-        "mute" | "explode" => 2,
+        "mute" | "explode" | "emp" => 2,
         "get" | "spawn" | "god" | "rejuv" | "delete" => 4,
         _ => return None,
     })
@@ -428,6 +428,15 @@ fn run_command(world: &mut World, link: Entity, line: &str) {
                 .arg("verb", verb)
                 .arg("target", first);
             tell_admins(world, &msg);
+        }
+        "emp" => {
+            let numbers: Vec<i32> = rest.split_whitespace().filter_map(|n| n.parse().ok()).collect();
+            if let (Some(here), [heavy, light, ..]) = (
+                own_mob(world, link).and_then(|mob| mob_at(world, mob)),
+                numbers.as_slice(),
+            ) {
+                rs13_classic::explosions::empulse(world, here, *heavy, *light);
+            }
         }
         "jump" | "explode" => {
             let numbers: Vec<i32> = rest.split_whitespace().filter_map(|n| n.parse().ok()).collect();

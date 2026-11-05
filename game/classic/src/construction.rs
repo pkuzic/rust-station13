@@ -2,6 +2,8 @@
 //! and taking walls apart (Luna's `stack_recipe`, `girders.dm`, `grille.dm`, `glass.dm`). Spec:
 //! `docs/reference/construction.md`.
 
+use std::collections::HashMap;
+
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_simulation::atmos::Cell;
@@ -68,6 +70,8 @@ pub enum Work {
     Plate(Entity),
     /// Take a girder apart with the wrench in hand.
     TakeApart(Entity),
+    /// The next step of taking a reinforced wall apart, or mending it.
+    Reinforced(TilePos, u8),
     /// Fasten a computer frame down, or loosen it (`frames.rs`).
     WrenchFrame(Entity),
     /// Take a computer back to its frame.
@@ -257,6 +261,72 @@ fn set_tile(
     }
 }
 
+/// How far along a reinforced wall is to being taken apart (Luna's `d_state`). Not there is whole.
+#[derive(Resource, Debug, Default)]
+pub struct WallProgress(pub HashMap<TilePos, u8>);
+
+/// What each stage of a reinforced wall takes next: the tool, whether it has to be lit, and how long, ds
+/// (Luna `r_wall/attackby`). The last leads to it coming down.
+const WALL_STEPS: [(&str, f32); 7] = [
+    ("wirecutters", 0.0),
+    ("screwdriver", 40.0),
+    ("welder", 60.0),
+    ("crowbar", 100.0),
+    ("wrench", 40.0),
+    ("welder", 100.0),
+    ("crowbar", 100.0),
+];
+/// How long mending one takes, ds, and what with.
+const WALL_MEND_DS: f32 = 100.0;
+
+fn reinforced_step(world: &mut World, mob: Entity, tool: Entity, at: TilePos, held: &str) {
+    let stage = world.resource::<WallProgress>().0.get(&at).copied().unwrap_or(0);
+    if held == METAL {
+        if stage > 0 {
+            start(world, mob, tool, Work::Reinforced(at, 0), WALL_MEND_DS);
+        }
+        return;
+    }
+    let Some((needed, takes)) = WALL_STEPS.get(usize::from(stage)).copied() else {
+        return;
+    };
+    if held != needed {
+        return;
+    }
+    if held == "welder" && !world.get::<Welder>(tool).is_some_and(|w| w.lit) {
+        tell(world, mob, "build-need-fuel");
+        return;
+    }
+    tell(world, mob, &format!("rwall-step-{stage}"));
+    if takes > 0.0 {
+        start(world, mob, tool, Work::Reinforced(at, stage + 1), takes);
+    } else {
+        finish_reinforced(world, mob, tool, at, stage + 1);
+    }
+}
+
+fn finish_reinforced(world: &mut World, mob: Entity, tool: Entity, at: TilePos, next: u8) {
+    if tile_id(world, at).as_deref() != Some("r-wall") {
+        return;
+    }
+    if next == 0 {
+        if use_up(world, mob, tool, 1) {
+            world.resource_mut::<WallProgress>().0.remove(&at);
+        }
+        return;
+    }
+    // Rods come away twice on the way (Luna's stages 1 and 6).
+    if next == 1 || next == 6 {
+        let _ = spawn_stack(world, RODS, at, 1);
+    }
+    if usize::from(next) >= WALL_STEPS.len() {
+        world.resource_mut::<WallProgress>().0.remove(&at);
+        dismantle_wall(world, at, false);
+    } else {
+        world.resource_mut::<WallProgress>().0.insert(at, next);
+    }
+}
+
 /// A tool on a tile itself. A lit welding tool starts on a wall, and wirecutters take a grille down.
 pub fn use_on_tile(world: &mut World, mob: Entity, tool: Entity, at: TilePos) {
     let Some(from) = world.get::<GridPos>(mob).map(|p| p.0) else {
@@ -282,7 +352,10 @@ pub fn use_on_tile(world: &mut World, mob: Entity, tool: Entity, at: TilePos) {
             tell(world, mob, "build-unwelding");
             start(world, mob, tool, Work::Unweld(at), UNWELD_DS);
         }
-        (Some("welder"), Some("r-wall")) => tell(world, mob, "build-too-tough"),
+        (Some(held), Some("r-wall")) => {
+            let held = held.to_owned();
+            reinforced_step(world, mob, tool, at, &held);
+        }
         _ => {}
     }
 }
@@ -359,6 +432,7 @@ fn finish(world: &mut World, mob: Entity, job: Job) {
                 let _ = spawn_stack(world, METAL, at, 1);
             }
         }
+        Work::Reinforced(at, next) => finish_reinforced(world, mob, job.tool, at, next),
         Work::WrenchFrame(frame) => crate::frames::finish_wrench(world, frame),
         Work::TakeDownComputer(computer) => crate::frames::finish_take_down(world, computer),
         Work::Plate(target) => {

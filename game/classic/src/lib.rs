@@ -149,6 +149,7 @@ impl Plugin for ClassicPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<time::WorldTime>()
             .init_resource::<escape::EscapePods>()
+            .init_resource::<construction::WallProgress>()
             .init_resource::<escape::StationAlert>()
             .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()

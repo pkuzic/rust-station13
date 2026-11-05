@@ -5,7 +5,9 @@ use bevy_ecs::prelude::*;
 use rs13_classic::ClassicPlugin;
 use rs13_classic::actions::{Action, PendingActions};
 use rs13_classic::atmos::StationAtmos;
-use rs13_classic::construction::{BuildPanelOut, Girder, METAL, PendingBuildOps, RECIPES, RODS};
+use rs13_classic::construction::{
+    BuildPanelOut, Girder, METAL, PendingBuildOps, RECIPES, RODS, WallProgress,
+};
 use rs13_classic::hands::{Hands, HeldBy, Stack};
 use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob, spawn_stack};
 use rs13_classic::welding::Welder;
@@ -220,4 +222,62 @@ fn a_reinforced_wall_takes_plasteel_twice() {
     seconds(&mut app, 6.0);
     assert_eq!(tile(&mut app, there), ("r-wall".to_owned(), true));
     assert!(app.world().get_entity(plasteel).is_err(), "used up");
+}
+
+#[test]
+fn a_reinforced_wall_comes_apart_in_order_and_a_sheet_mends_it() {
+    let (mut app, mob) = setup();
+    let there = TilePos::new(2, 0, 0);
+    let mut maps = app.world_mut().query::<&mut MapLayer>();
+    maps.single_mut(app.world_mut()).unwrap().0.set_tile(
+        there,
+        rs13_world::TileDef {
+            id: "r-wall".to_owned(),
+            solid: true,
+            opaque: None,
+            airtight: None,
+        },
+    );
+    let step = |app: &mut App, proto: &str, secs: f32| {
+        let tool = hold_new(app, mob, proto);
+        if let Some(mut welder) = app.world_mut().get_mut::<Welder>(tool) {
+            welder.lit = true;
+        }
+        act(app, mob, Action::UseOnTile(there));
+        seconds(app, secs);
+        app.world_mut().get_mut::<Hands>(mob).unwrap().left = None;
+        app.world_mut().get_mut::<Hands>(mob).unwrap().right = None;
+    };
+    // Out of order, nothing.
+    step(&mut app, "crowbar", 11.0);
+    assert_eq!(
+        *app.world().resource::<WallProgress>().0.get(&there).unwrap_or(&0),
+        0
+    );
+    step(&mut app, "wirecutters", 0.1);
+    step(&mut app, "screwdriver", 4.5);
+    assert_eq!(app.world().resource::<WallProgress>().0.get(&there), Some(&2));
+
+    // A sheet mends it, as far as it had got.
+    let pile = hold_stack(&mut app, mob, METAL, 2);
+    act(&mut app, mob, Action::UseOnTile(there));
+    seconds(&mut app, 10.5);
+    assert!(!app.world().resource::<WallProgress>().0.contains_key(&there));
+    assert_eq!(app.world().get::<Stack>(pile).unwrap().amount, 1);
+    app.world_mut().get_mut::<Hands>(mob).unwrap().left = None;
+    app.world_mut().get_mut::<Hands>(mob).unwrap().right = None;
+
+    for (tool, secs) in [
+        ("wirecutters", 0.1),
+        ("screwdriver", 4.5),
+        ("welder", 6.5),
+        ("crowbar", 10.5),
+        ("wrench", 4.5),
+        ("welder", 10.5),
+        ("crowbar", 10.5),
+    ] {
+        step(&mut app, tool, secs);
+    }
+    assert_eq!(tile(&mut app, there).0, "plating");
+    assert_eq!(things_here(&mut app, "girder-reinforced", there).len(), 1);
 }

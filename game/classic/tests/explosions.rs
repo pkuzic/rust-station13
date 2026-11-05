@@ -195,3 +195,40 @@ fn a_detonator_opens_then_sets_it_off() {
     seconds(&mut app, 4);
     assert!(app.world().get_entity(charge).is_err());
 }
+
+#[test]
+fn an_emp_drains_charge_and_can_flip_locks() {
+    let mut app = setup();
+    let gun = spawn_object(app.world_mut(), &ObjectSpec::new("laser-gun"), MIDDLE).unwrap();
+    let far = spawn_object(
+        app.world_mut(),
+        &ObjectSpec::new("laser-gun"),
+        TilePos::new(9, 1, 0),
+    )
+    .unwrap();
+    let charge = |app: &App, e| app.world().get::<rs13_classic::weapons::Gun>(e).unwrap().charge;
+    let (full, far_full) = (charge(&app, gun), charge(&app, far));
+    rs13_classic::explosions::empulse(app.world_mut(), MIDDLE, 1, 2);
+    assert_eq!(charge(&app, gun), full - 1000);
+    assert_eq!(charge(&app, far), far_full, "out of range");
+}
+
+#[test]
+fn a_blast_is_heard() {
+    let mut app = setup();
+    spawn_player_mob(app.world_mut(), MIDDLE);
+    let before = app.world().resource::<rs13_classic::sound::SoundEvents>().0.len();
+    assert_eq!(before, 0);
+    explode(app.world_mut(), TilePos::new(1, 1, 0), 0, 1, 1, 1);
+    let mut saw = false;
+    for _ in 0..40 {
+        app.world_mut().run_schedule(FixedUpdate);
+        let earshot = app
+            .world_mut()
+            .query::<&rs13_classic::sound::Earshot>()
+            .iter(app.world())
+            .any(|e| !e.0.is_empty());
+        saw |= earshot;
+    }
+    assert!(saw, "nothing heard");
+}
