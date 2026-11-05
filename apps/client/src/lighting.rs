@@ -402,7 +402,14 @@ fn update_lighting(
         let field = MapDecks::new(decks.iter().copied(), opaque.iter().copied()).light(&emitters);
         cache.levels = (0..height as i32)
             .flat_map(|y| (0..width as i32).map(move |x| (x, y)))
-            .map(|(x, y)| field.level(TilePos::new(x, y, map.z)))
+            .map(|(x, y)| {
+                // A hole shows the light on what's seen through it.
+                let mut at = TilePos::new(x, y, map.z);
+                while decks.iter().any(|m| m.is_hole(at)) && decks.iter().any(|m| m.z == at.z - 1) {
+                    at.z -= 1;
+                }
+                field.level(at)
+            })
             .collect();
         cache.digest = Some(digest);
         cache.width = width;

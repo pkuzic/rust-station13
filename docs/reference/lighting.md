@@ -73,8 +73,8 @@ Positions carry the deck. Light passes between decks only through a tile with no
 - light reaching a tile under an open tile goes up to it in the same way;
 - light that went down keeps going down, and light that went up keeps going up.
 
-No map has `open-space` tiles or more than one deck yet. The rules are tested with a
-made-up two-deck world.
+A hole is drawn with the light on what's seen through it. Tested with a made-up two-deck world, and
+on Luna's own decks.
 
 ## Drawing it
 

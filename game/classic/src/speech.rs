@@ -85,6 +85,33 @@ pub fn within_range(from: TilePos, to: TilePos, range: i32) -> bool {
     from.z == to.z && (from.x - to.x).abs() <= range && (from.y - to.y).abs() <= range
 }
 
+/// Whether `to` is in earshot of `from`: in plain sight on one deck, or between decks through a hole
+/// in the floor that both can see, with the whole way there and on no longer than `range`. `holes` is
+/// every tile with no floor (`multiz.md`).
+pub fn can_hear<'a>(
+    map_at: impl Fn(i32) -> &'a TileMap,
+    holes: &[TilePos],
+    opaque: &[TilePos],
+    from: TilePos,
+    to: TilePos,
+    range: i32,
+) -> bool {
+    if from.z == to.z {
+        return can_see(map_at(from.z), opaque, from, to, range);
+    }
+    let (upper, lower) = if from.z > to.z { (from, to) } else { (to, from) };
+    let drop = upper.z - lower.z;
+    let steps = |a: TilePos, b: TilePos| (a.x - b.x).abs().max((a.y - b.y).abs());
+    holes.iter().filter(|hole| hole.z == upper.z).any(|hole| {
+        let under = TilePos::new(hole.x, hole.y, lower.z);
+        let clear = ((lower.z + 1)..=upper.z).all(|z| holes.contains(&TilePos::new(hole.x, hole.y, z)));
+        clear
+            && steps(upper, *hole) + drop + steps(under, lower) <= range
+            && can_see(map_at(upper.z), opaque, upper, *hole, range)
+            && can_see(map_at(lower.z), opaque, under, lower, range)
+    })
+}
+
 /// Whether `to` can be seen from `from`: same deck, within `range`, and the straight
 /// line between them crosses no opaque tile, nor squeezes diagonally between two that meet
 /// at a corner. The end points themselves never block.
@@ -186,12 +213,15 @@ pub fn speak(
         Or<(With<Mob>, With<rs13_world::Ghost>)>,
     >,
     opaque: Query<&GridPos, (With<Opaque>, Without<Mob>)>,
+    holes: Res<crate::decks::Holes>,
     radios: RadioSets,
     mut rng: ResMut<crate::rng::GameRng>,
 ) {
     use crate::radio::{RADIO_TALK_RANGE, RadioMode, format_frequency, split_mode};
 
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
+    let hears =
+        |from: TilePos, to: TilePos, range: i32| can_hear(|z| map.at(z), &holes.0, &opaque, from, to, range);
     let mob_at: std::collections::HashMap<Entity, TilePos> =
         listeners.iter().map(|(e, p, ..)| (e, p.0)).collect();
     // Where each radio is: its tile, or the tile of whoever holds or wears it.
@@ -290,8 +320,7 @@ pub fn speak(
                 radios
                     .iter()
                     .filter(|(_, radio, at, ..)| {
-                        radio.broadcasting
-                            && at.is_some_and(|p| can_see(map.at(pos.0.z), &opaque, pos.0, p.0, range))
+                        radio.broadcasting && at.is_some_and(|p| hears(pos.0, p.0, range))
                     })
                     .map(|(e, ..)| e),
             );
@@ -324,7 +353,7 @@ pub fn speak(
             if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
                 continue;
             }
-            let sees = |range: i32| can_see(map.at(from.z), &opaque, from, to.0, range);
+            let sees = |range: i32| hears(from, to.0, range);
             if listener == speaker || sees(WHISPER_RANGE) {
                 outbox.0.push(whole.clone());
             } else if sees(EAVESDROP_RANGE) {
@@ -346,7 +375,7 @@ pub fn speak(
                     continue;
                 };
                 for (listener, to) in &mob_at {
-                    if can_see(map.at(at.z), &opaque, at, *to, radio.range)
+                    if hears(at, *to, radio.range)
                         && !tuned.iter().any(|(e, m)| e == listener && *m == radio_msg)
                     {
                         tuned.push((*listener, radio_msg.clone()));
@@ -362,9 +391,9 @@ pub fn speak(
             }
             // Ghosts see through walls, and hear through them too.
             let heard = if ghost {
-                within_range(from, to.0, range)
+                within_range(from, to.0, range) || hears(from, to.0, range)
             } else {
-                can_see(map.at(from.z), &opaque, from, to.0, range)
+                hears(from, to.0, range)
             };
             if listener == speaker || heard {
                 outbox.0.push(msg.clone());

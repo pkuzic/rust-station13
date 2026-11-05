@@ -62,7 +62,7 @@ mod vote_panel;
 mod wire_panel;
 mod world_view;
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::net::SocketAddr;
 
 use bevy::input::ButtonState;
@@ -689,7 +689,7 @@ fn main() {
                     update_status_line,
                     spawn_overlay,
                     update_overlay,
-                    show_own_deck,
+                    (show_own_deck, show_through_holes).chain(),
                     take_screenshot,
                     scripted_use,
                 )
@@ -1126,6 +1126,11 @@ struct TileSprites(HashMap<TilePos, (String, Vec<Entity>)>);
 /// facings are panes along one edge).
 const FULL_TILE_GLASS: u32 = 4;
 
+/// How dark what's seen through a hole in the floor is, 0 to 1.
+const HOLE_SHADE: f32 = 0.5;
+/// Over anything on the deck below, however tall.
+const HOLE_SHADE_Z: f32 = 3.5;
+
 /// Draw the map's tiles when it arrives, and redraw those that change (floor tiles pried
 /// up or put back): Luna sprites, or flat squares as a fallback.
 fn draw_map(
@@ -1188,6 +1193,18 @@ fn draw_map(
                             );
                         }
                     }
+                }
+                // A hole in the floor (`multiz.md`): the deck below shows through it, a little darker.
+                if tile.id == rs13_world::OPEN_SPACE {
+                    let shade = commands
+                        .spawn((
+                            Sprite::from_color(Color::srgba(0.0, 0.0, 0.0, HOLE_SHADE), Vec2::splat(TILE_PX)),
+                            Transform::from_translation(world_pos(pos, HOLE_SHADE_Z)),
+                            OnDeck(map.z),
+                        ))
+                        .id();
+                    drawn.0.insert(pos, (tile.id.clone(), vec![shade]));
+                    continue;
                 }
                 // Space is drawn under the map by `space.rs`; its tiles draw nothing.
                 if tile.id == "space" {
@@ -1750,6 +1767,36 @@ fn show_own_deck(
         } else {
             Visibility::Hidden
         });
+    }
+}
+
+/// Show the floor of the tiles seen through holes, which `show_own_deck` hides with the rest of their deck.
+fn show_through_holes(
+    sight: Res<shadows::Sight>,
+    tiles: Res<TileSprites>,
+    mut drawn: Query<(&OnDeck, &mut Visibility)>,
+    own: Query<&GridPos, With<OwnPlayer>>,
+    mut shown: Local<HashSet<TilePos>>,
+) {
+    let deck = own.iter().next().map(|p| p.0.z);
+    for tile in shown.difference(&sight.below) {
+        for sprite in tiles.0.get(tile).map_or(&[][..], |(_, sprites)| sprites) {
+            if let Ok((on, mut visibility)) = drawn.get_mut(*sprite)
+                && Some(on.0) != deck
+            {
+                visibility.set_if_neq(Visibility::Hidden);
+            }
+        }
+    }
+    for tile in &sight.below {
+        for sprite in tiles.0.get(tile).map_or(&[][..], |(_, sprites)| sprites) {
+            if let Ok((_, mut visibility)) = drawn.get_mut(*sprite) {
+                visibility.set_if_neq(Visibility::Inherited);
+            }
+        }
+    }
+    if *shown != sight.below {
+        shown.clone_from(&sight.below);
     }
 }
 

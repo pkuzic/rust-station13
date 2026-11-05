@@ -187,6 +187,9 @@ impl TileDef {
     }
 }
 
+/// A tile with no floor: what's on the deck below shows through it, and sound and air pass.
+pub const OPEN_SPACE: &str = "open-space";
+
 /// One deck of tiles. Tiles outside the map count as solid.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TileMap {
@@ -394,6 +397,11 @@ impl TileMap {
             return None;
         }
         self.area_names.get(*index as usize - 1).map(String::as_str)
+    }
+
+    /// Whether this tile has no floor, so the deck below shows through it (`multiz.md`).
+    pub fn is_hole(&self, pos: TilePos) -> bool {
+        self.tile(pos).is_some_and(|t| t.id == OPEN_SPACE)
     }
 
     pub fn tile(&self, pos: TilePos) -> Option<&TileDef> {

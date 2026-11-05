@@ -32,6 +32,8 @@ pub struct Sight {
     /// The tiles of our deck the player sees; `None` shows everything (lighting off, or
     /// before our player arrives).
     pub seen: Option<HashSet<TilePos>>,
+    /// Tiles on lower decks seen through holes in our floor (`multiz.md`).
+    pub below: HashSet<TilePos>,
     /// Meson scanners on: the floor plan shows through walls (Luna `SEE_TURFS`).
     pub meson: bool,
 }
@@ -39,7 +41,7 @@ pub struct Sight {
 impl Sight {
     /// Whether `tile` is seen.
     pub fn sees(&self, tile: TilePos) -> bool {
-        self.seen.as_ref().is_none_or(|seen| seen.contains(&tile))
+        self.seen.as_ref().is_none_or(|seen| seen.contains(&tile)) || self.below.contains(&tile)
     }
 }
 
@@ -105,6 +107,7 @@ fn update_sight(
         visibility.set_if_neq(Visibility::Hidden);
         if sight.seen.is_some() {
             sight.seen = None;
+            sight.below.clear();
         }
         inputs.0 = None;
         return;
@@ -126,6 +129,14 @@ fn update_sight(
 
     let mut digest = std::collections::hash_map::DefaultHasher::new();
     std::hash::Hash::hash(&(me, &closed, meson), &mut digest);
+    for dy in -REACH..=REACH {
+        for dx in -REACH..=REACH {
+            let tile = TilePos::new(me.x + dx, me.y + dy, me.z);
+            if map.0.is_hole(tile) {
+                std::hash::Hash::hash(&tile, &mut digest);
+            }
+        }
+    }
     std::hash::Hash::hash(&map.0.width, &mut digest);
     let key = std::hash::Hasher::finish(&digest);
     if inputs.0 == Some(key) && sight.seen.is_some() {
@@ -167,6 +178,17 @@ fn update_sight(
     if let Some(mut m) = materials.get_mut(&material.0) {
         m.color = Color::srgba(0.0, 0.0, 0.0, if meson { MESON_ALPHA } else { SHADOW_ALPHA });
     }
+    let is_hole = |p: TilePos| maps.iter().any(|m| m.0.is_hole(p));
+    let deck_at = |z: i32| maps.iter().any(|m| m.0.z == z);
+    let mut below = HashSet::new();
+    for tile in seen.iter().filter(|tile| is_hole(**tile)) {
+        let mut at = *tile;
+        while is_hole(at) && deck_at(at.z - 1) {
+            at.z -= 1;
+            below.insert(at);
+        }
+    }
+    sight.below = below;
     sight.seen = Some(seen);
     sight.meson = meson;
 }
