@@ -366,6 +366,7 @@ round-mode = The current game mode is { $mode ->
     [malfunction] AI Malfunction
     [nuclear] Nuclear Emergency
     [revolution] Revolution
+    [blob] Blob
     [changeling] Changeling
     [rp-revolution] RP Revolution
     [sandbox] Sandbox
@@ -856,6 +857,18 @@ objective-survive = Objective #{ $value }: stay alive until the end. { $done ->
    *[none] { "" }
 }
 vote-choice-changeling = Changeling
+round-mode-meteor = The ship has been stuck in a major meteor shower. You must escape from the ship or at least live!
+blob-alert = Cent. Com. update: biohazard alert. A level 5 organism may have reached the station. Find it and contain it, and don't leave the quarantine area.
+blob-confirmed = Confirmed outbreak of a level 5 biohazard aboard. All personnel must contain the outbreak.
+blob-directive = Uncontrolled spread of the biohazard on board. Cent. Com. has issued the directive to destroy the station.
+blob-staff-won = The staff has won! The biohazard has been contained.
+blob-staff-lost = The staff has lost! The station was destroyed by Cent. Com.
+blob-attacks-you = The blob attacks you!
+blob-weakened = The blob has weakened { $victim }!
+blob-knocked-down = The blob has knocked down { $victim }!
+blob-stunned = The blob has stunned { $victim }!
+vote-choice-meteor = Meteor
+vote-choice-blob = Blob
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

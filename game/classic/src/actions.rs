@@ -299,7 +299,11 @@ pub fn process_actions(
                             Query<(), With<crate::security::Barrier>>,
                             Query<
                                 (),
-                                Or<(With<crate::escape::CommsConsole>, With<crate::nuke::NuclearBomb>)>,
+                                Or<(
+                                    With<crate::escape::CommsConsole>,
+                                    With<crate::nuke::NuclearBomb>,
+                                    With<crate::blob::BlobCell>,
+                                )>,
                             >,
                             Query<(), Or<(With<crate::traitor::Uplink>, With<crate::nuke::Pinpointer>)>>,
                             Query<
@@ -481,7 +485,9 @@ pub fn process_actions(
                 {
                     // The communications console (`round.md`).
                     commands.queue(move |world: &mut World| {
-                        if world.get::<crate::nuke::NuclearBomb>(target).is_some() {
+                        if world.get::<crate::blob::BlobCell>(target).is_some() {
+                            crate::blob::attacked(world, mob, target);
+                        } else if world.get::<crate::nuke::NuclearBomb>(target).is_some() {
                             crate::nuke::click(world, mob, target);
                         } else {
                             crate::escape::click(world, mob, target);

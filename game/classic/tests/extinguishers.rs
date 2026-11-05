@@ -214,39 +214,3 @@ fn a_fire_closet_holds_extinguishers_and_emergency_toolboxes() {
         ]
     );
 }
-
-#[test]
-fn zz_probe() {
-    let mut app = App::new();
-    app.add_plugins(ClassicPlugin);
-    let text = std::fs::read_to_string("../../target/e2e/fire_room.ron").unwrap();
-    spawn_map(app.world_mut(), TileMap::from_ron(&text, 0).unwrap());
-    app.world_mut().run_schedule(FixedUpdate);
-    seconds(&mut app, 20.0);
-    let at = TilePos::new(2, 3, 0);
-    let a = &app.world().resource::<StationAtmos>().0;
-    let air = a.air_at(at);
-    eprintln!(
-        "air: pl {:.2} o2 {:.2} T {:.0} zones {}",
-        air.get(Gas::Plasma),
-        air.get(Gas::Oxygen),
-        air.temperature,
-        a.zones().len()
-    );
-    let mob = spawn_player_mob(app.world_mut(), at);
-    let welder = {
-        let mut q = app.world_mut().query::<(Entity, &Appearance)>();
-        q.iter(app.world()).find(|(_, a)| a.sprite == "welder").unwrap().0
-    };
-    eprintln!("{:?}", act(&mut app, mob, Action::UseOn(welder)));
-    eprintln!("{:?}", act(&mut app, mob, Action::UseOn(welder)));
-    eprintln!(
-        "lit {:?}",
-        app.world().get::<rs13_classic::welding::Welder>(welder)
-    );
-    for _ in 0..6 {
-        seconds(&mut app, 1.0);
-        let a = &app.world().resource::<StationAtmos>().0;
-        eprintln!("burning {}", a.burning_tiles().len());
-    }
-}

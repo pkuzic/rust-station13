@@ -30,7 +30,7 @@ pub const MODES: [Mode; 11] = [
     Mode {
         id: "meteor",
         probability: 2,
-        built: false,
+        built: true,
     },
     Mode {
         id: "malfunction",
@@ -40,7 +40,7 @@ pub const MODES: [Mode; 11] = [
     Mode {
         id: "blob",
         probability: 0,
-        built: false,
+        built: true,
     },
     Mode {
         id: "nuclear",

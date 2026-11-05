@@ -74,9 +74,13 @@ pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// A blast, up close and from anywhere on the station; and an EMP.
 pub const EXPLOSION: &str = "explosion";
 pub const EXPLOSION_FAR: &str = "explosion-far";
+pub const METEOR_IMPACT: &str = "meteor-impact";
+pub const BLOB_ATTACKED: &str = "blob-attacked";
 pub const EMP: &str = "emp";
 
 pub const ALL_SOUNDS: &[&str] = &[
+    METEOR_IMPACT,
+    BLOB_ATTACKED,
     EXPLOSION,
     EXPLOSION_FAR,
     EMP,

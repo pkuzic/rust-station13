@@ -13,7 +13,7 @@ The disk lies at one of Luna's four disk spawns on the station. The base gets th
 pinpointers and an uplink with 10 crystals for each agent), four gear closets (suit, helmet, jetpack, breath mask, jumpsuit, power cell)
 and four charges of C-4 (two strong).
 
-Luna's map has no landmark for the bomb, so its mode never places one: here it goes on the floor beside the team's closet.
+The bomb starts folded on Luna's bomb landmark (deck 1, 83,138). A map without that landmark gets it on the floor beside the team's closet.
 
 ## The bomb
 

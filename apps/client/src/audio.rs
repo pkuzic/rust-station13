@@ -31,6 +31,8 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
         &[ogg!("effects/Explosion1.ogg"), ogg!("effects/Explosion2.ogg")],
     ),
     ("explosion-far", &[ogg!("effects/explosionfar.ogg")]),
+    ("meteor-impact", &[ogg!("effects/meteorimpact.ogg")]),
+    ("blob-attacked", &[ogg!("effects/attackblob.ogg")]),
     ("emp", &[ogg!("effects/EMPulse.ogg")]),
     ("door-deny", &[ogg!("machines/buzz-two.ogg")]),
     ("closet-click", &[ogg!("machines/click.ogg")]),

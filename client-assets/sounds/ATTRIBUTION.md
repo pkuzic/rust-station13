@@ -20,6 +20,8 @@ to files in `apps/client/src/audio.rs`.
 | `items/Wirecutter.ogg` | `sound/items/Wirecutter.ogg` | `wirecutter` | CC-BY-SA 3.0 |
 | `items/Welder.ogg` | `sound/items/Welder.ogg` | `welder` | CC-BY-SA 3.0 |
 | `items/Welder2.ogg` | `sound/items/Welder2.ogg` | `welder` | CC-BY-SA 3.0 |
+| `effects/meteorimpact.ogg` | `sound/effects/meteorimpact.ogg` | `meteor-impact` | CC-BY-SA 3.0 |
+| `effects/attackblob.ogg` | `sound/effects/attackblob.ogg` | `blob-attacked` | CC-BY-SA 3.0 |
 | `effects/Explosion1.ogg` | `sound/effects/Explosion1.ogg` | `explosion` | CC-BY-SA 3.0 |
 | `effects/Explosion2.ogg` | `sound/effects/Explosion2.ogg` | `explosion` | CC-BY-SA 3.0 |
 | `effects/explosionfar.ogg` | `sound/effects/explosionfar.ogg` | `explosion-far` | CC-BY-SA 3.0 |
