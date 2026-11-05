@@ -322,6 +322,9 @@ fn declare_completion(world: &mut World) {
     for line in crate::traitor::report(world) {
         tell_everyone(world, &line);
     }
+    for line in crate::revolution::report(world) {
+        tell_everyone(world, &line);
+    }
     for line in crate::nuke::report(world) {
         tell_everyone(world, &line);
     }

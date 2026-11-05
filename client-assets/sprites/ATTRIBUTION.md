@@ -1232,6 +1232,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `redcoat-hat:` | `icons/obj/clothing/hats.dmi : "redcoat"` | CC-BY-SA 3.0 |
 | `reinforced-table-parts:` | `icons/obj/items.dmi : "reinf_tableparts"` | CC-BY-SA 3.0 |
 | `retractor:` | `icons/obj/surgery.dmi : "retractor"` | CC-BY-SA 3.0 |
+| `rev-mark:` | `icons/mob/mob.dmi : "rev"` | CC-BY-SA 3.0 |
+| `rev-mark:head` | `icons/mob/mob.dmi : "rev_head"` | CC-BY-SA 3.0 |
 | `revolver:detective` | `icons/obj/gun.dmi : "detective"` | CC-BY-SA 3.0 |
 | `rglass-sheet:` | `icons/obj/items.dmi : "sheet-rglass"` | CC-BY-SA 3.0 |
 | `riot-helmet:` | `icons/obj/clothing/hats.dmi : "riot"` | CC-BY-SA 3.0 |

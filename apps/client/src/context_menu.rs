@@ -73,6 +73,7 @@ pub fn open_menu(
     hud: Query<&Hovered>,
     maps: Query<&MapLayer>,
     sight: Res<Sight>,
+    rev: Res<crate::rev_panel::RevMembers>,
 ) {
     let Ok(me) = own.single() else { return };
     let (tile, at) = if let Some((dx, dy)) = request.open_at.take() {
@@ -173,6 +174,15 @@ pub fn open_menu(
             choices.push(("menu-use".to_owned(), ActionInput::UseOn(*id)));
             choices.push(("menu-pull".to_owned(), ActionInput::Pull(*id)));
             // Its own verbs (`rs13_classic::verbs`).
+            if !rev.0.is_empty() && matches!(appearance.sprite.as_str(), "human" | "human-f") {
+                choices.push((
+                    format!("verb-{}", rs13_classic::verbs::REV_CONVERT),
+                    ActionInput::Verb {
+                        target: *id,
+                        verb: rs13_classic::verbs::REV_CONVERT.to_owned(),
+                    },
+                ));
+            }
             for verb in rs13_classic::verbs::verbs_for(&appearance.sprite) {
                 choices.push((
                     format!("verb-{verb}"),

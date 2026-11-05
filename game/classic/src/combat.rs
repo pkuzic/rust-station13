@@ -264,6 +264,9 @@ pub fn resolve_attacks(
                         } else {
                             consequence.weaken_ds = time;
                         }
+                        commands.queue(move |world: &mut World| {
+                            crate::revolution::knocked_on_head(world, target);
+                        });
                         let msg = LocMsg::new("knocked-out").arg("victim", victim.clone());
                         visible.0.push((at, msg, None));
                     }

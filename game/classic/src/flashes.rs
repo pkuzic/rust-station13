@@ -150,7 +150,11 @@ pub fn flash_someone(world: &mut World, user: Entity, flash: Entity, target: Ent
         return;
     };
     play_flash_sound(world, at);
-    if blind(world, target, FLASH_WEAKEN_DS) && world.resource_mut::<GameRng>().prob(BURN_OUT_CHANCE) {
+    let blinded = blind(world, target, FLASH_WEAKEN_DS);
+    if blinded {
+        crate::revolution::flashed(world, user, target);
+    }
+    if blinded && world.resource_mut::<GameRng>().prob(BURN_OUT_CHANCE) {
         if let Some(mut look) = world.get_mut::<Appearance>(flash) {
             look.state = BURNT.to_owned();
         }

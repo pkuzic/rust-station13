@@ -61,9 +61,9 @@ use rs13_network::protocol::{
     ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsCommand,
     CommsPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
     IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, NukeCommand,
-    NukePanel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel,
-    SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel,
-    WirePanel,
+    NukePanel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, RevAskPanel,
+    RevIcons, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
+    UplinkPanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -199,6 +199,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .init_resource::<admin::AdminInbox>()
     .init_resource::<admin::AdminConfig>()
     .add_systems(FixedPostUpdate, send_nuke_panels)
+    .add_systems(FixedPostUpdate, send_rev_news)
     .add_systems(
         FixedUpdate,
         (
@@ -349,6 +350,43 @@ fn respawn_ghosts(
             world.entity_mut(link).insert(Controls(mob));
             world.despawn(ghost);
         });
+    }
+}
+
+/// Show revolutionaries each other, and put the question to anyone being asked to join.
+fn send_rev_news(
+    world: &mut World,
+    mut sent: Local<std::collections::HashMap<Entity, (Vec<(NetId, bool)>, Option<String>)>>,
+) {
+    use rs13_classic::revolution::{HeadRev, RevAsk, Revolutionary, members};
+    let everyone: Vec<(NetId, bool)> = {
+        let list = members(world);
+        list.into_iter()
+            .filter_map(|(mob, leads)| world.get::<NetId>(mob).map(|id| (*id, leads)))
+            .collect()
+    };
+    let mut links = world.query::<(Entity, &Controls)>();
+    let all: Vec<(Entity, Entity)> = links.iter(world).map(|(link, c)| (link, c.0)).collect();
+    for (link, mob) in all {
+        let in_on_it = world.get::<HeadRev>(mob).is_some() || world.get::<Revolutionary>(mob).is_some();
+        let icons = if in_on_it { everyone.clone() } else { Vec::new() };
+        let asker = world
+            .get::<RevAsk>(mob)
+            .and_then(|ask| ask.from)
+            .and_then(|from| world.get::<DisplayName>(from).map(|name| name.0.clone()));
+        let last = sent.entry(link).or_default();
+        if last.0 != icons {
+            last.0 = icons.clone();
+            if let Some(mut sender) = world.get_mut::<MessageSender<RevIcons>>(link) {
+                sender.send::<NoticeChannel>(RevIcons(icons));
+            }
+        }
+        if last.1 != asker {
+            last.1 = asker.clone();
+            if let Some(mut sender) = world.get_mut::<MessageSender<RevAskPanel>>(link) {
+                sender.send::<NoticeChannel>(RevAskPanel(asker));
+            }
+        }
     }
 }
 
@@ -913,6 +951,12 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::RevAnswer(yes) => {
+                    let mob = controls.0;
+                    commands
+                        .queue(move |world: &mut World| rs13_classic::revolution::answer(world, mob, yes));
+                    None
+                }
                 ActionInput::Nuke { target, command } => {
                     let mob = controls.0;
                     if let Some(bomb) = resolve(target) {

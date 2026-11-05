@@ -140,6 +140,8 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// An answer to being asked to join an RP revolution.
+    RevAnswer(bool),
     /// A button on a nuclear bomb's window.
     Nuke {
         target: NetId,
@@ -500,6 +502,14 @@ pub struct VotePanel(pub VoteView);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BuildPanel(pub Option<BuildPanelView>);
 
+/// Server → one revolutionary: who's in on it, and whether each leads.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct RevIcons(pub Vec<(NetId, bool)>);
+
+/// Server → one client: who's asking them to join an RP revolution, or `None` once answered.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct RevAskPanel(pub Option<String>);
+
 /// The buttons of a nuclear bomb's window.
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NukeCommand {
@@ -688,6 +698,10 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<VotePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BuildPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<RevIcons>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<RevAskPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<NukePanel>()
             .add_direction(NetworkDirection::ServerToClient);

@@ -366,6 +366,7 @@ round-mode = The current game mode is { $mode ->
     [malfunction] AI Malfunction
     [nuclear] Nuclear Emergency
     [revolution] Revolution
+    [rp-revolution] RP Revolution
     [sandbox] Sandbox
    *[extended] Extended
 }. Enjoy the game!
@@ -733,6 +734,37 @@ nuke-radio = Use ":t" to speak on the encrypted Syndicate radio channel.
 vote-choice-nuclear = Nuclear Emergency
 pref-nuke-on = Would be a nuclear agent: yes
 pref-nuke-off = Would be a nuclear agent: no
+rev-not-enough = Not enough players for a revolution: this round is Extended instead.
+rev-leader = You are a member of the revolutionaries' leadership!
+rev-objective-kill = Objective: kill { $name }, a head of staff.
+rev-objective-capture = Objective: capture { $name }, a head of staff, by handcuffing them or knocking them out.
+rev-flash-howto = You've been given a flash: flash someone in the face to turn them.
+rev-rp-howto = Right-click someone and choose Rev-Convert to ask them to join.
+rev-joined = You are now a revolutionary! Help your cause, and don't harm your fellow freedom fighters. Your comrades have a red R over them, your leaders a blue one. Help them bring down the heads!
+rev-brainwashed = You have been brainwashed! You are no longer a revolutionary!
+rev-remembered = { $name } looks like they just remembered their real allegiance!
+rev-already = { $name } is already a revolutionary!
+rev-cannot = { $name } can't be a revolutionary!
+rev-wait = Wait five seconds before asking them again.
+rev-asking = You try to convert { $name }...
+rev-accepted = { $name } joins the revolution!
+rev-refused = { $name } does not support the revolution!
+rev-rejected = You reject this traitorous cause!
+rev-question = { $name } asks: do you want to join the revolution?
+rev-answer-yes = Yes!
+rev-answer-no = No!
+rev-reveal = The ship has enemy operatives aboard by the names of { $names }: arrest them at once.
+rev-win = The heads of staff were brought down! The revolutionaries win!
+rev-lose = The heads of staff managed to stop the revolution!
+rev-roll-leaders = The head revolutionaries were:
+rev-roll-converted = The converted revolutionaries were:
+rev-roll-heads = The heads of staff were:
+rev-roll-line = { $name } ({ $state })
+rev-dead = dead
+rev-alive = survived
+verb-rev-convert = Rev-Convert
+vote-choice-revolution = Revolution
+vote-choice-rp-revolution = RP Revolution
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.
