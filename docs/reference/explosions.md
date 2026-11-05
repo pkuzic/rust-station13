@@ -39,6 +39,12 @@ The uplink sells two charges, each with a detonator that looks like a Zippo. Use
 press the button, from anywhere. 5 seconds later the charge goes off, with ranges of 1, 2, 3 and 4 times its power (1, or
 2 for the heavy one). The walls on its four sides come down, and doors there fly open.
 
+## EMP
+
+An electromagnetic pulse has a heavy and a light range. Cells, energy guns and batons lose 1000 charge inside the heavy range, and
+500 out to the light one, on the floor or carried. A locker's lock flips half the time, or a quarter out in the light range. Only
+the admin verb sets one off for now: grenades come with devices (3.20).
+
 ## Differences from Luna
 
 | Luna | Here |
@@ -47,9 +53,10 @@ press the button, from anywhere. 5 seconds later the charge goes off, with range
 | The deck above takes damage too | Only through the blast spreading between decks |
 | A person at severity 1 is gibbed | They die where they are |
 | Ears ring, and deafness | Not built |
-| A sound, far off for everyone, and the explosion's picture | Only a chat line |
+| The explosion's picture | Only a chat line and the sounds |
 | Machines take particular damage rather than vanishing, and some items, like tanks, go off themselves | All by the table above |
 | Lattice is left where a floor went | Just space |
 | Window edges still hold air after the window has gone | The same stale edge, for now |
-| Bombs of a tank with a timer or signaller (3.20), grenades, EMP | Not built |
+| Bombs of a tank with a timer or signaller, and grenades | Not built (3.20) |
+| An EMP also breaks computers, opens crates, upsets turrets, radios and sleepers, and reaches the next decks | Cells, energy weapons, batons and locks |
 | Doppler arrays report blasts | Not built |

@@ -26,6 +26,12 @@ macro_rules! ogg {
 /// manifest delivers them. Sources: `client-assets/sounds/ATTRIBUTION.md`.
 const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("airlock", &[ogg!("machines/airlock.ogg")]),
+    (
+        "explosion",
+        &[ogg!("effects/Explosion1.ogg"), ogg!("effects/Explosion2.ogg")],
+    ),
+    ("explosion-far", &[ogg!("effects/explosionfar.ogg")]),
+    ("emp", &[ogg!("effects/EMPulse.ogg")]),
     ("door-deny", &[ogg!("machines/buzz-two.ogg")]),
     ("closet-click", &[ogg!("machines/click.ogg")]),
     ("glass-hit", &[ogg!("effects/Glasshit.ogg")]),

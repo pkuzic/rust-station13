@@ -66,6 +66,13 @@ impl FloorWork<'_, '_> {
         self.map.iter().any(|m| m.0.z == pos.z && bare(m, pos))
     }
 
+    /// A reinforced wall here (`construction.md`).
+    pub fn reinforced_wall(&self, pos: TilePos) -> bool {
+        self.map
+            .iter()
+            .any(|m| m.0.z == pos.z && m.0.tile(pos).is_some_and(|t| t.id == "r-wall"))
+    }
+
     pub fn intact(&self, pos: TilePos) -> bool {
         self.map.iter().any(|m| m.0.z == pos.z && intact(m, pos))
     }

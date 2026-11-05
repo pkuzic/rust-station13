@@ -10,7 +10,8 @@ use rs13_simulation::atmos::Cell;
 use rs13_world::{Appearance, Ghost, GridPos, MapLayer, ObjectSpec, Slot, TileDef, TilePos};
 
 use crate::atmos::StationAtmos;
-use crate::closets::InCloset;
+use crate::cells::PowerCell;
+use crate::closets::{ClosetLock, InCloset};
 use crate::combat::{COUNT_DS, Paralyzed, VisibleEvents};
 use crate::construction::dismantle_wall;
 use crate::doors::{Airlock, DoorState};
@@ -21,8 +22,10 @@ use crate::movement::Mob;
 use crate::objects::spawn_object;
 use crate::power::PowerUser;
 use crate::rng::GameRng;
+use crate::sound::{EMP, EXPLOSION, EXPLOSION_FAR, SoundEvent, SoundEvents};
 use crate::storage::{InStorage, Storage};
 use crate::time::WorldTime;
+use crate::weapons::{Baton, Fires, Gun};
 
 /// How long between the bang being set off and the blast, ds (Luna's `sleep(5)`).
 const FUSE_DS: f32 = 5.0;
@@ -204,11 +207,91 @@ fn detonate(world: &mut World, blast: Blast) {
             hit_tile(world, at, severity);
         }
     }
+    // Everyone hears it from afar, and those near it hear it properly (Luna's two sounds).
+    let mut sounds = world.resource_mut::<SoundEvents>();
+    sounds
+        .0
+        .push(SoundEvent::new(EXPLOSION, blast.at, 100.0).extra_range(blast.devastation.max(1)));
+    let mut people = world.query_filtered::<&GridPos, With<Mob>>();
+    let everyone: Vec<TilePos> = people.iter(world).map(|p| p.0).collect();
+    let mut sounds = world.resource_mut::<SoundEvents>();
+    for at in everyone {
+        sounds.0.push(SoundEvent::new(EXPLOSION_FAR, at, 60.0));
+    }
     let msg = LocMsg::new("explosion-heard");
     world
         .resource_mut::<VisibleEvents>()
         .0
         .push((blast.at, msg, None));
+}
+
+/// How much power an EMP takes out of what it hits, by severity (Luna's `1000 / severity`).
+const EMP_DRAIN: i32 = 1000;
+
+/// An electromagnetic pulse (Luna's `empulse`): cells and energy weapons lose charge, and locks can fail,
+/// out to `light` tiles. At `heavy` it's a coin toss which it is, and closer is always the worse.
+pub fn empulse(world: &mut World, at: TilePos, heavy: i32, light: i32) {
+    let light = light.max(heavy);
+    world
+        .resource_mut::<SoundEvents>()
+        .0
+        .push(SoundEvent::new(EMP, at, 100.0));
+    let mut guns = world.query_filtered::<Entity, Or<(With<Gun>, With<Baton>, With<PowerCell>)>>();
+    let charged: Vec<Entity> = guns.iter(world).collect();
+    for thing in charged {
+        let Some(here) = tank_at(world, thing) else {
+            continue;
+        };
+        let Some(severity) = emp_severity(world, at, here, heavy, light) else {
+            continue;
+        };
+        let drain = EMP_DRAIN / severity;
+        if let Some(mut gun) = world.get_mut::<Gun>(thing)
+            && !matches!(gun.fires, Fires::Bullet(_))
+        {
+            gun.charge = (gun.charge - drain).max(0);
+        }
+        if let Some(mut baton) = world.get_mut::<Baton>(thing) {
+            baton.charge = (baton.charge - drain).max(0);
+        }
+        if let Some(mut cell) = world.get_mut::<PowerCell>(thing) {
+            cell.charge = (cell.charge - f64::from(drain)).max(0.0);
+        }
+    }
+    let mut locks = world.query::<(Entity, &GridPos, &ClosetLock)>();
+    let closets: Vec<(Entity, TilePos, ClosetLock)> =
+        locks.iter(world).map(|(e, p, l)| (e, p.0, l.clone())).collect();
+    for (closet, here, lock) in closets {
+        let Some(severity) = emp_severity(world, at, here, heavy, light) else {
+            continue;
+        };
+        if world.resource_mut::<GameRng>().prob(50.0 / severity as f32) {
+            world.entity_mut(closet).insert(ClosetLock {
+                locked: !lock.locked,
+                ..lock
+            });
+        }
+    }
+}
+
+fn emp_severity(world: &mut World, at: TilePos, here: TilePos, heavy: i32, light: i32) -> Option<i32> {
+    if here.z != at.z {
+        return None;
+    }
+    let distance = (here.x - at.x).abs().max((here.y - at.y).abs());
+    if distance < heavy {
+        Some(1)
+    } else if distance == heavy {
+        Some(if world.resource_mut::<GameRng>().prob(50.0) {
+            1
+        } else {
+            2
+        })
+    } else if distance <= light {
+        Some(2)
+    } else {
+        None
+    }
 }
 
 fn flash_at(world: &mut World, at: TilePos) {
