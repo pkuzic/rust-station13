@@ -111,6 +111,35 @@ fn worn(equipment: Option<&Equipment>, looks: &Query<&Appearance>) -> Worn {
     }
 }
 
+/// Whether someone's head and body are covered, as a blow from something other than a person sees it:
+/// (a helmet or a mask over the head, a suit or a uniform).
+pub fn covered(world: &World, mob: Entity) -> (bool, bool) {
+    let on = |slot: Slot| {
+        world
+            .get::<Equipment>(mob)
+            .and_then(|e| e.get(slot))
+            .and_then(|item| world.get::<Appearance>(item))
+            .map(|look| look.sprite.as_str())
+    };
+    let helmet = on(Slot::Head).is_some_and(|h| HELMETS.contains(&h));
+    (
+        helmet || on(Slot::Mask) == Some("gas-mask"),
+        on(Slot::Suit).is_some() || on(Slot::Uniform).is_some(),
+    )
+}
+
+/// Knocked down for so long, unless already for longer.
+pub fn weaken(world: &mut World, target: Entity, ds: f32) {
+    knock_down(
+        world,
+        target,
+        Consequence {
+            weaken_ds: ds,
+            paralyse_ds: 0.0,
+        },
+    );
+}
+
 /// Everything that came of a blow, to be done once the queries are let go.
 #[derive(Debug, Default)]
 struct Consequence {

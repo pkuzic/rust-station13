@@ -3,11 +3,14 @@
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, Dense, GridPos, MapLayer, TilePos};
+use rs13_world::{Appearance, Dense, DisplayName, GridPos, MapLayer, MobStat, TilePos};
 
 use crate::actions::Outbox;
-use crate::explosions::strike;
+use crate::combat::{COUNT_DS, VisibleEvents};
+use crate::explosions::strike_sparing_people;
 use crate::hands::{Hands, Item};
+use crate::health::{Body, Vitals, Zone};
+use crate::movement::Mob;
 use crate::objects::NetIds;
 use crate::rng::GameRng;
 use crate::round::{Phase, Round};
@@ -183,9 +186,102 @@ fn life(world: &mut World, cell: Entity, at: TilePos, taken: &mut Vec<TilePos>, 
             taken.push(to);
             blobs.push(to);
         } else if !blobs.contains(&to) && world.resource_mut::<GameRng>().prob(50.0) {
-            // Luna's `blob_act`: as a light blast, only here.
-            strike(world, to, 3);
+            // Luna's `blob_act`: people are lashed at, everything else is hit as by a light blast.
+            for mob in people_at(world, to) {
+                lash(world, mob);
+            }
+            strike_sparing_people(world, to, 3);
         }
+    }
+}
+
+fn people_at(world: &mut World, at: TilePos) -> Vec<Entity> {
+    let mut people = world.query_filtered::<(Entity, &GridPos, &Vitals), (With<Mob>, With<Body>)>();
+    let mut here: Vec<Entity> = people
+        .iter(world)
+        .filter(|(_, p, v)| p.0 == at && v.stat != MobStat::Dead)
+        .map(|(e, ..)| e)
+        .collect();
+    here.sort();
+    here
+}
+
+/// The blob lashes at someone beside it: 1 to 20 on one part of them at random, which clothes often
+/// keep off, and a hard one to the head or chest knocks them down (Luna's human `blob_act`).
+pub fn lash(world: &mut World, mob: Entity) {
+    let (head_covered, body_covered) = crate::combat::covered(world, mob);
+    let (damage, zone, roll, second) = {
+        let mut rng = world.resource_mut::<GameRng>();
+        let damage = rng.range(1, 20) as f32;
+        let zone = Zone::ALL[rng.range(0, Zone::ALL.len() as i32 - 1) as usize];
+        (damage, zone, rng.range(1, 100), rng.range(1, 100))
+    };
+    let told = |world: &mut World, id: &str| {
+        if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
+            outbox.0.push(LocMsg::new(id));
+        }
+    };
+    told(world, "blob-attacks-you");
+    let name = world
+        .get::<DisplayName>(mob)
+        .map(|n| n.0.clone())
+        .unwrap_or_default();
+    let at = world.get::<GridPos>(mob).map(|p| p.0);
+    let seen = |world: &mut World, id: &str| {
+        if let Some(at) = at {
+            world.resource_mut::<VisibleEvents>().0.push((
+                at,
+                LocMsg::new(id).arg("victim", name.clone()),
+                None,
+            ));
+        }
+    };
+    let hard = damage > 4.9;
+    match zone {
+        Zone::Head => {
+            if head_covered && roll <= 99 {
+                if second <= 20 {
+                    hurt(world, mob, zone, damage);
+                } else {
+                    told(world, "protected-head");
+                }
+                return;
+            }
+            if hard {
+                let counts = world.resource_mut::<GameRng>().range(10, 15) as f32;
+                crate::combat::weaken(world, mob, counts * COUNT_DS);
+                seen(world, "blob-weakened");
+            }
+        }
+        Zone::Chest => {
+            if body_covered && roll <= 85 {
+                told(world, "protected-chest");
+                return;
+            }
+            if hard {
+                crate::combat::weaken(world, mob, 5.0 * COUNT_DS);
+                seen(
+                    world,
+                    if second <= 50 {
+                        "blob-knocked-down"
+                    } else {
+                        "blob-stunned"
+                    },
+                );
+            }
+        }
+        Zone::Groin if body_covered && roll <= 75 => {
+            told(world, "protected-groin");
+            return;
+        }
+        _ => {}
+    }
+    hurt(world, mob, zone, damage);
+}
+
+fn hurt(world: &mut World, mob: Entity, zone: Zone, damage: f32) {
+    if let Some(mut body) = world.get_mut::<Body>(mob) {
+        body.take_damage(zone, damage, 0.0);
     }
 }
 

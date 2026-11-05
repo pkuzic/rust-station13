@@ -177,3 +177,55 @@ fn the_staff_win_with_no_cells_left() {
     assert!(over(app.world()));
     assert_eq!(app.world().resource::<BlobState>().staff_won, Some(true));
 }
+
+fn brute(app: &App, mob: Entity) -> Vec<f32> {
+    let body = app.world().get::<rs13_classic::health::Body>(mob).unwrap();
+    rs13_classic::health::Zone::ALL
+        .iter()
+        .map(|z| body.organ(*z).brute)
+        .collect()
+}
+
+#[test]
+fn the_blob_lashes_at_one_part_of_someone_for_up_to_twenty_and_tells_them() {
+    let mut app = setup("blob");
+    let mob = spawn_player_mob(app.world_mut(), TilePos::new(3, 3, 0));
+    for _ in 0..40 {
+        let before = brute(&app, mob);
+        rs13_classic::blob::lash(app.world_mut(), mob);
+        let after = brute(&app, mob);
+        let hit: Vec<f32> = before
+            .iter()
+            .zip(&after)
+            .map(|(b, a)| a - b)
+            .filter(|d| *d > 0.0)
+            .collect();
+        assert!(hit.len() <= 1, "one part at a time: {hit:?}");
+        assert!(hit.iter().all(|d| *d >= 1.0 && *d <= 20.0), "{hit:?}");
+    }
+    let said = &app.world().get::<rs13_classic::actions::Outbox>(mob).unwrap().0;
+    assert_eq!(said.iter().filter(|m| m.id == "blob-attacks-you").count(), 40);
+}
+
+#[test]
+fn someone_standing_by_the_blob_isnt_blasted_to_death_in_seconds() {
+    let mut app = setup("blob");
+    let mob = spawn_player_mob(app.world_mut(), TilePos::new(3, 3, 0));
+    spawn_blob(app.world_mut(), TilePos::new(4, 3, 0), 30.0);
+    app.world_mut().insert_resource(BlobState {
+        started: true,
+        stage: 0,
+        next_stage: f32::MAX,
+        next_life: 0.0,
+        staff_won: None,
+    });
+    // Ten seconds of growth (five lives).
+    tick(&mut app, 100);
+    let total: f32 = brute(&app, mob).iter().sum();
+    let at = app.world().get::<GridPos>(mob).unwrap().0;
+    assert_eq!(at, TilePos::new(3, 3, 0));
+    assert!(
+        app.world().get::<rs13_classic::health::Vitals>(mob).unwrap().stat != rs13_world::MobStat::Dead,
+        "alive after ten seconds: {total}"
+    );
+}

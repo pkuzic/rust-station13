@@ -13,6 +13,11 @@ pods get home. It's not on the vote list, as `votable = 0` in Luna, but it comes
 Starts as one cell on a random floor of the station. Every 2 seconds, 25 of its cells at random (often the same one again) get a chance to grow, in percent, of their health plus 3 on a floor. One that
 grows goes into every open tile beside it, giving the new cell its own health, and each tile that's blocked has an even chance of a light blast. It won't go into arrivals. A meteor can fall as it grows.
 
+Someone in the way is lashed at instead (Luna's human `blob_act`): 1 to 20 on one part of them at
+random, and they're told. A helmet or a gas mask keeps it off the head 99 times in 100 (and even then
+one in five gets through), a suit or a uniform keeps it off the chest 85 times in 100 and the groin 75.
+Over 4.9 to the head knocks them down for 10 to 15 counts, and to the chest for 5.
+
 A cell starts with 30 health. Weapons do a quarter of their force, a lit welding tool 15. Light and heavy blasts do 15 to 30, and a devastating one destroys it.
 
 | When | What happens |
@@ -32,7 +37,7 @@ It's only ever forced, as `enabled = 0` and its probability is 0 in Luna.
 | Meteors heat the air they pass through | Not yet |
 | Screens shake near an impact | Not yet |
 | Each object has its own `meteorhit`, and most do nothing | A heavy blast on the tile, for all of them |
-| Each object has its own `blob_act` | A light blast on the tile, for all of them |
+| Each object has its own `blob_act` | People get Luna's own (below); everything else a light blast on the tile |
 | A meteor round says who survived and how | The usual roll of who escaped |
 | The blob starts at a `blobstart` landmark, which Luna's map doesn't have | A random floor |
 | Guns hurt the blob | Not yet: the blob's cells aren't hit by shots |
