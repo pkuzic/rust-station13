@@ -249,3 +249,18 @@ fn someone_burnt_alive_leaves_as_a_ghost_too() {
     assert_eq!(departures[0].0, mob);
     assert!(app.world().get::<Ghost>(departures[0].1).is_some());
 }
+
+#[test]
+fn an_observer_is_a_ghost_with_no_body_behind_it() {
+    let (mut app, _) = setup();
+    let at = TilePos::new(2, 2, 0);
+    let watcher = rs13_classic::ghosts::spawn_observer(app.world_mut(), at, Some("Watcher".to_owned()));
+    ticks(&mut app, 2);
+    assert!(app.world().get::<Ghost>(watcher).is_some());
+    assert_eq!(app.world().get::<DisplayName>(watcher).unwrap().0, "Watcher");
+    assert_eq!(app.world().get::<GridPos>(watcher).unwrap().0, at);
+    assert!(app.world().get::<Vitals>(watcher).is_none());
+    assert_eq!(app.world().resource::<Departures>().0.len(), 0);
+    let unnamed = rs13_classic::ghosts::spawn_observer(app.world_mut(), at, None);
+    assert!(!app.world().get::<DisplayName>(unnamed).unwrap().0.is_empty());
+}

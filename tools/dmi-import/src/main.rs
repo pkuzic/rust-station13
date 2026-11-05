@@ -33,6 +33,10 @@ struct Entry {
     /// Take only this DMI direction index (0 S, 1 N, 2 E, 3 W, 4 SE, 5 SW, 6 NE, 7 NW).
     #[serde(default)]
     dir: Option<u32>,
+    /// Added to every colour. Luna tints its near-black hair by adding to it, which the client can't,
+    /// so these are brightened here for the client to multiply instead.
+    #[serde(default)]
+    lift: Option<u8>,
 }
 
 fn main() {
@@ -100,7 +104,15 @@ fn run(root: &Path, manifest_path: &Path, out: &Path) -> Result<(), String> {
             for frame in 0..state.frames {
                 for dir in &dirs {
                     anim.cells.push(cells.len() as u32);
-                    cells.push(dmi.icon(state.icon(frame, *dir)));
+                    let mut cell = dmi.icon(state.icon(frame, *dir));
+                    if let Some(lift) = entry.lift {
+                        for pixel in cell.pixels.as_chunks_mut::<4>().0 {
+                            for colour in &mut pixel[..3] {
+                                *colour = colour.saturating_add(lift);
+                            }
+                        }
+                    }
+                    cells.push(cell);
                 }
             }
             atlas

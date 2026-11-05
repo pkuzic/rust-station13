@@ -90,6 +90,37 @@ pub fn leave_body(world: &mut World, body: Entity) -> Option<Entity> {
     Some(ghost)
 }
 
+/// A ghost with no body behind it: someone watching from the start (Luna's `observe`).
+pub fn spawn_observer(world: &mut World, at: TilePos, name: Option<String>) -> Entity {
+    let id = world.resource_mut::<NetIds>().alloc();
+    let name = name.unwrap_or_else(|| crate::names::default_name(id.0));
+    let ghost = world
+        .spawn((
+            (
+                Ghost { worn: Vec::new() },
+                GridPos(at),
+                id,
+                Appearance::new("human", ""),
+                Facing::of(rs13_world::Dir::South),
+                DisplayName(name),
+                HandsView::default(),
+                WornView::default(),
+            ),
+            (
+                GhostSteps::default(),
+                MoveIntent::default(),
+                PendingSpeech::default(),
+                PendingActions::default(),
+                Outbox(vec![LocMsg::new("ghost-observing")]),
+                Earshot::default(),
+            ),
+        ))
+        .id();
+    // It left no body, so it's its own.
+    world.entity_mut(ghost).insert(GhostOf(ghost));
+    ghost
+}
+
 /// Whoever has just died leaves their body. Death is permanent (`health.md`), so they
 /// don't have to ask.
 pub fn leave_dead_bodies(world: &mut World) {

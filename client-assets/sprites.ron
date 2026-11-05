@@ -63,6 +63,190 @@
             "lying": (dmi: "icons/mob/human.dmi", state: "body_m_l"),
         },
 
+        "human-f": {
+            "": (dmi: "icons/mob/human.dmi", state: "body_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "body_f_l"),
+        },
+        "face:hair_a": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_a_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_a_l", lift: Some(200)),
+        },
+        "face:hair_b": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_b_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_b_l", lift: Some(200)),
+        },
+        "face:hair_longfringe": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_longfringe_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_longfringe_l", lift: Some(200)),
+        },
+        "face:hair_vlongfringe": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_vlongfringe_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_vlongfringe_l", lift: Some(200)),
+        },
+        "face:hair_longest": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_longest_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_longest_l", lift: Some(200)),
+        },
+        "face:hair_test": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_test_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_test_l", lift: Some(200)),
+        },
+        "face:hair_c": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_c_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_c_l", lift: Some(200)),
+        },
+        "face:hair_d": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_d_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_d_l", lift: Some(200)),
+        },
+        "face:hair_e": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_e_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_e_l", lift: Some(200)),
+        },
+        "face:hair_f": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_f_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_f_l", lift: Some(200)),
+        },
+        "face:hair_bedhead": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_bedhead_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_bedhead_l", lift: Some(200)),
+        },
+        "face:hair_bedheadv2": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_bedheadv2_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_bedheadv2_l", lift: Some(200)),
+        },
+        "face:hair_spikey": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_spikey_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_spikey_l", lift: Some(200)),
+        },
+        "face:hair_dreads": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_dreads_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_dreads_l", lift: Some(200)),
+        },
+        "face:hair_afro": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_afro_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_afro_l", lift: Some(200)),
+        },
+        "face:hair_bigafro": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_bigafro_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_bigafro_l", lift: Some(200)),
+        },
+        "face:hair_braid": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_braid_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_braid_l", lift: Some(200)),
+        },
+        "face:hair_kagami": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_kagami_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_kagami_l", lift: Some(200)),
+        },
+        "face:hair_ponytail": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "hair_ponytail_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "hair_ponytail_l", lift: Some(200)),
+        },
+        "face:facial_watson": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_watson_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_watson_l", lift: Some(200)),
+        },
+        "face:facial_chaplin": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_chaplin_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_chaplin_l", lift: Some(200)),
+        },
+        "face:facial_selleck": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_selleck_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_selleck_l", lift: Some(200)),
+        },
+        "face:facial_neckbeard": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_neckbeard_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_neckbeard_l", lift: Some(200)),
+        },
+        "face:facial_fullbeard": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_fullbeard_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_fullbeard_l", lift: Some(200)),
+        },
+        "face:facial_longbeard": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_longbeard_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_longbeard_l", lift: Some(200)),
+        },
+        "face:facial_vandyke": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_vandyke_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_vandyke_l", lift: Some(200)),
+        },
+        "face:facial_elvis": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_elvis_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_elvis_l", lift: Some(200)),
+        },
+        "face:facial_abe": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_abe_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_abe_l", lift: Some(200)),
+        },
+        "face:facial_chin": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_chin_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_chin_l", lift: Some(200)),
+        },
+        "face:facial_hip": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_hip_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_hip_l", lift: Some(200)),
+        },
+        "face:facial_gt": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_gt_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_gt_l", lift: Some(200)),
+        },
+        "face:facial_hogan": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "facial_hogan_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "facial_hogan_l", lift: Some(200)),
+        },
+        "face:eyes": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "eyes_s", lift: Some(200)),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "eyes_l", lift: Some(200)),
+        },
+        "face:mouth_m": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "mouth_m_s"),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "mouth_m_l"),
+        },
+        "face:mouth_f": {
+            "": (dmi: "icons/mob/human_face.dmi", state: "mouth_f_s"),
+            "lying": (dmi: "icons/mob/human_face.dmi", state: "mouth_f_l"),
+        },
+        "face:underwear1_m": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear1_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear1_m_l"),
+        },
+        "face:underwear1_f": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear1_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear1_f_l"),
+        },
+        "face:underwear2_m": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear2_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear2_m_l"),
+        },
+        "face:underwear2_f": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear2_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear2_f_l"),
+        },
+        "face:underwear3_m": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear3_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear3_m_l"),
+        },
+        "face:underwear3_f": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear3_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear3_f_l"),
+        },
+        "face:underwear4_m": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear4_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear4_m_l"),
+        },
+        "face:underwear4_f": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear4_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear4_f_l"),
+        },
+        "face:underwear5_m": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear5_m_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear5_m_l"),
+        },
+        "face:underwear5_f": {
+            "": (dmi: "icons/mob/human.dmi", state: "underwear5_f_s"),
+            "lying": (dmi: "icons/mob/human.dmi", state: "underwear5_f_l"),
+        },
         // Worn: "worn:<item id>", drawn over the body in slot order (docs/reference/equipment.md).
         // Gloves are two layers, one per hand ("worn:<id>:l").
         "worn:grey-jumpsuit": {

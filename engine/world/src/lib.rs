@@ -7,12 +7,13 @@ pub mod sight;
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView,
     AutolatheRow, BodyScanView, BrigPanelView, BuildPanelView, CameraPanelView, CameraRow, CameraView,
-    ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, Dense, DisplayName, EnvAlert, Facing,
-    FreezerPanelView, GasMachine, GasPanelView, Ghost, GridPos, Hand, HandsView, HeaterPanelView, Hidden,
-    IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
-    Opaque, PaperMode, PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow,
-    RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, UplinkPanelView,
-    VendingPanelView, VendingRow, VoteView, WirePanelView, WornView,
+    CharacterPrefs, ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, Dense, DisplayName,
+    EnvAlert, FACIAL_STYLES, Facing, FreezerPanelView, GasMachine, GasPanelView, Ghost, GridPos, HAIR_STYLES,
+    Hand, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent, JobPanelView,
+    LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperMode, PaperView,
+    PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView, Silhouette,
+    SleeperPanelView, Slot, SmesPanelView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView,
+    VendingRow, VoteView, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
 
