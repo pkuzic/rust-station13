@@ -490,6 +490,8 @@
     "jetpack-syndie": (gender: neuter, sg: (nom: "black jetpack", indef: "a black jetpack"), pl: None),
     "closet-syndicate-personal": (gender: neuter, sg: (nom: "gear closet", indef: "a gear closet"), pl: None),
     "closet-syndicate-nuclear": (gender: neuter, sg: (nom: "nuclear preparations closet", indef: "a nuclear preparations closet"), pl: None),
+    "meteor": (gender: neuter, sg: (nom: "meteor", indef: "a meteor"), pl: None),
+    "blob": (gender: neuter, sg: (nom: "blob", indef: "a blob"), pl: None),
     "shield-plate": (gender: neuter, sg: (nom: "shield emitter plate", indef: "a shield emitter plate"), pl: Some((nom: "shield emitter plates"))),
     "shield": (gender: neuter, sg: (nom: "energy shield", indef: "a energy shield"), pl: Some((nom: "energy shields"))),
     "shield-capacitor": (gender: neuter, sg: (nom: "shield capacitor", indef: "a shield capacitor"), pl: Some((nom: "shield capacitors"))),

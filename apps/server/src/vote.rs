@@ -74,7 +74,13 @@ fn choices(kind: VoteKind) -> Vec<String> {
         VoteKind::Restart => vec!["no".to_owned(), "restart".to_owned()],
         VoteKind::Mode => [NO_CHANGE, SECRET]
             .into_iter()
-            .chain(MODES.iter().filter(|m| m.built).map(|m| m.id))
+            // Luna's `votable = 0` and `enabled = 0`: only ever forced, or chance for meteors.
+            .chain(
+                MODES
+                    .iter()
+                    .filter(|m| m.built && !matches!(m.id, "meteor" | "blob"))
+                    .map(|m| m.id),
+            )
             .map(str::to_owned)
             .collect(),
     }

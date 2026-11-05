@@ -395,6 +395,12 @@ pub fn hit_tile(world: &mut World, at: TilePos, severity: u8) {
 
 /// What a blast does to what's on a tile. Things held or inside go with what they're in, unless
 /// that's opened up.
+/// Hit what's here, and the tile itself, as a blast would (for meteors and the blob).
+pub fn strike(world: &mut World, at: TilePos, severity: u8) {
+    hit_things(world, at, severity);
+    hit_tile(world, at, severity);
+}
+
 fn hit_things(world: &mut World, at: TilePos, severity: u8) {
     let mut things = world.query::<(Entity, &GridPos, Has<Mob>, Has<Ghost>, Has<Item>, Has<PowerUser>)>();
     let here: Vec<(Entity, bool, bool, bool, bool)> = things
@@ -408,6 +414,10 @@ fn hit_things(world: &mut World, at: TilePos, severity: u8) {
         }
         if mob {
             hit_person(world, thing, severity);
+            continue;
+        }
+        if world.get::<crate::blob::BlobCell>(thing).is_some() {
+            crate::blob::blasted(world, thing, severity);
             continue;
         }
         let chance = match (severity, item, machine) {

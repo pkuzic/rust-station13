@@ -13,6 +13,7 @@ pub mod atmos;
 pub mod autolathe;
 pub mod bedsheets;
 pub mod blastdoors;
+pub mod blob;
 pub mod brig;
 pub mod cables;
 pub mod cameras;
@@ -65,6 +66,7 @@ pub mod lights;
 pub mod machines;
 pub mod medbay;
 pub mod medical;
+pub mod meteor;
 pub mod meters;
 pub mod microwaves;
 pub mod monkeys;
@@ -155,6 +157,8 @@ impl Plugin for ClassicPlugin {
             .init_resource::<construction::WallProgress>()
             .init_resource::<escape::StationAlert>()
             .init_resource::<nuke::NukeState>()
+            .init_resource::<meteor::MeteorWaves>()
+            .init_resource::<blob::BlobState>()
             .init_resource::<changeling::LingState>()
             .init_resource::<changeling::HiveLines>()
             .init_resource::<explosions::PendingBlasts>()
@@ -438,6 +442,7 @@ impl Plugin for ClassicPlugin {
                             escape::update_comms_views,
                             (nuke::run_nuke, nuke::update_pinpointers, nuke::update_nuke_views),
                             revolution::run_revolution,
+                            (meteor::run_meteors, blob::run_blobs),
                             (
                                 changeling::run_changelings,
                                 changeling::update_ling_views,

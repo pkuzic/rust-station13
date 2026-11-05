@@ -95,6 +95,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `blast-door:pdoorc0` | `icons/obj/doors/rapid_pdoor.dmi : "pdoorc0"` | CC-BY-SA 3.0 |
 | `blast-door:pdoorc1` | `icons/obj/doors/rapid_pdoor.dmi : "pdoorc1"` | CC-BY-SA 3.0 |
 | `blindfold:` | `icons/obj/clothing/glasses.dmi : "blindfold"` | CC-BY-SA 3.0 |
+| `blob:a` | `icons/mob/blob.dmi : "bloba0"` | CC-BY-SA 3.0 |
+| `blob:b` | `icons/mob/blob.dmi : "blobb0"` | CC-BY-SA 3.0 |
+| `blob:c` | `icons/mob/blob.dmi : "blobc0"` | CC-BY-SA 3.0 |
 | `blue-gloves:` | `icons/obj/clothing/gloves.dmi : "blue"` | CC-BY-SA 3.0 |
 | `blue-shoes:` | `icons/obj/clothing/shoes.dmi : "blue"` | CC-BY-SA 3.0 |
 | `blue-shorts:` | `icons/obj/clothing/uniforms.dmi : "blueshorts"` | CC-BY-SA 3.0 |
@@ -1026,6 +1029,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `medical-records:medical` | `icons/obj/computer.dmi : "medical"` | CC-BY-SA 3.0 |
 | `meson-glasses:` | `icons/obj/clothing/glasses.dmi : "meson"` | CC-BY-SA 3.0 |
 | `metal-sheet:` | `icons/obj/items.dmi : "sheet-metal"` | CC-BY-SA 3.0 |
+| `meteor:` | `icons/obj/meteor.dmi : "flaming"` | CC-BY-SA 3.0 |
 | `meter:meter0` | `icons/obj/meter.dmi : "meter0"` | CC-BY-SA 3.0 |
 | `meter:meter1_1` | `icons/obj/meter.dmi : "meter1_1"` | CC-BY-SA 3.0 |
 | `meter:meter1_2` | `icons/obj/meter.dmi : "meter1_2"` | CC-BY-SA 3.0 |

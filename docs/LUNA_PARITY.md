@@ -40,8 +40,8 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 2.3 Revolution and rp-revolution | M | `gamemodes/revolution` | `revolution.md`. No intercept report: Centcom's messages aren't built |
 | [x] | 2.4 Changeling | L | `gamemodes/changeling` | `changeling.md`. No hallucinations or real blindness yet, so those stings do less |
 | [ ] | 2.5 Malfunction | M | `gamemodes/malfunction` | Needs 3.9 |
-| [ ] | 2.6 Meteor | S-M | `gamemodes/meteor` | Needs 1.13 |
-| [ ] | 2.7 Blob | M | `gamemodes/blob` | Probability 0 in Luna's config |
+| [x] | 2.6 Meteor | S-M | `gamemodes/meteor` | `meteor-blob.md` |
+| [x] | 2.7 Blob | M | `gamemodes/blob` | `meteor-blob.md`. Probability 0 in Luna's config. Guns don't hurt it yet |
 | [ ] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Check each works in Luna first |
 | [ ] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled |
 
