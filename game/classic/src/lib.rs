@@ -216,7 +216,13 @@ impl Plugin for ClassicPlugin {
                     heaters::process_heater_ops,
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
-                    (combat::resolve_attacks, combat::come_round, grabs::run_grabs).chain(),
+                    (
+                        combat::resolve_attacks,
+                        combat::keep_gods_whole,
+                        combat::come_round,
+                        grabs::run_grabs,
+                    )
+                        .chain(),
                     medical::resolve_treatments,
                     speech::speak,
                     combat::deliver_visible,

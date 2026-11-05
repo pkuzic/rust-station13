@@ -169,6 +169,7 @@ pub fn speak(
             Option<&Vitals>,
             Option<&crate::hands::Hands>,
             Option<&crate::equipment::Equipment>,
+            Has<crate::combat::Muted>,
         ),
         With<Mob>,
     >,
@@ -203,8 +204,8 @@ pub fn speak(
     let mut said: Vec<(Entity, TilePos, i32, LocMsg, Vec<(u16, LocMsg)>)> = Vec::new();
     // (speaker, where, whole, as caught from a little further, as seen from further still)
     let mut whispers: Vec<(Entity, TilePos, LocMsg, LocMsg, LocMsg)> = Vec::new();
-    for (speaker, pos, name, mut pending, vitals, hands, equipment) in &mut speakers {
-        if vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
+    for (speaker, pos, name, mut pending, vitals, hands, equipment, muted) in &mut speakers {
+        if muted || vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
             pending.0.clear();
             continue;
         }

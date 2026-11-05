@@ -86,6 +86,10 @@ fn every_message_formats_in_both_locales() {
     args.set("name", "Someone");
     args.set("done", "won");
     args.set("kind", "restart");
+    args.set("key", "abc");
+    args.set("verb", "kick");
+    args.set("by", "Someone");
+    args.set("address", "127.0.0.1");
     args.set("cost", 2);
     args.set("made", 4);
     args.set("a", "bruised");

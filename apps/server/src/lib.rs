@@ -1,5 +1,6 @@
 //! The dedicated server as a library, so tests can run it in-process.
 
+pub mod admin;
 mod lobby;
 mod sight;
 mod silhouettes;
@@ -192,7 +193,17 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .init_resource::<vote::Votes>()
     .init_resource::<vote::VoteInbox>()
     .init_resource::<lobby::OocInbox>()
-    .add_systems(FixedUpdate, (lobby::run_round, vote::run_votes, vote::send_votes))
+    .init_resource::<admin::AdminInbox>()
+    .init_resource::<admin::AdminConfig>()
+    .add_systems(
+        FixedUpdate,
+        (
+            lobby::run_round,
+            vote::run_votes,
+            vote::send_votes,
+            admin::run_admin,
+        ),
+    )
     // What each client is sent follows what its mob sees: once a tick, after the tick, and
     // for a client that has just joined, before anything is sent to it.
     .add_systems(
@@ -409,6 +420,7 @@ fn queue_actions(
     mut respawns: MessageWriter<RespawnRequest>,
     mut votes: ResMut<vote::VoteInbox>,
     mut ooc: ResMut<lobby::OocInbox>,
+    mut admin: ResMut<admin::AdminInbox>,
     mut mobs: Query<
         (
             &mut PendingActions,
@@ -512,6 +524,18 @@ fn queue_actions(
                     }
                     ActionInput::Ooc(text) => {
                         ooc.0.push((link, text));
+                        None
+                    }
+                    ActionInput::Hello(secret) => {
+                        admin.0.push((link, admin::AdminInput::Hello(secret)));
+                        None
+                    }
+                    ActionInput::AdminHelp(text) => {
+                        admin.0.push((link, admin::AdminInput::Help(text)));
+                        None
+                    }
+                    ActionInput::Admin(line) => {
+                        admin.0.push((link, admin::AdminInput::Command(line)));
                         None
                     }
                     ActionInput::Respawn => {
@@ -843,6 +867,18 @@ fn queue_actions(
                 }
                 ActionInput::Ooc(text) => {
                     ooc.0.push((link, text));
+                    None
+                }
+                ActionInput::Hello(secret) => {
+                    admin.0.push((link, admin::AdminInput::Hello(secret)));
+                    None
+                }
+                ActionInput::AdminHelp(text) => {
+                    admin.0.push((link, admin::AdminInput::Help(text)));
+                    None
+                }
+                ActionInput::Admin(line) => {
+                    admin.0.push((link, admin::AdminInput::Command(line)));
                     None
                 }
                 ActionInput::Resist => {

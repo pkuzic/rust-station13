@@ -35,13 +35,18 @@ pub fn read_lobby_inputs(
     mut links: Query<(Entity, &mut InLobby, &mut MessageReceiver<ActionInput>), Without<Controls>>,
     mut votes: ResMut<crate::vote::VoteInbox>,
     mut ooc: ResMut<OocInbox>,
+    mut admin: ResMut<crate::admin::AdminInbox>,
 ) {
+    use crate::admin::AdminInput;
     for (link, mut lobby, mut receiver) in &mut links {
         for input in receiver.receive() {
             match input {
                 ActionInput::Ready(ready) => lobby.ready = ready,
                 ActionInput::Vote(action) => votes.0.push((link, action)),
                 ActionInput::Ooc(text) => ooc.0.push((link, text)),
+                ActionInput::Hello(secret) => admin.0.push((link, AdminInput::Hello(secret))),
+                ActionInput::AdminHelp(text) => admin.0.push((link, AdminInput::Help(text))),
+                ActionInput::Admin(line) => admin.0.push((link, AdminInput::Command(line))),
                 ActionInput::JoinRound => {
                     lobby.ready = true;
                     lobby.joining = true;
@@ -66,14 +71,24 @@ pub struct OocInbox(pub Vec<(Entity, String)>);
 /// given no name yet are "someone": there are no accounts to show instead.
 pub fn send_ooc(
     mut inbox: ResMut<OocInbox>,
-    speakers: Query<(Option<&Controls>, Option<&InLobby>)>,
+    speakers: Query<(
+        Option<&Controls>,
+        Option<&InLobby>,
+        Has<rs13_classic::combat::Muted>,
+        Has<crate::admin::AdminLevel>,
+    )>,
+    config: Res<crate::admin::AdminConfig>,
     names: Query<&DisplayName>,
     mut links: Query<&mut MessageSender<Notice>, With<RemoteId>>,
 ) {
     for (link, typed) in inbox.0.drain(..) {
-        let Ok((controls, lobby)) = speakers.get(link) else {
+        let Ok((controls, lobby, muted, admin)) = speakers.get(link) else {
             continue;
         };
+        // Admins can always speak (Luna's `ooc`).
+        if muted || (!config.ooc_on && !admin) {
+            continue;
+        }
         let cleaned: String = typed
             .chars()
             .filter(|c| !c.is_control())
