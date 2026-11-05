@@ -366,6 +366,7 @@ round-mode = The current game mode is { $mode ->
     [malfunction] AI Malfunction
     [nuclear] Nuclear Emergency
     [revolution] Revolution
+    [sandbox] Sandbox
    *[extended] Extended
 }. Enjoy the game!
 lobby-title = Welcome to the pre-game lobby!
@@ -587,7 +588,7 @@ admin-your-key = Your key is { $key }.
 admin-not-admin = You aren't an admin.
 admin-low-rank = You need a higher rank for that.
 admin-unknown = There's no admin verb "{ $verb }". Try help.
-admin-help = Verbs: who, asay TEXT, dsay TEXT, pm WHO TEXT, announce TEXT, startnow, toggleooc, jump X Y [Z], jumpto WHO, kick WHO [WHY], ban WHO MINUTES [WHY] (0 for good), unban KEY, bans, restart, mute WHO, explode SIZE, emp HEAVY LIGHT, get WHO, spawn THING, delete THING, god WHO, rejuv WHO.
+admin-help = Verbs: who, asay TEXT, dsay TEXT, pm WHO TEXT, announce TEXT, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto WHO, kick WHO [WHY], ban WHO MINUTES [WHY] (0 for good), unban KEY, bans, restart, mute WHO, explode SIZE, emp HEAVY LIGHT, get WHO, spawn THING, delete THING, god WHO, rejuv WHO.
 admin-welcome = You are an admin. Press F2 for the admin line, then type help.
 admin-no-one = There's nobody called { $name }.
 admin-no-thing = There's no { $name } here.
@@ -690,6 +691,18 @@ pref-job-slot = Clicking a job sets choice { $value }
 lobby-observe = Observe
 lobby-crew = View the Crew Manifest
 ghost-observing = You are watching as a ghost. The living can't see or hear you.
+round-mode-extended = Just have fun and role-play!
+round-mode-sandbox = Build your own ship: F5 opens the sandbox panel.
+sandbox-title = Sandbox panel
+sandbox-suit = Suit up (space travel gear)
+sandbox-kit = { NOUN($item) } ({ $value })
+sandbox-object = { NOUN($item) }
+sandbox-objects = Any item, page { $value } of { $pages }:
+sandbox-previous = Previous page
+sandbox-next = Next page
+sandbox-spawning-on = Sandbox: item spawning has been turned on.
+sandbox-spawning-off = Sandbox: item spawning has been turned off.
+vote-choice-sandbox = Sandbox
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

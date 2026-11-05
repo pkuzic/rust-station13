@@ -125,7 +125,8 @@ pub fn pick_start(world: &mut World, starts: &[TilePos], taken: &[TilePos]) -> O
         .or_else(|| starts.iter().find(free).copied())
 }
 
-fn wear(world: &mut World, mob: Entity, item: Entity) {
+/// Put an item on someone, in place of whatever they wore there.
+pub fn wear(world: &mut World, mob: Entity, item: Entity) {
     let Some(slot) = world.get::<Wearable>(item).map(|w| w.slot) else {
         return;
     };

@@ -50,7 +50,7 @@ pub const MODES: [Mode; 9] = [
     Mode {
         id: "sandbox",
         probability: 0,
-        built: false,
+        built: true,
     },
     Mode {
         id: "restructuring",

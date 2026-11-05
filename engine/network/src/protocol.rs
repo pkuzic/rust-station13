@@ -11,9 +11,9 @@ use rs13_world::{
     ChemPanelView, ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
     GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent,
     JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView,
-    PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, Silhouette, SleeperPanelView, Slot,
-    SmesPanelView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView,
-    WornView,
+    PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, SandboxPanelView, Silhouette,
+    SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView,
+    WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -140,6 +140,8 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// Asked of the sandbox panel.
+    Sandbox(SandboxCommand),
     /// As it connects, and whenever they change: the player's character setup.
     SetPrefs(CharacterPrefs),
     /// In the lobby: watch as a ghost instead of playing.
@@ -493,6 +495,19 @@ pub struct VotePanel(pub VoteView);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BuildPanel(pub Option<BuildPanelView>);
 
+/// What can be asked of the sandbox panel. Lines are of what the panel was sent.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SandboxCommand {
+    Open,
+    Suit,
+    Kit(u8),
+    Spawn(u16),
+}
+
+/// Server → one client: the sandbox panel.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct SandboxPanel(pub SandboxPanelView);
+
 /// Server → one client: the lobby, or `None` once they've left it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct LobbyPanel(pub Option<LobbyView>);
@@ -651,6 +666,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<VotePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BuildPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<SandboxPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<LobbyPanel>()
             .add_direction(NetworkDirection::ServerToClient);

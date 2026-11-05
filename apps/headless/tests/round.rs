@@ -146,3 +146,57 @@ fn a_character_setup_is_seen_and_set_only_once() {
     assert!(woman("set"));
     assert!(woman("again"));
 }
+
+/// The sandbox panel only works in a sandbox round, and hands things over at your feet.
+#[test]
+fn the_sandbox_panel_gives_things_only_in_a_sandbox_round() {
+    use rs13_network::protocol::{ActionInput, SandboxCommand};
+    let run = |offset: u32, mode: Option<&'static str>| {
+        let port = 20_000 + ((std::process::id() + offset) % 20_000) as u16;
+        let server: SocketAddr = ([127, 0, 0, 1], port).into();
+        thread::spawn(move || {
+            let mut app = rs13_server::server_app_with_rounds(port, vec![MAP], 1);
+            if let Some(mode) = mode {
+                app.world_mut()
+                    .resource_mut::<rs13_classic::round::Round>()
+                    .forced_mode = Some(mode);
+            }
+            app.run()
+        });
+        thread::sleep(Duration::from_millis(500));
+        let report = BotReport::default();
+        let config = BotConfig {
+            server,
+            client_id: unique_client_id(),
+            dir: None,
+            hold: Duration::from_millis(6_000),
+            examine: None,
+            prefer_job: None,
+            name: None,
+            say: None,
+            // Long enough for the round to have started: the lobby can't use the panel.
+            script: vec![
+                Step::Wait(Duration::from_millis(3_000)),
+                Step::Act(ActionInput::Sandbox(SandboxCommand::Suit)),
+                Step::Act(ActionInput::Sandbox(SandboxCommand::Kit(8))),
+                Step::Wait(Duration::from_millis(700)),
+                Step::Snapshot("after".into()),
+            ],
+        };
+        let exit = bot_app(config, report.clone()).run();
+        assert!(exit.is_success(), "bot exited with {exit:?}");
+        let result = report.lock().unwrap().take().expect("bot produced a report");
+        result
+            .snapshots
+            .into_iter()
+            .find(|s| s.label == "after")
+            .unwrap()
+            .sprites
+    };
+    let sandbox = run(23_211, Some("sandbox"));
+    assert!(sandbox.iter().any(|s| s == "first-aid-kit"), "{sandbox:?}");
+    assert!(sandbox.iter().any(|s| s == "space-suit"), "{sandbox:?}");
+    let extended = run(23_317, Some("extended"));
+    assert!(!extended.iter().any(|s| s == "first-aid-kit"), "{extended:?}");
+    assert!(!extended.iter().any(|s| s == "space-suit"), "{extended:?}");
+}

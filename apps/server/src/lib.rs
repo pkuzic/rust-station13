@@ -2,6 +2,7 @@
 
 pub mod admin;
 mod lobby;
+pub mod sandbox;
 mod sight;
 mod silhouettes;
 pub mod vote;
@@ -887,6 +888,11 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::Sandbox(command) => {
+                    let mob = controls.0;
+                    commands.queue(move |world: &mut World| sandbox::run_command(world, link, mob, command));
+                    None
+                }
                 ActionInput::SetPrefs(prefs) => {
                     // Told as they connect: once they've a look, it's theirs for this body.
                     let mob = controls.0;

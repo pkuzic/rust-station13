@@ -579,6 +579,15 @@ pub struct CharacterPrefs {
     pub be_traitor: bool,
 }
 
+/// The sandbox panel: the suit-up line's message, the kits by item id and amount, and every item that
+/// can be asked for (none if an admin has turned that off).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SandboxPanelView {
+    pub suit: String,
+    pub kits: Vec<(String, u16)>,
+    pub objects: Vec<String>,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {

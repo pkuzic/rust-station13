@@ -67,11 +67,18 @@ running rounds, to change the mode. It's open for a minute, and the next can sta
 
 `rs13-server --vote-seconds N` shortens a vote, for trying it out.
 
+## Extended and sandbox
+
+Extended has nothing more to it than a word of welcome. Sandbox never comes up by chance (probability 0): it has to be voted for or
+forced. In a sandbox round **F5** opens a panel that gives anyone a space suit, helmet, gas mask and jetpack (what they wore there
+falls to the floor), 50 metal, 50 glass, an airlock, a canister, a toolbox, a first aid kit or any item at all, at their feet. An
+admin can turn off the any-item list with `togglespawning`. The round doesn't end when the pods arrive: it runs until it's restarted.
+
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
-| Preferences for each job at three levels, and the round divides people up with a random draw for each post | One job you'd like, first come among those who chose |
+| Preferences for each job at three levels, and the round divides people up with a random draw for each post | Three jobs you'd like in order, first come among those who chose |
 | A character setup window: gender, hair, skin, eyes, and more | Only a name |
 | An observe button, to watch as a ghost | Not built |
 | A secret mode that hides what's been picked, and modes chosen by vote | Always announced; votes aren't built |
