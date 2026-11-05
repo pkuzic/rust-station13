@@ -12,15 +12,12 @@ two lines at 9 and 17 pixels down, or one at 13. Each glyph is a small object of
 (`status-glyph`) with that pixel offset. Without power the glyphs go and the frame stays
 (10 W).
 
-- **Ordinary displays** show the evacuation shuttle's countdown in Luna ("ETL" over
-  minutes and seconds), which is blank until a shuttle is called. There is no shuttle yet,
-  so they stay blank, as Luna's do at round start.
+- **Ordinary displays** show the countdown to the escape pods, or what a communications console sets (`round.md`).
 - **Supply displays** show where the supply shuttle is: "SPPLY" over "AWAY".
 
 ## Differences from Luna
 
 | Luna | Here |
 |---|---|
-| The communications console sets messages, alert pictures (red alert, lockdown, biohazard) or blank on every display, by radio | Not built: there is no communications console yet |
-| The shuttle countdown, and the supply shuttle's "SHIP" and timer | There are no shuttles yet |
-| Long messages scroll; the AI's faces; an EMP's blue screen | Not built |
+| The supply shuttle's "SHIP" and timer | There's no supply shuttle yet |
+| Long messages scroll, where these are cut to 5 characters; the AI's faces; an EMP's blue screen | Not built |

@@ -457,6 +457,7 @@ pub struct CommsPanelView {
     pub launch_in: Option<u32>,
     /// They've gone.
     pub gone: bool,
+    pub red_alert: bool,
 }
 
 /// An open Syndicate uplink's window, as shown to the player holding it.

@@ -119,10 +119,10 @@ pub enum ActionInput {
         target: NetId,
         line: Option<u8>,
     },
-    /// On a communications console: call the escape pods, or stop them.
+    /// A button on a communications console.
     Comms {
         target: NetId,
-        call: bool,
+        command: CommsCommand,
     },
     /// On an identification computer: print the crew manifest, or switch to it and back.
     IdManifest {
@@ -449,6 +449,19 @@ pub struct ChemPanel(pub Option<ChemPanelView>);
 /// Server → one client: the identification computer it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct IdComputerPanel(pub Option<IdComputerView>);
+
+/// What a communications console can be asked.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum CommsCommand {
+    Call,
+    Stop,
+    RedAlert,
+    DisplayPods,
+    DisplayBlank,
+    DisplayMessage(String, String),
+    /// This line of the pictures it can show.
+    DisplayPicture(u8),
+}
 
 /// Server → one client: the communications console it has open, or `None` to close it.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]

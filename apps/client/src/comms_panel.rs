@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
-use rs13_network::protocol::{ActionInput, CommsPanel, IntentChannel};
+use rs13_network::protocol::{ActionInput, CommsCommand, CommsPanel, IntentChannel};
 use rs13_world::CommsPanelView;
 
 use crate::{Loc, ui_text_font};
@@ -18,9 +18,34 @@ pub struct OpenComms(pub Option<CommsPanelView>);
 #[derive(Component)]
 pub struct CommsWindow;
 
+#[derive(Clone, Copy)]
+pub enum Sent {
+    Call,
+    Stop,
+    RedAlert,
+    DisplayPods,
+    DisplayBlank,
+    DisplayPicture(u8),
+}
+
+impl Sent {
+    fn command(self) -> CommsCommand {
+        match self {
+            Sent::Call => CommsCommand::Call,
+            Sent::Stop => CommsCommand::Stop,
+            Sent::RedAlert => CommsCommand::RedAlert,
+            Sent::DisplayPods => CommsCommand::DisplayPods,
+            Sent::DisplayBlank => CommsCommand::DisplayBlank,
+            Sent::DisplayPicture(line) => CommsCommand::DisplayPicture(line),
+        }
+    }
+}
+
 #[derive(Component, Clone, Copy)]
 pub enum CommsButton {
-    Call(bool),
+    Send(Sent),
+    /// Open the chat line for a display message.
+    Message,
     Close,
 }
 
@@ -92,15 +117,56 @@ pub fn show_comms(
                 &mut commands,
                 window,
                 text(LocMsg::new("comms-recall")),
-                CommsButton::Call(false),
+                CommsButton::Send(Sent::Stop),
             );
         }
         (None, _) => button(
             &mut commands,
             window,
             text(LocMsg::new("comms-call")),
-            CommsButton::Call(true),
+            CommsButton::Send(Sent::Call),
         ),
+    }
+    let red = if view.red_alert {
+        "comms-red-off"
+    } else {
+        "comms-red-on"
+    };
+    button(
+        &mut commands,
+        window,
+        text(LocMsg::new(red)),
+        CommsButton::Send(Sent::RedAlert),
+    );
+    label(&mut commands, text(LocMsg::new("comms-display-title")));
+    button(
+        &mut commands,
+        window,
+        text(LocMsg::new("comms-display-pods")),
+        CommsButton::Send(Sent::DisplayPods),
+    );
+    button(
+        &mut commands,
+        window,
+        text(LocMsg::new("comms-display-blank")),
+        CommsButton::Send(Sent::DisplayBlank),
+    );
+    button(
+        &mut commands,
+        window,
+        text(LocMsg::new("comms-display-message")),
+        CommsButton::Message,
+    );
+    for (line, id) in ["default", "redalert", "lockdown", "biohazard"]
+        .iter()
+        .enumerate()
+    {
+        button(
+            &mut commands,
+            window,
+            text(LocMsg::new(format!("comms-picture-{id}"))),
+            CommsButton::Send(Sent::DisplayPicture(line as u8)),
+        );
     }
     button(
         &mut commands,
@@ -134,6 +200,7 @@ fn click_button(
     click: On<PointerClick>,
     buttons: Query<&CommsButton>,
     mut open: ResMut<OpenComms>,
+    mut chat: ResMut<crate::ChatInput>,
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
 ) {
     let Ok(action) = buttons.get(click.entity) else {
@@ -143,12 +210,20 @@ fn click_button(
         return;
     };
     match *action {
-        CommsButton::Call(call) => {
+        CommsButton::Send(sent) => {
             if let Some(view) = &open.0 {
                 sender.send::<IntentChannel>(ActionInput::Comms {
                     target: view.target,
-                    call,
+                    command: sent.command(),
                 });
+            }
+        }
+        CommsButton::Message => {
+            if let Some(view) = &open.0 {
+                chat.open = true;
+                chat.buffer.clear();
+                chat.kind = crate::ChatKind::Display;
+                chat.console = Some(view.target);
             }
         }
         CommsButton::Close => {

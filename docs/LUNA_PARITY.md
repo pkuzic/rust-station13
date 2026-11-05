@@ -19,7 +19,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [~] | 1.2 Lobby: character setup, job preferences, ready-up, late join | M | `mob/new_player` | Ready, late join, name, one job choice, `round.md`. Left: looks, observe, 3-level preferences |
 | [x] | 1.3 Crew manifest | S | `computer.dm` `datacore` | On the ID computer, printed too, `access.md`. PDAs' copy waits for 3.21 |
 | [x] | 1.4 Escape pods: call, recall, launch, round end | M-L | `shuttle_controller` | `round.md`. Pods don't physically move; prison shuttle left out |
-| [~] | 1.5 Communications console: alert levels, status displays | S-M | `computer/communications` | Call and stop done. Left: messages, alert levels, status displays, red alert |
+| [x] | 1.5 Communications console: alert levels, status displays | S-M | `computer/communications` | `round.md`. Message list waits for something to send messages; AI interface for 3.9 |
 | [x] | 1.6 Objectives and the end-of-round report | S-M | `newobjective`, `intercept_report` | `traitor.md`. Intercept report left out |
 | [x] | 1.7 Votes: restart and mode | S | `game/vote`, `datums/vote` | `round.md`. Custom votes wait for admins |
 | [~] | 1.8 Traitor mode and uplink | M | `gamemodes/traitor`, `Abi79/uplinks` | `traitor.md`. Sells only what works: more as those systems arrive |

@@ -73,7 +73,7 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, IntentChannel, MoveInput, Notice, Player, StatusUpdate, VoteAction,
+    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, Player, StatusUpdate, VoteAction,
 };
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
@@ -170,6 +170,10 @@ enum UseStep {
     Build(u8),
     /// `buy:N`: buy line `N` of what an open Syndicate uplink sells.
     Buy(u8),
+    /// `commsred`: declare or cancel red alert on an open communications console.
+    CommsRed,
+    /// `commsmsg:TEXT`: put this on the status displays, as `LINE ONE/LINE TWO`.
+    CommsMessage(&'static str),
     /// `callpods`: call the escape pods on an open communications console.
     CallPods,
     /// `ready`: ready for the round to start, in the lobby.
@@ -216,6 +220,10 @@ impl UseStep {
             "jobstay" => Some(Self::JobStay),
             "ready" => Some(Self::Ready),
             "callpods" => Some(Self::CallPods),
+            "commsred" => Some(Self::CommsRed),
+            _ if s.starts_with("commsmsg:") => Some(Self::CommsMessage(Box::leak(
+                s["commsmsg:".len()..].to_owned().into_boxed_str(),
+            ))),
             "drop" => Some(Self::Drop),
             _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
             _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
@@ -289,6 +297,8 @@ struct ChatInput {
     paper: Option<(NetId, rs13_world::PaperMode)>,
     /// What the line is for: T to say, O out of character, M to do something.
     kind: ChatKind,
+    /// The console a display message is for.
+    console: Option<NetId>,
 }
 
 #[derive(Default, Clone, Copy, PartialEq, Eq)]
@@ -301,6 +311,8 @@ enum ChatKind {
     AdminHelp,
     /// F2: an admin verb.
     Admin,
+    /// A message for the status displays, typed as `LINE ONE/LINE TWO`.
+    Display,
 }
 
 /// The secret that gives this client its key on any server (`admin.md`). Kept in a file so the key
@@ -1310,7 +1322,21 @@ fn chat_typing(
                 if !line.trim().is_empty()
                     && let Ok(mut sender) = sender.single_mut()
                 {
+                    if chat.kind == ChatKind::Display {
+                        if let Some(target) = chat.console.take() {
+                            let (one, two) = line.split_once('/').unwrap_or((&line, ""));
+                            sender.send::<IntentChannel>(ActionInput::Comms {
+                                target,
+                                command: CommsCommand::DisplayMessage(
+                                    one.trim().to_owned(),
+                                    two.trim().to_owned(),
+                                ),
+                            });
+                        }
+                        continue;
+                    }
                     sender.send::<IntentChannel>(match chat.kind {
+                        ChatKind::Display => continue,
                         ChatKind::Say => ActionInput::Say(line),
                         ChatKind::Ooc => ActionInput::Ooc(line),
                         ChatKind::Me => ActionInput::Say(format!("*me {line}")),
@@ -1812,6 +1838,7 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
             ChatKind::Me => "chat-prompt-me",
             ChatKind::AdminHelp => "chat-prompt-ahelp",
             ChatKind::Admin => "chat-prompt-admin",
+            ChatKind::Display => "chat-prompt-display",
         };
         let prompt = loc.0.format(prompt, None).unwrap_or_default();
         format!("{prompt} {}_", chat.buffer)
@@ -1992,7 +2019,18 @@ fn scripted_use(
         | UseStep::Ooc(_) => None,
         UseStep::CallPods => comms.0.as_ref().map(|view| ActionInput::Comms {
             target: view.target,
-            call: true,
+            command: CommsCommand::Call,
+        }),
+        UseStep::CommsRed => comms.0.as_ref().map(|view| ActionInput::Comms {
+            target: view.target,
+            command: CommsCommand::RedAlert,
+        }),
+        UseStep::CommsMessage(text) => comms.0.as_ref().map(|view| {
+            let (one, two) = text.split_once('/').unwrap_or((text, ""));
+            ActionInput::Comms {
+                target: view.target,
+                command: CommsCommand::DisplayMessage(one.to_owned(), two.to_owned()),
+            }
         }),
         UseStep::Ready => Some(ActionInput::Ready(true)),
         UseStep::JoinRound => Some(ActionInput::JoinRound),
