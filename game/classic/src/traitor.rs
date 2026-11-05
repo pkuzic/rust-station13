@@ -108,6 +108,10 @@ pub struct Traitor {
     pub remind_at: Option<f32>,
 }
 
+/// Would like to be a traitor (Luna `be_syndicate`): those who would are picked first.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct WantsTraitor;
+
 /// A radio that's really an uplink, and the crystals left in it.
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Uplink {
@@ -259,10 +263,15 @@ pub fn choose_traitors(world: &mut World) {
         return;
     }
     let now = world.resource::<WorldTime>().deciseconds();
+    let mut wanting = world.query_filtered::<Entity, With<WantsTraitor>>();
+    let wants: Vec<Entity> = wanting.iter(world).collect();
     let mut rng = world.resource_mut::<GameRng>();
     let roll = rng.range(0, 5) as usize;
     let count = how_many(all.len(), roll).min(all.len());
-    let mut candidates = all.clone();
+    // If anyone would like to be one, it's from among them (Luna `get_possible_traitors`).
+    let wanting: Vec<_> = all.iter().filter(|(e, ..)| wants.contains(e)).cloned().collect();
+    let mut candidates = if wanting.is_empty() { all.clone() } else { wanting };
+    let count = count.min(candidates.len());
     let mut chosen = Vec::new();
     for _ in 0..count {
         let i = rng.range(0, candidates.len() as i32 - 1) as usize;

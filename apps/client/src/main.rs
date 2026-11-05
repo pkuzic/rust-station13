@@ -102,6 +102,8 @@ struct Args {
     name: Option<String>,
     /// Where this client's secret is kept (`admin.md`), if not the usual place.
     key_file: Option<String>,
+    /// Where this client's character setup is kept (`round.md`), if not the usual place.
+    prefs_file: Option<String>,
     /// Save a screenshot here a few seconds after joining, then quit (for checking).
     screenshot: Option<String>,
     /// Seconds after joining to take it (`--shot-after`, default 4).
@@ -151,6 +153,8 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `observe`: watch as a ghost, from the lobby.
+    Observe,
     /// `admin:TEXT`: an admin verb, as typed on the F2 line.
     Admin(&'static str),
     /// `ahelp:TEXT`: ask the admins, as typed on the F1 line.
@@ -225,6 +229,7 @@ impl UseStep {
                 s["commsmsg:".len()..].to_owned().into_boxed_str(),
             ))),
             "drop" => Some(Self::Drop),
+            "observe" => Some(Self::Observe),
             _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
             _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
             _ if s.starts_with("admin:") => Some(Self::Admin(Box::leak(
@@ -354,13 +359,15 @@ fn load_secret(path: &std::path::Path) -> String {
     secret
 }
 
-/// Say who this is, each time a connection is made.
+/// Say who this is and how they look, each time a connection is made.
 fn send_hello(
     secret: Res<PlayerSecret>,
+    prefs: Res<lobby_panel::Prefs>,
     mut links: Query<&mut MessageSender<ActionInput>, (With<Client>, Added<Connected>)>,
 ) {
     for mut sender in &mut links {
         sender.send::<IntentChannel>(ActionInput::Hello(secret.0.clone()));
+        sender.send::<IntentChannel>(ActionInput::SetPrefs(prefs.data));
     }
 }
 
@@ -466,6 +473,7 @@ fn main() {
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<ToldToLeave>()
+        .insert_resource(lobby_panel::Prefs::load(args.prefs_file.clone()))
         .insert_resource(PlayerSecret(load_secret(&secret_path(args.key_file.clone()))))
         .init_resource::<hud::WalkMode>()
         .init_resource::<hud::AimedZone>()
@@ -591,6 +599,7 @@ fn main() {
                     .chain(),
                 follow_own_player,
                 send_hello,
+                sprites::tint_skin,
                 reconnect,
                 (
                     hud::update_hud,
@@ -618,6 +627,7 @@ fn parse_args() -> Args {
         russian: false,
         name: None,
         key_file: None,
+        prefs_file: None,
         screenshot: None,
         shot_after: 4.0,
         size: None,
@@ -635,6 +645,7 @@ fn parse_args() -> Args {
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
             "--key-file" => args.key_file = it.next(),
+            "--prefs-file" => args.prefs_file = it.next(),
             "--shot-after" => {
                 if let Some(secs) = it.next().and_then(|s| s.parse().ok()) {
                     args.shot_after = secs;
@@ -895,9 +906,9 @@ fn tile_color(id: &str) -> Color {
 /// Placeholder look of an object: colour, size and draw layer.
 fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
     match (appearance.sprite.as_str(), appearance.state.as_str()) {
-        ("human", "unconscious") => (Color::srgb(0.45, 0.45, 0.55), TILE_PX * 0.7, 3.0),
-        ("human", "dead") => (Color::srgb(0.45, 0.10, 0.10), TILE_PX * 0.7, 3.0),
-        ("human", _) => (Color::srgb(0.35, 0.55, 0.95), TILE_PX * 0.7, 3.0),
+        ("human" | "human-f", "unconscious") => (Color::srgb(0.45, 0.45, 0.55), TILE_PX * 0.7, 3.0),
+        ("human" | "human-f", "dead") => (Color::srgb(0.45, 0.10, 0.10), TILE_PX * 0.7, 3.0),
+        ("human" | "human-f", _) => (Color::srgb(0.35, 0.55, 0.95), TILE_PX * 0.7, 3.0),
         ("airlock", "deny") => (Color::srgb(0.85, 0.20, 0.15), TILE_PX - 1.0, 2.0),
         ("airlock", "open") => (Color::srgb(0.22, 0.20, 0.14), TILE_PX - 1.0, 2.0),
         ("airlock", "opening" | "closing") => (Color::srgb(0.70, 0.58, 0.30), TILE_PX - 1.0, 2.0),
@@ -1008,7 +1019,7 @@ fn pick_sprite(
 /// Which thing on a tile a click picks: lowest rank wins.
 fn click_rank(appearance: &Appearance) -> u8 {
     match appearance.sprite.as_str() {
-        "human" | "monkey" => 3,
+        "human" | "human-f" | "monkey" => 3,
         "airlock" | "table" | "table-reinforced" | "table-wood" | "rack" | "microwave" => 2,
         chair if rs13_classic::chairs::is_chair(chair) => 2,
         closet if rs13_classic::closets::is_closet(closet) => 2,
@@ -1934,6 +1945,7 @@ fn scripted_use(
         let input = match step {
             UseStep::Ready => ActionInput::Ready(true),
             UseStep::JoinRound => ActionInput::JoinRound,
+            UseStep::Observe => ActionInput::Observe,
             UseStep::Job(line) => ActionInput::ChooseJob { line: Some(line) },
             // The rest wait until there's a body to do them with.
             _ => return,
@@ -2000,6 +2012,7 @@ fn scripted_use(
         })),
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
+        UseStep::Observe => Some(ActionInput::Observe),
         UseStep::Build(line) => builds.0.as_ref().map(|view| ActionInput::Build {
             target: view.target,
             line,

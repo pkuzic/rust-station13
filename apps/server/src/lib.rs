@@ -339,6 +339,9 @@ fn respawn_ghosts(
             };
             let mob = spawn_controlled_mob(world, spawn, client_id, link);
             world.entity_mut(mob).insert((name, NameChosen));
+            if let Some(prefs) = world.get::<lobby::SavedPrefs>(link).map(|saved| saved.0) {
+                lobby::apply_prefs(world, mob, &prefs);
+            }
             world.entity_mut(link).insert(Controls(mob));
             world.despawn(ghost);
         });
@@ -528,6 +531,10 @@ fn queue_actions(
                     }
                     ActionInput::Hello(secret) => {
                         admin.0.push((link, admin::AdminInput::Hello(secret)));
+                        None
+                    }
+                    ActionInput::SetPrefs(prefs) => {
+                        commands.entity(link).insert(lobby::SavedPrefs(prefs));
                         None
                     }
                     ActionInput::AdminHelp(text) => {
@@ -873,7 +880,18 @@ fn queue_actions(
                     }
                     None
                 }
-                ActionInput::Respawn => None,
+                ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::SetPrefs(prefs) => {
+                    // Told as they connect: once they've a look, it's theirs for this body.
+                    let mob = controls.0;
+                    commands.entity(link).insert(lobby::SavedPrefs(prefs));
+                    commands.queue(move |world: &mut World| {
+                        if world.get::<rs13_world::HumanLook>(mob).is_none() {
+                            lobby::apply_prefs(world, mob, &prefs);
+                        }
+                    });
+                    None
+                }
                 ActionInput::Vote(action) => {
                     votes.0.push((link, action));
                     None

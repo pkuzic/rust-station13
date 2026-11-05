@@ -97,3 +97,52 @@ fn a_finished_round_asks_for_a_restart() {
         bevy::app::AppExit::from_code(rs13_server::RESTART_CODE)
     );
 }
+
+/// Someone's look reaches everyone, and it can't be changed once it's set.
+#[test]
+fn a_character_setup_is_seen_and_set_only_once() {
+    use rs13_network::protocol::ActionInput;
+    use rs13_world::{CharacterPrefs, HumanLook};
+    let port = 20_000 + ((std::process::id() + 23_107) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_map(port, MAP).run());
+    thread::sleep(Duration::from_millis(500));
+    let prefs = |female| CharacterPrefs {
+        look: HumanLook {
+            female,
+            ..HumanLook::default()
+        },
+        ..CharacterPrefs::default()
+    };
+    let report = BotReport::default();
+    let config = BotConfig {
+        server,
+        client_id: unique_client_id(),
+        dir: None,
+        hold: Duration::from_millis(500),
+        examine: None,
+        prefer_job: None,
+        name: None,
+        say: None,
+        script: vec![
+            Step::Wait(Duration::from_millis(500)),
+            Step::Snapshot("before".into()),
+            Step::Act(ActionInput::SetPrefs(prefs(true))),
+            Step::Wait(Duration::from_millis(500)),
+            Step::Snapshot("set".into()),
+            Step::Act(ActionInput::SetPrefs(prefs(false))),
+            Step::Wait(Duration::from_millis(500)),
+            Step::Snapshot("again".into()),
+        ],
+    };
+    let exit = bot_app(config, report.clone()).run();
+    assert!(exit.is_success(), "bot exited with {exit:?}");
+    let result = report.lock().unwrap().take().expect("bot produced a report");
+    let woman = |label: &str| {
+        let shot = result.snapshots.iter().find(|s| s.label == label).unwrap();
+        shot.sprites.iter().any(|s| s == "human-f")
+    };
+    assert!(!woman("before"));
+    assert!(woman("set"));
+    assert!(woman("again"));
+}

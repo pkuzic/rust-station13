@@ -13,7 +13,7 @@ use rs13_classic::time::WorldTime;
 use rs13_i18n::LocMsg;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{ActionInput, LobbyPanel, Notice, NoticeChannel, Player};
-use rs13_world::{DisplayName, LobbyView, MapLayer, TilePos};
+use rs13_world::{Appearance, CharacterPrefs, DisplayName, LobbyView, MapLayer, TilePos};
 
 use crate::{Controls, NameChosen, SentPanel, SentStatus};
 
@@ -28,7 +28,15 @@ pub struct InLobby {
     sent: Option<LobbyView>,
     /// Asked to start, with the round on.
     joining: bool,
+    /// Their character setup.
+    pub prefs: CharacterPrefs,
+    /// Would rather watch.
+    observing: bool,
 }
+
+/// A player's character setup, kept once they've left the lobby: they look the same when they respawn.
+#[derive(Component, Debug, Clone, Copy)]
+pub struct SavedPrefs(pub CharacterPrefs);
 
 /// Read what people in the lobby ask for.
 pub fn read_lobby_inputs(
@@ -42,6 +50,8 @@ pub fn read_lobby_inputs(
         for input in receiver.receive() {
             match input {
                 ActionInput::Ready(ready) => lobby.ready = ready,
+                ActionInput::SetPrefs(prefs) => lobby.prefs = prefs,
+                ActionInput::Observe => lobby.observing = true,
                 ActionInput::Vote(action) => votes.0.push((link, action)),
                 ActionInput::Ooc(text) => ooc.0.push((link, text)),
                 ActionInput::Hello(secret) => admin.0.push((link, AdminInput::Hello(secret))),
@@ -119,18 +129,25 @@ fn enter_world(world: &mut World, link: Entity, starts: &[TilePos], mode: &'stat
     let Some(lobby) = world.get::<InLobby>(link) else {
         return false;
     };
-    let (prefer, name) = (lobby.prefer, lobby.name.clone());
-    let wanted = prefer
-        .and_then(|line| rs13_classic::jobs::jobs().get(line))
-        .map(|job| job.id.clone());
+    let (prefer, name, prefs) = (lobby.prefer, lobby.name.clone(), lobby.prefs);
+    // The job they asked for, or else their choices in order.
+    let wanted: Vec<String> = prefer
+        .into_iter()
+        .chain(prefs.jobs.iter().flatten().map(|line| usize::from(*line)))
+        .filter_map(|line| rs13_classic::jobs::jobs().get(line))
+        .map(|job| job.id.clone())
+        .collect();
     let at = wanted
-        .and_then(|job| free_post(world, &job))
+        .iter()
+        .find_map(|job| free_post(world, job))
         .or_else(|| next_start(world, starts));
     let (Some(at), Some(remote)) = (at, world.get::<RemoteId>(link).map(|r| r.0)) else {
         return false;
     };
     let mob = spawn_player_mob(world, at);
     take_up(world, mob, at);
+    apply_prefs(world, mob, &prefs);
+    world.entity_mut(link).insert(SavedPrefs(prefs));
     world.entity_mut(mob).insert((
         Player {
             client_id: remote.to_bits(),
@@ -170,6 +187,14 @@ pub fn run_round(world: &mut World) {
         .flat_map(|m| m.0.spawns.iter().copied())
         .collect();
     let mut links = world.query::<(Entity, &InLobby)>();
+    let watching: Vec<Entity> = links
+        .iter(world)
+        .filter(|(_, l)| l.observing)
+        .map(|(e, _)| e)
+        .collect();
+    for link in watching {
+        enter_as_observer(world, link, &starts);
+    }
     let mode = match round.phase {
         Phase::Pregame { starts_at } => {
             if now < starts_at {
@@ -227,6 +252,49 @@ pub fn run_round(world: &mut World) {
     }
 }
 
+/// Make someone look as they've set up, and note whether they'd like to be a traitor.
+pub fn apply_prefs(world: &mut World, mob: Entity, prefs: &CharacterPrefs) {
+    if let Some(mut appearance) = world.get_mut::<Appearance>(mob) {
+        appearance.sprite = if prefs.look.female { "human-f" } else { "human" }.to_owned();
+    }
+    world.entity_mut(mob).insert(prefs.look);
+    if prefs.be_traitor {
+        world.entity_mut(mob).insert(rs13_classic::traitor::WantsTraitor);
+    }
+}
+
+/// Into the world as a ghost, to watch (Luna's `observe`).
+fn enter_as_observer(world: &mut World, link: Entity, starts: &[TilePos]) {
+    let Some((name, prefs)) = world
+        .get::<InLobby>(link)
+        .map(|lobby| (lobby.name.clone(), lobby.prefs))
+    else {
+        return;
+    };
+    let (Some(at), Some(remote)) = (starts.first().copied(), world.get::<RemoteId>(link).map(|r| r.0)) else {
+        return;
+    };
+    let ghost = rs13_classic::ghosts::spawn_observer(world, at, name);
+    world.entity_mut(ghost).insert((
+        Player {
+            client_id: remote.to_bits(),
+        },
+        ControlledBy {
+            owner: link,
+            lifetime: Lifetime::SessionBased,
+        },
+    ));
+    world.entity_mut(link).remove::<InLobby>().insert((
+        Controls(ghost),
+        SentStatus::default(),
+        SentPanel::default(),
+        SavedPrefs(prefs),
+    ));
+    if let Some(mut sender) = world.get_mut::<MessageSender<LobbyPanel>>(link) {
+        sender.send::<NoticeChannel>(LobbyPanel(None));
+    }
+}
+
 /// Show each person in the lobby how it stands.
 pub fn send_lobby(world: &mut World) {
     let Some(round) = world.get_resource::<Round>().copied() else {
@@ -238,6 +306,15 @@ pub fn send_lobby(world: &mut World) {
         Phase::Playing { .. } | Phase::Finished { .. } => None,
     };
     let jobs = open_posts(world);
+    let crew: Vec<(String, String)> = {
+        let mut aboard = world.query::<(Entity, &DisplayName, &rs13_classic::jobs::HasJob)>();
+        let mut all: Vec<_> = aboard
+            .iter(world)
+            .map(|(e, n, j)| (e, n.0.clone(), j.0.clone()))
+            .collect();
+        all.sort_by_key(|(e, ..)| *e);
+        all.into_iter().map(|(_, n, j)| (n, j)).collect()
+    };
     let mut links = world.query::<(Entity, &InLobby)>();
     let everyone: Vec<(Entity, bool, Option<usize>, Option<String>)> = links
         .iter(world)
@@ -254,6 +331,7 @@ pub fn send_lobby(world: &mut World) {
             name,
             preference: prefer.and_then(|line| jobs.get(line)).map(|(id, _)| id.clone()),
             jobs: jobs.clone(),
+            crew: crew.clone(),
         };
         let changed = world
             .get::<InLobby>(link)

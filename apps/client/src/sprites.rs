@@ -6,7 +6,9 @@ use bevy::image::{CompressedImageFormats, ImageSampler, ImageType};
 use bevy::prelude::*;
 use bevy::render::render_resource::{Extent3d, TextureDimension};
 use rs13_dmi_import::atlas::Atlas;
-use rs13_world::{Appearance, GridPos, NetId, Slot, TileMap, TilePos, WornView};
+use rs13_world::{
+    Appearance, FACIAL_STYLES, GridPos, HAIR_STYLES, HumanLook, NetId, Slot, TileMap, TilePos, WornView,
+};
 
 /// Built by `rs13-dmi-import` from `client-assets/sprites.ron`. Embedded until assets are
 /// delivered by the server's asset manifest.
@@ -237,7 +239,7 @@ fn alpha_over(under: [u8; 4], over: [u8; 4]) -> [u8; 4] {
 pub fn state_for(appearance: &Appearance) -> String {
     let base = appearance.state.split('+').next().unwrap_or_default();
     match (appearance.sprite.as_str(), base) {
-        ("human" | "monkey", "unconscious" | "dead") => "lying".to_owned(),
+        ("human" | "human-f" | "monkey", "unconscious" | "dead") => "lying".to_owned(),
         // Until `join_lines` sees the neighbours, draw a straight east–west run.
         ("cable" | "pipe", "") => "4-8".to_owned(),
         (_, state) => state.to_owned(),
@@ -454,6 +456,7 @@ pub fn wear_layers(
             Option<&Dressed>,
             Option<&Children>,
             Option<&rs13_world::Ghost>,
+            Option<&HumanLook>,
         ),
         Without<Layer>,
     >,
@@ -461,28 +464,33 @@ pub fn wear_layers(
     layers: Query<(), With<Layer>>,
 ) {
     let Some(atlas) = atlas else { return };
-    for (person, worn, look, dressed, children, ghost) in &people {
-        let keys: Vec<String> = DRAW_ORDER
+    for (person, worn, look, dressed, children, ghost, human) in &people {
+        let body_keys = human.map_or_else(Vec::new, body_layers);
+        let keys: Vec<String> = body_keys
             .into_iter()
-            .filter_map(|slot| match ghost {
-                // What the body wore when they died.
-                Some(ghost) => ghost.worn.iter().find(|(s, _)| *s == slot).map(|(_, a)| a),
-                None => worn
-                    .get(slot)
-                    .and_then(|id| items.iter().find(|(n, _)| **n == id).map(|(_, a)| a)),
-            })
-            // An item in a state of its own (a lit hard hat) is drawn as
-            // "worn:<sprite>-<state>" when there is one.
-            .map(|a| {
-                let stated = format!("{}-{}", a.sprite, a.state);
-                if !a.state.is_empty() && atlas.atlas.get(&format!("worn:{stated}"), "").is_some() {
-                    stated
-                } else {
-                    a.sprite.clone()
-                }
-            })
-            .flat_map(|sprite| [format!("worn:{sprite}"), format!("worn:{sprite}:l")])
-            .filter(|key| atlas.atlas.get(key, "").is_some())
+            .chain(
+                DRAW_ORDER
+                    .into_iter()
+                    .filter_map(|slot| match ghost {
+                        // What the body wore when they died.
+                        Some(ghost) => ghost.worn.iter().find(|(s, _)| *s == slot).map(|(_, a)| a),
+                        None => worn
+                            .get(slot)
+                            .and_then(|id| items.iter().find(|(n, _)| **n == id).map(|(_, a)| a)),
+                    })
+                    // An item in a state of its own (a lit hard hat) is drawn as
+                    // "worn:<sprite>-<state>" when there is one.
+                    .map(|a| {
+                        let stated = format!("{}-{}", a.sprite, a.state);
+                        if !a.state.is_empty() && atlas.atlas.get(&format!("worn:{stated}"), "").is_some() {
+                            stated
+                        } else {
+                            a.sprite.clone()
+                        }
+                    })
+                    .flat_map(|sprite| [format!("worn:{sprite}"), format!("worn:{sprite}:l")]),
+            )
+            .filter(|key| atlas.atlas.get(split_tint(key).0, "").is_some())
             .collect();
         if dressed.is_some_and(|d| d.0 == keys) {
             continue;
@@ -496,13 +504,17 @@ pub fn wear_layers(
         // A ghost is drawn flat (`draw_ghosts`).
         let layered = if ghost.is_some() { &[][..] } else { &keys[..] };
         for (i, key) in layered.iter().enumerate() {
-            if let Some(image) = atlas.sprite(key, &look.state, look.facing) {
+            let (key, tint) = split_tint(key);
+            if let Some(mut image) = atlas.sprite(key, &look.state, look.facing) {
+                if let Some([r, g, b]) = tint {
+                    image.color = Color::srgb_u8(r, g, b);
+                }
                 e.with_child((
                     image,
                     // Slightly in front of the body, in the parent's space.
                     Transform::from_xyz(0.0, 0.0, 0.01 * (i + 1) as f32),
                     Look {
-                        sprite: key.clone(),
+                        sprite: key.to_owned(),
                         state: look.state.clone(),
                         facing: look.facing,
                         since: 0.0,
@@ -512,6 +524,54 @@ pub fn wear_layers(
             }
         }
         e.insert(Dressed(keys));
+    }
+}
+
+/// What's drawn on someone's body under their clothes, in order. Those with `#R,G,B` are tinted.
+fn body_layers(look: &HumanLook) -> Vec<String> {
+    let g = if look.female { "f" } else { "m" };
+    let [r, gr, b] = look.eyes_rgb;
+    let mut keys = Vec::new();
+    if look.underwear > 0 {
+        keys.push(format!("face:underwear{}_{g}", look.underwear));
+    }
+    keys.push(format!("face:eyes#{r},{gr},{b}"));
+    keys.push(format!("face:mouth_{g}"));
+    let [r, gr, b] = look.hair_rgb;
+    if let Some(style) = usize::from(look.facial)
+        .checked_sub(1)
+        .and_then(|l| FACIAL_STYLES.get(l))
+    {
+        keys.push(format!("face:{style}#{r},{gr},{b}"));
+    }
+    if let Some(style) = usize::from(look.hair)
+        .checked_sub(1)
+        .and_then(|l| HAIR_STYLES.get(l))
+    {
+        keys.push(format!("face:{style}#{r},{gr},{b}"));
+    }
+    keys
+}
+
+/// A layer's sprite, and the tint it's drawn with if any.
+fn split_tint(key: &str) -> (&str, Option<[u8; 3]>) {
+    let Some((sprite, tint)) = key.split_once('#') else {
+        return (key, None);
+    };
+    let mut parts = tint.split(',').filter_map(|n| n.parse().ok());
+    let colour = parts.next().zip(parts.next()).zip(parts.next());
+    (sprite, colour.map(|((r, g), b)| [r, g, b]))
+}
+
+/// Skin: darker by multiplying, as near as can be to Luna's taking away. Lighter than the sprite can't
+/// be drawn, so those stay as they are.
+pub fn tint_skin(mut people: Query<(&HumanLook, &mut Sprite), Without<Layer>>) {
+    for (look, mut sprite) in &mut people {
+        let shade = (255 + look.skin.clamp(-180, 0)) as u8;
+        let wanted = Color::srgb_u8(shade, shade, shade);
+        if sprite.color != wanted {
+            sprite.color = wanted;
+        }
     }
 }
 

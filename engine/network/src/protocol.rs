@@ -7,12 +7,13 @@ use lightyear::prelude::*;
 use rs13_i18n::LocMsg;
 use rs13_world::{
     AlarmPanelView, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView, BodyScanView,
-    BrigPanelView, BuildPanelView, CameraPanelView, CameraView, ChemMasterPanelView, ChemPanelView,
-    ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView, GasPanelView, Ghost,
-    GridPos, HandsView, HeaterPanelView, Hidden, IdComputerView, Intent, JobPanelView, LaserPanelView,
-    LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView, PickListView, PixelOffset,
-    PowerMonitorView, RecordsPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView,
-    TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
+    BrigPanelView, BuildPanelView, CameraPanelView, CameraView, CharacterPrefs, ChemMasterPanelView,
+    ChemPanelView, ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
+    GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent,
+    JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView,
+    PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, Silhouette, SleeperPanelView, Slot,
+    SmesPanelView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView,
+    WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -139,6 +140,10 @@ pub enum ActionInput {
         target: NetId,
         line: u8,
     },
+    /// As it connects, and whenever they change: the player's character setup.
+    SetPrefs(CharacterPrefs),
+    /// In the lobby: watch as a ghost instead of playing.
+    Observe,
     /// As it connects: the secret that makes this client's key. Only ever sent to the server.
     Hello(String),
     /// Anywhere: ask the admins for help.
@@ -679,6 +684,7 @@ impl Plugin for ProtocolPlugin {
         app.component::<Hidden>().replicate();
         app.component::<HandsView>().replicate();
         app.component::<WornView>().replicate();
+        app.component::<HumanLook>().replicate();
         app.component::<Ghost>().replicate();
         app.component::<DisplayName>().replicate();
         app.component::<AtmosView>().replicate();

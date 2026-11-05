@@ -498,6 +498,87 @@ pub struct BuildPanelView {
     pub recipes: Vec<(String, u8, u8)>,
 }
 
+/// Luna's hair styles, by their icon state, with "bald" as none of them.
+pub const HAIR_STYLES: [&str; 19] = [
+    "hair_a",
+    "hair_b",
+    "hair_longfringe",
+    "hair_vlongfringe",
+    "hair_longest",
+    "hair_test",
+    "hair_c",
+    "hair_d",
+    "hair_e",
+    "hair_f",
+    "hair_bedhead",
+    "hair_bedheadv2",
+    "hair_spikey",
+    "hair_dreads",
+    "hair_afro",
+    "hair_bigafro",
+    "hair_braid",
+    "hair_kagami",
+    "hair_ponytail",
+];
+/// Luna's beards, by their icon state, with shaved as none of them.
+pub const FACIAL_STYLES: [&str; 13] = [
+    "facial_watson",
+    "facial_chaplin",
+    "facial_selleck",
+    "facial_neckbeard",
+    "facial_fullbeard",
+    "facial_longbeard",
+    "facial_vandyke",
+    "facial_elvis",
+    "facial_abe",
+    "facial_chin",
+    "facial_hip",
+    "facial_gt",
+    "facial_hogan",
+];
+/// How many kinds of underwear there are.
+pub const UNDERWEAR_KINDS: u8 = 5;
+
+/// How someone looks, beyond what they wear (Luna's character setup).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct HumanLook {
+    pub female: bool,
+    /// Lighter above 0, darker below (Luna `s_tone`).
+    pub skin: i16,
+    /// A line of `HAIR_STYLES` past the first, or 0 for bald.
+    pub hair: u8,
+    /// A line of `FACIAL_STYLES` past the first, or 0 for shaved.
+    pub facial: u8,
+    pub hair_rgb: [u8; 3],
+    pub eyes_rgb: [u8; 3],
+    /// 1 to `UNDERWEAR_KINDS`, or 0 for none.
+    pub underwear: u8,
+}
+
+impl Default for HumanLook {
+    fn default() -> Self {
+        Self {
+            female: false,
+            skin: 0,
+            hair: 1,
+            facial: 0,
+            hair_rgb: [16, 16, 16],
+            eyes_rgb: [16, 16, 16],
+            underwear: 1,
+        }
+    }
+}
+
+/// What a player has set up: kept by their client, and told to the server as it connects.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CharacterPrefs {
+    pub look: HumanLook,
+    /// The jobs they'd like, as lines of the list, best first (Luna's `occupation1` to 3).
+    pub jobs: [Option<u8>; 3],
+    /// Would like to be a traitor (Luna `be_syndicate`).
+    pub be_traitor: bool,
+}
+
 /// The lobby, as one player sees it (Luna's `new_player` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LobbyView {
@@ -512,6 +593,8 @@ pub struct LobbyView {
     pub preference: Option<String>,
     /// Every job, by id, and how many posts are free.
     pub jobs: Vec<(String, u16)>,
+    /// Who's aboard: name and job, by id (Luna's "View the Crew Manifest").
+    pub crew: Vec<(String, String)>,
 }
 
 /// The job window a new arrival sees (Luna's job choice).

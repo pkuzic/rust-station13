@@ -16,7 +16,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
 | [x] | 1.1 Round flow: pre-game timer, mode choice, restart | L | `gamemodes/gameticker`, `game_mode`, `setupgame` | `round.md`. Secret mode waits for 2.x |
-| [~] | 1.2 Lobby: character setup, job preferences, ready-up, late join | M | `mob/new_player` | Ready, late join, name, one job choice, `round.md`. Left: looks, observe, 3-level preferences |
+| [x] | 1.2 Lobby: character setup, job preferences, ready-up, late join | M | `mob/new_player` | `round.md`. Luna's saved slots, free colour picker, age, blood type and preview left out |
 | [x] | 1.3 Crew manifest | S | `computer.dm` `datacore` | On the ID computer, printed too, `access.md`. PDAs' copy waits for 3.21 |
 | [x] | 1.4 Escape pods: call, recall, launch, round end | M-L | `shuttle_controller` | `round.md`. Pods don't physically move; prison shuttle left out |
 | [x] | 1.5 Communications console: alert levels, status displays | S-M | `computer/communications` | `round.md`. Message list waits for something to send messages; AI interface for 3.9 |

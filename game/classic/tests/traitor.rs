@@ -253,3 +253,23 @@ fn a_traitor_with_everything_done_wins_when_the_pods_arrive() {
     assert!(told.contains(&"round-traitor-won".to_owned()), "{told:?}");
     let _ = (mob, PendingCommsOps::default(), GridPos(POD));
 }
+
+#[test]
+fn those_who_want_to_be_traitors_are_picked_first() {
+    let mut app = setup();
+    let mobs: Vec<Entity> = (0..6)
+        .map(|i| crew(&mut app, STATION, &format!("Crew {i}")))
+        .collect();
+    app.world_mut()
+        .entity_mut(mobs[4])
+        .insert(rs13_classic::traitor::WantsTraitor);
+    for _ in 0..10 {
+        for mob in &mobs {
+            app.world_mut().entity_mut(*mob).remove::<Traitor>();
+        }
+        choose_traitors(app.world_mut());
+        for (i, mob) in mobs.iter().enumerate() {
+            assert_eq!(app.world().get::<Traitor>(*mob).is_some(), i == 4, "{i}");
+        }
+    }
+}

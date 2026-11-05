@@ -15,6 +15,11 @@ Connecting puts you in the lobby, with no body, on a black screen, and the serve
 station. Before the round you can declare yourself ready, see how long is left and how many are ready, type a name
 with T, and choose the job you'd like, with those that have no free post greyed out.
 
+The lobby also holds a character setup, kept by the client in `rs13-prefs.ron` beside its key: gender, hair and beard from Luna's
+styles, their colour, eye colour, how dark the skin is, underwear, whether you'd like to be a traitor, and three jobs in order.
+Those who'd like to be traitors are picked first. **Observe** enters as a ghost, with no character and no job, and **View the Crew
+Manifest** lists who's aboard once anyone is.
+
 ## Starting
 
 After 180 seconds a mode is picked at random, weighted by Luna's `config.txt`, and everyone ready is put in the
