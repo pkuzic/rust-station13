@@ -119,7 +119,7 @@ fn a_character_setup_is_seen_and_set_only_once() {
         server,
         client_id: unique_client_id(),
         dir: None,
-        hold: Duration::from_millis(500),
+        hold: Duration::from_millis(3_000),
         examine: None,
         prefer_job: None,
         name: None,

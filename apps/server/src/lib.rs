@@ -559,8 +559,14 @@ fn queue_actions(
             continue;
         };
         for input in receiver.receive() {
-            // Not in the world yet: all they can do is choose (`jobs.md`).
-            if choosing && !matches!(input, ActionInput::ChooseJob { .. }) {
+            // Not in the world yet: all they can do is choose (`jobs.md`), besides saying who they are
+            // as they connect.
+            if choosing
+                && !matches!(
+                    input,
+                    ActionInput::ChooseJob { .. } | ActionInput::Hello(_) | ActionInput::SetPrefs(_)
+                )
+            {
                 continue;
             }
             let action = match input {
