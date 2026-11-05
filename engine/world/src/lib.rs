@@ -10,8 +10,8 @@ pub use components::{
     CharacterPrefs, ChemMasterPanelView, ChemPanelView, ClipboardView, CommsPanelView, Dense, DisplayName,
     EnvAlert, FACIAL_STYLES, Facing, FreezerPanelView, GasMachine, GasPanelView, Ghost, GridPos, HAIR_STYLES,
     Hand, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent, JobPanelView,
-    LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperMode, PaperView,
-    PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView,
+    LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, NukePanelView, Opaque, PaperMode,
+    PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView,
     SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, UNDERWEAR_KINDS,
     UplinkPanelView, VendingPanelView, VendingRow, VoteView, WirePanelView, WornView,
 };

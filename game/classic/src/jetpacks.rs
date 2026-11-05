@@ -13,7 +13,7 @@ pub const THRUST_MOLES: f64 = 0.005;
 
 /// Jetpack prototypes: Luna's plain one and the chief engineer's.
 pub fn is_jetpack(proto: &str) -> bool {
-    matches!(proto, "jetpack" | "jetpack-ce")
+    matches!(proto, "jetpack" | "jetpack-ce" | "jetpack-syndie")
 }
 
 /// A jetpack's switch. On, it pushes its wearer through open space and keeps them from

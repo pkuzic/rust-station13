@@ -10,8 +10,8 @@ use rs13_world::{
     BrigPanelView, BuildPanelView, CameraPanelView, CameraView, CharacterPrefs, ChemMasterPanelView,
     ChemPanelView, ClipboardView, CommsPanelView, Dir, DisplayName, EnvAlert, Facing, FreezerPanelView,
     GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent,
-    JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, Opaque, PaperView,
-    PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, SandboxPanelView, Silhouette,
+    JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, NukePanelView, Opaque,
+    PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView, SandboxPanelView, Silhouette,
     SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView,
     WirePanelView, WornView,
 };
@@ -139,6 +139,11 @@ pub enum ActionInput {
     Build {
         target: NetId,
         line: u8,
+    },
+    /// A button on a nuclear bomb's window.
+    Nuke {
+        target: NetId,
+        command: NukeCommand,
     },
     /// Asked of the sandbox panel.
     Sandbox(SandboxCommand),
@@ -495,6 +500,23 @@ pub struct VotePanel(pub VoteView);
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BuildPanel(pub Option<BuildPanelView>);
 
+/// The buttons of a nuclear bomb's window.
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
+pub enum NukeCommand {
+    Disk,
+    Key(u8),
+    Reset,
+    Enter,
+    Time(i8),
+    Timer,
+    Safety,
+    Anchor,
+}
+
+/// Server → one client: the bomb they have open.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct NukePanel(pub Option<NukePanelView>);
+
 /// What can be asked of the sandbox panel. Lines are of what the panel was sent.
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SandboxCommand {
@@ -666,6 +688,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<VotePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<BuildPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<NukePanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<SandboxPanel>()
             .add_direction(NetworkDirection::ServerToClient);

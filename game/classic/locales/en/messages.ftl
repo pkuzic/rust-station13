@@ -703,6 +703,36 @@ sandbox-next = Next page
 sandbox-spawning-on = Sandbox: item spawning has been turned on.
 sandbox-spawning-off = Sandbox: item spawning has been turned off.
 vote-choice-sandbox = Sandbox
+nuke-title = Nuclear Fission Explosive
+nuke-disk-in = Auth. disk: ++++++++++
+nuke-disk-out = Auth. disk: ----------
+nuke-time = Time: { $value }
+nuke-on = on
+nuke-off = off
+nuke-timer = Timer: { $state }
+nuke-safety = Safety: { $state }
+nuke-anchor = Anchor: { $state }
+nuke-display-auth = AUTH
+nuke-blast = The station shakes as a blinding light swallows everything!
+nuke-win-syndicate = The Syndicate's operatives have destroyed the station!
+nuke-killed-everyone = Everyone was killed by the nuclear blast!
+nuke-win-crew = The crew escaped with the disk: the Syndicate's operatives have been stopped!
+nuke-neutral = Neutral victory: the disk didn't get away, but the station still stands. Next time, don't lose the disk!
+nuke-agent = { $name } was a Syndicate agent.
+nuke-agent-dead = { $name } was a Syndicate agent. (dead)
+nuke-pin-on = You activate the pinpointer. { $deck ->
+    [up] The disk is on a deck above.
+    [down] The disk is on a deck below.
+   *[level] The disk is on this deck.
+}
+nuke-pin-off = You deactivate the pinpointer.
+nuke-agent-brief = You are a Syndicate agent! Take the authentication disk and detonate the nuclear bomb on the station.
+nuke-leader-code = The nuclear authorization code is: { $code }
+nuke-guide = How to set off the bomb. Bring it to the station first: a click on the folded bomb bolts it down, and it can only be moved again from its window. Then put in the disk, type the code and press E. Turn off the safety, set the time, and start the timer. Taking out the disk now won't stop it. R resets the keypad. Remember: disk, code, safety, timer, disk, run.
+nuke-radio = Use ":t" to speak on the encrypted Syndicate radio channel.
+vote-choice-nuclear = Nuclear Emergency
+pref-nuke-on = Would be a nuclear agent: yes
+pref-nuke-off = Would be a nuclear agent: no
 shields-raised = You raise the station's shields.
 shields-lowered = You lower the station's shields.
 shields-no-charge = Nothing happens: the shield capacitors hold too little charge.

@@ -231,6 +231,9 @@ pub fn run_round(world: &mut World) {
             if mode == "traitor" {
                 rs13_classic::traitor::choose_traitors(world);
             }
+            if mode == "nuclear" {
+                rs13_classic::nuke::setup_round(world);
+            }
             return;
         }
         Phase::Finished { restart_at } => {
@@ -240,8 +243,9 @@ pub fn run_round(world: &mut World) {
             return;
         }
         Phase::Playing { mode } => {
-            // A sandbox round never finishes by itself (Luna's `check_finished`).
-            if mode != "sandbox" && world.resource::<EscapePods>().state == PodState::Arrived {
+            // A sandbox round never finishes by itself (Luna's `check_finished`). A nuclear blast ends any.
+            let pods_home = mode != "sandbox" && world.resource::<EscapePods>().state == PodState::Arrived;
+            if pods_home || world.resource::<rs13_classic::nuke::NukeState>().detonated {
                 world.resource_mut::<Round>().phase = Phase::Finished {
                     restart_at: now + RESTART_DS,
                 };
@@ -270,6 +274,9 @@ pub fn apply_prefs(world: &mut World, mob: Entity, prefs: &CharacterPrefs) {
         appearance.sprite = if prefs.look.female { "human-f" } else { "human" }.to_owned();
     }
     world.entity_mut(mob).insert(prefs.look);
+    if prefs.be_nuke {
+        world.entity_mut(mob).insert(rs13_classic::nuke::WantsNuke);
+    }
     if prefs.be_traitor {
         world.entity_mut(mob).insert(rs13_classic::traitor::WantsTraitor);
     }

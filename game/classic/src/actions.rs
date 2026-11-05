@@ -297,8 +297,11 @@ pub fn process_actions(
                             Query<(), With<crate::id_computer::IdComputer>>,
                             Query<(), With<crate::hydroponics::PlantPot>>,
                             Query<(), With<crate::security::Barrier>>,
-                            Query<(), With<crate::escape::CommsConsole>>,
-                            Query<(), With<crate::traitor::Uplink>>,
+                            Query<
+                                (),
+                                Or<(With<crate::escape::CommsConsole>, With<crate::nuke::NuclearBomb>)>,
+                            >,
+                            Query<(), Or<(With<crate::traitor::Uplink>, With<crate::nuke::Pinpointer>)>>,
                             Query<
                                 (),
                                 Or<(
@@ -464,14 +467,26 @@ pub fn process_actions(
                 }
                 Action::UseOn(target) if uplinks.contains(target) && !places.contains(target) => {
                     // In the hand it's the uplink (`traitor.md`); on the floor it's picked up.
-                    commands.queue(move |world: &mut World| crate::traitor::use_uplink(world, mob, target));
+                    commands.queue(move |world: &mut World| {
+                        if world.get::<crate::nuke::Pinpointer>(target).is_some() {
+                            crate::nuke::use_pinpointer(world, mob, target);
+                        } else {
+                            crate::traitor::use_uplink(world, mob, target);
+                        }
+                    });
                 }
                 Action::UseOn(target)
                     if comms_consoles.contains(target)
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
                 {
                     // The communications console (`round.md`).
-                    commands.queue(move |world: &mut World| crate::escape::click(world, mob, target));
+                    commands.queue(move |world: &mut World| {
+                        if world.get::<crate::nuke::NuclearBomb>(target).is_some() {
+                            crate::nuke::click(world, mob, target);
+                        } else {
+                            crate::escape::click(world, mob, target);
+                        }
+                    });
                 }
                 Action::UseOn(target)
                     if barriers.contains(target)

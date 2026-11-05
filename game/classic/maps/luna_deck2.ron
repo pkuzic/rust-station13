@@ -4,7 +4,6 @@
 //
 // Skipped (no prototype yet):
 //      4 /obj/effect/landmark/alterations/nopath
-//      2 /obj/effect/landmark/disk_spawn
 //      3 /obj/item/clothing/mask/cigarette/cigar
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      4 /obj/item/weapon/anobattery
@@ -209,7 +208,7 @@
         'č': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "flash", "flashlight", "utility-belt-loaded"]),
         'Ď': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: North), (id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'ď': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "firedoor", dir: South), (id: "airlock", access: ["construction"])]),
-        'Đ': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical"]),
+        'Đ': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical", "landmark-disk-spawn"]),
         'đ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: South)]),
         'Ē': (tile: (id: "plating"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-s")), (id: "firedoor", dir: South), (id: "airlock", access: ["engine"])]),
         'ē': (tile: (id: "floor"), objects: [(id: "airlock", vars: {"id_tag": "eng_airlock_door_int"})]),
@@ -1000,7 +999,7 @@
         '倳': (tile: (id: "floor"), objects: ["wrench", (id: "pipe", dir: East)]),
         '倴': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "pipe", dir: East)]),
         '倵': (tile: (id: "floor"), objects: [(id: "light-small", dir: East), (id: "camera", dir: West, vars: {"c_tag": "Brig Cell B"}), (id: "flasher", vars: {"id": "Cell 2", "pixel_x": "24"})]),
-        '倶': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_1tileendtable")), (id: "camera", dir: East, vars: {"c_tag": "Secure Storage"})]),
+        '倶': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_1tileendtable")), "landmark-disk-spawn", (id: "camera", dir: East, vars: {"c_tag": "Secure Storage"})]),
         '倷': (tile: (id: "floor"), objects: ["shield-plate"]),
         '倸': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [South, East]), "rack", "combat-shotgun"]),
         '倹': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "rack", "pistol", "pistol"]),

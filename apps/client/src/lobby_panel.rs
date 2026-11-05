@@ -42,6 +42,7 @@ pub enum Pref {
     EyeColour,
     Underwear,
     Traitor,
+    Nuke,
     Slot,
 }
 
@@ -114,6 +115,7 @@ impl Prefs {
             Pref::EyeColour => look.eyes_rgb = next_colour(look.eyes_rgb),
             Pref::Underwear => look.underwear = (look.underwear + 1) % (UNDERWEAR_KINDS + 1),
             Pref::Traitor => self.data.be_traitor = !self.data.be_traitor,
+            Pref::Nuke => self.data.be_nuke = !self.data.be_nuke,
             Pref::Slot => self.slot = (self.slot + 1) % self.data.jobs.len(),
         }
     }
@@ -315,6 +317,14 @@ pub fn show_lobby(
             Pref::Underwear,
         ),
         (text(LocMsg::new(traitor)), Pref::Traitor),
+        (
+            text(LocMsg::new(if prefs.data.be_nuke {
+                "pref-nuke-on"
+            } else {
+                "pref-nuke-off"
+            })),
+            Pref::Nuke,
+        ),
     ];
     let setup = commands
         .spawn((

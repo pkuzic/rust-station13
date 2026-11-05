@@ -5,7 +5,6 @@
 // Skipped (no prototype yet):
 //     19 /obj/effect/landmark/alterations/nopath
 //     21 /obj/effect/landmark/crew_spawn
-//      1 /obj/effect/landmark/disk_spawn
 //     15 /obj/effect/landmark/hostile_spawn
 //      1 /obj/item/clothing/gloves/fyellow
 //      1 /obj/item/weapon/gun/syringe
@@ -969,7 +968,7 @@
         '倉': (tile: (id: "floor"), objects: [(id: "pipe", dir: East), (id: "fire-alarm", dir: West, vars: {"pixel_x": "-24"}), (id: "cable", ends: [North, South])]),
         '倊': (tile: (id: "floor"), objects: ["rack", "oxygen-tank", "gas-mask", (id: "vent", dir: West)]),
         '個': (tile: (id: "floor"), objects: [(id: "chair", dir: South), (id: "cable", ends: [North, South])]),
-        '倌': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("tabledir")), "pill-bottle-inaprovaline", (id: "intercom", vars: {"pixel_x": "27"})]),
+        '倌': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("tabledir")), "pill-bottle-inaprovaline", (id: "intercom", vars: {"pixel_x": "27"}), "landmark-disk-spawn"]),
         '倍': (tile: (id: "floor"), objects: [(id: "firedoor", dir: South), (id: "table", dir: South, state: Some("table_1tilethick")), (id: "window-pane", dir: West), "pill-bottle-kelotane", "folder-white"]),
         '倎': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("tabledir")), (id: "first-aid-kit-o2", vars: {"pixel_x": "4", "pixel_y": "4"}), (id: "first-aid-kit", vars: {"pixel_x": "1", "pixel_y": "2"})]),
         '倏': (tile: (id: "floor"), objects: ["locker-doctor"]),

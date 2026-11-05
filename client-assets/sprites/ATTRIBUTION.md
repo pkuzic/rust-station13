@@ -316,6 +316,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `closet-fire:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
 | `closet-legal:blue` | `icons/obj/closet.dmi : "blue"` | CC-BY-SA 3.0 |
 | `closet-legal:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
+| `closet-syndicate-nuclear:syndicate` | `icons/obj/closet.dmi : "syndicate"` | CC-BY-SA 3.0 |
+| `closet-syndicate-nuclear:syndicateopen` | `icons/obj/closet.dmi : "syndicateopen"` | CC-BY-SA 3.0 |
+| `closet-syndicate-personal:syndicate1` | `icons/obj/closet.dmi : "syndicate1"` | CC-BY-SA 3.0 |
+| `closet-syndicate-personal:syndicate1open` | `icons/obj/closet.dmi : "syndicate1open"` | CC-BY-SA 3.0 |
 | `closet-tools:toolcloset` | `icons/obj/closet.dmi : "toolcloset"` | CC-BY-SA 3.0 |
 | `closet-tools:toolclosetopen` | `icons/obj/closet.dmi : "toolclosetopen"` | CC-BY-SA 3.0 |
 | `closet-tools:welded` | `icons/obj/closet.dmi : "welded"` | CC-BY-SA 3.0 |
@@ -814,6 +818,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `jetpack:on` | `icons/obj/tank.dmi : "jetpack1"` | CC-BY-SA 3.0 |
 | `jetpack-ce:` | `icons/obj/tank.dmi : "jetpack0_ce"` | CC-BY-SA 3.0 |
 | `jetpack-ce:on` | `icons/obj/tank.dmi : "jetpack1_ce"` | CC-BY-SA 3.0 |
+| `jetpack-syndie:` | `icons/obj/tank.dmi : "jetpack0_s"` | CC-BY-SA 3.0 |
+| `jetpack-syndie:on` | `icons/obj/tank.dmi : "jetpack1_s"` | CC-BY-SA 3.0 |
 | `ketchup:` | `icons/obj/food.dmi : "ketchup"` | CC-BY-SA 3.0 |
 | `kilt:` | `icons/obj/clothing/uniforms.dmi : "kilt"` | CC-BY-SA 3.0 |
 | `knife:` | `icons/obj/kitchen.dmi : "knife"` | CC-BY-SA 3.0 |
@@ -1078,6 +1084,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `no-raisin:` | `icons/obj/food.dmi : "4no_raisins"` | CC-BY-SA 3.0 |
 | `noodles:` | `icons/obj/food.dmi : "spagetti"` | CC-BY-SA 3.0 |
 | `noticeboard:` | `icons/obj/stationobjs.dmi : "nboard00"` | CC-BY-SA 3.0 |
+| `nuclear-bomb:0` | `icons/obj/stationobjs.dmi : "nuclearbomb0"` | CC-BY-SA 3.0 |
+| `nuclear-bomb:1` | `icons/obj/stationobjs.dmi : "nuclearbomb1"` | CC-BY-SA 3.0 |
+| `nuclear-bomb:2` | `icons/obj/stationobjs.dmi : "nuclearbomb2"` | CC-BY-SA 3.0 |
+| `nuclear-bomb:3` | `icons/obj/stationobjs.dmi : "nuclearbomb3"` | CC-BY-SA 3.0 |
+| `nuclear-disk:` | `icons/obj/items.dmi : "nucleardisk"` | CC-BY-SA 3.0 |
 | `ointment:` | `icons/obj/items.dmi : "ointment"` | CC-BY-SA 3.0 |
 | `operating-table:` | `icons/obj/surgery.dmi : "table2-idle"` | CC-BY-SA 3.0 |
 | `orange:` | `icons/GoonHydroPort/hydroponics.dmi : "orange"` | CC-BY-SA 3.0 |
@@ -1120,6 +1131,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pill-made:` | `icons/obj/chemical.dmi : "pill1"` | CC-BY-SA 3.0 |
 | `pill-silver:` | `icons/obj/chemical.dmi : "pill9"` | CC-BY-SA 3.0 |
 | `pinpointer:` | `icons/obj/device.dmi : "pinoff"` | CC-BY-SA 3.0 |
+| `pinpointer:close` | `icons/obj/device.dmi : "pinonclose"` | CC-BY-SA 3.0 |
+| `pinpointer:direct` | `icons/obj/device.dmi : "pinondirect"` | CC-BY-SA 3.0 |
+| `pinpointer:far` | `icons/obj/device.dmi : "pinonfar"` | CC-BY-SA 3.0 |
+| `pinpointer:medium` | `icons/obj/device.dmi : "pinonmedium"` | CC-BY-SA 3.0 |
+| `pinpointer:null` | `icons/obj/device.dmi : "pinonnull"` | CC-BY-SA 3.0 |
 | `pipe:1-2` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:1-4` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
 | `pipe:1-8` | `icons/obj/pipes.dmi : "intact"` | CC-BY-SA 3.0 |
@@ -1403,6 +1419,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `surgical-drapes:` | `icons/obj/surgery.dmi : "surgical_drapes"` | CC-BY-SA 3.0 |
 | `suspenders:` | `icons/obj/clothing/belts.dmi : "suspenders"` | CC-BY-SA 3.0 |
+| `swat-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
+| `syndicate-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "syndicate"` | CC-BY-SA 3.0 |
 | `syndicate-revolver:revolver` | `icons/obj/gun.dmi : "revolver"` | CC-BY-SA 3.0 |
 | `syringe:d0` | `icons/obj/syringe.dmi : "d0"` | CC-BY-SA 3.0 |
 | `syringe:d10` | `icons/obj/syringe.dmi : "d10"` | CC-BY-SA 3.0 |
@@ -1605,6 +1623,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `teg:teg-op8` | `icons/obj/power.dmi : "teg-op8"` | CC-BY-SA 3.0 |
 | `teg:teg-op9` | `icons/obj/power.dmi : "teg-op9"` | CC-BY-SA 3.0 |
 | `terminal:` | `icons/obj/power.dmi : "term"` | CC-BY-SA 3.0 |
+| `terror-helmet:` | `icons/obj/clothing/hats.dmi : "syndicate-helm-black-red"` | CC-BY-SA 3.0 |
+| `terror-suit:` | `icons/obj/clothing/suits.dmi : "syndicate-black-red"` | CC-BY-SA 3.0 |
 | `thermal-plate:` | `icons/obj/atmospherics/cold_sink.dmi : "intact_off"` | CC-BY-SA 3.0 |
 | `tile:floor:` | `icons/turf/floors.dmi : "floor"` | CC-BY-SA 3.0 |
 | `tile:grille:` | `icons/obj/structures.dmi : "grille"` | CC-BY-SA 3.0 |
@@ -1970,6 +1990,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:jetpack-ce-on:lying` | `icons/mob/back.dmi : "jetpack1_ce2"` | CC-BY-SA 3.0 |
 | `worn:jetpack-on:` | `icons/mob/back.dmi : "jetpack1"` | CC-BY-SA 3.0 |
 | `worn:jetpack-on:lying` | `icons/mob/back.dmi : "jetpack12"` | CC-BY-SA 3.0 |
+| `worn:jetpack-syndie:` | `icons/mob/back.dmi : "jetpack0_s"` | CC-BY-SA 3.0 |
+| `worn:jetpack-syndie:lying` | `icons/mob/back.dmi : "jetpack0_s2"` | CC-BY-SA 3.0 |
+| `worn:jetpack-syndie-on:` | `icons/mob/back.dmi : "jetpack1_s"` | CC-BY-SA 3.0 |
+| `worn:jetpack-syndie-on:lying` | `icons/mob/back.dmi : "jetpack1_s2"` | CC-BY-SA 3.0 |
 | `worn:kilt:` | `icons/mob/uniform.dmi : "kilt_s"` | CC-BY-SA 3.0 |
 | `worn:kilt:lying` | `icons/mob/uniform.dmi : "kilt_l"` | CC-BY-SA 3.0 |
 | `worn:labcoat:` | `icons/mob/suit.dmi : "labcoat"` | CC-BY-SA 3.0 |
@@ -2080,6 +2104,14 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:sunglasses:lying` | `icons/mob/eyes.dmi : "sun2"` | CC-BY-SA 3.0 |
 | `worn:suspenders:` | `icons/mob/suit.dmi : "suspenders"` | CC-BY-SA 3.0 |
 | `worn:suspenders:lying` | `icons/mob/suit.dmi : "suspenders2"` | CC-BY-SA 3.0 |
+| `worn:swat-gloves:` | `icons/mob/hands.dmi : "swat_gl"` | CC-BY-SA 3.0 |
+| `worn:swat-gloves:lying` | `icons/mob/hands.dmi : "swat_gl2"` | CC-BY-SA 3.0 |
+| `worn:syndicate-jumpsuit:` | `icons/mob/uniform.dmi : "syndicate_s"` | CC-BY-SA 3.0 |
+| `worn:syndicate-jumpsuit:lying` | `icons/mob/uniform.dmi : "syndicate_l"` | CC-BY-SA 3.0 |
+| `worn:terror-helmet:` | `icons/mob/head.dmi : "syndicate-helm-black-red"` | CC-BY-SA 3.0 |
+| `worn:terror-helmet:lying` | `icons/mob/head.dmi : "syndicate-helm-black-red2"` | CC-BY-SA 3.0 |
+| `worn:terror-suit:` | `icons/mob/suit.dmi : "syndicate-black-red"` | CC-BY-SA 3.0 |
+| `worn:terror-suit:lying` | `icons/mob/suit.dmi : "syndicate-black-red2"` | CC-BY-SA 3.0 |
 | `worn:top-hat:` | `icons/mob/head.dmi : "tophat"` | CC-BY-SA 3.0 |
 | `worn:top-hat:lying` | `icons/mob/head.dmi : "tophat2"` | CC-BY-SA 3.0 |
 | `worn:ushanka:` | `icons/mob/head.dmi : "ushankadown"` | CC-BY-SA 3.0 |

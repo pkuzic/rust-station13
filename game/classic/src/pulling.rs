@@ -36,6 +36,7 @@ pub struct Pullable<'w, 's> {
             Option<&'static crate::filing::FilingCabinet>,
             Has<crate::heaters::SpaceHeater>,
             Option<&'static crate::security::Barrier>,
+            Option<&'static crate::nuke::NuclearBomb>,
         ),
         With<GridPos>,
     >,
@@ -45,7 +46,7 @@ impl Pullable<'_, '_> {
     /// Items, people, closets and crates, chairs, space heaters, an unlocked barrier, a canister not wrenched to
     /// a port, and a generator or filing cabinet not bolted down.
     pub fn check(&self, target: Entity) -> bool {
-        let Ok((item, mob, closet, chair, member, canister, generator, cabinet, heater, barrier)) =
+        let Ok((item, mob, closet, chair, member, canister, generator, cabinet, heater, barrier, bomb)) =
             self.things.get(target)
         else {
             return false;
@@ -58,6 +59,7 @@ impl Pullable<'_, '_> {
             || cabinet.is_some_and(|c| !c.anchored)
             || heater
             || barrier.is_some_and(|b| !b.locked)
+            || bomb.is_some_and(|b| !b.anchored)
     }
 }
 

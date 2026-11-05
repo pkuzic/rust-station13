@@ -70,6 +70,12 @@
     // Luna `tank/jetpack`: an oxygen tank like the big one, worn on the back; w_class 4.
     (id: "jetpack", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     (id: "jetpack-ce", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
+    (id: "jetpack-syndie", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
+    (id: "terror-suit", force: 0.0, size: 4, slot: "suit", slowdown: 1.0, space: true, covers: 2046, armor: (melee: 40, bullet: 50, laser: 30, energy: 15, bomb: 30), heat: 0.02, protect_k: 1000.0),
+    (id: "terror-helmet", force: 0.0, slot: "head", space: true, covers: 1, armor: (melee: 40, bullet: 50, laser: 30, energy: 15, bomb: 30), heat: 0.1, protect_k: 500.0),
+    (id: "syndicate-jumpsuit", force: 0.0, slot: "uniform"),
+    (id: "swat-gloves", force: 0.0, slot: "gloves"),
+    (id: "nuclear-disk", force: 0.0, size: 1),
     (id: "grey-jumpsuit", force: 0.0, slot: "uniform"),
     (id: "black-shoes", force: 0.0, slot: "shoes", slowdown: -1.0, covers: 96, heat: 0.01, protect_k: 1500.0),
     (id: "insulated-gloves", force: 0.0, size: 2, slot: "gloves", siemens: 0.0, covers: 1536, heat: 0.01, protect_k: 1000.0),
