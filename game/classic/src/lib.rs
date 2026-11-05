@@ -72,6 +72,7 @@ pub mod movement;
 pub mod multiz;
 pub mod names;
 pub mod navbeacons;
+pub mod nuke;
 pub mod objects;
 pub mod paperwork;
 pub mod portables;
@@ -151,6 +152,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<escape::EscapePods>()
             .init_resource::<construction::WallProgress>()
             .init_resource::<escape::StationAlert>()
+            .init_resource::<nuke::NukeState>()
             .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
@@ -430,6 +432,7 @@ impl Plugin for ClassicPlugin {
                             hydroponics::run_pots,
                             escape::run_escape,
                             escape::update_comms_views,
+                            (nuke::run_nuke, nuke::update_pinpointers, nuke::update_nuke_views),
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,

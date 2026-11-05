@@ -67,6 +67,8 @@ running rounds, to change the mode. It's open for a minute, and the next can sta
 
 `rs13-server --vote-seconds N` shortens a vote, for trying it out.
 
+The nuclear emergency has its own page, `nuke.md`.
+
 ## Extended and sandbox
 
 Extended has nothing more to it than a word of welcome. Sandbox never comes up by chance (probability 0): it has to be voted for or

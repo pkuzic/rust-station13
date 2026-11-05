@@ -3,7 +3,6 @@
 // import again.
 //
 // Skipped (no prototype yet):
-//      1 /obj/effect/landmark/disk_spawn
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
 //      1 /obj/machinery/computer/cargo/ordercomp
@@ -277,7 +276,7 @@
         'β': (tile: (id: "floor"), objects: [(id: "table", dir: North, state: Some("tabledir")), "flash", "flashlight", "utility-belt-loaded"]),
         'γ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: North), (id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'δ': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "firedoor", dir: South), (id: "airlock", access: ["construction"])]),
-        'ε': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical"]),
+        'ε': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "toolbox-mechanical", "landmark-disk-spawn"]),
         'ζ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "window-pane", dir: West), (id: "window-pane", dir: South)]),
         'η': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: North, state: Some("pipe-c"))]),
         'θ': (tile: (id: "plating"), objects: [(id: "disposal-pipe", dir: East, state: Some("pipe-s")), (id: "firedoor", dir: South), (id: "airlock", access: ["engine"])]),

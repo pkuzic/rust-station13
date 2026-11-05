@@ -14,6 +14,15 @@
 // air tanks, radiation suits and the RCD.
 [
     (id: "closet", closed: "closed", open: "open"),
+    // Luna `closet/syndicate/personal` and `nuclear`; what isn't built yet is left out.
+    (id: "closet-syndicate-personal", closed: "syndicate1", open: "syndicate1open", contents: [
+        (id: "jetpack-syndie"), (id: "breath-mask"), (id: "syndicate-jumpsuit"), (id: "terror-helmet"),
+        (id: "terror-suit"), (id: "power-cell"),
+    ]),
+    (id: "closet-syndicate-nuclear", closed: "syndicate", open: "syndicateopen", contents: [
+        (id: "handcuffs-box"), (id: "energy-gun"), (id: "energy-gun"), (id: "energy-gun"),
+        (id: "pinpointer"), (id: "pinpointer"), (id: "pinpointer"), (id: "uplink-radio"),
+    ]),
     // Luna `emcloset`: an engineering oxygen tank one time in ten; ours is always the
     // plain emergency one.
     (id: "closet-emergency", closed: "emergency", open: "emergencyopen", contents: [

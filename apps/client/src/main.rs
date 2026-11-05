@@ -40,6 +40,7 @@ mod lighting;
 mod lobby_panel;
 mod master_panel;
 mod monitor_panel;
+mod nuke_panel;
 mod paper_panel;
 mod pick_panel;
 mod records_panel;
@@ -74,8 +75,8 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, Player, SandboxCommand, StatusUpdate,
-    VoteAction,
+    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, NukeCommand, Player, SandboxCommand,
+    StatusUpdate, VoteAction,
 };
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
@@ -155,6 +156,8 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `nuke:disk|e|r|timer|safety|anchor|N|+N|-N`: a button of a nuclear bomb's window.
+    Nuke(NukeCommand),
     /// `sandbox`, `suit`, `kit:N` or `object:N`: the sandbox panel.
     SandboxOpen,
     SandboxSuit,
@@ -237,6 +240,19 @@ impl UseStep {
             ))),
             "drop" => Some(Self::Drop),
             "observe" => Some(Self::Observe),
+            _ if s.starts_with("nuke:") => match s["nuke:".len()..].trim() {
+                "disk" => Some(Self::Nuke(NukeCommand::Disk)),
+                "e" => Some(Self::Nuke(NukeCommand::Enter)),
+                "r" => Some(Self::Nuke(NukeCommand::Reset)),
+                "timer" => Some(Self::Nuke(NukeCommand::Timer)),
+                "safety" => Some(Self::Nuke(NukeCommand::Safety)),
+                "anchor" => Some(Self::Nuke(NukeCommand::Anchor)),
+                time if time.starts_with(['+', '-']) => time
+                    .parse()
+                    .ok()
+                    .map(|change| Self::Nuke(NukeCommand::Time(change))),
+                digit => digit.parse().ok().map(|key| Self::Nuke(NukeCommand::Key(key))),
+            },
             "sandbox" => Some(Self::SandboxOpen),
             "suit" => Some(Self::SandboxSuit),
             _ if s.starts_with("kit:") => s["kit:".len()..].trim().parse().ok().map(Self::SandboxKit),
@@ -517,6 +533,7 @@ fn main() {
         .init_resource::<uplink_panel::OpenUplink>()
         .init_resource::<build_panel::OpenBuild>()
         .init_resource::<sandbox_panel::OpenSandbox>()
+        .init_resource::<nuke_panel::OpenNuke>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -585,6 +602,7 @@ fn main() {
                             (comms_panel::receive_comms, comms_panel::show_comms).chain(),
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
                             (build_panel::receive_build, build_panel::show_build).chain(),
+                            (nuke_panel::receive_nuke, nuke_panel::show_nuke).chain(),
                             (
                                 sandbox_panel::toggle_sandbox,
                                 sandbox_panel::receive_sandbox,
@@ -892,6 +910,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<uplink_panel::OpenUplink>().0 = None;
     world.resource_mut::<build_panel::OpenBuild>().0 = None;
     world.resource_mut::<sandbox_panel::OpenSandbox>().view = None;
+    world.resource_mut::<nuke_panel::OpenNuke>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
     world.resource_mut::<paper_panel::OpenPaper>().0 = None;
@@ -1890,7 +1909,7 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink, builds): (
+    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink, builds, nukes): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1902,6 +1921,7 @@ fn scripted_use(
         Res<comms_panel::OpenComms>,
         Res<uplink_panel::OpenUplink>,
         Res<build_panel::OpenBuild>,
+        Res<nuke_panel::OpenNuke>,
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
@@ -2034,6 +2054,10 @@ fn scripted_use(
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Observe => Some(ActionInput::Observe),
+        UseStep::Nuke(command) => nukes.0.as_ref().map(|view| ActionInput::Nuke {
+            target: view.target,
+            command,
+        }),
         UseStep::SandboxOpen => Some(ActionInput::Sandbox(SandboxCommand::Open)),
         UseStep::SandboxSuit => Some(ActionInput::Sandbox(SandboxCommand::Suit)),
         UseStep::SandboxKit(line) => Some(ActionInput::Sandbox(SandboxCommand::Kit(line))),

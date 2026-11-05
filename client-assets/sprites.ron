@@ -247,6 +247,53 @@
             "": (dmi: "icons/mob/human.dmi", state: "underwear5_f_s"),
             "lying": (dmi: "icons/mob/human.dmi", state: "underwear5_f_l"),
         },
+        "nuclear-bomb": {
+            "0": (dmi: "icons/obj/stationobjs.dmi", state: "nuclearbomb0"),
+            "1": (dmi: "icons/obj/stationobjs.dmi", state: "nuclearbomb1"),
+            "2": (dmi: "icons/obj/stationobjs.dmi", state: "nuclearbomb2"),
+            "3": (dmi: "icons/obj/stationobjs.dmi", state: "nuclearbomb3"),
+        },
+        "nuclear-disk": { "": (dmi: "icons/obj/items.dmi", state: "nucleardisk") },
+        "syndicate-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "syndicate") },
+        "swat-gloves": { "": (dmi: "icons/obj/clothing/gloves.dmi", state: "black") },
+        "terror-suit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "syndicate-black-red") },
+        "terror-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "syndicate-helm-black-red") },
+        "jetpack-syndie": {
+            "": (dmi: "icons/obj/tank.dmi", state: "jetpack0_s"),
+            "on": (dmi: "icons/obj/tank.dmi", state: "jetpack1_s"),
+        },
+        "closet-syndicate-personal": {
+            "syndicate1": (dmi: "icons/obj/closet.dmi", state: "syndicate1"),
+            "syndicate1open": (dmi: "icons/obj/closet.dmi", state: "syndicate1open"),
+        },
+        "closet-syndicate-nuclear": {
+            "syndicate": (dmi: "icons/obj/closet.dmi", state: "syndicate"),
+            "syndicateopen": (dmi: "icons/obj/closet.dmi", state: "syndicateopen"),
+        },
+        "worn:syndicate-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "syndicate_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "syndicate_l"),
+        },
+        "worn:swat-gloves": {
+            "": (dmi: "icons/mob/hands.dmi", state: "swat_gl"),
+            "lying": (dmi: "icons/mob/hands.dmi", state: "swat_gl2"),
+        },
+        "worn:terror-suit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "syndicate-black-red"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "syndicate-black-red2"),
+        },
+        "worn:terror-helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "syndicate-helm-black-red"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "syndicate-helm-black-red2"),
+        },
+        "worn:jetpack-syndie": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack0_s"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack0_s2"),
+        },
+        "worn:jetpack-syndie-on": {
+            "": (dmi: "icons/mob/back.dmi", state: "jetpack1_s"),
+            "lying": (dmi: "icons/mob/back.dmi", state: "jetpack1_s2"),
+        },
         // Worn: "worn:<item id>", drawn over the body in slot order (docs/reference/equipment.md).
         // Gloves are two layers, one per hand ("worn:<id>:l").
         "worn:grey-jumpsuit": {
@@ -2517,7 +2564,14 @@
         "pill-inaprovaline": { "": (dmi: "icons/obj/chemical.dmi", state: "pill20") },
         "pill-antitox": { "": (dmi: "icons/obj/chemical.dmi", state: "pill17") },
         "bucket": { "": (dmi: "icons/obj/janitor.dmi", state: "bucket") },
-        "pinpointer": { "": (dmi: "icons/obj/device.dmi", state: "pinoff") },
+        "pinpointer": {
+            "": (dmi: "icons/obj/device.dmi", state: "pinoff"),
+            "null": (dmi: "icons/obj/device.dmi", state: "pinonnull"),
+            "direct": (dmi: "icons/obj/device.dmi", state: "pinondirect"),
+            "close": (dmi: "icons/obj/device.dmi", state: "pinonclose"),
+            "medium": (dmi: "icons/obj/device.dmi", state: "pinonmedium"),
+            "far": (dmi: "icons/obj/device.dmi", state: "pinonfar"),
+        },
         "cartridge-security": { "": (dmi: "icons/obj/pda.dmi", state: "cart") },
         "cartridge-head": { "": (dmi: "icons/obj/pda.dmi", state: "cart") },
         "cartridge-engineering": { "": (dmi: "icons/obj/pda.dmi", state: "cart") },

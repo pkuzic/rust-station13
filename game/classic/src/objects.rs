@@ -223,6 +223,19 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::construction::spawn_girder(world, proto, pos, id));
     }
+    if proto.starts_with("landmark-") {
+        // Only ever seen by the server, when a nuclear round is set up.
+        let mut mark = world.spawn((GridPos(pos), crate::nuke::Landmark(proto.to_owned())));
+        if spec.vars.get("name").is_some_and(|name| name.contains("Strong")) {
+            mark.insert(crate::nuke::LandmarkStrong);
+        }
+        return Ok(mark.id());
+    }
+    if proto == crate::nuke::BOMB {
+        // An admin's: no keypad can type Luna's "ADMIN".
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::nuke::spawn_bomb(world, pos, id, "ADMIN"));
+    }
     if proto == crate::escape::COMMS_CONSOLE {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::escape::spawn_console(world, pos, id));
@@ -600,6 +613,12 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     }
     if proto == crate::traitor::UPLINK {
         item.insert(crate::traitor::Uplink::default());
+    }
+    if proto == crate::nuke::DISK {
+        item.insert(crate::nuke::NuclearDisk);
+    }
+    if proto == crate::nuke::PINPOINTER {
+        item.insert(crate::nuke::Pinpointer::default());
     }
     if crate::jetpacks::is_jetpack(proto) {
         item.insert(crate::jetpacks::Jetpack::default());

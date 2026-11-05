@@ -36,7 +36,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
 | [x] | 2.1 Extended and sandbox | S | `gamemodes/extended`, `sandbox` | `round.md`. Luna's list of offsets and counts for spawned items left out: one at your feet |
-| [ ] | 2.2 Nuke: team, bomb, disk, pinpointer, base | M | `gamemodes/nuclear` | Needs 1.13 |
+| [x] | 2.2 Nuke: team, bomb, disk, pinpointer, base | M | `gamemodes/nuclear` | `nuke.md`. Goods the closets lack wait on their systems |
 | [ ] | 2.3 Revolution and rp-revolution | M | `gamemodes/revolution` | Flash exists |
 | [ ] | 2.4 Changeling | L | `gamemodes/changeling` | |
 | [ ] | 2.5 Malfunction | M | `gamemodes/malfunction` | Needs 3.9 |

@@ -38,6 +38,7 @@ use rs13_classic::jobs::{JobPanelOut, PendingJobOps};
 use rs13_classic::medbay::{PendingSleeperOps, ScanPanelOut, SleeperPanelOut};
 use rs13_classic::movement::MoveIntent;
 use rs13_classic::names::sanitize_name;
+use rs13_classic::nuke::{NukeOp, NukePanelOut};
 use rs13_classic::objects::{spawn_player_mob, spawn_station};
 use rs13_classic::paperwork::{ClipboardOut, PaperOp, PaperOut, PendingPaperOps};
 use rs13_classic::power_monitor::PowerMonitorOut;
@@ -59,9 +60,10 @@ use rs13_network::protocol::{
     ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, BuildPanel, CameraPanel, ChemCommand,
     ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsCommand,
     CommsPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
-    IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, PaperPanel,
-    PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel, SmesCommand, SmesLevel,
-    SmesPanel, SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
+    IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, NukeCommand,
+    NukePanel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, SleeperPanel,
+    SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel,
+    WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -196,6 +198,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .init_resource::<lobby::OocInbox>()
     .init_resource::<admin::AdminInbox>()
     .init_resource::<admin::AdminConfig>()
+    .add_systems(FixedPostUpdate, send_nuke_panels)
     .add_systems(
         FixedUpdate,
         (
@@ -346,6 +349,28 @@ fn respawn_ghosts(
             world.entity_mut(link).insert(Controls(mob));
             world.despawn(ghost);
         });
+    }
+}
+
+/// Show each player the bomb they have open.
+fn send_nuke_panels(
+    mut links: Query<(Entity, &Controls, &mut MessageSender<NukePanel>)>,
+    mobs: Query<&NukePanelOut>,
+    mut sent: Local<std::collections::HashMap<Entity, rs13_world::NukePanelView>>,
+) {
+    for (link, controls, mut sender) in &mut links {
+        let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
+        if sent.get(&link) != now.as_ref() {
+            sender.send::<NoticeChannel>(NukePanel(now.clone()));
+            match now {
+                Some(view) => {
+                    sent.insert(link, view);
+                }
+                None => {
+                    sent.remove(&link);
+                }
+            }
+        }
     }
 }
 
@@ -888,6 +913,24 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::Nuke { target, command } => {
+                    let mob = controls.0;
+                    if let Some(bomb) = resolve(target) {
+                        let op = match command {
+                            NukeCommand::Disk => NukeOp::Disk,
+                            NukeCommand::Key(digit) => NukeOp::Key(digit),
+                            NukeCommand::Reset => NukeOp::Reset,
+                            NukeCommand::Enter => NukeOp::Enter,
+                            NukeCommand::Time(change) => NukeOp::Time(i32::from(change)),
+                            NukeCommand::Timer => NukeOp::Timer,
+                            NukeCommand::Safety => NukeOp::Safety,
+                            NukeCommand::Anchor => NukeOp::Anchor,
+                        };
+                        commands
+                            .queue(move |world: &mut World| rs13_classic::nuke::apply(world, mob, bomb, op));
+                    }
+                    None
+                }
                 ActionInput::Sandbox(command) => {
                     let mob = controls.0;
                     commands.queue(move |world: &mut World| sandbox::run_command(world, link, mob, command));

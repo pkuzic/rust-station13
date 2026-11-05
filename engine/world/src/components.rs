@@ -577,6 +577,26 @@ pub struct CharacterPrefs {
     pub jobs: [Option<u8>; 3],
     /// Would like to be a traitor (Luna `be_syndicate`).
     pub be_traitor: bool,
+    /// Would like to be a nuclear agent (Luna `be_nuke_agent`).
+    #[serde(default)]
+    pub be_nuke: bool,
+}
+
+/// An open nuclear bomb's window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NukePanelView {
+    /// The bomb.
+    pub target: NetId,
+    /// The authentication disk is in it.
+    pub disk: bool,
+    /// The right code has been entered.
+    pub code_ok: bool,
+    /// What's been typed.
+    pub display: String,
+    pub timing: bool,
+    pub time_left: u32,
+    pub safety: bool,
+    pub anchored: bool,
 }
 
 /// The sandbox panel: the suit-up line's message, the kits by item id and amount, and every item that
