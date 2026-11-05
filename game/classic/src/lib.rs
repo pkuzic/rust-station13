@@ -82,6 +82,7 @@ pub mod pulling;
 pub mod radio;
 pub mod reagent_tanks;
 pub mod records;
+pub mod revolution;
 pub mod rng;
 pub mod round;
 pub mod scenery;
@@ -433,6 +434,7 @@ impl Plugin for ClassicPlugin {
                             escape::run_escape,
                             escape::update_comms_views,
                             (nuke::run_nuke, nuke::update_pinpointers, nuke::update_nuke_views),
+                            revolution::run_revolution,
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,

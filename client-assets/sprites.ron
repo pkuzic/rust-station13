@@ -294,6 +294,10 @@
             "": (dmi: "icons/mob/back.dmi", state: "jetpack1_s"),
             "lying": (dmi: "icons/mob/back.dmi", state: "jetpack1_s2"),
         },
+        "rev-mark": {
+            "": (dmi: "icons/mob/mob.dmi", state: "rev"),
+            "head": (dmi: "icons/mob/mob.dmi", state: "rev_head"),
+        },
         // Worn: "worn:<item id>", drawn over the body in slot order (docs/reference/equipment.md).
         // Gloves are two layers, one per hand ("worn:<id>:l").
         "worn:grey-jumpsuit": {

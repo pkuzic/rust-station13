@@ -741,6 +741,11 @@ pub fn process_actions(
                         {
                             closets.toggle_lock(mob, &hands, target)
                         }
+                        crate::verbs::REV_CONVERT => {
+                            commands
+                                .queue(move |world: &mut World| crate::revolution::ask(world, mob, target));
+                            None
+                        }
                         crate::verbs::ROTATE_CHAIR if near => chairs.rotate(target),
                         crate::verbs::TOGGLE_LIGHT if carried => flashlights.use_self(target),
                         crate::verbs::TOGGLE_JETPACK if carried => jetpacks.use_self(target),

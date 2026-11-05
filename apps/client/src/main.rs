@@ -44,6 +44,7 @@ mod nuke_panel;
 mod paper_panel;
 mod pick_panel;
 mod records_panel;
+mod rev_panel;
 mod sandbox_panel;
 mod scaling;
 mod scan_panel;
@@ -156,6 +157,10 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `revyes` or `revno`: answer being asked to join an RP revolution.
+    RevAnswer(bool),
+    /// `revask:DX,DY`: ask whoever's there to join an RP revolution.
+    RevAsk(i32, i32),
     /// `nuke:disk|e|r|timer|safety|anchor|N|+N|-N`: a button of a nuclear bomb's window.
     Nuke(NukeCommand),
     /// `sandbox`, `suit`, `kit:N` or `object:N`: the sandbox panel.
@@ -253,6 +258,12 @@ impl UseStep {
                     .map(|change| Self::Nuke(NukeCommand::Time(change))),
                 digit => digit.parse().ok().map(|key| Self::Nuke(NukeCommand::Key(key))),
             },
+            "revyes" => Some(Self::RevAnswer(true)),
+            "revno" => Some(Self::RevAnswer(false)),
+            _ if s.starts_with("revask:") => {
+                let (dx, dy) = s["revask:".len()..].split_once(',')?;
+                Some(Self::RevAsk(dx.trim().parse().ok()?, dy.trim().parse().ok()?))
+            }
             "sandbox" => Some(Self::SandboxOpen),
             "suit" => Some(Self::SandboxSuit),
             _ if s.starts_with("kit:") => s["kit:".len()..].trim().parse().ok().map(Self::SandboxKit),
@@ -534,6 +545,8 @@ fn main() {
         .init_resource::<build_panel::OpenBuild>()
         .init_resource::<sandbox_panel::OpenSandbox>()
         .init_resource::<nuke_panel::OpenNuke>()
+        .init_resource::<rev_panel::RevMembers>()
+        .init_resource::<rev_panel::RevQuestion>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -603,6 +616,12 @@ fn main() {
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
                             (build_panel::receive_build, build_panel::show_build).chain(),
                             (nuke_panel::receive_nuke, nuke_panel::show_nuke).chain(),
+                            (
+                                rev_panel::receive_rev,
+                                rev_panel::draw_rev_marks,
+                                rev_panel::show_question,
+                            )
+                                .chain(),
                             (
                                 sandbox_panel::toggle_sandbox,
                                 sandbox_panel::receive_sandbox,
@@ -911,6 +930,8 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<build_panel::OpenBuild>().0 = None;
     world.resource_mut::<sandbox_panel::OpenSandbox>().view = None;
     world.resource_mut::<nuke_panel::OpenNuke>().0 = None;
+    world.resource_mut::<rev_panel::RevMembers>().0.clear();
+    world.resource_mut::<rev_panel::RevQuestion>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
     world.resource_mut::<paper_panel::OpenPaper>().0 = None;
@@ -2054,6 +2075,18 @@ fn scripted_use(
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Observe => Some(ActionInput::Observe),
+        UseStep::RevAnswer(yes) => Some(ActionInput::RevAnswer(yes)),
+        UseStep::RevAsk(dx, dy) => {
+            let tile = (me.0.x + dx, me.0.y + dy);
+            let target = objects
+                .iter()
+                .find(|(_, p, a)| (a.sprite == "human" || a.sprite == "human-f") && (p.0.x, p.0.y) == tile)
+                .map(|(id, ..)| *id);
+            target.map(|target| ActionInput::Verb {
+                target,
+                verb: rs13_classic::verbs::REV_CONVERT.to_owned(),
+            })
+        }
         UseStep::Nuke(command) => nukes.0.as_ref().map(|view| ActionInput::Nuke {
             target: view.target,
             command,

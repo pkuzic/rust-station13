@@ -232,7 +232,7 @@ fn give_uplink(world: &mut World, mob: Entity, at: TilePos) {
 }
 
 /// Into a free hand, if there is one.
-fn put_in_hand(world: &mut World, mob: Entity, item: Entity) -> bool {
+pub(crate) fn put_in_hand(world: &mut World, mob: Entity, item: Entity) -> bool {
     let Some(mut hands) = world.get_mut::<Hands>(mob) else {
         return false;
     };

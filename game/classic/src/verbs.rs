@@ -15,13 +15,18 @@ pub const TOGGLE_LIGHT: &str = "toggle-light";
 /// Switch a jetpack you carry (Luna `jetpack/verb/toggle`).
 pub const TOGGLE_JETPACK: &str = "toggle-jetpack";
 
+/// Ask someone to join an RP revolution (Luna's "Rev-Convert"). The client only offers it to those
+/// in on one, and the server checks.
+pub const REV_CONVERT: &str = "rev-convert";
+
 /// Every verb, for turning a name a client sent into one of ours.
-pub const ALL: [&str; 5] = [
+pub const ALL: [&str; 6] = [
     TOGGLE_OPEN,
     TOGGLE_LOCK,
     ROTATE_CHAIR,
     TOGGLE_LIGHT,
     TOGGLE_JETPACK,
+    REV_CONVERT,
 ];
 
 /// The verb with this name, if there is one.
