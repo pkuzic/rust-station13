@@ -209,6 +209,13 @@ impl Plugin for ClassicPlugin {
                     .chain(),
             )
             .add_systems(FixedUpdate, time::advance_time.before(TickSet::Commands))
+            .init_resource::<decks::Holes>()
+            .add_systems(
+                FixedUpdate,
+                decks::update_holes
+                    .before(speech::speak)
+                    .before(sound::deliver_sounds),
+            )
             .add_systems(
                 FixedUpdate,
                 (

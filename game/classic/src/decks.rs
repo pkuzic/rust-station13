@@ -6,6 +6,30 @@ use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_world::{MapLayer, TileDef, TileMap, TilePos};
 
+/// Every tile with no floor, on any deck: how speech and sound get between decks (`multiz.md`).
+#[derive(Resource, Debug, Default, Clone, PartialEq, Eq)]
+pub struct Holes(pub Vec<TilePos>);
+
+/// Keep [`Holes`] up to date as the map changes.
+pub fn update_holes(changed: Query<(), Changed<MapLayer>>, maps: Query<&MapLayer>, mut holes: ResMut<Holes>) {
+    if changed.is_empty() {
+        return;
+    }
+    holes.0 = maps
+        .iter()
+        .flat_map(|layer| {
+            let map = &layer.0;
+            (0..map.height as i32).flat_map(move |y| {
+                (0..map.width as i32).filter_map(move |x| {
+                    let at = TilePos::new(x, y, map.z);
+                    map.is_hole(at).then_some(at)
+                })
+            })
+        })
+        .collect();
+    holes.0.sort();
+}
+
 /// Every deck of the station.
 #[derive(SystemParam)]
 pub struct Decks<'w, 's> {

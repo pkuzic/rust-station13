@@ -7,6 +7,14 @@ use std::collections::HashSet;
 
 use crate::{Dir, TilePos};
 
+/// The tile on deck `eye_z` that something at `at`, lower down, shows through: straight above it, if
+/// every deck over it up to `eye_z` has no floor there. `None` if it's not lower down, or a floor's
+/// in the way (`multiz.md`).
+pub fn shown_through(at: TilePos, eye_z: i32, is_hole: impl Fn(TilePos) -> bool) -> Option<TilePos> {
+    (at.z < eye_z && ((at.z + 1)..=eye_z).all(|z| is_hole(TilePos::new(at.x, at.y, z))))
+        .then_some(TilePos::new(at.x, at.y, eye_z))
+}
+
 /// How far a person sees, in tiles: Luna's 15 × 15 view.
 pub const VIEW_RANGE: i32 = 7;
 /// How wide the arc behind a person is, either side of straight back, in degrees.
