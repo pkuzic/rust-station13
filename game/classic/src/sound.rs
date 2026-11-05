@@ -191,8 +191,7 @@ pub struct HeardSound {
 pub struct Earshot(pub Vec<HeardSound>);
 
 /// What sound travels through. Implemented over the tile map for the game, and by hand in
-/// tests. Positions carry `z`, so a deck change is just another step on the path: when
-/// decks connect, a floor between them becomes an obstruction like a wall.
+/// tests. It gets between decks only through holes in the floor.
 pub trait SoundMedium {
     /// How many obstructions this tile counts as when a sound passes through it.
     fn obstruction(&self, at: TilePos) -> u32;
@@ -200,6 +199,10 @@ pub trait SoundMedium {
     fn edge_closed(&self, from: TilePos, to: TilePos) -> bool;
     /// Air pressure at a tile, kPa. `None` when no air is simulated: assume normal air.
     fn pressure(&self, at: TilePos) -> Option<f64>;
+    /// Every tile with no floor (`multiz.md`).
+    fn holes(&self) -> &[TilePos] {
+        &[]
+    }
 }
 
 /// The station: walls and dense airlocks obstruct, closed edges block, and air comes from
@@ -211,9 +214,14 @@ pub struct StationMedium<'a> {
     pub closed_doors: &'a HashSet<TilePos>,
     pub barriers: &'a SoundBarriers,
     pub atmos: Option<&'a AtmosGrid>,
+    pub holes: &'a [TilePos],
 }
 
 impl SoundMedium for StationMedium<'_> {
+    fn holes(&self) -> &[TilePos] {
+        self.holes
+    }
+
     fn obstruction(&self, at: TilePos) -> u32 {
         u32::from((self.solid)(at)) + u32::from(self.closed_doors.contains(&at))
     }
@@ -262,10 +270,54 @@ fn air_pass(medium: &impl SoundMedium, from: TilePos, to: TilePos) -> f32 {
 
 /// How loud `sound` is for a listener at `listener`, 0–100, or `None` if it is not heard.
 pub fn heard_volume(medium: &impl SoundMedium, sound: &SoundEvent, listener: TilePos) -> Option<f32> {
+    heard(medium, sound, listener).map(|(volume, _)| volume)
+}
+
+/// How loud a sound on another deck is, by the best hole there is, and that hole, on the listener's
+/// deck: it's from there that it seems to come. Each way to the hole counts as walls would, and the
+/// whole way there and on has to be in range.
+fn heard_through_hole(
+    medium: &impl SoundMedium,
+    sound: &SoundEvent,
+    listener: TilePos,
+) -> Option<(f32, TilePos)> {
+    let (from, to) = (sound.at, listener);
+    let (upper, lower) = if from.z > to.z { (from, to) } else { (to, from) };
+    let drop = upper.z - lower.z;
+    let holes = medium.holes();
+    let steps = |a: TilePos, b: TilePos| (a.x - b.x).abs().max((a.y - b.y).abs());
+    let length = |a: TilePos, b: TilePos| ((a.x - b.x) as f32).hypot((a.y - b.y) as f32);
+    let range = sound.range.max(1) as f32;
+    holes
+        .iter()
+        .filter(|hole| hole.z == upper.z)
+        .filter(|hole| ((lower.z + 1)..=upper.z).all(|z| holes.contains(&TilePos::new(hole.x, hole.y, z))))
+        .filter_map(|hole| {
+            let under = TilePos::new(hole.x, hole.y, lower.z);
+            if steps(upper, *hole) + drop + steps(under, lower) > sound.range {
+                return None;
+            }
+            let blocked = obstructions(medium, upper, *hole) + obstructions(medium, under, lower);
+            if blocked > MAX_OBSTRUCTIONS {
+                return None;
+            }
+            let distance = (length(upper, *hole) + drop as f32 + length(under, lower)).min(range);
+            let volume = sound.volume
+                * (1.0 - DISTANCE_FALLOFF * distance / range)
+                * OBSTRUCTION_PASS.powi(blocked as i32)
+                * air_pass(medium, from, to);
+            Some((volume, TilePos::new(hole.x, hole.y, to.z)))
+        })
+        .max_by(|a, b| a.0.total_cmp(&b.0))
+        .filter(|(volume, _)| *volume >= MIN_VOLUME)
+        .map(|(volume, at)| (volume.min(100.0), at))
+}
+
+/// How loud `sound` is for a listener, and where it seems to come from.
+pub fn heard(medium: &impl SoundMedium, sound: &SoundEvent, listener: TilePos) -> Option<(f32, TilePos)> {
     let (from, to) = (sound.at, listener);
     if from.z != to.z {
-        // One deck per map for now; see `SoundMedium`.
-        return None;
+        return heard_through_hole(medium, sound, listener);
     }
     let (dx, dy) = ((to.x - from.x) as f32, (to.y - from.y) as f32);
     if (to.x - from.x).abs() > sound.range || (to.y - from.y).abs() > sound.range {
@@ -281,7 +333,7 @@ pub fn heard_volume(medium: &impl SoundMedium, sound: &SoundEvent, listener: Til
         * (1.0 - DISTANCE_FALLOFF * distance / range)
         * OBSTRUCTION_PASS.powi(blocked as i32)
         * air_pass(medium, from, to);
-    (volume >= MIN_VOLUME).then_some(volume.min(100.0))
+    (volume >= MIN_VOLUME).then_some((volume.min(100.0), from))
 }
 
 /// Give every conscious mob the sounds it hears this tick.
@@ -290,6 +342,7 @@ pub fn deliver_sounds(
     barriers: Res<SoundBarriers>,
     atmos: Option<Res<StationAtmos>>,
     map: crate::decks::Decks,
+    holes: Res<crate::decks::Holes>,
     doors: Query<(&GridPos, &Airlock)>,
     mut listeners: Query<
         (Entity, &GridPos, &mut Earshot, Option<&Vitals>),
@@ -309,20 +362,21 @@ pub fn deliver_sounds(
         closed_doors: &closed_doors,
         barriers: &barriers,
         atmos: atmos.as_deref().map(|a| &a.0),
+        holes: &holes.0,
     };
     for sound in sounds.0.drain(..) {
         for (mob, pos, mut earshot, vitals) in &mut listeners {
             if sound.except == Some(mob) || vitals.is_some_and(|v| v.stat != MobStat::Conscious) {
                 continue;
             }
-            if let Some(volume) = heard_volume(&medium, &sound, pos.0) {
+            if let Some((volume, at)) = heard(&medium, &sound, pos.0) {
                 // Nobody collects for a mob without a player: keep only the latest.
                 if earshot.0.len() >= EARSHOT_LIMIT {
                     earshot.0.remove(0);
                 }
                 earshot.0.push(HeardSound {
                     sound: sound.sound,
-                    at: sound.at,
+                    at,
                     volume,
                 });
             }

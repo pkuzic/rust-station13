@@ -19,8 +19,16 @@ or `--map-file` given once per deck, bottom first):
 - **Air:** one simulation across all decks. A room reaches across decks only through open
   floor (`open-space`): a hole in the deck shares its air with the tile below it, as Luna's
   open floor shares its zone. Otherwise each deck keeps its own air.
-- **Sight:** you see and are sent only your own deck.
-- **The client** draws only the deck you are on, and switches when you change deck.
+- **Sight:** you see and are sent your own deck, and through any hole in the floor you can see
+  (`open-space`), the tile straight below it and all that's on it: who's walking there, what's lying
+  there. If that tile has no floor either, the one below it too. You can't look up through a hole.
+- **Speech:** a hole carries speech both ways, up and down. A speaker and listener on different decks
+  hear each other if each is in sight of the hole, or of the tile under it, and the whole way there,
+  through and on is within the speech's range: 7 tiles, 1 for a whisper. Radios near a hole hear in the same way.
+- **Sound:** the same, at the sound's own range. Distance counts the whole way, walls in either part count
+  as they do on one deck, and it seems to come from the hole.
+- **The client** draws the deck you are on, and the floor and things of the tiles seen through holes, a
+  little darker. It switches when you change deck.
 
 ## Ladder (`ladder`)
 
@@ -53,3 +61,4 @@ Ghosts click a ladder or stairs from anywhere to go to the same spot on that dec
 |---|---|
 | Open floor over space would vent into it | Only sideways openings reach space; none of Luna's open floor lies over space |
 | Anything pushed into stairs goes up or down | People only |
+| Walking onto open floor makes you fall to the deck below | Not yet: you walk across it |

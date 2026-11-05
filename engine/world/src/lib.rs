@@ -16,7 +16,7 @@ pub use components::{
     SmesPanelView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView, VendingRow, VoteView,
     WirePanelView, WornView,
 };
-pub use map::{Dir, MapError, ObjectSpec, TileDef, TileMap};
+pub use map::{Dir, MapError, OPEN_SPACE, ObjectSpec, TileDef, TileMap};
 
 use serde::{Deserialize, Serialize};
 

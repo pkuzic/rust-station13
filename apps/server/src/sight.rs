@@ -192,6 +192,9 @@ pub fn update_sight<F: QueryFilter>(
             };
             centre(at) || (blocks(at) && sight::borders_seen(at, blocks, &mut centre))
         };
+        // What's under a hole in the floor is seen where the hole is (`multiz.md`).
+        let is_hole = |p: TilePos| maps.iter().any(|m| m.0.is_hole(p));
+        let through = |at: TilePos| sight::shown_through(at, eye.z, is_hole).unwrap_or(at);
         let placed_hidden: HashSet<Entity> = things
             .iter()
             .filter(
@@ -210,7 +213,7 @@ pub fn update_sight<F: QueryFilter>(
                         let mut clear = |_: TilePos| true;
                         return *under_floor
                             || shade.is_some()
-                            || out_of_sight(eye, None, at.0, false, &mut clear);
+                            || out_of_sight(eye, None, through(at.0), false, &mut clear);
                     }
                     if *ghost {
                         return true;
@@ -220,7 +223,9 @@ pub fn update_sight<F: QueryFilter>(
                     }
                     let person = *person || shade.is_some();
                     *under_floor
-                        || (!*opaque && !*light && out_of_sight(eye, facing, at.0, person, &mut seen))
+                        || (!*opaque
+                            && !*light
+                            && out_of_sight(eye, facing, through(at.0), person, &mut seen))
                 },
             )
             .map(|(entity, ..)| entity)
