@@ -125,7 +125,11 @@ pub fn spawn_observer(world: &mut World, at: TilePos, name: Option<String>) -> E
 /// don't have to ask.
 pub fn leave_dead_bodies(world: &mut World) {
     let dead: Vec<Entity> = world
-        .query_filtered::<(Entity, &Vitals), (With<PlayerControlled>, Without<LeftBody>)>()
+        .query_filtered::<(Entity, &Vitals), (
+            With<PlayerControlled>,
+            Without<LeftBody>,
+            Without<crate::changeling::Changeling>,
+        )>()
         .iter(world)
         .filter(|(_, vitals)| vitals.stat == MobStat::Dead)
         .map(|(body, _)| body)

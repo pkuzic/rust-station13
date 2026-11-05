@@ -374,6 +374,7 @@ round-mode = Текущий режим игры: { $mode ->
     [malfunction] Сбой ИИ
     [nuclear] Ядерная угроза
     [revolution] Революция
+    [changeling] Генокрад
     [rp-revolution] Ролевая революция
     [sandbox] Песочница
    *[extended] Расширенный
@@ -755,6 +756,96 @@ rev-alive = выжил
 verb-rev-convert = Обратить
 vote-choice-revolution = Революция
 vote-choice-rp-revolution = Ролевая революция
+ling-power-absorb = Поглотить ДНК
+ling-power-transform = Превращение
+ling-power-stasis = Регенеративный стазис
+ling-power-hive-channel = Канал улья
+ling-power-hive-absorb = Поглощение из улья
+ling-power-lesser-form = Низшая форма
+ling-power-panacea = Анатомическая панацея
+ling-power-deaf-sting = Глухое жало
+ling-power-blind-sting = Слепое жало
+ling-power-silence-sting = Немое жало
+ling-power-mimic-voice = Подражание голосу
+ling-power-extract-dna = Жало сбора ДНК
+ling-power-transformation-sting = Жало превращения
+ling-power-paralysis-sting = Парализующее жало
+ling-power-death-sting = Смертельное жало
+ling-power-boost-range = Дальнее жало
+ling-power-epinephrine = Железы адреналина
+ling-power-chem-synth = Быстрый синтез
+ling-power-adv-chem-synth = Продвинутый синтез
+ling-power-engorged-glands = Увеличенные железы
+ling-power-digital-camo = Цифровой камуфляж
+ling-power-rapid-regen = Быстрая регенерация
+ling-title = Генокрад
+ling-stats = Химикаты: { $value }/{ $storage }. Очки генома: { $points }. Поглощено геномов: { $absorbed }. Генетический урон: { $damage }.
+ling-mimicking = Подражание: { $name }
+ling-give-up = Сдаться и покинуть тело
+ling-choose = Выберите:
+ling-cancel = Отмена
+ling-evolve = Развить { $name } ({ $value })
+ling-use = { $name } ({ $value })
+chat-prompt-mimic = Голос для подражания:
+ling-you = Вы генокрад!
+ling-howto = F6 открывает способности. Схватите кого-нибудь и используйте «Поглотить ДНК», чтобы забрать геном. Начните строку с :g, чтобы говорить в канале улья.
+ling-incapacitated = Мы не в состоянии.
+ling-need-chems = Нужно не меньше { $value } единиц химикатов!
+ling-genes = Наши геномы ещё собираются. Нужно время, чтобы прийти в себя.
+ling-need-grab = Чтобы поглотить существо, нужно держать его в активной руке.
+ling-incompatible = Это существо несовместимо с нашей биологией.
+ling-ruined = ДНК этого существа безнадёжно испорчена!
+ling-busy = Мы уже поглощаем!
+ling-absorb-1 = Это существо совместимо. Нужно не двигаться...
+ling-absorb-2 = Мы выдвигаем хоботок.
+ling-absorb-3 = Мы вонзаем хоботок.
+ling-proboscis = { $name } выдвигает хоботок!
+ling-stabs = { $name } вонзает хоботок в цель: { $victim }!
+ling-stab-pain = Вы чувствуете острую колющую боль!
+ling-interrupted = Наше поглощение прервано!
+ling-absorbed = Мы поглотили: { $name }!
+ling-you-absorbed = Вас поглотил генокрад!
+ling-sucks = { $name } высасывает соки из цели: { $victim }!
+ling-transforms = Кто-то превращается: { $name }!
+ling-genes-cry = Наши гены кричат!
+ling-stasis = Мы попытаемся восстановить свою форму.
+ling-stasis-failed = Нам не хватает химикатов для регенерации.
+ling-regenerated = Мы восстановились.
+ling-wakes = { $name } будто встаёт из мёртвых, и все раны зажили.
+ling-hive-has = Эта ДНК уже в эфире.
+ling-hive-sent = Мы передаём в эфир ДНК: { $name }.
+ling-hive-none = В эфире нет новых ДНК.
+ling-hive-got = Мы поглощаем из эфира ДНК: { $name }.
+ling-hive-say = { $name }: { $text }
+ling-cleansed = Мы очищаем своё тело от примесей.
+ling-range = Наше горло готовится метнуть жало.
+ling-arise = Мы поднимаемся.
+ling-camo-on = Мы искажаем свою форму, чтобы ИИ нас не отслеживал.
+ling-camo-off = Мы возвращаемся к обычному виду.
+ling-voice = Мы меняем голос на: { $name }. На это уходят химикаты, пока мы не прекратим.
+ling-voice-back = Мы возвращаем голосовые железы на место.
+ling-stung = Мы незаметно жалим: { $name }.
+ling-prick = Вы чувствуете лёгкий укол.
+ling-ears-pop = В ушах хлопает и громко звенит!
+ling-eyes-burn = Глаза ужасно жжёт!
+ling-muscles = Мышцы болезненно сводит.
+ling-chest = Вы чувствуете лёгкий укол, и грудь стягивает...
+ling-sting-useless = Похоже, жало не действует на эту ДНК.
+ling-was = Генокрадом был: { $name }.
+ling-genomes = Поглощено геномов: { $value }
+ling-won = Генокрад справился!
+ling-lost = Генокрад провалился!
+objective-absorb = Цель №{ $value }: собрать совместимых геномов: { $goal }. { $done ->
+    [won] Успех
+    [failed] Провал
+   *[none] { "" }
+}
+objective-survive = Цель №{ $value }: остаться в живых до конца. { $done ->
+    [won] Успех
+    [failed] Провал
+   *[none] { "" }
+}
+vote-choice-changeling = Генокрад
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

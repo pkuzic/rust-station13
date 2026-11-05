@@ -20,6 +20,7 @@ mod audio;
 mod brig_panel;
 mod build_panel;
 mod camera_panel;
+mod changeling_panel;
 mod chem_panel;
 mod comms_panel;
 mod context_menu;
@@ -76,8 +77,8 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, NukeCommand, Player, SandboxCommand,
-    StatusUpdate, VoteAction,
+    ActionInput, ChangelingCommand, CommsCommand, IntentChannel, MoveInput, Notice, NukeCommand, Player,
+    SandboxCommand, StatusUpdate, VoteAction,
 };
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
@@ -157,6 +158,11 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `ling`, `lingbuy:N`, `lingdna:N:D` or `lingat:N`: the changeling's window. A target's the first in reach.
+    LingOpen,
+    LingBuy(u8),
+    LingDna(u8, u8),
+    LingAt(u8),
     /// `revyes` or `revno`: answer being asked to join an RP revolution.
     RevAnswer(bool),
     /// `revask:DX,DY`: ask whoever's there to join an RP revolution.
@@ -258,6 +264,13 @@ impl UseStep {
                     .map(|change| Self::Nuke(NukeCommand::Time(change))),
                 digit => digit.parse().ok().map(|key| Self::Nuke(NukeCommand::Key(key))),
             },
+            "ling" => Some(Self::LingOpen),
+            _ if s.starts_with("lingbuy:") => s["lingbuy:".len()..].trim().parse().ok().map(Self::LingBuy),
+            _ if s.starts_with("lingat:") => s["lingat:".len()..].trim().parse().ok().map(Self::LingAt),
+            _ if s.starts_with("lingdna:") => {
+                let (line, dna) = s["lingdna:".len()..].split_once(':')?;
+                Some(Self::LingDna(line.trim().parse().ok()?, dna.trim().parse().ok()?))
+            }
             "revyes" => Some(Self::RevAnswer(true)),
             "revno" => Some(Self::RevAnswer(false)),
             _ if s.starts_with("revask:") => {
@@ -356,6 +369,8 @@ enum ChatKind {
     AdminHelp,
     /// F2: an admin verb.
     Admin,
+    /// The voice a changeling mimics.
+    Mimic,
     /// A message for the status displays, typed as `LINE ONE/LINE TWO`.
     Display,
 }
@@ -545,6 +560,7 @@ fn main() {
         .init_resource::<build_panel::OpenBuild>()
         .init_resource::<sandbox_panel::OpenSandbox>()
         .init_resource::<nuke_panel::OpenNuke>()
+        .init_resource::<changeling_panel::OpenLing>()
         .init_resource::<rev_panel::RevMembers>()
         .init_resource::<rev_panel::RevQuestion>()
         .init_resource::<id_panel::OpenIdComputer>()
@@ -616,6 +632,12 @@ fn main() {
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
                             (build_panel::receive_build, build_panel::show_build).chain(),
                             (nuke_panel::receive_nuke, nuke_panel::show_nuke).chain(),
+                            (
+                                changeling_panel::toggle_ling,
+                                changeling_panel::receive_ling,
+                                changeling_panel::show_ling,
+                            )
+                                .chain(),
                             (
                                 rev_panel::receive_rev,
                                 rev_panel::draw_rev_marks,
@@ -930,6 +952,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<build_panel::OpenBuild>().0 = None;
     world.resource_mut::<sandbox_panel::OpenSandbox>().view = None;
     world.resource_mut::<nuke_panel::OpenNuke>().0 = None;
+    world.resource_mut::<changeling_panel::OpenLing>().view = None;
     world.resource_mut::<rev_panel::RevMembers>().0.clear();
     world.resource_mut::<rev_panel::RevQuestion>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
@@ -1409,6 +1432,7 @@ fn chat_typing(
                     }
                     sender.send::<IntentChannel>(match chat.kind {
                         ChatKind::Display => continue,
+                        ChatKind::Mimic => ActionInput::Changeling(ChangelingCommand::Mimic(line)),
                         ChatKind::Say => ActionInput::Say(line),
                         ChatKind::Ooc => ActionInput::Ooc(line),
                         ChatKind::Me => ActionInput::Say(format!("*me {line}")),
@@ -1911,6 +1935,7 @@ fn update_chat_line(loc: Res<Loc>, chat: Res<ChatInput>, mut text: Single<&mut T
             ChatKind::AdminHelp => "chat-prompt-ahelp",
             ChatKind::Admin => "chat-prompt-admin",
             ChatKind::Display => "chat-prompt-display",
+            ChatKind::Mimic => "chat-prompt-mimic",
         };
         let prompt = loc.0.format(prompt, None).unwrap_or_default();
         format!("{prompt} {}_", chat.buffer)
@@ -1930,7 +1955,21 @@ fn scripted_use(
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
     lists: Res<pick_panel::OpenPickList>,
-    (arcades, timers, dispensers, sleepers, masters, lathes, records, ids, comms, uplink, builds, nukes): (
+    (
+        arcades,
+        timers,
+        dispensers,
+        sleepers,
+        masters,
+        lathes,
+        records,
+        ids,
+        comms,
+        uplink,
+        builds,
+        nukes,
+        lings,
+    ): (
         Res<arcade_panel::OpenArcade>,
         Res<brig_panel::OpenBrig>,
         Res<chem_panel::OpenChem>,
@@ -1943,6 +1982,7 @@ fn scripted_use(
         Res<uplink_panel::OpenUplink>,
         Res<build_panel::OpenBuild>,
         Res<nuke_panel::OpenNuke>,
+        Res<changeling_panel::OpenLing>,
     ),
     mut next_at: Local<Option<f32>>,
     lobby: Res<lobby_panel::OpenLobby>,
@@ -2075,6 +2115,24 @@ fn scripted_use(
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Observe => Some(ActionInput::Observe),
+        UseStep::LingOpen => Some(ActionInput::Changeling(ChangelingCommand::Open)),
+        UseStep::LingBuy(line) => Some(ActionInput::Changeling(ChangelingCommand::Buy(line))),
+        UseStep::LingDna(power, dna) => Some(ActionInput::Changeling(ChangelingCommand::Use {
+            power,
+            target: None,
+            dna: Some(dna),
+        })),
+        UseStep::LingAt(power) => lings
+            .view
+            .as_ref()
+            .and_then(|view| view.nearby.first())
+            .map(|(id, _)| {
+                ActionInput::Changeling(ChangelingCommand::Use {
+                    power,
+                    target: Some(*id),
+                    dna: None,
+                })
+            }),
         UseStep::RevAnswer(yes) => Some(ActionInput::RevAnswer(yes)),
         UseStep::RevAsk(dx, dy) => {
             let tile = (me.0.x + dx, me.0.y + dy);

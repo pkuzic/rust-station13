@@ -19,6 +19,7 @@ use rs13_classic::arcade::{ArcadeOp, ArcadePanelOut, PendingArcadeOps};
 use rs13_classic::autolathe::{LathePanelOut, PendingLatheOps};
 use rs13_classic::brig::{BrigOp, BrigPanelOut, PendingBrigOps};
 use rs13_classic::cameras::{CameraPanelOut, PendingCameraOps};
+use rs13_classic::changeling::LingOp;
 use rs13_classic::chem_dispenser::{ChemOp, ChemPanelOut, PendingChemOps};
 use rs13_classic::chem_master::{MasterOp, MasterPanelOut, PendingMasterOps};
 use rs13_classic::cloning::Arrivals;
@@ -57,13 +58,13 @@ use rs13_network::lightyear::prelude::server::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, AlarmCommand, AlarmPanel, ApcChannelSetting, ApcCommand, ApcPanel, ArcadeCommand,
-    ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, BuildPanel, CameraPanel, ChemCommand,
-    ChemMasterCommand, ChemMasterPanel, ChemPanel, ClipboardCommand, ClipboardPanel, CommsCommand,
-    CommsPanel, FreezerCommand, FreezerPanel, GasCommand, GasPanel, HeaterCommand, HeaterPanel,
-    IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput, Notice, NoticeChannel, NukeCommand,
-    NukePanel, PaperPanel, PickListPanel, PlaySound, Player, PowerMonitorPanel, RecordsPanel, RevAskPanel,
-    RevIcons, SleeperPanel, SmesCommand, SmesLevel, SmesPanel, SoundChannel, StatusUpdate, StoragePanel,
-    UplinkPanel, VendingPanel, WirePanel,
+    ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, BuildPanel, CameraPanel,
+    ChangelingCommand, ChangelingPanel, ChemCommand, ChemMasterCommand, ChemMasterPanel, ChemPanel,
+    ClipboardCommand, ClipboardPanel, CommsCommand, CommsPanel, FreezerCommand, FreezerPanel, GasCommand,
+    GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput,
+    Notice, NoticeChannel, NukeCommand, NukePanel, PaperPanel, PickListPanel, PlaySound, Player,
+    PowerMonitorPanel, RecordsPanel, RevAskPanel, RevIcons, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
+    SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -200,6 +201,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .init_resource::<admin::AdminConfig>()
     .add_systems(FixedPostUpdate, send_nuke_panels)
     .add_systems(FixedPostUpdate, send_rev_news)
+    .add_systems(FixedPostUpdate, send_ling_panels)
     .add_systems(
         FixedUpdate,
         (
@@ -350,6 +352,28 @@ fn respawn_ghosts(
             world.entity_mut(link).insert(Controls(mob));
             world.despawn(ghost);
         });
+    }
+}
+
+/// Show each changeling their window, while it's open.
+fn send_ling_panels(
+    mut links: Query<(Entity, &Controls, &mut MessageSender<ChangelingPanel>)>,
+    mobs: Query<&rs13_classic::changeling::LingPanelOut>,
+    mut sent: Local<std::collections::HashMap<Entity, rs13_world::ChangelingPanelView>>,
+) {
+    for (link, controls, mut sender) in &mut links {
+        let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
+        if sent.get(&link) != now.as_ref() {
+            sender.send::<NoticeChannel>(ChangelingPanel(now.clone()));
+            match now {
+                Some(view) => {
+                    sent.insert(link, view);
+                }
+                None => {
+                    sent.remove(&link);
+                }
+            }
+        }
     }
 }
 
@@ -951,6 +975,26 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::Changeling(command) => {
+                    let mob = controls.0;
+                    let op = match command {
+                        ChangelingCommand::Open => Some(LingOp::Open),
+                        ChangelingCommand::Buy(line) => Some(LingOp::Buy(line)),
+                        ChangelingCommand::Use { power, target, dna } => Some(LingOp::Use {
+                            power,
+                            target: target.and_then(&resolve),
+                            dna,
+                        }),
+                        ChangelingCommand::Mimic(name) => Some(LingOp::Mimic(name)),
+                        ChangelingCommand::GiveUp => Some(LingOp::GiveUp),
+                    };
+                    if let Some(op) = op {
+                        commands.queue(move |world: &mut World| {
+                            rs13_classic::changeling::command(world, mob, op)
+                        });
+                    }
+                    None
+                }
                 ActionInput::RevAnswer(yes) => {
                     let mob = controls.0;
                     commands

@@ -464,6 +464,8 @@ fn effect(
         }
         "synaptizine" => *wake = true,
         "toxin" => body.tox += 2.0,
+        // Luna's `lexorin`: the changeling's death sting.
+        "lexorin" => body.oxy += 3.0,
         "stoxin" => *sedate = true,
         "sugar" => *fed += 1.0,
         "nutriment" => *fed += 6.0,

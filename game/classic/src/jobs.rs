@@ -125,6 +125,30 @@ pub fn pick_start(world: &mut World, starts: &[TilePos], taken: &[TilePos]) -> O
         .or_else(|| starts.iter().find(free).copied())
 }
 
+/// Everything they wear and hold falls to the floor.
+pub fn drop_everything(world: &mut World, mob: Entity) {
+    let Some(at) = world.get::<rs13_world::GridPos>(mob).map(|p| p.0) else {
+        return;
+    };
+    let worn: Vec<Entity> = world
+        .get_mut::<Equipment>(mob)
+        .map_or_else(Vec::new, |mut e| std::mem::take(&mut e.0).into_values().collect());
+    for item in worn {
+        world.entity_mut(item).remove::<WornBy>().insert(GridPos(at));
+    }
+    let mut held = Vec::new();
+    if let Some(mut hands) = world.get_mut::<crate::hands::Hands>(mob) {
+        held.extend(hands.left.take());
+        held.extend(hands.right.take());
+    }
+    for item in held {
+        world
+            .entity_mut(item)
+            .remove::<crate::hands::HeldBy>()
+            .insert(GridPos(at));
+    }
+}
+
 /// Put an item on someone, in place of whatever they wore there.
 pub fn wear(world: &mut World, mob: Entity, item: Entity) {
     let Some(slot) = world.get::<Wearable>(item).map(|w| w.slot) else {
