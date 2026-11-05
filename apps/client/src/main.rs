@@ -43,6 +43,7 @@ mod monitor_panel;
 mod paper_panel;
 mod pick_panel;
 mod records_panel;
+mod sandbox_panel;
 mod scaling;
 mod scan_panel;
 mod shadows;
@@ -73,7 +74,8 @@ use rs13_network::client::{ClientNetworkPlugin, connect};
 use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
-    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, Player, StatusUpdate, VoteAction,
+    ActionInput, CommsCommand, IntentChannel, MoveInput, Notice, Player, SandboxCommand, StatusUpdate,
+    VoteAction,
 };
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
@@ -153,6 +155,11 @@ enum UseStep {
     Intent(u8),
     /// `zone:N`: aim at line `N` of `Zone::ALL`, as the doll does.
     Zone(u8),
+    /// `sandbox`, `suit`, `kit:N` or `object:N`: the sandbox panel.
+    SandboxOpen,
+    SandboxSuit,
+    SandboxKit(u8),
+    SandboxObject(u16),
     /// `observe`: watch as a ghost, from the lobby.
     Observe,
     /// `admin:TEXT`: an admin verb, as typed on the F2 line.
@@ -230,6 +237,12 @@ impl UseStep {
             ))),
             "drop" => Some(Self::Drop),
             "observe" => Some(Self::Observe),
+            "sandbox" => Some(Self::SandboxOpen),
+            "suit" => Some(Self::SandboxSuit),
+            _ if s.starts_with("kit:") => s["kit:".len()..].trim().parse().ok().map(Self::SandboxKit),
+            _ if s.starts_with("object:") => {
+                s["object:".len()..].trim().parse().ok().map(Self::SandboxObject)
+            }
             _ if s.starts_with("intent:") => s["intent:".len()..].trim().parse().ok().map(Self::Intent),
             _ if s.starts_with("zone:") => s["zone:".len()..].trim().parse().ok().map(Self::Zone),
             _ if s.starts_with("admin:") => Some(Self::Admin(Box::leak(
@@ -503,6 +516,7 @@ fn main() {
         .init_resource::<vote_panel::OpenVote>()
         .init_resource::<uplink_panel::OpenUplink>()
         .init_resource::<build_panel::OpenBuild>()
+        .init_resource::<sandbox_panel::OpenSandbox>()
         .init_resource::<id_panel::OpenIdComputer>()
         .init_resource::<chem_panel::OpenChem>()
         .init_resource::<paper_panel::OpenPaper>()
@@ -571,6 +585,12 @@ fn main() {
                             (comms_panel::receive_comms, comms_panel::show_comms).chain(),
                             (uplink_panel::receive_uplink, uplink_panel::show_uplink).chain(),
                             (build_panel::receive_build, build_panel::show_build).chain(),
+                            (
+                                sandbox_panel::toggle_sandbox,
+                                sandbox_panel::receive_sandbox,
+                                sandbox_panel::show_sandbox,
+                            )
+                                .chain(),
                             (
                                 vote_panel::receive_vote,
                                 vote_panel::toggle_vote,
@@ -871,6 +891,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<vote_panel::OpenVote>().open = false;
     world.resource_mut::<uplink_panel::OpenUplink>().0 = None;
     world.resource_mut::<build_panel::OpenBuild>().0 = None;
+    world.resource_mut::<sandbox_panel::OpenSandbox>().view = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
     world.resource_mut::<chem_panel::OpenChem>().0 = None;
     world.resource_mut::<paper_panel::OpenPaper>().0 = None;
@@ -2013,6 +2034,10 @@ fn scripted_use(
         UseStep::Zone(line) => Some(ActionInput::SetZone(line)),
         UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Observe => Some(ActionInput::Observe),
+        UseStep::SandboxOpen => Some(ActionInput::Sandbox(SandboxCommand::Open)),
+        UseStep::SandboxSuit => Some(ActionInput::Sandbox(SandboxCommand::Suit)),
+        UseStep::SandboxKit(line) => Some(ActionInput::Sandbox(SandboxCommand::Kit(line))),
+        UseStep::SandboxObject(line) => Some(ActionInput::Sandbox(SandboxCommand::Spawn(line))),
         UseStep::Build(line) => builds.0.as_ref().map(|view| ActionInput::Build {
             target: view.target,
             line,

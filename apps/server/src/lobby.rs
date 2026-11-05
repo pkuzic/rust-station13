@@ -162,6 +162,12 @@ fn enter_world(world: &mut World, link: Entity, starts: &[TilePos], mode: &'stat
     }
     if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
         outbox.0.insert(0, LocMsg::new("round-mode").arg("mode", mode));
+        // Each mode's word of welcome (Luna's `announce`).
+        match mode {
+            "extended" => outbox.0.insert(1, LocMsg::new("round-mode-extended")),
+            "sandbox" => outbox.0.insert(1, LocMsg::new("round-mode-sandbox")),
+            _ => {}
+        }
     }
     world.entity_mut(link).remove::<InLobby>().insert((
         Controls(mob),
@@ -211,7 +217,12 @@ pub fn run_round(world: &mut World) {
                 .forced_mode
                 .unwrap_or_else(|| pick_mode(&mut world.resource_mut::<GameRng>()));
             // A traitor round needs someone there to start with: late joiners never are one.
-            let mode = if ready.is_empty() { "extended" } else { mode };
+            // A sandbox needs no one: there's nothing to set up for those who are there.
+            let mode = if ready.is_empty() && mode != "sandbox" {
+                "extended"
+            } else {
+                mode
+            };
             world.resource_mut::<Round>().phase = Phase::Playing { mode };
             info!(mode, "round started");
             for (_, link) in ready {
@@ -229,7 +240,8 @@ pub fn run_round(world: &mut World) {
             return;
         }
         Phase::Playing { mode } => {
-            if world.resource::<EscapePods>().state == PodState::Arrived {
+            // A sandbox round never finishes by itself (Luna's `check_finished`).
+            if mode != "sandbox" && world.resource::<EscapePods>().state == PodState::Arrived {
                 world.resource_mut::<Round>().phase = Phase::Finished {
                     restart_at: now + RESTART_DS,
                 };

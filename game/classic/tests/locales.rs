@@ -87,6 +87,7 @@ fn every_message_formats_in_both_locales() {
     args.set("done", "won");
     args.set("kind", "restart");
     args.set("what", "something");
+    args.set("pages", 2);
     args.set("key", "abc");
     args.set("verb", "kick");
     args.set("by", "Someone");
@@ -204,6 +205,25 @@ fn every_area_of_every_map_has_a_name() {
                 let id = format!("area-{area}");
                 assert!(loc.format(&id, None).is_ok(), "{id} is missing");
             }
+        }
+    }
+}
+
+/// The sandbox panel lists every item by name: each must have a noun in both languages.
+#[test]
+fn every_item_can_be_named_on_the_sandbox_panel() {
+    let protos = rs13_classic::objects::ItemProtos::default();
+    for locale in ["en", "ru"] {
+        let lexicon = std::fs::read_to_string(format!(
+            "{}/locales/{locale}/nouns.ron",
+            env!("CARGO_MANIFEST_DIR")
+        ))
+        .unwrap();
+        for id in protos.0.keys() {
+            assert!(
+                lexicon.contains(&format!("\"{id}\"")),
+                "{locale} has no noun for {id}"
+            );
         }
     }
 }

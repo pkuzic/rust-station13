@@ -374,6 +374,7 @@ round-mode = Текущий режим игры: { $mode ->
     [malfunction] Сбой ИИ
     [nuclear] Ядерная угроза
     [revolution] Революция
+    [sandbox] Песочница
    *[extended] Расширенный
 }. Приятной игры!
 lobby-title = Добро пожаловать в лобби!
@@ -577,7 +578,7 @@ admin-your-key = Ваш ключ: { $key }.
 admin-not-admin = Вы не администратор.
 admin-low-rank = Для этого нужен ранг выше.
 admin-unknown = Нет такой команды: { $verb }. Попробуйте help.
-admin-help = Команды: who, asay ТЕКСТ, dsay ТЕКСТ, pm КТО ТЕКСТ, announce ТЕКСТ, startnow, toggleooc, jump X Y [Z], jumpto КТО, kick КТО [ЗА ЧТО], ban КТО МИНУТЫ [ЗА ЧТО] (0 навсегда), unban КЛЮЧ, bans, restart, mute КТО, explode РАЗМЕР, emp СИЛЬНО СЛАБО, get КТО, spawn ЧТО, delete ЧТО, god КТО, rejuv КТО.
+admin-help = Команды: who, asay ТЕКСТ, dsay ТЕКСТ, pm КТО ТЕКСТ, announce ТЕКСТ, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto КТО, kick КТО [ЗА ЧТО], ban КТО МИНУТЫ [ЗА ЧТО] (0 навсегда), unban КЛЮЧ, bans, restart, mute КТО, explode РАЗМЕР, emp СИЛЬНО СЛАБО, get КТО, spawn ЧТО, delete ЧТО, god КТО, rejuv КТО.
 admin-welcome = Вы администратор. Нажмите F2 для строки команд и введите help.
 admin-no-one = Нет никого по имени { $name }.
 admin-no-thing = Здесь нет такого: { $name }.
@@ -680,6 +681,18 @@ pref-job-slot = Клик по работе задаёт выбор { $value }
 lobby-observe = Наблюдать
 lobby-crew = Посмотреть список экипажа
 ghost-observing = Вы наблюдаете как призрак. Живые вас не видят и не слышат.
+round-mode-extended = Просто веселитесь и отыгрывайте роль!
+round-mode-sandbox = Постройте свой корабль: F5 открывает панель песочницы.
+sandbox-title = Панель песочницы
+sandbox-suit = Надеть снаряжение для космоса
+sandbox-kit = { NOUN($item) } ({ $value })
+sandbox-object = { NOUN($item) }
+sandbox-objects = Любой предмет, страница { $value } из { $pages }:
+sandbox-previous = Предыдущая страница
+sandbox-next = Следующая страница
+sandbox-spawning-on = Песочница: создание предметов включено.
+sandbox-spawning-off = Песочница: создание предметов выключено.
+vote-choice-sandbox = Песочница
 shields-raised = Вы поднимаете щиты станции.
 shields-lowered = Вы опускаете щиты станции.
 shields-no-charge = Ничего не происходит: в конденсаторах щита слишком мало заряда.

@@ -260,8 +260,8 @@ fn outranks(world: &World, link: Entity, target: Entity) -> bool {
 /// The lowest level each verb needs (Luna's `averbs_*`).
 fn needs(verb: &str) -> Option<i32> {
     Some(match verb {
-        "help" | "who" | "asay" | "pm" | "dsay" | "announce" | "startnow" | "toggleooc" | "jump"
-        | "jumpto" | "kick" | "ban" | "unban" | "bans" => 0,
+        "help" | "who" | "asay" | "pm" | "dsay" | "announce" | "startnow" | "toggleooc"
+        | "togglespawning" | "jump" | "jumpto" | "kick" | "ban" | "unban" | "bans" => 0,
         "restart" => 1,
         "mute" | "explode" | "emp" => 2,
         "get" | "spawn" | "god" | "rejuv" | "delete" => 4,
@@ -365,6 +365,17 @@ fn run_command(world: &mut World, link: Entity, line: &str) {
             config.ooc_on = !config.ooc_on;
             let on = config.ooc_on;
             let msg = LocMsg::new(if on { "admin-ooc-on" } else { "admin-ooc-off" });
+            tell_everyone(world, &msg);
+        }
+        "togglespawning" => {
+            let mut spawning = world.get_resource_or_init::<crate::sandbox::SandboxSpawning>();
+            spawning.0 = !spawning.0;
+            let on = spawning.0;
+            let msg = LocMsg::new(if on {
+                "sandbox-spawning-on"
+            } else {
+                "sandbox-spawning-off"
+            });
             tell_everyone(world, &msg);
         }
         "kick" => {
