@@ -271,6 +271,7 @@ impl Plugin for ClassicPlugin {
                     movement::move_mobs,
                     slips::slip,
                     pulling::follow_pullers,
+                    multiz::fall_through_holes,
                     pulling::drop_lost_pulls,
                     closets::leave_closets,
                     movement::sync_facing,

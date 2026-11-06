@@ -3,11 +3,12 @@
 Sources:
 - `luna:code/game/objects/MultiZ.dm` (`obj/multiz`, `ladder/attack_hand`, `stairs/New`,
   `stairs/active/Bumped`);
+- `luna:code/defines/turf.dm` (`floor/open/Enter`): falling through open floor;
 - `NSV_Luna.dmm`: decks 1 (top) to 4 (bottom), about 40 ladder ends and 20 staircases.
 
 Code: `game/classic/src/multiz.rs`; decks in `game/classic/src/decks.rs`,
 `rs13_simulation::atmos::AtmosGrid::new_decks`, `objects::spawn_station`.
-Tests: `game/classic/tests/multiz.rs`, `game/classic/tests/luna_station.rs`,
+Tests: `game/classic/tests/multiz.rs`, `game/classic/tests/luna_station.rs`, `game/classic/tests/holes.rs`,
 `apps/headless/tests/decks.rs`.
 
 ## Decks
@@ -27,6 +28,11 @@ or `--map-file` given once per deck, bottom first):
   through and on is within the speech's range: 7 tiles, 1 for a whisper. Radios near a hole hear in the same way.
 - **Sound:** the same, at the sound's own range. Distance counts the whole way, walls in either part count
   as they do on one deck, and it seems to come from the hole.
+- **Falling:** anything that isn't anchored down (whatever can be pulled: people, items, closets, chairs)
+  and stands on open floor drops to the same spot one deck down. A person or anything else solid needs that
+  spot free of anything solid; an item only needs a floor there. A person who lands takes 10 brute, spread
+  over the body, and is knocked down for 5 of Luna's counts. Open floor over open floor keeps them falling.
+  Ghosts don't fall.
 - **The client** draws the deck you are on, and the floor and things of the tiles seen through holes, a
   little darker. It switches when you change deck.
 
@@ -61,4 +67,5 @@ Ghosts click a ladder or stairs from anywhere to go to the same spot on that dec
 |---|---|
 | Open floor over space would vent into it | Only sideways openings reach space; none of Luna's open floor lies over space |
 | Anything pushed into stairs goes up or down | People only |
-| Walking onto open floor makes you fall to the deck below | Not yet: you walk across it |
+| Someone kept from falling by something below stays on the open floor | They fall once the spot below is clear |
+| Rods on open floor build a lattice, and floor tiles on that make a floor | Not yet |

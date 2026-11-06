@@ -211,3 +211,68 @@ fn what_is_under_a_hole_is_seen_and_heard_from_above() {
     assert!(said(above).contains("Hello from"), "{}", said(above));
     assert!(said(below).contains("Hello from"), "{}", said(below));
 }
+
+/// Upstairs: the bot starts west of a hole. Downstairs: floor under it.
+const FALL_UPPER: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+        's': (tile: (id: "floor"), spawn: true),
+        'o': (tile: (id: "open-space")),
+    },
+    rows: [
+        "WWWWWWW",
+        "W.so..W",
+        "WWWWWWW",
+    ],
+)"#;
+
+const FALL_LOWER: &str = r#"(
+    legend: {
+        'W': (tile: (id: "wall", solid: true)),
+        '.': (tile: (id: "floor")),
+    },
+    rows: [
+        "WWWWWWW",
+        "W.....W",
+        "WWWWWWW",
+    ],
+)"#;
+
+/// Walking onto a hole drops the bot to the deck below.
+#[test]
+fn walking_onto_a_hole_drops_you_a_deck() {
+    let port = 20_000 + ((std::process::id() + 31_877) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || rs13_server::server_app_with_station(port, vec![FALL_LOWER, FALL_UPPER]).run());
+    thread::sleep(Duration::from_millis(500));
+    let report = BotReport::default();
+    let config = BotConfig {
+        server,
+        client_id: unique_client_id(),
+        dir: None,
+        hold: Duration::from_millis(3_000),
+        examine: None,
+        prefer_job: None,
+        name: None,
+        say: None,
+        script: vec![
+            Step::Wait(Duration::from_millis(1_000)),
+            Step::Snapshot("before".into()),
+            Step::Move(Some(Dir::East)),
+            Step::Wait(Duration::from_millis(250)),
+            Step::Move(None),
+            Step::Wait(Duration::from_millis(1_000)),
+            Step::Snapshot("after".into()),
+        ],
+    };
+    let exit = bot_app(config, report.clone()).run();
+    assert!(exit.is_success(), "bot exited with {exit:?}");
+    let result: BotResult = report.lock().unwrap().take().expect("bot produced a report");
+    let own = |label: &str| {
+        let shot: &Snapshot = result.snapshots.iter().find(|s| s.label == label).unwrap();
+        shot.players.iter().find(|p| p.own).unwrap().pos
+    };
+    assert_eq!(own("before").z, 1, "starts upstairs");
+    assert_eq!(own("after").z, 0, "fell through: {:?}", own("after"));
+}
