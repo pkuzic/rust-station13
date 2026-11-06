@@ -134,4 +134,9 @@
     (id: "crate-engineering", crate: true, closed: "engi_crate", open: "engi_crate_open"),
     (id: "crate-radiation", crate: true, closed: "radiation", open: "radiationopen"),
     (id: "crate-rcd", crate: true, closed: "crate", open: "crateopen"),
+    // Luna `crate/badmin/wizard`, an admin's. Its blue jumpsuit isn't built yet.
+    (id: "crate-wizard", crate: true, closed: "crate", open: "crateopen", contents: [
+        (id: "teleportation-scroll"), (id: "spellbook"), (id: "magic-staff"),
+        (id: "sandals"), (id: "wizard-robe"), (id: "wizard-hat"),
+    ]),
 ]

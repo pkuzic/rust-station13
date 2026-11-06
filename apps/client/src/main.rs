@@ -54,6 +54,7 @@ mod sleeper_panel;
 mod smes_panel;
 mod space;
 mod spell_panel;
+mod spellbook_panel;
 mod sprite_shadows;
 mod sprites;
 mod storage_panel;
@@ -227,7 +228,8 @@ enum UseStep {
     Pick(usize),
     /// `camera:N`: on an open security console, watch its `N`th camera (from 0).
     Camera(u16),
-    /// `take:N`: in an open list window (a filing cabinet's), take its `N`th line (from 0).
+    /// `take:N`: in an open list window (a filing cabinet's, a teleportation scroll's) or an open
+    /// spellbook, take its `N`th line (from 0).
     Take(u16),
 }
 
@@ -558,6 +560,7 @@ fn main() {
         .init_resource::<vending_panel::OpenVending>()
         .init_resource::<camera_panel::OpenCameras>()
         .init_resource::<pick_panel::OpenPickList>()
+        .init_resource::<spellbook_panel::OpenSpellbook>()
         .init_resource::<heater_panel::OpenHeater>()
         .init_resource::<arcade_panel::OpenArcade>()
         .init_resource::<brig_panel::OpenBrig>()
@@ -631,7 +634,14 @@ fn main() {
                     (
                         (vending_panel::receive_vending, vending_panel::show_vending).chain(),
                         (camera_panel::receive_cameras, camera_panel::show_cameras).chain(),
-                        (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
+                        (
+                            (pick_panel::receive_pick_list, pick_panel::show_pick_list).chain(),
+                            (
+                                spellbook_panel::receive_spellbook,
+                                spellbook_panel::show_spellbook,
+                            )
+                                .chain(),
+                        ),
                         (heater_panel::receive_heater, heater_panel::show_heater).chain(),
                         (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
                         (brig_panel::receive_brig, brig_panel::show_brig).chain(),
@@ -957,6 +967,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<vending_panel::OpenVending>().0 = None;
     world.resource_mut::<camera_panel::OpenCameras>().0 = None;
     world.resource_mut::<pick_panel::OpenPickList>().0 = None;
+    world.resource_mut::<spellbook_panel::OpenSpellbook>().0 = None;
     world.resource_mut::<heater_panel::OpenHeater>().0 = None;
     world.resource_mut::<arcade_panel::OpenArcade>().0 = None;
     world.resource_mut::<brig_panel::OpenBrig>().0 = None;
@@ -2032,7 +2043,7 @@ fn scripted_use(
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
-    lists: Res<pick_panel::OpenPickList>,
+    (lists, books): (Res<pick_panel::OpenPickList>, Res<spellbook_panel::OpenSpellbook>),
     (
         arcades,
         timers,
@@ -2142,10 +2153,12 @@ fn scripted_use(
     }
     let action = match step {
         UseStep::Wait(_) | UseStep::Menu(..) | UseStep::Pick(_) => None,
-        UseStep::Take(line) => lists.0.as_ref().map(|view| ActionInput::Pick {
-            target: view.target,
-            line,
-        }),
+        UseStep::Take(line) => lists
+            .0
+            .as_ref()
+            .map(|view| view.target)
+            .or_else(|| books.0.as_ref().map(|view| view.target))
+            .map(|target| ActionInput::Pick { target, line }),
         UseStep::Camera(line) => consoles.0.as_ref().map(|view| ActionInput::Camera {
             target: view.target,
             line: Some(line),

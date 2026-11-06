@@ -171,10 +171,12 @@ pub fn process_picks(
     let now = time.deciseconds();
     for (mob, mob_pos, mut hands, mut picks) in &mut mobs {
         for (target, line) in std::mem::take(&mut picks.0) {
-            commands.entity(mob).remove::<PanelViewer>();
             let Ok((at, mut cabinet)) = cabinets.get_mut(target) else {
+                // Someone else's list (`wizard_items`): left for it.
+                picks.0.push((target, line));
                 continue;
             };
+            commands.entity(mob).remove::<PanelViewer>();
             if !in_reach(mob_pos.0, at.0) || line >= cabinet.contents.len() {
                 continue;
             }
@@ -211,9 +213,16 @@ pub fn update_cabinet_views(
     mut viewers: Query<(Entity, &GridPos, Option<&PanelViewer>, &mut PickListOut)>,
     cabinets: Query<(&GridPos, &FilingCabinet, &NetId, &Appearance)>,
     papers: Query<&Paper>,
+    looks: Query<&Appearance>,
     mut commands: Commands,
 ) {
     for (mob, mob_pos, viewer, mut out) in &mut viewers {
+        if viewer
+            .and_then(|v| looks.get(v.0).ok())
+            .is_some_and(|a| crate::wizard_items::keeps_own_list(&a.sprite))
+        {
+            continue;
+        }
         let target = viewer.map(|v| v.0).filter(|t| cabinets.contains(*t));
         let shown = target.and_then(|cabinet| {
             let (at, cabinet, id, look) = cabinets.get(cabinet).ok()?;

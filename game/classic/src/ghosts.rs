@@ -166,17 +166,40 @@ pub fn move_ghosts(
 #[allow(clippy::type_complexity)]
 pub fn run_ghost_actions(
     decks: crate::decks::Decks,
-    mut ghosts: Query<(&mut GridPos, &mut PendingActions, &mut Outbox), With<Ghost>>,
+    mut ghosts: Query<
+        (
+            Entity,
+            &mut GridPos,
+            &mut PendingActions,
+            &mut Outbox,
+            Option<&GhostOf>,
+            Has<crate::wizard_items::MayReturn>,
+        ),
+        With<Ghost>,
+    >,
     ways: Query<(Option<&Ladder>, Option<&Stairs>), Without<Ghost>>,
     looks: Query<(&Appearance, Option<&DisplayName>)>,
     hidden: Query<(), With<rs13_world::Hidden>>,
+    vitals: Query<&Vitals>,
+    mut arrivals: ResMut<crate::cloning::Arrivals>,
+    mut commands: Commands,
 ) {
     use crate::actions::Action;
-    for (mut pos, mut pending, mut outbox) in &mut ghosts {
+    for (ghost, mut pos, mut pending, mut outbox, of, may_return) in &mut ghosts {
         for action in pending.0.drain(..) {
             let (Action::UseOn(target) | Action::Examine(target)) = action else {
                 continue;
             };
+            // Back into a living body it was let out of (the scrying orb's, `spells.md`).
+            if matches!(action, Action::UseOn(_))
+                && may_return
+                && of.is_some_and(|o| o.0 == target)
+                && vitals.get(target).is_ok_and(|v| v.stat != MobStat::Dead)
+            {
+                commands.entity(target).remove::<LeftBody>();
+                arrivals.0.push((ghost, target));
+                break;
+            }
             if hidden.contains(target) {
                 continue;
             }

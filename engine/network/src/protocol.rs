@@ -12,8 +12,8 @@ use rs13_world::{
     FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook,
     IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
     NukePanelView, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView,
-    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellPanelView, StorageView,
-    TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
+    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellPanelView, SpellbookView,
+    StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -537,6 +537,10 @@ pub enum SpellCommand {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SpellPanel(pub Option<SpellPanelView>);
 
+/// Server → one reader: their open spellbook, or `None` when it's closed.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct SpellbookPanel(pub Option<SpellbookView>);
+
 /// Server → one changeling: their window, or `None` when it's closed.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChangelingPanel(pub Option<ChangelingPanelView>);
@@ -741,6 +745,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<ChangelingPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<SpellPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<SpellbookPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RevIcons>()
             .add_direction(NetworkDirection::ServerToClient);

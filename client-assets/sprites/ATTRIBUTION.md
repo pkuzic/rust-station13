@@ -169,6 +169,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `brig-windoor:rightsecureopening-south` | `icons/obj/doors/windoor.dmi : "rightsecureopening"` | CC-BY-SA 3.0 |
 | `brig-windoor:rightsecureopening-west` | `icons/obj/doors/windoor.dmi : "rightsecureopening"` | CC-BY-SA 3.0 |
 | `britcup:` | `icons/obj/cup.dmi : "britcup"` | CC-BY-SA 3.0 |
+| `broom:` | `icons/obj/wizard.dmi : "broom"` | CC-BY-SA 3.0 |
 | `brown-shoes:` | `icons/obj/clothing/shoes.dmi : "brown"` | CC-BY-SA 3.0 |
 | `bruise-pack:` | `icons/obj/items.dmi : "brutepack"` | CC-BY-SA 3.0 |
 | `bucket:` | `icons/obj/janitor.dmi : "bucket"` | CC-BY-SA 3.0 |
@@ -391,6 +392,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `crate-radiation:radiationopen` | `icons/obj/storage.dmi : "radiationopen"` | CC-BY-SA 3.0 |
 | `crate-rcd:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
 | `crate-rcd:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |
+| `crate-wizard:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
+| `crate-wizard:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |
 | `crayon-box:` | `icons/obj/crayons.dmi : "crayonbox"` | CC-BY-SA 3.0 |
 | `crayon-mime:` | `icons/obj/crayons.dmi : "crayonmime"` | CC-BY-SA 3.0 |
 | `crayon-rainbow:` | `icons/obj/crayons.dmi : "crayonrainbow"` | CC-BY-SA 3.0 |
@@ -1025,6 +1028,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `magazine-9mm:` | `icons/obj/ammo.dmi : "9x19p"` | CC-BY-SA 3.0 |
 | `magboots:` | `icons/obj/clothing/shoes.dmi : "magboots"` | CC-BY-SA 3.0 |
 | `magic-missile:` | `icons/obj/projectiles.dmi : "magicm"` | CC-BY-SA 3.0 |
+| `magic-scroll-blink:` | `icons/obj/wizard.dmi : "scroll2f"` | CC-BY-SA 3.0 |
+| `magic-scroll-fireball:` | `icons/obj/wizard.dmi : "scroll2f"` | CC-BY-SA 3.0 |
+| `magic-scroll-forcewall:` | `icons/obj/wizard.dmi : "scroll2f"` | CC-BY-SA 3.0 |
+| `magic-staff:` | `icons/obj/wizard.dmi : "staff"` | CC-BY-SA 3.0 |
 | `mailman-hat:` | `icons/obj/clothing/hats.dmi : "mailman"` | CC-BY-SA 3.0 |
 | `mailman-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "mailman"` | CC-BY-SA 3.0 |
 | `manifold:1-2-4` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |
@@ -1270,6 +1277,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `screwdriver:` | `icons/obj/items.dmi : "screwdriver"` | CC-BY-SA 3.0 |
 | `scrubber:off` | `icons/obj/atmospherics/vent_scrubber.dmi : "off"` | CC-BY-SA 3.0 |
 | `scrubber:on` | `icons/obj/atmospherics/vent_scrubber.dmi : "on"` | CC-BY-SA 3.0 |
+| `scrying-orb:` | `icons/obj/projectiles.dmi : "bluespace"` | CC-BY-SA 3.0 |
 | `secure-briefcase:` | `icons/obj/storage.dmi : "secure"` | CC-BY-SA 3.0 |
 | `security-console:seccam` | `icons/obj/computer.dmi : "seccam"` | CC-BY-SA 3.0 |
 | `security-console:seccam0` | `icons/obj/computer.dmi : "seccam0"` | CC-BY-SA 3.0 |
@@ -1358,6 +1366,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `sparker:migniter-spark` | `icons/obj/stationobjs.dmi : "migniter-spark"` | CC-BY-SA 3.0 |
 | `sparks:` | `icons/effects/effects.dmi : "sparks"` | CC-BY-SA 3.0 |
 | `speed-loader-38:` | `icons/obj/ammo.dmi : "38"` | CC-BY-SA 3.0 |
+| `spellbook:` | `icons/obj/library.dmi : "book"` | CC-BY-SA 3.0 |
+| `staff:` | `icons/obj/wizard.dmi : "staff"` | CC-BY-SA 3.0 |
 | `stairs:bottom-east` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
 | `stairs:bottom-north` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
 | `stairs:bottom-south` | `icons/obj/multiz.dmi : "rampbottom"` | CC-BY-SA 3.0 |
@@ -1642,6 +1652,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `teg:teg-op7` | `icons/obj/power.dmi : "teg-op7"` | CC-BY-SA 3.0 |
 | `teg:teg-op8` | `icons/obj/power.dmi : "teg-op8"` | CC-BY-SA 3.0 |
 | `teg:teg-op9` | `icons/obj/power.dmi : "teg-op9"` | CC-BY-SA 3.0 |
+| `teleportation-scroll:` | `icons/obj/wizard.dmi : "scroll"` | CC-BY-SA 3.0 |
 | `terminal:` | `icons/obj/power.dmi : "term"` | CC-BY-SA 3.0 |
 | `terror-helmet:` | `icons/obj/clothing/hats.dmi : "syndicate-helm-black-red"` | CC-BY-SA 3.0 |
 | `terror-suit:` | `icons/obj/clothing/suits.dmi : "syndicate-black-red"` | CC-BY-SA 3.0 |
@@ -1829,6 +1840,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `window-pane:west` | `icons/obj/structures.dmi : "rwindow"` | CC-BY-SA 3.0 |
 | `wirecutters:` | `icons/obj/items.dmi : "cutters"` | CC-BY-SA 3.0 |
 | `witch-robe:` | `icons/obj/clothing/suits.dmi : "marisa"` | CC-BY-SA 3.0 |
+| `wizard-hardsuit:` | `icons/obj/clothing/suits.dmi : "rig-wiz"` | CC-BY-SA 3.0 |
+| `wizard-hardsuit-helmet:` | `icons/obj/clothing/hats.dmi : "rig0-wiz"` | CC-BY-SA 3.0 |
 | `wizard-hat:` | `icons/obj/clothing/hats.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
 | `wizard-robe:` | `icons/obj/clothing/suits.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
 | `worn-shirt:` | `icons/obj/clothing/suits.dmi : "ianshirt"` | CC-BY-SA 3.0 |
@@ -2155,6 +2168,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:white-suit:lying` | `icons/mob/uniform.dmi : "scratch_l"` | CC-BY-SA 3.0 |
 | `worn:witch-robe:` | `icons/mob/suit.dmi : "marisa"` | CC-BY-SA 3.0 |
 | `worn:witch-robe:lying` | `icons/mob/suit.dmi : "marisa2"` | CC-BY-SA 3.0 |
+| `worn:wizard-hardsuit:` | `icons/mob/suit.dmi : "rig-wiz"` | CC-BY-SA 3.0 |
+| `worn:wizard-hardsuit:lying` | `icons/mob/suit.dmi : "rig-wiz2"` | CC-BY-SA 3.0 |
+| `worn:wizard-hardsuit-helmet:` | `icons/mob/head.dmi : "rig0-wiz"` | CC-BY-SA 3.0 |
+| `worn:wizard-hardsuit-helmet:lying` | `icons/mob/head.dmi : "rig0-wiz2"` | CC-BY-SA 3.0 |
 | `worn:wizard-hat:` | `icons/mob/head.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
 | `worn:wizard-hat:lying` | `icons/mob/head.dmi : "wizard-fake2"` | CC-BY-SA 3.0 |
 | `worn:wizard-robe:` | `icons/mob/suit.dmi : "wizard-fake"` | CC-BY-SA 3.0 |

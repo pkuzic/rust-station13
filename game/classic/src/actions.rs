@@ -665,6 +665,27 @@ pub fn process_actions(
                     commands
                         .queue(move |world: &mut World| crate::security::click_control(world, mob, target));
                 }
+                // The wizard's things (`spells.md`): read or stared into in the hand, and the
+                // magic staff used further than reach.
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::wizard_items::uses_self)
+                        && hands.active_item() == Some(target) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::wizard_items::use_self(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::wizard_items::MAGIC_STAFF)
+                        && places.get(target).is_ok_and(|p| !in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::wizard_items::staff_at_thing(world, target));
+                }
+                Action::UseOnTile(to)
+                    if tool == Some(crate::wizard_items::MAGIC_STAFF) && !in_reach(mob_pos.0, to) =>
+                {
+                    commands.queue(move |world: &mut World| crate::wizard_items::staff_at_tile(world, to));
+                }
                 // Guns and batons first: they answer clicks of their own (`weapons.md`).
                 Action::UseOn(target)
                     if tool.is_some_and(crate::weapons::is_gun) && hands.active_item() == Some(target) =>

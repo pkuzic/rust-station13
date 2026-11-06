@@ -858,6 +858,30 @@
         // Spells (`spells.md`).
         "magic-missile": { "": (dmi: "icons/obj/projectiles.dmi", state: "magicm") },
         "fireball": { "": (dmi: "icons/obj/projectiles.dmi", state: "fireball") },
+        // The wizard's things.
+        "spellbook": { "": (dmi: "icons/obj/library.dmi", state: "book") },
+        "magic-scroll-fireball": { "": (dmi: "icons/obj/wizard.dmi", state: "scroll2f") },
+        "magic-scroll-blink": { "": (dmi: "icons/obj/wizard.dmi", state: "scroll2f") },
+        "magic-scroll-forcewall": { "": (dmi: "icons/obj/wizard.dmi", state: "scroll2f") },
+        "teleportation-scroll": { "": (dmi: "icons/obj/wizard.dmi", state: "scroll") },
+        "staff": { "": (dmi: "icons/obj/wizard.dmi", state: "staff") },
+        "magic-staff": { "": (dmi: "icons/obj/wizard.dmi", state: "staff") },
+        "broom": { "": (dmi: "icons/obj/wizard.dmi", state: "broom") },
+        "scrying-orb": { "": (dmi: "icons/obj/projectiles.dmi", state: "bluespace") },
+        "wizard-hardsuit": { "": (dmi: "icons/obj/clothing/suits.dmi", state: "rig-wiz") },
+        "worn:wizard-hardsuit": {
+            "": (dmi: "icons/mob/suit.dmi", state: "rig-wiz"),
+            "lying": (dmi: "icons/mob/suit.dmi", state: "rig-wiz2"),
+        },
+        "wizard-hardsuit-helmet": { "": (dmi: "icons/obj/clothing/hats.dmi", state: "rig0-wiz") },
+        "worn:wizard-hardsuit-helmet": {
+            "": (dmi: "icons/mob/head.dmi", state: "rig0-wiz"),
+            "lying": (dmi: "icons/mob/head.dmi", state: "rig0-wiz2"),
+        },
+        "crate-wizard": {
+            "crate": (dmi: "icons/obj/storage.dmi", state: "crate"),
+            "crateopen": (dmi: "icons/obj/storage.dmi", state: "crateopen"),
+        },
         "forcewall": { "": (dmi: "icons/effects/effects.dmi", state: "m_shield") },
         "uranium-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-uranium") },
         "emergency-oxygen-engi": { "": (dmi: "icons/obj/tank.dmi", state: "emergency_engi") },

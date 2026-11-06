@@ -43,7 +43,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 2.6 Meteor | S-M | `gamemodes/meteor` | `meteor-blob.md` |
 | [x] | 2.7 Blob | M | `gamemodes/blob` | `meteor-blob.md`. Probability 0 in Luna's config. Guns don't hurt it yet |
 | [~] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Monkey, restructuring (`monkey-restructuring.md`), AutoTraitor (`autotraitor.md`) and derelict (`derelict.md`) built. Takeover needs 3.4 viruses, 3.5 powers and 3.9 AI |
-| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall (`spells.md`); the rest wait on genetics, gibbing, smoke, blindness. Spellbook, scroll, staff and orb to do |
+| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall; the spellbook, magic and teleportation scrolls, staffs, scrying orb, hardsuit and wizard crate (`spells.md`). Left: the spells that wait on genetics, gibbing, smoke and blindness, and the orb's X-ray |
 
 ## 3. Departments
 
