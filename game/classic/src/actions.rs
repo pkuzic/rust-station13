@@ -437,6 +437,26 @@ pub fn process_actions(
                         });
                     }
                 }
+                Action::UseOn(target)
+                    if cable.floors.lattice(target).is_some() && hands.active_item().is_some() =>
+                {
+                    // A lattice over open floor (`floors.md`), within reach.
+                    if !cable
+                        .floors
+                        .lattice(target)
+                        .is_some_and(|at| in_reach(mob_pos.0, at))
+                    {
+                        continue;
+                    }
+                    let lit = welding.lit(hands.active_item()).is_some();
+                    if let Some(outcome) =
+                        cable
+                            .floors
+                            .use_on_lattice(mob_pos.0, &mut hands, target, lit, &mut commands)
+                    {
+                        outbox.0.extend(outcome.to_mob);
+                    }
+                }
                 Action::UseOn(target) if buildable.contains(target) && hands.active_item().is_some() => {
                     if let Some(held) = hands.active_item() {
                         commands.queue(move |world: &mut World| {

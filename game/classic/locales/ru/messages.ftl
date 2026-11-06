@@ -1090,6 +1090,9 @@ examine-floor-tiles = В стопке { $count } { $count ->
         [few] плитки
        *[many] плиток
     } пола.
+lattice-built = Вы собираете опорную решётку...
+lattice-needs-support = Под обшивку нужна опора.
+lattice-sliced = Вы разрезаете стыки решётки...
 
 # Освещение (docs/reference/lights.md).
 light-no-fitting = В светильнике нет { NOUN($item, case: "gen") }.

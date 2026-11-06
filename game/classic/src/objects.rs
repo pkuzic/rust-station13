@@ -215,6 +215,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::medbay::spawn_part(world, proto, pos, id));
     }
+    if proto == crate::floors::LATTICE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::floors::spawn_lattice(world, pos, id));
+    }
     if proto == crate::frames::FRAME {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::frames::spawn_frame(world, pos, id));

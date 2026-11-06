@@ -701,6 +701,8 @@
         "utility-belt": { "": (dmi: "icons/obj/clothing/belts.dmi", state: "utilitybelt") },
         "rods": { "": (dmi: "icons/obj/items.dmi", state: "rods") },
         "girder": { "girder": (dmi: "icons/obj/structures.dmi", state: "girder") },
+        // Over open floor every side meets floor or wall, so Luna joins it on all four.
+        "lattice": { "": (dmi: "icons/obj/smoothlattice.dmi", state: "lattice15") },
         "girder-reinforced": { "reinforced": (dmi: "icons/obj/structures.dmi", state: "reinforced") },
         "metal-sheet": { "": (dmi: "icons/obj/items.dmi", state: "sheet-metal") },
         // Power cells: the meter overlay is cell-o1 part full, cell-o2 full.

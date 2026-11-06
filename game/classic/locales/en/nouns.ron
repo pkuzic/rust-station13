@@ -470,6 +470,7 @@
     "c4-large": (gender: neuter, sg: (nom: "heavy mysterious package", indef: "a heavy mysterious package"), pl: Some((nom: "heavy mysterious packages"))),
     "c4-detonator": (gender: neuter, sg: (nom: "Zippo lighter", indef: "a Zippo lighter"), pl: Some((nom: "Zippo lighters"))),
     "rods": (gender: neuter, sg: (nom: "metal rods", indef: "some metal rods"), pl: Some((nom: "metal rods"))),
+    "lattice": (gender: neuter, sg: (nom: "lattice", indef: "a lattice"), pl: Some((nom: "lattices"))),
     "girder": (gender: neuter, sg: (nom: "girder", indef: "a girder"), pl: Some((nom: "girders"))),
     "girder-reinforced": (gender: neuter, sg: (nom: "reinforced girder", indef: "a reinforced girder"), pl: Some((nom: "reinforced girders"))),
     "computer-frame": (gender: neuter, sg: (nom: "computer frame", indef: "a computer frame"), pl: Some((nom: "computer frames"))),
