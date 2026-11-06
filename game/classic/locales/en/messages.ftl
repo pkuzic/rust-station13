@@ -1093,6 +1093,9 @@ examine-floor-tiles = There { $count ->
         [one] is { $count } floor tile
        *[other] are { $count } floor tiles
     } in the stack.
+lattice-built = Constructing support lattice ...
+lattice-needs-support = The plating is going to need some support.
+lattice-sliced = Slicing lattice joints ...
 
 # Lights (docs/reference/lights.md).
 light-no-fitting = There is no { NOUN($item) } in this light.

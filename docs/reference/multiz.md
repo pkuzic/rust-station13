@@ -33,6 +33,8 @@ or `--map-file` given once per deck, bottom first):
   spot free of anything solid; an item only needs a floor there. A person who lands takes 10 brute, spread
   over the body, and is knocked down for 5 of Luna's counts. Open floor over open floor keeps them falling.
   Ghosts don't fall.
+- **Covering a hole:** rods build a lattice over it and floor tiles on the lattice make plating
+  (`floors.md`). The hole is gone: nothing falls, and sight, speech, sound and air no longer pass.
 - **The client** draws the deck you are on, and the floor and things of the tiles seen through holes, a
   little darker. It switches when you change deck.
 
@@ -68,4 +70,3 @@ Ghosts click a ladder or stairs from anywhere to go to the same spot on that dec
 | Open floor over space would vent into it | Only sideways openings reach space; none of Luna's open floor lies over space |
 | Anything pushed into stairs goes up or down | People only |
 | Someone kept from falling by something below stays on the open floor | They fall once the spot below is clear |
-| Rods on open floor build a lattice, and floor tiles on that make a floor | Not yet |

@@ -40,6 +40,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `anomaly-hood:` | `icons/obj/clothing/hats.dmi : "anom_hood"` | CC-BY-SA 3.0 |
 | `anomaly-suit:` | `icons/obj/clothing/suits.dmi : "anom_suit"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:broken` | `icons/obj/power.dmi : "apc-b"` | CC-BY-SA 3.0 |
 | `apc:low` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:off` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
@@ -855,6 +856,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `laser-gun:laser75` | `icons/obj/gun.dmi : "laser75"` | CC-BY-SA 3.0 |
 | `laser-machine:` | `icons/effects/lasers2.dmi : "lasermachine"` | CC-BY-SA 3.0 |
 | `latex-gloves:` | `icons/obj/clothing/gloves.dmi : "latex"` | CC-BY-SA 3.0 |
+| `lattice:` | `icons/obj/smoothlattice.dmi : "lattice15"` | CC-BY-SA 3.0 |
 | `lawyer-suit:` | `icons/obj/clothing/uniforms.dmi : "black_suit_fem"` | CC-BY-SA 3.0 |
 | `lemon:` | `icons/GoonHydroPort/hydroponics.dmi : "lemon"` | CC-BY-SA 3.0 |
 | `light:tube-broken-east` | `icons/obj/lighting.dmi : "tube-broken"` | CC-BY-SA 3.0 |
