@@ -853,6 +853,10 @@
         "radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "intercom": { "": (dmi: "icons/obj/radio.dmi", state: "intercom") },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
+        // Spells (`spells.md`).
+        "magic-missile": { "": (dmi: "icons/obj/projectiles.dmi", state: "magicm") },
+        "fireball": { "": (dmi: "icons/obj/projectiles.dmi", state: "fireball") },
+        "forcewall": { "": (dmi: "icons/effects/effects.dmi", state: "m_shield") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },

@@ -600,6 +600,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `fire-extinguisher:on` | `icons/obj/items.dmi : "fire_extinguisher1"` | CC-BY-SA 3.0 |
 | `fire-extinguisher-mini:` | `icons/obj/items.dmi : "miniFE0"` | CC-BY-SA 3.0 |
 | `fire-extinguisher-mini:on` | `icons/obj/items.dmi : "miniFE1"` | CC-BY-SA 3.0 |
+| `fireball:` | `icons/obj/projectiles.dmi : "fireball"` | CC-BY-SA 3.0 |
 | `firedoor:door0-east` | `icons/obj/doors/door_fire2.dmi : "door0"` | CC-BY-SA 3.0 |
 | `firedoor:door0-north` | `icons/obj/doors/door_fire2.dmi : "door0"` | CC-BY-SA 3.0 |
 | `firedoor:door0-south` | `icons/obj/doors/door_fire2.dmi : "door0"` | CC-BY-SA 3.0 |
@@ -639,6 +640,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `folder-red:` | `icons/obj/bureaucracy.dmi : "folder_red"` | CC-BY-SA 3.0 |
 | `folder-white:` | `icons/obj/bureaucracy.dmi : "folder_white"` | CC-BY-SA 3.0 |
 | `folder-yellow:` | `icons/obj/bureaucracy.dmi : "folder_yellow"` | CC-BY-SA 3.0 |
+| `forcewall:` | `icons/effects/effects.dmi : "m_shield"` | CC-BY-SA 3.0 |
 | `forensic-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "forensicsred"` | CC-BY-SA 3.0 |
 | `forensic-scanner:` | `icons/obj/device.dmi : "forensic0"` | CC-BY-SA 3.0 |
 | `freezer:freezer` | `icons/obj/Cryogenic2.dmi : "freezer"` | CC-BY-SA 3.0 |
@@ -1013,6 +1015,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `magazine-12mm:` | `icons/obj/ammo.dmi : "12mm"` | CC-BY-SA 3.0 |
 | `magazine-9mm:` | `icons/obj/ammo.dmi : "9x19p"` | CC-BY-SA 3.0 |
 | `magboots:` | `icons/obj/clothing/shoes.dmi : "magboots"` | CC-BY-SA 3.0 |
+| `magic-missile:` | `icons/obj/projectiles.dmi : "magicm"` | CC-BY-SA 3.0 |
 | `mailman-hat:` | `icons/obj/clothing/hats.dmi : "mailman"` | CC-BY-SA 3.0 |
 | `mailman-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "mailman"` | CC-BY-SA 3.0 |
 | `manifold:1-2-4` | `icons/obj/atmospherics/pipe_manifold.dmi : "manifold"` | CC-BY-SA 3.0 |

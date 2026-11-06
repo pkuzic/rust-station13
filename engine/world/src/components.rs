@@ -582,6 +582,39 @@ pub struct CharacterPrefs {
     pub be_nuke: bool,
 }
 
+/// What a spell needs chosen before it's cast.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SpellAim {
+    /// Nothing: it picks its own targets, or acts on the caster.
+    None,
+    /// Someone from the window's `nearby`.
+    Someone,
+    /// A place from the window's `areas`.
+    Area,
+}
+
+/// A line of the spell window (Luna's "Spells" panel).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SpellLine {
+    /// A message `spell-<id>` names it.
+    pub id: String,
+    /// Recharging: seconds so far and in all. With charges: charges left and at most.
+    pub now: u16,
+    pub max: u16,
+    pub charges: bool,
+    pub aim: SpellAim,
+}
+
+/// The spell window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SpellPanelView {
+    pub spells: Vec<SpellLine>,
+    /// Who a spell aimed at someone can reach.
+    pub nearby: Vec<(NetId, String)>,
+    /// Where a teleport can go.
+    pub areas: Vec<String>,
+}
+
 /// A line of the changeling's window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChangelingPower {

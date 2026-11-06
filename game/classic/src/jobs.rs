@@ -232,6 +232,7 @@ pub fn take_up(world: &mut World, mob: Entity, at: TilePos) -> Option<String> {
         }
     }
     world.entity_mut(mob).insert((HasJob(job.clone()), Post(at)));
+    crate::spells::learn_for_job(world, mob, &job);
     if let Some(mut outbox) = world.get_mut::<Outbox>(mob) {
         outbox.0.push(LocMsg::new("job-assigned").arg("job", job.clone()));
     }
