@@ -235,6 +235,10 @@ pub fn run_round(world: &mut World) {
             };
             world.resource_mut::<Round>().phase = Phase::Playing { mode };
             info!(mode, "round started");
+            if mode == "derelict" {
+                // Wrecked before anyone's aboard (Luna's `pre_setup`).
+                rs13_classic::derelict::wreck(world);
+            }
             for (_, link) in ready {
                 enter_world(world, link, &starts, mode);
             }
@@ -252,6 +256,9 @@ pub fn run_round(world: &mut World) {
             }
             if mode == "autotraitor" {
                 rs13_classic::autotraitor::setup_round(world);
+            }
+            if mode == "derelict" {
+                rs13_classic::derelict::setup_round(world);
             }
             if mode == "monkey" {
                 rs13_classic::monkey_round::setup_round(world);
@@ -298,6 +305,7 @@ pub fn run_round(world: &mut World) {
         enter_world(world, link, &starts, mode);
         if let Some(mob) = world.get::<Controls>(link).map(|c| c.0) {
             rs13_classic::autotraitor::late_join(world, mob);
+            rs13_classic::derelict::late_join(world, mob);
         }
         if let Some(mut lobby) = world.get_mut::<InLobby>(link) {
             lobby.joining = false;

@@ -853,6 +853,9 @@
         "radio": { "": (dmi: "icons/obj/radio.dmi", state: "walkietalkie") },
         "intercom": { "": (dmi: "icons/obj/radio.dmi", state: "intercom") },
         "plasma-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-plasma") },
+        "uranium-sheet": { "": (dmi: "icons/obj/mining.dmi", state: "sheet-uranium") },
+        "emergency-oxygen-engi": { "": (dmi: "icons/obj/tank.dmi", state: "emergency_engi") },
+        "circuit-box": { "": (dmi: "icons/obj/storage.dmi", state: "circuit") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
@@ -994,6 +997,7 @@
             "off": (dmi: "icons/obj/power.dmi", state: "apc0"),
             "open": (dmi: "icons/obj/power.dmi", state: "apc2"),
             "open-empty": (dmi: "icons/obj/power.dmi", state: "apc1"),
+            "broken": (dmi: "icons/obj/power.dmi", state: "apc-b"),
         },
         // Tank storage unit: the overlay shows how full it is (oxygen-5 full … oxygen-1).
         "tank-dispenser": {
@@ -1018,6 +1022,11 @@
         // P.A.C.M.A.N. generator: portgen0 idle, portgen1 running.
         "pacman": {
             "portgen0": (dmi: "icons/obj/power.dmi", state: "portgen0"),
+            "portgen1": (dmi: "icons/obj/power.dmi", state: "portgen1"),
+        },
+        // Luna draws the S.U.P.E.R.P.A.C.M.A.N. as the P.A.C.M.A.N. running, on or off.
+        "super-pacman": {
+            "portgen0": (dmi: "icons/obj/power.dmi", state: "portgen1"),
             "portgen1": (dmi: "icons/obj/power.dmi", state: "portgen1"),
         },
         // Fire alarm: fire0 normal, fire1 its area is on alert, firep unpowered.
@@ -1559,6 +1568,14 @@
         "crate-internals": {
             "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
             "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
+        },
+        "crate-internals-oxy": {
+            "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
+            "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
+        },
+        "crate-engineering": {
+            "engi_crate": (dmi: "icons/obj/storage.dmi", state: "engi_crate"),
+            "engi_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_crate_open"),
         },
         "crate-radiation": {
             "radiation": (dmi: "icons/obj/storage.dmi", state: "radiation"),
@@ -2146,6 +2163,11 @@
         "worn:black-skirt": {
             "": (dmi: "icons/mob/uniform.dmi", state: "blackskirt_s"),
             "lying": (dmi: "icons/mob/uniform.dmi", state: "blackskirt_l"),
+        },
+        "black-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "black") },
+        "worn:black-jumpsuit": {
+            "": (dmi: "icons/mob/uniform.dmi", state: "black_s"),
+            "lying": (dmi: "icons/mob/uniform.dmi", state: "black_l"),
         },
         "purple-jumpsuit": { "": (dmi: "icons/obj/clothing/uniforms.dmi", state: "purple") },
         "worn:purple-jumpsuit": {

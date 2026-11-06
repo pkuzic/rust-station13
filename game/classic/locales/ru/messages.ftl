@@ -379,6 +379,7 @@ round-mode = Текущий режим игры: { $mode ->
     [rp-revolution] Ролевая революция
     [monkey] Обезьяны
     [autotraitor] Автопредатель
+    [derelict] Заброшенная станция
     [restructuring] Корпоративная реструктуризация
     [sandbox] Песочница
    *[extended] Расширенный
@@ -1627,3 +1628,5 @@ autotraitor-announce = Это испытательный стенд для бе�
 traitor-debt = ВНИМАНИЕ: пришло время вернуть долг Синдикату...
 traitor-now = Теперь вы предатель.
 vote-choice-autotraitor = Автопредатель
+vote-choice-derelict = Заброшенная станция
+job-scavenger = Мусорщик

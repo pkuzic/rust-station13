@@ -127,6 +127,11 @@
     (id: "crate-internals", crate: true, closed: "o2crate", open: "o2crateopen", contents: [
         (id: "oxygen-tank", chance: 50.0),
     ]),
+    // Luna `internalsoxy`, only put out by a derelict round: three gas masks and three oxygen tanks.
+    (id: "crate-internals-oxy", crate: true, closed: "o2crate", open: "o2crateopen", contents: [
+        (id: "gas-mask"), (id: "oxygen-tank"), (id: "gas-mask"), (id: "oxygen-tank"), (id: "gas-mask"), (id: "oxygen-tank"),
+    ]),
+    (id: "crate-engineering", crate: true, closed: "engi_crate", open: "engi_crate_open"),
     (id: "crate-radiation", crate: true, closed: "radiation", open: "radiationopen"),
     (id: "crate-rcd", crate: true, closed: "crate", open: "crateopen"),
 ]

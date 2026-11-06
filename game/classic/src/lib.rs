@@ -30,6 +30,7 @@ pub mod combat;
 pub mod construction;
 pub mod conveyors;
 pub mod decks;
+pub mod derelict;
 pub mod dispensers;
 pub mod disposals;
 pub mod doors;

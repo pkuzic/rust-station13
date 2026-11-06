@@ -111,7 +111,8 @@ fn it_starts_empty_and_unsecured_and_wont_run_like_that() {
             sheets: 0,
             burning: 0,
             active: false,
-            anchored: false
+            anchored: false,
+            super_type: false,
         }
     );
     // An unsecured generator has no panel to work.
