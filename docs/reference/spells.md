@@ -1,14 +1,18 @@
 # Spells
 
 Luna's `code/datums/spell.dm` and `code/datums/spells/*`, in `game/classic/src/spells.rs`, with the
-list in `game/classic/content/spells.ron`. Client: `apps/client/src/spell_panel.rs`. Tests:
-`game/classic/tests/spells.rs`.
+list in `game/classic/content/spells.ron`. The wizard's things (Luna `gamemodes/wizard`) are in
+`game/classic/src/wizard_items.rs`. Client: `apps/client/src/spell_panel.rs`,
+`apps/client/src/spellbook_panel.rs`. Tests: `game/classic/tests/spells.rs`,
+`game/classic/tests/wizard_items.rs`.
 
 Luna's wizard game mode isn't compiled, so nobody starts as a wizard. Spells come from:
 - an admin's **Give Spell** (here the admin line's `spell WHO SPELL`, at Administrator rank);
 - the **Mime** job, which starts with Invisible Wall.
 
-Luna's other ways in, the wizard station's spellbook and the wizard crate, come with 2.9's items.
+- the wizard's things below: the spellbook, the magic scrolls. Luna keeps them at its wizard
+  station, which isn't on the decks imported here, and in the admin's wizard crate
+  (`crate-wizard`: the teleportation scroll, the spellbook, the magic staff, sandals, robe and hat).
 
 ## Casting
 
@@ -38,6 +42,50 @@ Casting checks, in Luna's order:
 | Knock | 10 s | no | AULIE OXIN FIERA (whispered) | Every airlock within 3 unbolted and opened, if it has power. |
 | Invisible Wall | 30 s | no | — | The mime's: a wall nobody can see on the caster's tile, for 30 s. |
 
+## The wizard's things
+
+Used in the hand unless it says otherwise.
+
+**Spellbook** (Luna `spellbook`). Opens its window: spells left to learn (6 to start), each spell
+with its recharge in seconds and what it does, the artefacts, and Re-memorize. A line is taken by a
+person who is awake, not cuffed, and holding the book or beside it:
+- **A spell** uses one. One they know already costs nothing: "You already know that spell."
+- **Summon Guns** uses one for good (the most it can teach goes down too). It puts a gun at the feet
+  of every living person who has a player and isn't already an antagonist, the wizard included.
+  One in four of them also becomes a survivor: a traitor whose only objective is to stay alive.
+  The gun is one of those built so far: taser, energy gun, laser gun, revolver, syndicate revolver,
+  pistol, double-barrel, combat shotgun.
+- **Mastercrafted Armour Set** uses one for good: sandals, purple gloves and the gem-encrusted
+  hardsuit and its helmet, at their feet. The hardsuit and helmet count as the robes and hat for
+  spells, are a space suit, and make the wearer a little faster (slowdown −1).
+- **Scrying Orb** uses one for good: the orb at their feet.
+- **Re-memorize** works only inside the wizard's sanctuary (an area named with `wizard`): every
+  spell is forgotten and the book can teach as many as it could before. Elsewhere: "You can only
+  re-memorize spells in the wizard's sanctuary."
+- With none left, a line does nothing.
+
+**Magic scrolls** (Luna `spellbook/oneuse`): fireball, blink and forcewall. Read once, the spell is
+learned; read again, nothing. Smoke's waits on smoke.
+
+**Teleportation scroll** (Luna `teleportation_scroll`). Opens a list of places, the same as
+Teleport's. Picking one, by an awake, uncuffed person holding it or beside it, uses one of its four
+jumps: to a random floor of that place with nothing dense on it. No words are said and no robes
+are needed.
+
+**Wizard's staff and broom** (Luna `staff`): something to hit with, force 3. One lies on the
+costume rack with the wizard's robe and hat.
+
+**Magic staff** (Luna `staff/magical/test`), used on something further than reach, at no charge and
+with no words:
+- an airlock is unbolted and opened, if it has power (Knock on that tile);
+- a floor that isn't solid gets a forcewall for 5 seconds;
+- a person: Luna hands its fireball the person instead of their floor, so nothing flies. Here too.
+- used in the hand, Luna's ethereal jaunt: waits on passing through walls.
+
+**Scrying orb** (Luna `scrying`). "You can see... everything!", and those around see them stare
+into it. They leave their body as a ghost. Clicking their own body, while it lives, puts them
+back in it. It hits like a heavy object: force 15.
+
 ## Not built yet
 
 These spells wait on systems that don't exist yet:
@@ -64,3 +112,12 @@ These spells wait on systems that don't exist yet:
 | Knock opens every door: windoors, firedoors | Airlocks only |
 | A Magic Missile's burn is spread over the body | It's on the chest |
 | The mime is also silenced for good | Not yet |
+| The spellbook lists every spell | Only the ones built |
+| The spellbook's answers replace its window until Clear | They go to chat, and the window stays |
+| A magic scroll teaches a spell they know again, as a second copy | They just know it |
+| Buying the scrying orb also gives X-ray vision | Not yet: no genetic powers (3.5) |
+| Smoke when the teleportation scroll jumps | No smoke yet |
+| The scrying orb burns | Brute, like anything thrown or swung |
+| The hardsuit reflects a fifth of shots | Nothing reflects yet |
+| A ghost from the orb uses Re-enter Corpse, even into a dead body | Clicks its body; only while it lives, as death is final here |
+| The wizard crate has a blue jumpsuit | Not built yet |

@@ -615,6 +615,19 @@ pub struct SpellPanelView {
     pub areas: Vec<String>,
 }
 
+/// An open spellbook's window (Luna's "The Book of Spells").
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SpellbookView {
+    /// The book.
+    pub target: NetId,
+    /// Spells left to learn.
+    pub uses: u8,
+    /// The spells it teaches, then Summon Guns: ids (`book-<id>` names them), and seconds to
+    /// recharge (0: once only). The artefacts follow, then Re-memorize, as lines of the list.
+    pub spells: Vec<(String, u16)>,
+    pub artefacts: Vec<String>,
+}
+
 /// A line of the changeling's window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChangelingPower {

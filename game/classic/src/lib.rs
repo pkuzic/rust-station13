@@ -116,6 +116,7 @@ pub mod welding;
 pub mod windoors;
 pub mod windows;
 pub mod wires;
+pub mod wizard_items;
 
 use bevy_app::{App, FixedUpdate, Plugin};
 use bevy_ecs::prelude::*;
@@ -471,6 +472,7 @@ impl Plugin for ClassicPlugin {
                                 spells::update_spell_views,
                                 spells::clear_closed_spell_views,
                             ),
+                            (wizard_items::run_picks, wizard_items::update_views).chain(),
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,

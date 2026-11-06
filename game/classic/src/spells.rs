@@ -173,6 +173,21 @@ pub fn give(world: &mut World, mob: Entity, id: &str) -> bool {
     true
 }
 
+/// Whether someone knows a spell.
+pub fn knows(world: &World, mob: Entity, id: &str) -> bool {
+    world
+        .get::<Spellcaster>(mob)
+        .is_some_and(|c| c.known.iter().any(|k| k.id == id))
+}
+
+/// Forget every spell (Luna `spellremove`), and close the window.
+pub fn forget_all(world: &mut World, mob: Entity) {
+    if let Some(mut caster) = world.get_mut::<Spellcaster>(mob) {
+        caster.known.clear();
+    }
+    world.entity_mut(mob).remove::<SpellViewer>();
+}
+
 pub fn command(world: &mut World, mob: Entity, op: SpellOp) {
     match op {
         SpellOp::Open => {
@@ -195,13 +210,20 @@ fn worn(world: &World, mob: Entity, slot: Slot) -> Option<String> {
 
 /// What a wizard must wear (Luna's `clothes_req`): the first thing missing, if any.
 fn missing_clothes(world: &World, mob: Entity) -> Option<&'static str> {
-    if worn(world, mob, Slot::Suit).as_deref() != Some("wizard-robe") {
+    // The spellbook's hardsuit and its helmet count too (Luna `rig/wizard`).
+    if !matches!(
+        worn(world, mob, Slot::Suit).as_deref(),
+        Some("wizard-robe" | "wizard-hardsuit")
+    ) {
         return Some("spell-no-robe");
     }
     if worn(world, mob, Slot::Shoes).as_deref() != Some("sandals") {
         return Some("spell-no-sandals");
     }
-    if worn(world, mob, Slot::Head).as_deref() != Some("wizard-hat") {
+    if !matches!(
+        worn(world, mob, Slot::Head).as_deref(),
+        Some("wizard-hat" | "wizard-hardsuit-helmet")
+    ) {
         return Some("spell-no-hat");
     }
     None
@@ -325,10 +347,10 @@ fn perform(world: &mut World, mob: Entity, effect: Effect, area: Option<u16>) ->
             return Some(Some(name.replace('-', " ").to_uppercase()));
         }
         Effect::Forcewall => {
-            wall(world, here, true);
+            wall(world, here, true, WALL_DS);
         }
         Effect::InvisibleWall => {
-            wall(world, here, false);
+            wall(world, here, false, WALL_DS);
         }
         Effect::Fireball => {
             let dir = facing(world, mob);
@@ -346,7 +368,7 @@ fn perform(world: &mut World, mob: Entity, effect: Effect, area: Option<u16>) ->
                 },
             ));
         }
-        Effect::Knock => knock(world, here),
+        Effect::Knock => knock(world, here, KNOCK_RANGE),
     }
     Some(None)
 }
@@ -448,7 +470,7 @@ pub fn teleport_areas(world: &mut World) -> Vec<String> {
 }
 
 /// A random floor of the area with nothing dense on it.
-fn clear_tile_in(world: &mut World, area: &str) -> Option<TilePos> {
+pub(crate) fn clear_tile_in(world: &mut World, area: &str) -> Option<TilePos> {
     let dense = dense_at(world);
     let mut layers = world.query::<&MapLayer>();
     let mut clear = Vec::new();
@@ -472,9 +494,9 @@ fn clear_tile_in(world: &mut World, area: &str) -> Option<TilePos> {
     Some(clear[i])
 }
 
-/// A wall where the caster stands: seen, or not (the mime's).
-fn wall(world: &mut World, here: TilePos, seen: bool) {
-    let until = world.resource::<WorldTime>().deciseconds() + WALL_DS;
+/// A wall on `here` for `ds`: seen, or not (the mime's).
+pub(crate) fn wall(world: &mut World, here: TilePos, seen: bool, ds: f32) {
+    let until = world.resource::<WorldTime>().deciseconds() + ds;
     let wall = world.spawn((GridPos(here), Dense, Forcefield { until })).id();
     if seen {
         let id = world.resource_mut::<NetIds>().alloc();
@@ -484,13 +506,13 @@ fn wall(world: &mut World, here: TilePos, seen: bool) {
     }
 }
 
-/// Every airlock within reach unbolted and opened (Luna `knock`).
-fn knock(world: &mut World, here: TilePos) {
+/// Every airlock within `range` unbolted and opened (Luna `knock`).
+pub(crate) fn knock(world: &mut World, here: TilePos, range: i32) {
     let now = world.resource::<WorldTime>().deciseconds();
     let mut doors = world.query::<(&GridPos, &mut Airlock)>();
     for (pos, mut door) in doors.iter_mut(world) {
         let p = pos.0;
-        if p.z != here.z || (p.x - here.x).abs().max((p.y - here.y).abs()) > KNOCK_RANGE {
+        if p.z != here.z || (p.x - here.x).abs().max((p.y - here.y).abs()) > range {
             continue;
         }
         door.bolted = false;

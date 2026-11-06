@@ -16,7 +16,6 @@
 //      2 /obj/item/weapon/reagent_containers/glass/wateringcan
 //      1 /obj/item/weapon/reagent_containers/spray/waterflower
 //      1 /obj/item/weapon/secstorage/ssafe
-//      1 /obj/item/weapon/staff
 //      1 /obj/item/weapon/storage/box/disk/genetics
 //      1 /obj/item/weapon/storage/box/dna_inject
 //      1 /obj/item/weapon/storage/box/imp_kit/da
@@ -269,7 +268,7 @@
         'Ŀ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South), (id: "cable", ends: [West])]),
         'ŀ': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South])]),
         'Ł': (tile: (id: "floor"), objects: [(id: "chair", dir: East), (id: "light", dir: South)]),
-        'ł': (tile: (id: "floor"), objects: ["rack", "sandals", "purple-jumpsuit", "wizard-robe", "wizard-hat", "witch-robe"]),
+        'ł': (tile: (id: "floor"), objects: ["rack", "sandals", "purple-jumpsuit", "wizard-robe", "wizard-hat", "staff", "witch-robe"]),
         'Ń': (tile: (id: "floor"), spawn: true, objects: [(id: "id-card", access: [], vars: {"job": "clown"}), (id: "cable", ends: [North, South]), (id: "cable", ends: [North, East])]),
         'ń': (tile: (id: "floor"), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s")), (id: "cable", ends: [East, West])]),
         'Ņ': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "airlock", access: ["theater"]), (id: "cable", ends: [East, West])]),

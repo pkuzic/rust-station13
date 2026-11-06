@@ -375,6 +375,16 @@ pub fn make_traitor(world: &mut World, mob: Entity, greeting: &[&str]) {
     }
 }
 
+/// Luna's Summon Guns survivor: a traitor whose only objective is to live, with no uplink.
+pub fn make_survivor(world: &mut World, mob: Entity) {
+    world.entity_mut(mob).insert(Traitor {
+        objectives: vec![Objective::Survive],
+        remind_at: None,
+    });
+    tell(world, mob, LocMsg::new("survivor-you"));
+    brief(world, mob);
+}
+
 /// A click on an uplink in the hand opens it, and for a traitor it also goes over their objectives,
 /// standing in for Luna's Notes.
 pub fn use_uplink(world: &mut World, mob: Entity, uplink: Entity) {
