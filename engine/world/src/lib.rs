@@ -13,8 +13,8 @@ pub use components::{
     IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
     NukePanelView, Opaque, PaperMode, PaperView, PickListView, PixelOffset, PowerMonitorRow,
     PowerMonitorView, RecordRow, RecordsPanelView, SandboxPanelView, Silhouette, SleeperPanelView, Slot,
-    SmesPanelView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView, VendingRow, VoteView,
-    WirePanelView, WornView,
+    SmesPanelView, SpellAim, SpellLine, SpellPanelView, StorageView, UNDERWEAR_KINDS, UplinkPanelView,
+    VendingPanelView, VendingRow, VoteView, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, OPEN_SPACE, ObjectSpec, TileDef, TileMap};
 

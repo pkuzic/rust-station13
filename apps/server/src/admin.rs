@@ -263,7 +263,7 @@ fn needs(verb: &str) -> Option<i32> {
         "help" | "who" | "asay" | "pm" | "dsay" | "announce" | "startnow" | "toggleooc"
         | "togglespawning" | "jump" | "jumpto" | "kick" | "ban" | "unban" | "bans" => 0,
         "restart" => 1,
-        "mute" | "explode" | "emp" => 2,
+        "mute" | "explode" | "emp" | "spell" => 2,
         "get" | "spawn" | "god" | "rejuv" | "delete" => 4,
         _ => return None,
     })
@@ -433,6 +433,39 @@ fn run_command(world: &mut World, link: Entity, line: &str) {
                 world,
                 target,
                 LocMsg::new(if muting { "admin-muted" } else { "admin-voiced" }),
+            );
+            let msg = LocMsg::new("admin-did")
+                .arg("name", by)
+                .arg("verb", verb)
+                .arg("target", first);
+            tell_admins(world, &msg);
+        }
+        // Luna's "Give Spell".
+        "spell" => {
+            let Some(target) = find_link(world, first) else {
+                return no_one(world, link, first);
+            };
+            let Some(mob) = own_mob(world, target) else {
+                return no_one(world, link, first);
+            };
+            let id = rest.split_whitespace().nth(1).unwrap_or_default().to_owned();
+            if !rs13_classic::spells::give(world, mob, &id) {
+                let known: Vec<&str> = rs13_classic::spells::spells()
+                    .iter()
+                    .map(|s| s.id.as_str())
+                    .collect();
+                return tell(
+                    world,
+                    link,
+                    LocMsg::new("admin-no-spell")
+                        .arg("name", id)
+                        .arg("text", known.join(", ")),
+                );
+            }
+            tell(
+                world,
+                target,
+                LocMsg::new("spell-learned").msg("name", format!("spell-{id}")),
             );
             let msg = LocMsg::new("admin-did")
                 .arg("name", by)

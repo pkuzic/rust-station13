@@ -47,6 +47,7 @@ use rs13_classic::records::{PendingRecordOps, RecordsPanelOut};
 use rs13_classic::smes_panel::{Level, PendingSmesOps, SmesOp, SmesPanelOut};
 use rs13_classic::sound::Earshot;
 use rs13_classic::speech::PendingSpeech;
+use rs13_classic::spells::SpellOp;
 use rs13_classic::storage::StorageOut;
 use rs13_classic::supermatter::{LaserOp, LaserPanelOut, PendingLaserOps};
 use rs13_classic::traitor::{PendingUplinkOps, UplinkPanelOut};
@@ -64,7 +65,7 @@ use rs13_network::protocol::{
     GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput,
     Notice, NoticeChannel, NukeCommand, NukePanel, PaperPanel, PickListPanel, PlaySound, Player,
     PowerMonitorPanel, RecordsPanel, RevAskPanel, RevIcons, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
-    SoundChannel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
+    SoundChannel, SpellCommand, SpellPanel, StatusUpdate, StoragePanel, UplinkPanel, VendingPanel, WirePanel,
 };
 use rs13_network::server::{ServerNetworkPlugin, start_server};
 use rs13_world::{
@@ -202,6 +203,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .add_systems(FixedPostUpdate, send_nuke_panels)
     .add_systems(FixedPostUpdate, send_rev_news)
     .add_systems(FixedPostUpdate, send_ling_panels)
+    .add_systems(FixedPostUpdate, send_spell_panels)
     .add_systems(
         FixedUpdate,
         (
@@ -352,6 +354,28 @@ fn respawn_ghosts(
             world.entity_mut(link).insert(Controls(mob));
             world.despawn(ghost);
         });
+    }
+}
+
+/// Show each caster their spell window, while it's open.
+fn send_spell_panels(
+    mut links: Query<(Entity, &Controls, &mut MessageSender<SpellPanel>)>,
+    mobs: Query<&rs13_classic::spells::SpellPanelOut>,
+    mut sent: Local<std::collections::HashMap<Entity, rs13_world::SpellPanelView>>,
+) {
+    for (link, controls, mut sender) in &mut links {
+        let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
+        if sent.get(&link) != now.as_ref() {
+            sender.send::<NoticeChannel>(SpellPanel(now.clone()));
+            match now {
+                Some(view) => {
+                    sent.insert(link, view);
+                }
+                None => {
+                    sent.remove(&link);
+                }
+            }
+        }
     }
 }
 
@@ -975,6 +999,19 @@ fn queue_actions(
                     None
                 }
                 ActionInput::Respawn | ActionInput::Observe => None,
+                ActionInput::Spell(command) => {
+                    let mob = controls.0;
+                    let op = match command {
+                        SpellCommand::Open => SpellOp::Open,
+                        SpellCommand::Cast { spell, target, area } => SpellOp::Cast {
+                            spell,
+                            target: target.and_then(&resolve),
+                            area,
+                        },
+                    };
+                    commands.queue(move |world: &mut World| rs13_classic::spells::command(world, mob, op));
+                    None
+                }
                 ActionInput::Changeling(command) => {
                     let mob = controls.0;
                     let op = match command {

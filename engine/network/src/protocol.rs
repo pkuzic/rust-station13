@@ -12,8 +12,8 @@ use rs13_world::{
     FreezerPanelView, GasPanelView, Ghost, GridPos, HandsView, HeaterPanelView, Hidden, HumanLook,
     IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
     NukePanelView, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView, RecordsPanelView,
-    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, StorageView, TilePos,
-    UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
+    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellPanelView, StorageView,
+    TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView, WornView,
 };
 use serde::{Deserialize, Serialize};
 
@@ -142,6 +142,8 @@ pub enum ActionInput {
     },
     /// Asked of the changeling's window.
     Changeling(ChangelingCommand),
+    /// Asked of the spell window.
+    Spell(SpellCommand),
     /// An answer to being asked to join an RP revolution.
     RevAnswer(bool),
     /// A button on a nuclear bomb's window.
@@ -519,6 +521,22 @@ pub enum ChangelingCommand {
     GiveUp,
 }
 
+/// What's asked of the spell window.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum SpellCommand {
+    /// Open it, or close it.
+    Open,
+    Cast {
+        spell: u8,
+        target: Option<NetId>,
+        area: Option<u16>,
+    },
+}
+
+/// Server → one caster: their spell window, or `None` when it's closed.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct SpellPanel(pub Option<SpellPanelView>);
+
 /// Server → one changeling: their window, or `None` when it's closed.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChangelingPanel(pub Option<ChangelingPanelView>);
@@ -721,6 +739,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<BuildPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<ChangelingPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<SpellPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RevIcons>()
             .add_direction(NetworkDirection::ServerToClient);

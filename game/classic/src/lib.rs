@@ -101,6 +101,7 @@ pub mod smoking;
 pub mod sound;
 pub mod sparks;
 pub mod speech;
+pub mod spells;
 pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
@@ -464,6 +465,11 @@ impl Plugin for ClassicPlugin {
                                 changeling::run_changelings,
                                 changeling::update_ling_views,
                                 changeling::clear_closed_views,
+                            ),
+                            (
+                                spells::run_spells,
+                                spells::update_spell_views,
+                                spells::clear_closed_spell_views,
                             ),
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,

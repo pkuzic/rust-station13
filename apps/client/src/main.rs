@@ -53,6 +53,7 @@ mod shadows;
 mod sleeper_panel;
 mod smes_panel;
 mod space;
+mod spell_panel;
 mod sprite_shadows;
 mod sprites;
 mod storage_panel;
@@ -78,7 +79,7 @@ use rs13_network::lightyear::prelude::client::*;
 use rs13_network::lightyear::prelude::*;
 use rs13_network::protocol::{
     ActionInput, ChangelingCommand, CommsCommand, IntentChannel, MoveInput, Notice, NukeCommand, Player,
-    SandboxCommand, StatusUpdate, VoteAction,
+    SandboxCommand, SpellCommand, StatusUpdate, VoteAction,
 };
 use rs13_world::{
     Appearance, AtmosView, Dir, EnvAlert, GridPos, Hand, HandsView, Hidden, Intent, MapLayer, MobStat, NetId,
@@ -163,6 +164,9 @@ enum UseStep {
     LingBuy(u8),
     LingDna(u8, u8),
     LingAt(u8),
+    /// `spells`, `cast:N` or `cast:N:A`: the spell window, and casting line `N` (to area `A` of its list).
+    SpellsOpen,
+    Cast(u8, Option<u16>),
     /// `revyes` or `revno`: answer being asked to join an RP revolution.
     RevAnswer(bool),
     /// `revask:DX,DY`: ask whoever's there to join an RP revolution.
@@ -265,6 +269,16 @@ impl UseStep {
                 digit => digit.parse().ok().map(|key| Self::Nuke(NukeCommand::Key(key))),
             },
             "ling" => Some(Self::LingOpen),
+            "spells" => Some(Self::SpellsOpen),
+            _ if s.starts_with("cast:") => {
+                let rest = &s["cast:".len()..];
+                Some(match rest.split_once(':') {
+                    Some((line, area)) => {
+                        Self::Cast(line.trim().parse().ok()?, Some(area.trim().parse().ok()?))
+                    }
+                    None => Self::Cast(rest.trim().parse().ok()?, None),
+                })
+            }
             _ if s.starts_with("lingbuy:") => s["lingbuy:".len()..].trim().parse().ok().map(Self::LingBuy),
             _ if s.starts_with("lingat:") => s["lingat:".len()..].trim().parse().ok().map(Self::LingAt),
             _ if s.starts_with("lingdna:") => {
@@ -561,6 +575,7 @@ fn main() {
         .init_resource::<sandbox_panel::OpenSandbox>()
         .init_resource::<nuke_panel::OpenNuke>()
         .init_resource::<changeling_panel::OpenLing>()
+        .init_resource::<spell_panel::OpenSpells>()
         .init_resource::<rev_panel::RevMembers>()
         .init_resource::<rev_panel::RevQuestion>()
         .init_resource::<id_panel::OpenIdComputer>()
@@ -636,6 +651,12 @@ fn main() {
                                 changeling_panel::toggle_ling,
                                 changeling_panel::receive_ling,
                                 changeling_panel::show_ling,
+                            )
+                                .chain(),
+                            (
+                                spell_panel::toggle_spells,
+                                spell_panel::receive_spells,
+                                spell_panel::show_spells,
                             )
                                 .chain(),
                             (
@@ -953,6 +974,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<sandbox_panel::OpenSandbox>().view = None;
     world.resource_mut::<nuke_panel::OpenNuke>().0 = None;
     world.resource_mut::<changeling_panel::OpenLing>().view = None;
+    world.resource_mut::<spell_panel::OpenSpells>().view = None;
     world.resource_mut::<rev_panel::RevMembers>().0.clear();
     world.resource_mut::<rev_panel::RevQuestion>().0 = None;
     world.resource_mut::<id_panel::OpenIdComputer>().0 = None;
@@ -2172,6 +2194,12 @@ fn scripted_use(
         UseStep::Drop => Some(ActionInput::Drop),
         UseStep::Observe => Some(ActionInput::Observe),
         UseStep::LingOpen => Some(ActionInput::Changeling(ChangelingCommand::Open)),
+        UseStep::SpellsOpen => Some(ActionInput::Spell(SpellCommand::Open)),
+        UseStep::Cast(spell, area) => Some(ActionInput::Spell(SpellCommand::Cast {
+            spell,
+            target: None,
+            area,
+        })),
         UseStep::LingBuy(line) => Some(ActionInput::Changeling(ChangelingCommand::Buy(line))),
         UseStep::LingDna(power, dna) => Some(ActionInput::Changeling(ChangelingCommand::Use {
             power,

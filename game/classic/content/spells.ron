@@ -1,0 +1,17 @@
+// Luna's spells (`code/datums/spells/wizard.dm`, `construct_spells.dm`), the ones built so far.
+// Spec: docs/reference/spells.md.
+//
+// cooldown: ds before it can be cast again (Luna `charge_max`, recharge).
+// clothes:  needs a wizard's robe, hat and sandals (Luna `clothes_req`).
+// words:    what's said casting it, and how (Luna `invocation`, `invocation_type`).
+// effect:   what it does.
+[
+    (id: "magic-missile", cooldown: 150, clothes: true, words: Some(("FORTI GY AMA", Shout)), effect: MagicMissile),
+    (id: "disable-tech", cooldown: 400, clothes: true, words: Some(("NEC CANTIO", Shout)), effect: DisableTech),
+    (id: "blink", cooldown: 20, clothes: true, words: None, effect: Blink),
+    (id: "teleport", cooldown: 600, clothes: true, words: Some(("SCYAR NILA", Shout)), effect: Teleport),
+    (id: "forcewall", cooldown: 100, clothes: false, words: Some(("TARCOL MINTI ZHERI", Whisper)), effect: Forcewall),
+    (id: "fireball", cooldown: 60, clothes: false, words: Some(("ONI SOMA", Shout)), effect: Fireball),
+    (id: "knock", cooldown: 100, clothes: false, words: Some(("AULIE OXIN FIERA", Whisper)), effect: Knock),
+    (id: "invisible-wall", cooldown: 300, clothes: false, words: None, effect: InvisibleWall),
+]
