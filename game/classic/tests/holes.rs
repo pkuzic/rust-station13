@@ -4,10 +4,12 @@ use bevy_app::{App, FixedUpdate};
 use bevy_ecs::prelude::*;
 use rs13_classic::ClassicPlugin;
 use rs13_classic::actions::Outbox;
-use rs13_classic::objects::{spawn_player_mob, spawn_station};
+use rs13_classic::flashes::Weakened;
+use rs13_classic::health::Body;
+use rs13_classic::objects::{spawn_object, spawn_player_mob, spawn_station};
 use rs13_classic::sound::{Earshot, SoundEvents};
 use rs13_classic::speech::PendingSpeech;
-use rs13_world::{TileMap, TilePos};
+use rs13_world::{GridPos, ObjectSpec, TileMap, TilePos};
 
 /// Downstairs: a long room with a wall sticking up from the south at x = 7.
 const LOWER: &str = r#"(
@@ -159,7 +161,8 @@ fn a_sound_below_is_heard_through_the_hole_and_seems_to_come_from_it() {
 fn a_sound_further_from_the_hole_is_quieter() {
     let volume = |x: i32| {
         let mut app = setup();
-        let above = mob(&mut app, 5, 2, 1);
+        // Beside the hole, not on it, or they'd fall through.
+        let above = mob(&mut app, 4, 2, 1);
         sound_at(&mut app, TilePos::new(x, 2, 0));
         app.world()
             .get::<Earshot>(above)
@@ -171,4 +174,48 @@ fn a_sound_further_from_the_hole_is_quieter() {
     let near = volume(5).expect("right under");
     let far = volume(3).expect("a bit away");
     assert!(far < near, "{far} < {near}");
+}
+
+fn at(app: &App, thing: Entity) -> TilePos {
+    app.world().get::<GridPos>(thing).unwrap().0
+}
+
+fn brute(app: &App, who: Entity) -> f32 {
+    let body = app.world().get::<Body>(who).unwrap();
+    rs13_classic::health::Zone::ALL
+        .iter()
+        .map(|z| body.organ(*z).brute)
+        .sum()
+}
+
+#[test]
+fn someone_on_a_hole_falls_through_hurt_and_knocked_down() {
+    let mut app = setup();
+    let who = mob(&mut app, 5, 2, 1);
+    app.world_mut().run_schedule(FixedUpdate);
+    assert_eq!(at(&app, who), TilePos::new(5, 2, 0));
+    assert!((brute(&app, who) - 10.0).abs() < 0.01, "{}", brute(&app, who));
+    assert!(app.world().get::<Weakened>(who).is_some());
+}
+
+#[test]
+fn a_dropped_thing_falls_through_and_a_floor_holds_it() {
+    let mut app = setup();
+    let wrench = spawn_object(app.world_mut(), &ObjectSpec::new("wrench"), TilePos::new(5, 2, 1)).unwrap();
+    let kept = spawn_object(app.world_mut(), &ObjectSpec::new("wrench"), TilePos::new(6, 2, 1)).unwrap();
+    app.world_mut().run_schedule(FixedUpdate);
+    assert_eq!(at(&app, wrench), TilePos::new(5, 2, 0));
+    assert_eq!(at(&app, kept), TilePos::new(6, 2, 1));
+}
+
+#[test]
+fn someone_below_holds_up_a_faller_but_not_a_thing() {
+    let mut app = setup();
+    let under = mob(&mut app, 5, 2, 0);
+    let who = mob(&mut app, 5, 2, 1);
+    let wrench = spawn_object(app.world_mut(), &ObjectSpec::new("wrench"), TilePos::new(5, 2, 1)).unwrap();
+    app.world_mut().run_schedule(FixedUpdate);
+    assert_eq!(at(&app, who), TilePos::new(5, 2, 1));
+    assert_eq!(at(&app, wrench), TilePos::new(5, 2, 0));
+    assert_eq!(brute(&app, under), 0.0);
 }
