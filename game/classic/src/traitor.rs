@@ -301,6 +301,11 @@ pub(crate) fn put_in_hand(world: &mut World, mob: Entity, item: Entity) -> bool 
 
 /// Choose the round's traitors from those who've started, and tell them.
 pub fn choose_traitors(world: &mut World) {
+    choose_some(world, |players, rng| how_many(players, rng.range(0, 5) as usize));
+}
+
+/// Choose so many traitors, `count` of how many have started, and tell them.
+pub fn choose_some(world: &mut World, count: impl FnOnce(usize, &mut GameRng) -> usize) {
     let mut crew = world.query_filtered::<(Entity, &DisplayName, &HasJob), With<Mob>>();
     let mut all: Vec<(Entity, String, String)> = crew
         .iter(world)
@@ -314,8 +319,7 @@ pub fn choose_traitors(world: &mut World) {
     let mut wanting = world.query_filtered::<Entity, With<WantsTraitor>>();
     let wants: Vec<Entity> = wanting.iter(world).collect();
     let mut rng = world.resource_mut::<GameRng>();
-    let roll = rng.range(0, 5) as usize;
-    let count = how_many(all.len(), roll).min(all.len());
+    let count = count(all.len(), &mut rng).min(all.len());
     // If anyone would like to be one, it's from among them (Luna `get_possible_traitors`).
     let wanting: Vec<_> = all.iter().filter(|(e, ..)| wants.contains(e)).cloned().collect();
     let mut candidates = if wanting.is_empty() { all.clone() } else { wanting };
@@ -344,6 +348,30 @@ pub fn choose_traitors(world: &mut World) {
         if let Some(at) = world.get::<GridPos>(mob).map(|p| p.0) {
             give_uplink(world, mob, at);
         }
+    }
+}
+
+/// Make one more traitor, later on: work against the rest of the crew, these words, and an uplink.
+pub fn make_traitor(world: &mut World, mob: Entity, greeting: &[&str]) {
+    let mut crew = world.query_filtered::<(Entity, &DisplayName, &HasJob), With<Mob>>();
+    let mut others: Vec<(Entity, String, String)> = crew
+        .iter(world)
+        .filter(|(e, ..)| *e != mob)
+        .map(|(e, n, j)| (e, n.0.clone(), j.0.clone()))
+        .collect();
+    others.sort_by_key(|(e, ..)| *e);
+    let now = world.resource::<WorldTime>().deciseconds();
+    let objectives = select_objectives(&mut world.resource_mut::<GameRng>(), &others);
+    world.entity_mut(mob).insert(Traitor {
+        objectives,
+        remind_at: Some(now + REMINDER_DS),
+    });
+    for id in greeting {
+        tell(world, mob, LocMsg::new(*id));
+    }
+    brief(world, mob);
+    if let Some(at) = world.get::<GridPos>(mob).map(|p| p.0) {
+        give_uplink(world, mob, at);
     }
 }
 

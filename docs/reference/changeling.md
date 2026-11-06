@@ -1,7 +1,7 @@
 # Changelings
 
-Luna's `code/game/gamemodes/changeling`, in `game/classic/src/changeling.rs`. The mode never comes up by chance, as Luna's config gives it no
-probability: it has to be voted for or forced.
+Luna's `code/game/gamemodes/changeling`, in `game/classic/src/changeling.rs`. Luna's `config.txt` leaves it out, so it keeps the
+default chance of 1 when the round is picked at random; it can also be voted for or forced.
 
 ## Setting up
 

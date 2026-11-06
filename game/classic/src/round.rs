@@ -16,7 +16,7 @@ pub struct Mode {
     pub built: bool,
 }
 
-pub const MODES: [Mode; 11] = [
+pub const MODES: [Mode; 13] = [
     Mode {
         id: "extended",
         probability: 5,
@@ -55,21 +55,33 @@ pub const MODES: [Mode; 11] = [
     Mode {
         id: "restructuring",
         probability: 0,
-        built: false,
+        built: true,
     },
     Mode {
         id: "revolution",
         probability: 5,
         built: true,
     },
+    // Modes `config.txt` leaves out keep Luna's default chance of 1.
     Mode {
         id: "changeling",
-        probability: 0,
+        probability: 1,
         built: true,
     },
     Mode {
         id: "rp-revolution",
-        probability: 0,
+        probability: 1,
+        built: true,
+    },
+    Mode {
+        id: "monkey",
+        probability: 1,
+        built: true,
+    },
+    // Luna's `Extend-A-Traitormongous`.
+    Mode {
+        id: "autotraitor",
+        probability: 1,
         built: true,
     },
 ];

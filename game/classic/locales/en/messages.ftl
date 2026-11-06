@@ -369,6 +369,9 @@ round-mode = The current game mode is { $mode ->
     [blob] Blob
     [changeling] Changeling
     [rp-revolution] RP Revolution
+    [monkey] Monkey
+    [autotraitor] AutoTraitor
+    [restructuring] Corporate Restructuring
     [sandbox] Sandbox
    *[extended] Extended
 }. Enjoy the game!
@@ -1600,3 +1603,20 @@ crematorium-locked = It's locked.
 crematorium-denied = Access denied.
 crematorium-crackle = You hear a hollow crackle.
 crematorium-roar = You hear a roar as the crematorium activates.
+monkey-you-are = You are now a monkey.
+monkey-won = The monkeys have won!
+monkey-lost = The Research Staff has stopped the monkey invasion!
+monkey-was = { $name } was a monkey.
+bitten = { $attacker } has bit { $victim }!
+bite-missed = { $attacker } has attempted to bite { $victim }!
+restructuring-announce = GLOBAL TRANSMISSION FROM HEAD OFFICE: A CORPORATE RESTRUCTURING IS TO TAKE PLACE
+restructuring-announce-care = Stay tuned for further news; note that we do care for our employees and any layoffs will be dealt with discretion and compassion
+restructuring-target = HEAD OFFICE: { $name } is accused of attempting to start a Union and is now considered a threat to the ship. Terminate the employee immediately.
+restructuring-target-job = HEAD OFFICE: { $name } the { $job } is accused of attempting to start a Union and is now considered a threat to the ship. Terminate the employee immediately.
+restructuring-you = Head office has ordered your downsizing. Watch out!
+vote-choice-monkey = Monkey
+vote-choice-restructuring = Corporate Restructuring
+autotraitor-announce = This is a test bed for theories and methods to implement an infinite traitor round. Traitors will be added to the round automagically as needed. Expect bugs.
+traitor-debt = ATTENTION: It is time to pay your debt to the Syndicate...
+traitor-now = You are now a traitor.
+vote-choice-autotraitor = AutoTraitor

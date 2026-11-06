@@ -82,12 +82,17 @@ pub const ARMOUR: [&str; 7] = [
     "red-tag-armor",
 ];
 
+/// Suits besides armour that keep a monkey's teeth out.
+pub const BITE_PROOF: [&str; 2] = ["space-suit", "anomaly-suit"];
+
 /// What a target is wearing, as far as stopping a blow goes.
 #[derive(Debug, Clone, Copy, Default)]
 struct Worn {
     helmet: bool,
     /// A helmet, or a mask over the head.
     head_covered: bool,
+    /// A suit a monkey can't bite through, most of the time (Luna's space, bio, armour and swat).
+    bite_proof: bool,
     armour: bool,
     /// A suit or a uniform.
     body_covered: bool,
@@ -107,6 +112,7 @@ fn worn(equipment: Option<&Equipment>, looks: &Query<&Appearance>) -> Worn {
         helmet,
         head_covered: helmet || on(Slot::Mask) == Some("gas-mask"),
         armour: suit.is_some_and(|s| ARMOUR.contains(&s)),
+        bite_proof: suit.is_some_and(|s| ARMOUR.contains(&s) || BITE_PROOF.contains(&s)),
         body_covered: suit.is_some() || on(Slot::Uniform).is_some(),
     }
 }
@@ -325,6 +331,31 @@ pub fn resolve_attacks(
                 _ => {}
             }
             body.take_damage(zone, force, 0.0);
+        } else if intent == Intent::Harm && looks.get(attacker).is_ok_and(crate::monkey_round::is_monkey) {
+            // A monkey bites (Luna's `attack_paw`): another monkey three times in four for 1 to 5, a
+            // person always for 1 to 3, unless a heavy suit is in the way.
+            let line = |id: &str| {
+                LocMsg::new(id)
+                    .arg("attacker", attacker_name.clone())
+                    .arg("victim", victim.clone())
+            };
+            let (bites, most) = if looks.get(target).is_ok_and(crate::monkey_round::is_monkey) {
+                (rng.prob(75.0), 5)
+            } else if gear.bite_proof {
+                if rng.prob(25.0) {
+                    visible.0.push((at, line("bite-missed"), None));
+                }
+                (false, 0)
+            } else {
+                (true, 3)
+            };
+            if bites {
+                visible.0.push((at, line("bitten"), None));
+                let zone = ran_zone(aimed, &mut rng);
+                body.take_damage(zone, rng.range(1, most) as f32, 0.0);
+            } else if most > 0 {
+                visible.0.push((at, line("bite-missed"), None));
+            }
         } else if intent == Intent::Harm {
             let damage = rng.range(1, 9) as f32;
             let zone = ran_zone(aimed, &mut rng);
