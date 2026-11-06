@@ -72,6 +72,7 @@ wizard-robe
 witch-robe
 black-skirt
 purple-jumpsuit
+black-jumpsuit
 hop-suit
 gladiator-uniform
 kilt

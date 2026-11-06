@@ -379,6 +379,7 @@ round-mode = Текущий режим игры: { $mode ->
     [rp-revolution] Ролевая революция
     [monkey] Обезьяны
     [autotraitor] Автопредатель
+    [derelict] Заброшенная станция
     [restructuring] Корпоративная реструктуризация
     [sandbox] Песочница
    *[extended] Расширенный
@@ -1090,6 +1091,9 @@ examine-floor-tiles = В стопке { $count } { $count ->
         [few] плитки
        *[many] плиток
     } пола.
+lattice-built = Вы собираете опорную решётку...
+lattice-needs-support = Под обшивку нужна опора.
+lattice-sliced = Вы разрезаете стыки решётки...
 
 # Освещение (docs/reference/lights.md).
 light-no-fitting = В светильнике нет { NOUN($item, case: "gen") }.
@@ -1647,3 +1651,5 @@ spell-line = { $name } ({ $value }/{ $max })
 spell-choose-area = Куда?
 spell-cancel = Отмена
 admin-no-spell = Нет заклинания «{ $name }». Заклинания: { $text }.
+vote-choice-derelict = Заброшенная станция
+job-scavenger = Мусорщик

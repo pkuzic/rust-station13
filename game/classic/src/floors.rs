@@ -4,7 +4,7 @@
 use bevy_ecs::prelude::*;
 use bevy_ecs::system::SystemParam;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, GridPos, Hidden, MapLayer, ObjectSpec, TileDef, TilePos};
+use rs13_world::{Appearance, GridPos, Hidden, MapLayer, NetId, OPEN_SPACE, ObjectSpec, TileDef, TilePos};
 
 use crate::actions::{ClickOutcome, in_reach};
 use crate::hands::{Hands, Stack};
@@ -13,6 +13,19 @@ use crate::hands::{Hands, Stack};
 pub const FLOOR_TILE: &str = "floor-tile";
 const FLOOR: &str = "floor";
 const PLATING: &str = "plating";
+/// The support lattice prototype (Luna `structure/lattice`): built with rods over open floor.
+pub const LATTICE: &str = "lattice";
+
+/// A support lattice over open floor: floor tiles laid on it make plating.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Lattice;
+
+/// Spawn a lattice: anchored, not solid.
+pub fn spawn_lattice(world: &mut World, pos: TilePos, id: NetId) -> Entity {
+    world
+        .spawn((GridPos(pos), id, Appearance::new(LATTICE, ""), Lattice))
+        .id()
+}
 
 /// On a pipe or cable laid under the floor tiles (Luna `level = 1`): hidden while its
 /// tile has them.
@@ -55,6 +68,7 @@ pub struct FloorWork<'w, 's> {
     map: Query<'w, 's, &'static MapLayer>,
     pub(crate) stacks: Query<'w, 's, &'static mut Stack>,
     pub(crate) looks: Query<'w, 's, &'static Appearance>,
+    lattices: Query<'w, 's, (Entity, &'static GridPos), With<Lattice>>,
 }
 
 impl FloorWork<'_, '_> {
@@ -77,6 +91,46 @@ impl FloorWork<'_, '_> {
         self.map.iter().any(|m| m.0.z == pos.z && intact(m, pos))
     }
 
+    /// Open floor: a hole down to the deck below.
+    pub fn hole(&self, pos: TilePos) -> bool {
+        self.map.iter().any(|m| m.0.is_hole(pos))
+    }
+
+    /// The lattice on `pos`, if any.
+    pub fn lattice_at(&self, pos: TilePos) -> Option<Entity> {
+        self.lattices.iter().find(|(_, p)| p.0 == pos).map(|(e, _)| e)
+    }
+
+    /// Whether `entity` is a lattice, and where.
+    pub fn lattice(&self, entity: Entity) -> Option<TilePos> {
+        self.lattices.get(entity).ok().map(|(_, p)| p.0)
+    }
+
+    /// Clicking a lattice: floor tiles go to the open floor under it, and a lit welding tool
+    /// (`lit`) cuts it back into a rod (Luna `lattice/attackby`). The caller checks reach.
+    pub fn use_on_lattice(
+        &mut self,
+        mob_pos: TilePos,
+        hands: &mut Hands,
+        lattice: Entity,
+        lit: bool,
+        commands: &mut Commands,
+    ) -> Option<ClickOutcome> {
+        let at = self.lattice(lattice)?;
+        let active = hands.active_item()?;
+        match self.sprite(active)? {
+            FLOOR_TILE => self.use_on_tile(mob_pos, hands, at, commands),
+            "welder" if lit => {
+                commands.entity(lattice).despawn();
+                commands.queue(move |world: &mut World| {
+                    let _ = crate::objects::spawn_stack(world, crate::construction::RODS, at, 1);
+                });
+                Some(ClickOutcome::told("lattice-sliced"))
+            }
+            _ => None,
+        }
+    }
+
     /// Clicking a tile itself with a crowbar or floor tiles (Luna `floor/attackby`).
     /// `None` when these rules don't apply.
     pub fn use_on_tile(
@@ -97,6 +151,34 @@ impl FloorWork<'_, '_> {
                         let _ = crate::objects::spawn_stack(world, FLOOR_TILE, tile, 1);
                     }
                 });
+                Some(ClickOutcome::default())
+            }
+            // Open floor (Luna `floor/open/attackby`): rods build a lattice over it, and floor
+            // tiles on a lattice make plating.
+            crate::construction::RODS if self.hole(tile) && self.stacks.contains(active) => {
+                if self.lattice_at(tile).is_some() {
+                    return Some(ClickOutcome::default());
+                }
+                commands.queue(move |world: &mut World| {
+                    let id = world.resource_mut::<crate::objects::NetIds>().alloc();
+                    spawn_lattice(world, tile, id);
+                });
+                self.use_up(active, 1, hands, commands);
+                Some(ClickOutcome::told("lattice-built"))
+            }
+            FLOOR_TILE if self.hole(tile) && self.stacks.contains(active) => {
+                let Some(lattice) = self.lattice_at(tile) else {
+                    return Some(ClickOutcome::told("lattice-needs-support"));
+                };
+                commands.entity(lattice).despawn();
+                commands.queue(move |world: &mut World| {
+                    if set_floor(world, tile, OPEN_SPACE, PLATING)
+                        && let Some(mut atmos) = world.get_resource_mut::<crate::atmos::StationAtmos>()
+                    {
+                        atmos.0.set_open_below(tile, false);
+                    }
+                });
+                self.use_up(active, 1, hands, commands);
                 Some(ClickOutcome::default())
             }
             FLOOR_TILE if self.bare(tile) && self.stacks.contains(active) => {

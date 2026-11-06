@@ -229,6 +229,17 @@ impl AtmosGrid {
         }
     }
 
+    /// Open or close a hole in the floor of `pos` to the tile below (`open-space` built over,
+    /// or broken open). Zones are rebuilt on the next step.
+    pub fn set_open_below(&mut self, pos: TilePos, open: bool) {
+        if let Some(i) = self.index(pos)
+            && self.open_below[i] != open
+        {
+            self.open_below[i] = open;
+            self.zones_dirty = true;
+        }
+    }
+
     /// Open or close a door tile.
     pub fn set_portal_open(&mut self, pos: TilePos, open: bool) {
         if let Some(i) = self.index(pos)

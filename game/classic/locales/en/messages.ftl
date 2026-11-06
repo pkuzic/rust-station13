@@ -371,6 +371,7 @@ round-mode = The current game mode is { $mode ->
     [rp-revolution] RP Revolution
     [monkey] Monkey
     [autotraitor] AutoTraitor
+    [derelict] Derelict
     [restructuring] Corporate Restructuring
     [sandbox] Sandbox
    *[extended] Extended
@@ -1092,6 +1093,9 @@ examine-floor-tiles = There { $count ->
         [one] is { $count } floor tile
        *[other] are { $count } floor tiles
     } in the stack.
+lattice-built = Constructing support lattice ...
+lattice-needs-support = The plating is going to need some support.
+lattice-sliced = Slicing lattice joints ...
 
 # Lights (docs/reference/lights.md).
 light-no-fitting = There is no { NOUN($item) } in this light.
@@ -1640,3 +1644,5 @@ spell-line = { $name } ({ $value }/{ $max })
 spell-choose-area = Where to?
 spell-cancel = Cancel
 admin-no-spell = There's no spell called { $name }. Spells: { $text }.
+vote-choice-derelict = Derelict
+job-scavenger = Scavenger
