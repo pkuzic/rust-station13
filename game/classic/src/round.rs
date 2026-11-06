@@ -16,7 +16,7 @@ pub struct Mode {
     pub built: bool,
 }
 
-pub const MODES: [Mode; 13] = [
+pub const MODES: [Mode; 14] = [
     Mode {
         id: "extended",
         probability: 5,
@@ -81,6 +81,11 @@ pub const MODES: [Mode; 13] = [
     // Luna's `Extend-A-Traitormongous`.
     Mode {
         id: "autotraitor",
+        probability: 1,
+        built: true,
+    },
+    Mode {
+        id: "derelict",
         probability: 1,
         built: true,
     },

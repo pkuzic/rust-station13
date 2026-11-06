@@ -55,6 +55,8 @@
     (id: "high-power-cell", force: 5.0, conducts: true),
     // Luna `sheet/mineral/plasma`: up to 50; fuel for the P.A.C.M.A.N. (`generators.md`).
     (id: "plasma-sheet", force: 5.0, stack: 50),
+    // What a S.U.P.E.R.P.A.C.M.A.N. burns.
+    (id: "uranium-sheet", force: 5.0, size: 3, stack: 50),
     // Luna `table_rack_parts.dm`.
     (id: "table-parts", force: 0.0),
     (id: "table-parts-reinforced", force: 0.0),
@@ -67,6 +69,8 @@
     (id: "oxygen-tank", force: 5.0, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     // Luna: 15 L at 2 atm, worn on the belt.
     (id: "emergency-oxygen", force: 7.0, size: 2, slot: "belt", tank: (volume: 15.0, pressure: 202.65, gas: "oxygen")),
+    // The engineers' one: 25 litres (Luna `emergency_oxygen/engi`).
+    (id: "emergency-oxygen-engi", force: 7.0, size: 2, slot: "belt", tank: (volume: 25.0, pressure: 202.65, gas: "oxygen")),
     // Luna `tank/jetpack`: an oxygen tank like the big one, worn on the back; w_class 4.
     (id: "jetpack", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
     (id: "jetpack-ce", force: 5.0, size: 4, slot: "back", tank: (volume: 70.0, pressure: 607.95, gas: "oxygen")),
@@ -100,6 +104,9 @@
     // "" works, "burned", "broken" (`docs/reference/lights.md`).
     (id: "light-tube", force: 2.0, size: 2),
     (id: "light-bulb", force: 2.0, size: 2),
+    // Luna's derelict scavengers carry one (`box/circuity`).
+    (id: "circuit-box", force: 0.0, storage: (),
+        contents: ["circuit-board", "circuit-board", "circuit-board", "circuit-board", "circuit-board", "circuit-board", "circuit-board"]),
     (id: "light-tubes-box", force: 0.0, storage: (),
         contents: ["light-tube", "light-tube", "light-tube", "light-tube", "light-tube", "light-tube", "light-tube"]),
     (id: "light-bulbs-box", force: 0.0, storage: (),
@@ -271,6 +278,7 @@
     (id: "witch-robe", force: 0.0, slot: "suit", covers: 414),
     (id: "black-skirt", force: 0.0, slot: "uniform", covers: 390, heat: 0.3),
     (id: "purple-jumpsuit", force: 0.0, slot: "uniform", covers: 414, heat: 0.3),
+    (id: "black-jumpsuit", force: 0.0, slot: "uniform", covers: 414, heat: 0.3),
     (id: "hop-suit", force: 0.0, slot: "uniform", covers: 414, heat: 0.3),
     (id: "gladiator-uniform", force: 0.0, slot: "uniform", covers: 390, heat: 0.3),
     (id: "kilt", force: 0.0, slot: "uniform", covers: 102, heat: 0.3),

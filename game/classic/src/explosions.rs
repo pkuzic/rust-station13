@@ -72,6 +72,15 @@ pub fn explode(world: &mut World, at: TilePos, devastation: i32, heavy: i32, lig
     });
 }
 
+/// Every blast waiting, set off at once (for wreckage made before anyone's aboard).
+pub fn detonate_pending_now(world: &mut World) {
+    let now = world.resource::<WorldTime>().deciseconds();
+    for blast in &mut world.resource_mut::<PendingBlasts>().0 {
+        blast.goes_off_at = now;
+    }
+    run_blasts(world);
+}
+
 /// Blasts whose time has come.
 pub fn run_blasts(world: &mut World) {
     let now = world.resource::<WorldTime>().deciseconds();

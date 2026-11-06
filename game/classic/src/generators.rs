@@ -12,8 +12,14 @@ use crate::machines::MACHINE_TICKS;
 use crate::power::{PowerNode, PowerSupply, Powernets};
 use crate::time::WorldTime;
 
-/// The generator prototype.
+/// The generator prototypes.
 pub const PACMAN: &str = "pacman";
+/// The bigger one, burning uranium (Luna `pacman/super`).
+pub const SUPER_PACMAN: &str = "super-pacman";
+pub const URANIUM_SHEET: &str = "uranium-sheet";
+/// What the bigger one puts out, W, and how many cycles a sheet lasts (Luna 15 000 and 160).
+pub const SUPER_PACMAN_OUTPUT: f64 = 15_000.0;
+pub const SUPER_CYCLES_PER_SHEET: u32 = 160;
 /// What it burns.
 pub const PLASMA_SHEET: &str = "plasma-sheet";
 /// Output while running, W (Luna `power_gen` 5 000 per cycle at the lowest setting).
@@ -33,9 +39,27 @@ pub struct Pacman {
     pub active: bool,
     /// Wrenched to the floor; only then does it join the cable on its tile.
     pub anchored: bool,
+    /// The S.U.P.E.R.P.A.C.M.A.N.: uranium, three times the output.
+    pub super_type: bool,
 }
 
 impl Pacman {
+    pub fn fuel(&self) -> &'static str {
+        if self.super_type {
+            URANIUM_SHEET
+        } else {
+            PLASMA_SHEET
+        }
+    }
+
+    pub fn output(&self) -> f64 {
+        if self.super_type {
+            SUPER_PACMAN_OUTPUT
+        } else {
+            PACMAN_OUTPUT
+        }
+    }
+
     pub fn has_fuel(&self) -> bool {
         self.burning > 0 || self.sheets > 0
     }
@@ -44,7 +68,11 @@ impl Pacman {
     fn burn(&mut self) {
         if self.burning == 0 && self.sheets > 0 {
             self.sheets -= 1;
-            self.burning = CYCLES_PER_SHEET;
+            self.burning = if self.super_type {
+                SUPER_CYCLES_PER_SHEET
+            } else {
+                CYCLES_PER_SHEET
+            };
         }
         self.burning = self.burning.saturating_sub(1);
     }
@@ -62,6 +90,7 @@ pub fn spawn_pacman(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: NetI
                 burning: 0,
                 active: false,
                 anchored: false,
+                super_type: spec.id == SUPER_PACMAN,
             },
             PowerSupply::default(),
             Dense,
@@ -93,7 +122,7 @@ impl GeneratorWork<'_, '_> {
     ) -> Option<ClickOutcome> {
         let mut generator = self.generators.get_mut(target).ok()?;
         match held {
-            Some(PLASMA_SHEET) => {
+            Some(fuel) if fuel == generator.fuel() => {
                 let item = hands.active_item()?;
                 let mut stack = stacks.get_mut(item).ok()?;
                 let amount = (PACMAN_MAX_SHEETS - generator.sheets.min(PACMAN_MAX_SHEETS)).min(stack.amount);
@@ -142,7 +171,7 @@ impl GeneratorWork<'_, '_> {
             LocMsg::new("examine-pacman")
                 .arg("on", if generator.active { "yes" } else { "no" })
                 .num("count", i64::from(generator.sheets))
-                .num("watts", PACMAN_OUTPUT as i64),
+                .num("watts", generator.output() as i64),
         )
     }
 }
@@ -168,7 +197,7 @@ pub fn run_generators(
         } else if generator.active {
             generator.active = false;
         }
-        let watts = if running { PACMAN_OUTPUT } else { 0.0 };
+        let watts = if running { generator.output() } else { 0.0 };
         if supply.watts != watts {
             supply.watts = watts;
         }

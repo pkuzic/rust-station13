@@ -540,6 +540,15 @@
         (path: "/obj/effect/landmark/closet_spawn", id: "landmark-closet-spawn"),
         (path: "/obj/effect/landmark/gearcloset", id: "landmark-gear-closet"),
         (path: "/obj/effect/landmark/synbomb", id: "landmark-synbomb", vars: ["name"]),
+        // Where a derelict round puts its supplies, and what it leaves alone (`derelict.md`).
+        (path: "/obj/effect/landmark/derelict/glass", id: "landmark-derelict-glass"),
+        (path: "/obj/effect/landmark/derelict/metal", id: "landmark-derelict-metal"),
+        (path: "/obj/effect/landmark/derelict/noblast", id: "landmark-derelict-noblast"),
+        (path: "/obj/effect/landmark/derelict/nodamage", id: "landmark-derelict-nodamage"),
+        (path: "/obj/effect/landmark/derelict/o2canister", id: "landmark-derelict-o2canister"),
+        (path: "/obj/effect/landmark/derelict/o2crate", id: "landmark-derelict-o2crate"),
+        (path: "/obj/effect/landmark/derelict/superpacman", id: "landmark-derelict-superpacman"),
+        (path: "/obj/effect/landmark/derelict/supplycrate", id: "landmark-derelict-supplycrate"),
         (path: "/obj/structure/closet/syndicate/personal", id: "closet-syndicate-personal"),
         (path: "/obj/item/weapon/cartridge/security", id: "cartridge-security"),
         (path: "/obj/item/weapon/cartridge/head", id: "cartridge-head"),
@@ -756,7 +765,6 @@
     // Not worth reporting: decorations, mapping helpers, things on space tiles.
     ignore: [
         "/obj/effect/decal",
-        "/obj/effect/landmark/derelict",
         "/obj/structure/lattice",
         // Laser tag guns aren't built, and would otherwise be real lasers.
         "/obj/item/weapon/gun/energy/laser/redtag",
