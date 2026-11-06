@@ -167,6 +167,15 @@ fn enter_world(world: &mut World, link: Entity, starts: &[TilePos], mode: &'stat
             "extended" => outbox.0.insert(1, LocMsg::new("round-mode-extended")),
             "sandbox" => outbox.0.insert(1, LocMsg::new("round-mode-sandbox")),
             "meteor" => outbox.0.insert(1, rs13_classic::meteor::warning()),
+            "autotraitor" => outbox.0.insert(1, rs13_classic::autotraitor::announcement()),
+            "restructuring" => {
+                for (i, line) in rs13_classic::restructuring::announcement()
+                    .into_iter()
+                    .enumerate()
+                {
+                    outbox.0.insert(1 + i, line);
+                }
+            }
             _ => {}
         }
     }
@@ -241,6 +250,15 @@ pub fn run_round(world: &mut World) {
             if mode == "changeling" {
                 rs13_classic::changeling::setup_round(world);
             }
+            if mode == "autotraitor" {
+                rs13_classic::autotraitor::setup_round(world);
+            }
+            if mode == "monkey" {
+                rs13_classic::monkey_round::setup_round(world);
+            }
+            if mode == "restructuring" {
+                rs13_classic::restructuring::setup_round(world);
+            }
             if mode == "revolution" || mode == "rp-revolution" {
                 let rp = mode == "rp-revolution";
                 if !rs13_classic::revolution::setup_round(world, rp) {
@@ -278,6 +296,9 @@ pub fn run_round(world: &mut World) {
         .collect();
     for link in joining {
         enter_world(world, link, &starts, mode);
+        if let Some(mob) = world.get::<Controls>(link).map(|c| c.0) {
+            rs13_classic::autotraitor::late_join(world, mob);
+        }
         if let Some(mut lobby) = world.get_mut::<InLobby>(link) {
             lobby.joining = false;
         }

@@ -11,6 +11,7 @@ pub mod apc;
 pub mod arcade;
 pub mod atmos;
 pub mod autolathe;
+pub mod autotraitor;
 pub mod bedsheets;
 pub mod blastdoors;
 pub mod blob;
@@ -69,6 +70,7 @@ pub mod medical;
 pub mod meteor;
 pub mod meters;
 pub mod microwaves;
+pub mod monkey_round;
 pub mod monkeys;
 pub mod morgue;
 pub mod movement;
@@ -85,6 +87,7 @@ pub mod pulling;
 pub mod radio;
 pub mod reagent_tanks;
 pub mod records;
+pub mod restructuring;
 pub mod revolution;
 pub mod rng;
 pub mod round;
@@ -450,6 +453,11 @@ impl Plugin for ClassicPlugin {
                             (nuke::run_nuke, nuke::update_pinpointers, nuke::update_nuke_views),
                             revolution::run_revolution,
                             (meteor::run_meteors, blob::run_blobs),
+                            (
+                                monkey_round::run_monkey_round,
+                                restructuring::run_restructuring,
+                                autotraitor::run_autotraitor,
+                            ),
                             (
                                 changeling::run_changelings,
                                 changeling::update_ling_views,

@@ -78,7 +78,7 @@ fn choices(kind: VoteKind) -> Vec<String> {
             .chain(
                 MODES
                     .iter()
-                    .filter(|m| m.built && !matches!(m.id, "meteor" | "blob"))
+                    .filter(|m| m.built && !matches!(m.id, "meteor" | "blob" | "monkey" | "restructuring"))
                     .map(|m| m.id),
             )
             .map(str::to_owned)

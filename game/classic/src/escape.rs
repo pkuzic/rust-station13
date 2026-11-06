@@ -331,6 +331,9 @@ fn declare_completion(world: &mut World) {
     for line in crate::nuke::report(world) {
         tell_everyone(world, &line);
     }
+    for line in crate::monkey_round::report(world) {
+        tell_everyone(world, &line);
+    }
 }
 
 /// Show each player the console they have open.

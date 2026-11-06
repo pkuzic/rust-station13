@@ -42,7 +42,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 2.5 Malfunction | M | `gamemodes/malfunction` | Blocked: needs 3.9 AI |
 | [x] | 2.6 Meteor | S-M | `gamemodes/meteor` | `meteor-blob.md` |
 | [x] | 2.7 Blob | M | `gamemodes/blob` | `meteor-blob.md`. Probability 0 in Luna's config. Guns don't hurt it yet |
-| [ ] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Check each works in Luna first |
+| [~] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Monkey, restructuring (`monkey-restructuring.md`) and AutoTraitor (`autotraitor.md`) built. Derelict to do. Takeover needs 3.4 viruses, 3.5 powers and 3.9 AI |
 | [ ] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled |
 
 ## 3. Departments

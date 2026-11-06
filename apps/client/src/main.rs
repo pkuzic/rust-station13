@@ -1290,6 +1290,15 @@ fn update_appearance(
         match look {
             Some(mut look) => {
                 let state = sprites::state_for(appearance);
+                // A new body altogether (someone turned into a monkey): drawn afresh, untinted
+                // (`tint_skin` tints it again if it's still a person's).
+                if look.sprite != appearance.sprite {
+                    look.sprite = appearance.sprite.clone();
+                    look.state = state;
+                    look.since = time.elapsed_secs();
+                    sprite.color = Color::WHITE;
+                    continue;
+                }
                 if look.state != state {
                     look.state = state;
                     look.since = time.elapsed_secs();
