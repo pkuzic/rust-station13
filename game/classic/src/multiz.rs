@@ -143,3 +143,67 @@ impl ClimbWork<'_, '_> {
         free(&self.decks, &self.blockers, to).then_some(to)
     }
 }
+
+/// How much brute a person takes landing on the deck below (Luna `adjustBruteLoss(10)`).
+pub const FALL_BRUTE: f32 = 10.0;
+/// How long a fall takes a person off their feet, in Luna's counts (its `weakened = 5`).
+const FALL_COUNTS: f32 = 5.0;
+
+/// Luna `floor/open/Enter`: anything that isn't anchored and stands on open floor drops to the
+/// same spot one deck down, if it can go there. Something solid (a person, a closet) needs the
+/// spot free of anything solid; an item needs only a floor. A person who lands takes
+/// [`FALL_BRUTE`] and is knocked down. A hole over a hole keeps them falling, a deck each tick.
+pub fn fall_through_holes(
+    holes: Res<crate::decks::Holes>,
+    decks: Decks,
+    time: Res<crate::time::WorldTime>,
+    mut set: ParamSet<(
+        (
+            crate::pulling::Pullable,
+            Query<(Entity, &GridPos, Has<Dense>, Has<Mob>), Without<rs13_world::Ghost>>,
+        ),
+        Query<(&mut GridPos, Option<&mut crate::health::Body>)>,
+    )>,
+    mut commands: Commands,
+) {
+    if holes.0.is_empty() {
+        return;
+    }
+    let falls: Vec<(Entity, TilePos, bool)> = {
+        let (pullable, things) = set.p0();
+        let solid_at: std::collections::HashSet<TilePos> = things
+            .iter()
+            .filter(|(_, _, dense, mob)| *dense || *mob)
+            .map(|(_, p, ..)| p.0)
+            .collect();
+        things
+            .iter()
+            .filter(|(_, at, ..)| holes.0.binary_search(&at.0).is_ok())
+            .filter(|(e, ..)| pullable.check(*e))
+            .filter_map(|(e, at, dense, mob)| {
+                let to = other_deck(at.0, true);
+                let lands = decks.deck(to.z).is_some()
+                    && !decks.is_solid(to)
+                    && !((dense || mob) && solid_at.contains(&to));
+                lands.then_some((e, to, mob))
+            })
+            .collect()
+    };
+    let until = time.deciseconds() + FALL_COUNTS * crate::combat::COUNT_DS;
+    let mut moved = set.p1();
+    for (thing, to, mob) in falls {
+        let Ok((mut pos, body)) = moved.get_mut(thing) else {
+            continue;
+        };
+        pos.0 = to;
+        if mob {
+            if let Some(mut body) = body {
+                body.take_damage_spread(FALL_BRUTE, 0.0);
+            }
+            commands
+                .entity(thing)
+                .remove::<crate::pulling::Pulling>()
+                .insert(crate::flashes::Weakened(until));
+        }
+    }
+}
