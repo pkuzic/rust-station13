@@ -40,6 +40,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `anomaly-hood:` | `icons/obj/clothing/hats.dmi : "anom_hood"` | CC-BY-SA 3.0 |
 | `anomaly-suit:` | `icons/obj/clothing/suits.dmi : "anom_suit"` | CC-BY-SA 3.0 |
 | `apc:` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
+| `apc:broken` | `icons/obj/power.dmi : "apc-b"` | CC-BY-SA 3.0 |
 | `apc:low` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:off` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
@@ -86,6 +87,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `beret:` | `icons/obj/clothing/hats.dmi : "beret"` | CC-BY-SA 3.0 |
 | `bike-horn:` | `icons/obj/items.dmi : "bike_horn"` | CC-BY-SA 3.0 |
 | `black-gloves:` | `icons/obj/clothing/gloves.dmi : "black"` | CC-BY-SA 3.0 |
+| `black-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shoes:` | `icons/obj/clothing/shoes.dmi : "black"` | CC-BY-SA 3.0 |
 | `black-shorts:` | `icons/obj/clothing/uniforms.dmi : "blackshorts"` | CC-BY-SA 3.0 |
 | `black-skirt:` | `icons/obj/clothing/uniforms.dmi : "blackskirt"` | CC-BY-SA 3.0 |
@@ -286,6 +288,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `cigarette-packet:4` | `icons/obj/cigarettes.dmi : "cigpacket4"` | CC-BY-SA 3.0 |
 | `cigarette-packet:5` | `icons/obj/cigarettes.dmi : "cigpacket5"` | CC-BY-SA 3.0 |
 | `circuit-board:` | `icons/obj/module.dmi : "id_mod"` | CC-BY-SA 3.0 |
+| `circuit-box:` | `icons/obj/storage.dmi : "circuit"` | CC-BY-SA 3.0 |
 | `circular-saw:` | `icons/obj/surgery.dmi : "saw"` | CC-BY-SA 3.0 |
 | `clipboard:` | `icons/obj/bureaucracy.dmi : "clipboard"` | CC-BY-SA 3.0 |
 | `clipboard:clipboard_over` | `icons/obj/bureaucracy.dmi : "clipboard_over"` | CC-BY-SA 3.0 |
@@ -378,8 +381,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `coveralls:` | `icons/obj/clothing/suits.dmi : "overalls"` | CC-BY-SA 3.0 |
 | `crate:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
 | `crate:crateopen` | `icons/obj/storage.dmi : "crateopen"` | CC-BY-SA 3.0 |
+| `crate-engineering:engi_crate` | `icons/obj/storage.dmi : "engi_crate"` | CC-BY-SA 3.0 |
+| `crate-engineering:engi_crate_open` | `icons/obj/storage.dmi : "engi_crate_open"` | CC-BY-SA 3.0 |
 | `crate-internals:o2crate` | `icons/obj/storage.dmi : "o2crate"` | CC-BY-SA 3.0 |
 | `crate-internals:o2crateopen` | `icons/obj/storage.dmi : "o2crateopen"` | CC-BY-SA 3.0 |
+| `crate-internals-oxy:o2crate` | `icons/obj/storage.dmi : "o2crate"` | CC-BY-SA 3.0 |
+| `crate-internals-oxy:o2crateopen` | `icons/obj/storage.dmi : "o2crateopen"` | CC-BY-SA 3.0 |
 | `crate-radiation:radiation` | `icons/obj/storage.dmi : "radiation"` | CC-BY-SA 3.0 |
 | `crate-radiation:radiationopen` | `icons/obj/storage.dmi : "radiationopen"` | CC-BY-SA 3.0 |
 | `crate-rcd:crate` | `icons/obj/storage.dmi : "crate"` | CC-BY-SA 3.0 |
@@ -473,6 +480,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `emergency-locker:` | `icons/obj/lockwall.dmi : "emerg"` | CC-BY-SA 3.0 |
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `emergency-oxygen-double:` | `icons/obj/tank.dmi : "emergency_double"` | CC-BY-SA 3.0 |
+| `emergency-oxygen-engi:` | `icons/obj/tank.dmi : "emergency_engi"` | CC-BY-SA 3.0 |
 | `empty-canister:` | `icons/obj/atmos.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `empty-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
 | `empty-canister:can-o0` | `icons/obj/atmos.dmi : "can-o0"` | CC-BY-SA 3.0 |
@@ -1423,6 +1431,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `stun-baton:stunbaton_active` | `icons/obj/weapons.dmi : "stunbaton_active"` | CC-BY-SA 3.0 |
 | `sundress:` | `icons/obj/clothing/uniforms.dmi : "sundress"` | CC-BY-SA 3.0 |
 | `sunglasses:` | `icons/obj/clothing/glasses.dmi : "sun"` | CC-BY-SA 3.0 |
+| `super-pacman:portgen0` | `icons/obj/power.dmi : "portgen1"` | CC-BY-SA 3.0 |
+| `super-pacman:portgen1` | `icons/obj/power.dmi : "portgen1"` | CC-BY-SA 3.0 |
 | `supermatter:` | `icons/obj/machines/engine.dmi : "darkmatter"` | CC-BY-SA 3.0 |
 | `surgical-drapes:` | `icons/obj/surgery.dmi : "surgical_drapes"` | CC-BY-SA 3.0 |
 | `suspenders:` | `icons/obj/clothing/belts.dmi : "suspenders"` | CC-BY-SA 3.0 |
@@ -1696,6 +1706,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `turret:grey_target_prism` | `icons/obj/turrets.dmi : "grey_target_prism"` | CC-BY-SA 3.0 |
 | `turret-control:motion3` | `icons/obj/device.dmi : "motion3"` | CC-BY-SA 3.0 |
 | `uplink-radio:` | `icons/obj/radio.dmi : "walkietalkie"` | CC-BY-SA 3.0 |
+| `uranium-sheet:` | `icons/obj/mining.dmi : "sheet-uranium"` | CC-BY-SA 3.0 |
 | `urn:` | `icons/obj/items.dmi : "urn"` | CC-BY-SA 3.0 |
 | `ushanka:` | `icons/obj/clothing/hats.dmi : "ushankadown"` | CC-BY-SA 3.0 |
 | `utility-belt:` | `icons/obj/clothing/belts.dmi : "utilitybelt"` | CC-BY-SA 3.0 |
@@ -1838,6 +1849,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `worn:black-gloves:lying` | `icons/mob/hands.dmi : "bgloves2"` | CC-BY-SA 3.0 |
 | `worn:black-gloves:l:` | `icons/mob/hands.dmi : "bgloves_lhand"` | CC-BY-SA 3.0 |
 | `worn:black-gloves:l:lying` | `icons/mob/hands.dmi : "bgloves2"` | CC-BY-SA 3.0 |
+| `worn:black-jumpsuit:` | `icons/mob/uniform.dmi : "black_s"` | CC-BY-SA 3.0 |
+| `worn:black-jumpsuit:lying` | `icons/mob/uniform.dmi : "black_l"` | CC-BY-SA 3.0 |
 | `worn:black-shoes:` | `icons/mob/feet.dmi : "black"` | CC-BY-SA 3.0 |
 | `worn:black-shoes:lying` | `icons/mob/feet.dmi : "black2"` | CC-BY-SA 3.0 |
 | `worn:black-shorts:` | `icons/mob/uniform.dmi : "blackshorts_s"` | CC-BY-SA 3.0 |

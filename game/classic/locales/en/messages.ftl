@@ -371,6 +371,7 @@ round-mode = The current game mode is { $mode ->
     [rp-revolution] RP Revolution
     [monkey] Monkey
     [autotraitor] AutoTraitor
+    [derelict] Derelict
     [restructuring] Corporate Restructuring
     [sandbox] Sandbox
    *[extended] Extended
@@ -1623,3 +1624,5 @@ autotraitor-announce = This is a test bed for theories and methods to implement 
 traitor-debt = ATTENTION: It is time to pay your debt to the Syndicate...
 traitor-now = You are now a traitor.
 vote-choice-autotraitor = AutoTraitor
+vote-choice-derelict = Derelict
+job-scavenger = Scavenger

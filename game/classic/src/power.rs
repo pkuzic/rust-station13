@@ -198,6 +198,8 @@ pub struct Apc {
     pub charging: u8,
     /// Each channel's load last cycle, W.
     pub last_used: [f64; 3],
+    /// Wrecked (Luna `BROKEN`, only from a derelict round): it powers nothing and charges nothing.
+    pub broken: bool,
 }
 
 impl Apc {
@@ -214,6 +216,7 @@ impl Apc {
             main_status: 0,
             charging: 0,
             last_used: [0.0; 3],
+            broken: false,
         }
     }
 
@@ -419,6 +422,11 @@ pub fn power_cycle(
         let usage: f64 = state.used.iter().sum();
         apc.last_used = state.used.map(|j| j / POWER_DT);
         state.used = [0.0; 3];
+        if apc.broken {
+            apc.main_status = 0;
+            state.on = [false; 3];
+            continue;
+        }
         let grid = nets.net_of.get(&entity).map(|n| &mut remaining[*n]);
         let mut spare = grid.as_deref().copied().unwrap_or(0.0);
         apc.main_status = if spare <= 0.0 {
@@ -548,7 +556,9 @@ pub fn power_cycle(
 /// "low" once equipment has been cut, else on.
 pub fn update_power_looks(mut apcs: Query<(&Apc, &mut rs13_world::Appearance), Changed<Apc>>) {
     for (apc, mut appearance) in &mut apcs {
-        let state = if apc.opened {
+        let state = if apc.broken {
+            "broken"
+        } else if apc.opened {
             if apc.cell.is_some() { "open" } else { "open-empty" }
         } else if !apc.operating {
             "off"
