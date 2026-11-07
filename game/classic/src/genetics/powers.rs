@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, HumanLook, MobStat};
+use rs13_world::{Appearance, DisplayName, GridPos, HumanLook, MobStat, Vision};
 
 use super::dna::{self, MONKEY_BLOCK, Threshold};
 use super::{Genome, Radiation, genome, layout, random_bad, random_good, random_identity, tell};
@@ -225,6 +225,14 @@ pub fn check_in(world: &mut World, mob: Entity, injected: bool, _in_scanner: boo
     if let Some(mut body) = world.get_mut::<Body>(mob) {
         body.burn_proof = now.contains(&Gene::ColdResist);
     }
+    // Luna's blindness covers the screen whatever else they could see.
+    if now.contains(&Gene::Blind) {
+        world.entity_mut(mob).insert(Vision::Blind);
+    } else if now.contains(&Gene::Xray) {
+        world.entity_mut(mob).insert(Vision::Xray);
+    } else {
+        world.entity_mut(mob).remove::<Vision>();
+    }
     if fake {
         // Something else goes wrong, or now and then right.
         let (bad, ident) = {
@@ -242,8 +250,7 @@ pub fn check_in(world: &mut World, mob: Entity, injected: bool, _in_scanner: boo
         Threshold::Normal,
         layout.block_add,
     );
-    let is_person = world.get::<HumanLook>(mob).is_some()
-        || world.get::<Appearance>(mob).is_some_and(|a| a.sprite == "human");
+    let is_person = super::is_person(world, mob);
     let is_monkey = world
         .get::<Appearance>(mob)
         .is_some_and(crate::monkey_round::is_monkey);
@@ -307,9 +314,7 @@ pub fn update_look(world: &mut World, mob: Entity) {
     let underwear = match world.get::<HumanLook>(mob) {
         Some(old) => old.underwear,
         // A person who never chose a look gets one now; a monkey keeps its shape.
-        None if world.get::<Appearance>(mob).is_some_and(|a| a.sprite == "human") => {
-            HumanLook::default().underwear
-        }
+        None if super::is_person(world, mob) => HumanLook::default().underwear,
         None => return,
     };
     let look = dna::look_of(&g.ui, block_add, underwear);

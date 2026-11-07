@@ -12,7 +12,9 @@ use rs13_classic::hands::HeldBy;
 use rs13_classic::movement::Mob;
 use rs13_classic::storage::{InStorage, OpenStorage};
 use rs13_network::lightyear::prelude::*;
-use rs13_world::{Facing, Ghost, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, sight};
+use rs13_world::{
+    Facing, Ghost, GridPos, Hidden, LightSource, MapLayer, NetId, Opaque, TilePos, Vision, sight,
+};
 
 use crate::Controls;
 use crate::silhouettes::{Shade, Shaded};
@@ -93,7 +95,7 @@ pub fn held_out_of_sight(
 #[allow(clippy::type_complexity)]
 pub fn update_sight<F: QueryFilter>(
     mut links: Query<(Entity, Option<&Controls>, Option<&mut OutOfSight>), (With<PriorityMap>, F)>,
-    viewers: Query<(Option<&Facing>, Option<&OpenStorage>, Has<Ghost>)>,
+    viewers: Query<(Option<&Facing>, Option<&OpenStorage>, Has<Ghost>, Option<&Vision>)>,
     cameras: Query<&rs13_world::CameraView>,
     maps: Query<&MapLayer>,
     things: Query<
@@ -158,9 +160,10 @@ pub fn update_sight<F: QueryFilter>(
             continue;
         };
         let me = controls.0;
-        let Ok((facing, open, is_ghost)) = viewers.get(me) else {
+        let Ok((facing, open, is_ghost, vision)) = viewers.get(me) else {
             continue;
         };
+        let vision = vision.copied().unwrap_or_default();
         // Watching a camera, you see from it, all the way round (`cameras.rs`); shut in a
         // closet, from where the closet stands.
         let camera = cameras.get(me).ok().map(|v| v.0);
@@ -207,9 +210,14 @@ pub fn update_sight<F: QueryFilter>(
                     if *entity == me {
                         return false;
                     }
+                    // The blind see nothing but themselves (`genetics.md`).
+                    if vision == Vision::Blind && !is_ghost {
+                        return true;
+                    }
                     // Ghosts are for ghosts; who sees through walls and the dark sees the
-                    // person themselves, all round (`ghosts.md`).
-                    if is_ghost {
+                    // person themselves, all round (`ghosts.md`). X-ray sees as ghosts do,
+                    // but not ghosts.
+                    if is_ghost || (vision == Vision::Xray && !*ghost) {
                         let mut clear = |_: TilePos| true;
                         return *under_floor
                             || shade.is_some()

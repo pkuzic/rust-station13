@@ -13,7 +13,7 @@ use rs13_world::{
     HumanLook, IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer,
     MobStat, NetId, NukePanelView, Opaque, PaperView, PickListView, PixelOffset, PowerMonitorView,
     RecordsPanelView, SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellPanelView,
-    SpellbookView, StorageView, TilePos, UplinkPanelView, VendingPanelView, VoteView, WirePanelView,
+    SpellbookView, StorageView, TilePos, UplinkPanelView, VendingPanelView, Vision, VoteView, WirePanelView,
     WornView,
 };
 use serde::{Deserialize, Serialize};
@@ -411,6 +411,8 @@ pub struct StatusUpdate {
     pub body_temperature: u16,
     /// Pulling something (the HUD pull button lights up).
     pub pulling: bool,
+    /// Seeing through walls, or nothing at all (`genetics.md`).
+    pub vision: Vision,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its

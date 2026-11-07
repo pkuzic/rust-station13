@@ -165,6 +165,14 @@ pub(crate) fn tell(world: &mut World, mob: Entity, msg: LocMsg) {
     }
 }
 
+/// A person, whether or not they chose how they look (a female disguise is drawn as `human-f`).
+pub fn is_person(world: &World, mob: Entity) -> bool {
+    world.get::<HumanLook>(mob).is_some()
+        || world
+            .get::<Appearance>(mob)
+            .is_some_and(|a| a.sprite.starts_with("human"))
+}
+
 /// Someone's genes, made from how they look the first time they're needed (Luna `ready_dna`).
 /// Monkeys have them too, with the monkey block on; those who aren't people don't.
 pub fn genome(world: &mut World, mob: Entity) -> Option<Genome> {
@@ -175,7 +183,7 @@ pub fn genome(world: &mut World, mob: Entity) -> Option<Genome> {
     let sprite = world.get::<Appearance>(mob).map(|a| a.sprite.clone());
     let monkey = sprite.as_deref() == Some(crate::monkeys::MONKEY);
     // Every person has genes, whether or not they chose how they look.
-    let human = look.is_some() || sprite.as_deref() == Some("human");
+    let human = is_person(world, mob);
     if !human && !monkey {
         return None;
     }
@@ -829,7 +837,7 @@ pub fn use_injector(world: &mut World, mob: Entity, injector: Entity, target: En
     ) else {
         return;
     };
-    if world.get::<HumanLook>(target).is_some() {
+    if is_person(world, target) {
         let now = world.resource::<WorldTime>().deciseconds();
         world.entity_mut(mob).insert(GeneInjecting {
             target,

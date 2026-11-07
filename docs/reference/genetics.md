@@ -43,7 +43,8 @@ hold can on a later read.
 | Tourette's (twitch) | You twitch. | 5% every 2 s: twitches, knocked down 5 counts |
 | Fake | You feel strange. | No gene of its own: each read, 95% another defect's block or a look block is changed, else a great power's |
 | Running, blending | You feel quick. / You feel alone. | Nothing, as in Luna |
-| X-ray, blindness | The walls suddenly disappear. / You can't seem to see anything. | Had, but nothing yet: waits on sight changing with the genes |
+| X-ray | The walls suddenly disappear. | Sees through walls and closed doors and in the dark, all the way round, as far as anyone sees: people, things and the station itself. Not ghosts, and not what's under the floor |
+| Blindness | You can't seem to see anything. | Sees nothing: the view is black, and nothing but themself and what they carry is sent to them. Blindness wins over X-ray |
 | Telekinesis, clumsiness, stuttering, remote view, project mind, morph, hallucination, no prints, shock immunity, small size | (theirs) | Had, but nothing yet: see Not built |
 
 Block 14 on turns a person into a monkey: all they had falls, they're named `monkey (xxxx)` from
@@ -120,11 +121,11 @@ Their block is this round's. `box-dna-injectors` holds three of each of the last
 | Tourette's makes them shout swear words two times in three | They only twitch |
 | A hulk's punch pushes them two steps | One |
 | Hulks are green | They look the same |
+| The blind are spared what's seen in messages (a visible message comes as what's heard, or not at all) | They still read what others do in the chat |
 
 ## Not built
 
-X-ray vision and blindness, which wait on what's seen changing with the genes. Telekinesis
-(reach at any distance), clumsiness (guns, batons, cuffs, grenades turned on themself), stuttering,
+Telekinesis (reach at any distance), clumsiness (guns, batons, cuffs, grenades turned on themself), stuttering,
 Remote View, Project Mind, Morph, hallucinations, no fingerprints (no forensics yet), shock immunity,
 small size (under tables), and hulks smashing walls, windows, tables and grilles. Mutagen, the
 gene analyser and the wizard's Mutate spell.
