@@ -37,6 +37,10 @@ pub const HEAL_OXY: f32 = 1.0;
 #[derive(Component, Debug, Clone, Default, PartialEq, Eq)]
 pub struct DnaScanner {
     pub occupant: Option<Entity>,
+    /// Locked from its DNA console: nobody gets out (Luna `locked`).
+    pub locked: bool,
+    /// A DNA console's beam is on: held shut till it's done.
+    pub beam: bool,
 }
 
 /// One scanned person (Luna's record): their name, and the body scanned, by which their ghost
@@ -150,11 +154,19 @@ pub fn leave(world: &mut World, mob: Entity, machine: Entity) -> bool {
 }
 
 fn release(world: &mut World, scanner: Entity, person: Entity) {
+    // Luna `go_out`: not while it's locked.
+    if world
+        .get::<DnaScanner>(scanner)
+        .is_some_and(|s| s.locked || s.beam)
+    {
+        return;
+    }
     if let Ok(mut e) = world.get_entity_mut(person) {
         e.remove::<(InCloset, Hidden)>();
     }
     if let Some(mut s) = world.get_mut::<DnaScanner>(scanner) {
         s.occupant = None;
+        s.locked = false;
     }
     set_look(world, scanner, "scanner_0");
 }
