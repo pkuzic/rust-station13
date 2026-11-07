@@ -116,6 +116,18 @@ pub enum MobStat {
     Ghost,
 }
 
+/// How a mob sees, when not as anyone does (`docs/reference/genetics.md`). On the mob, server
+/// side; the player's own is sent in their status.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum Vision {
+    #[default]
+    Normal,
+    /// Through walls and in the dark, all the way round (Luna's X-ray).
+    Xray,
+    /// Nothing at all but themselves.
+    Blind,
+}
+
 /// How a mob acts on others (BYOND `a_intent`). Disarm and grab come later.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Intent {

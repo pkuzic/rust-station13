@@ -1209,6 +1209,7 @@ fn send_status(
         (
             Has<rs13_classic::pulling::Pulling>,
             Option<&rs13_classic::flashes::Dazzled>,
+            Option<&rs13_world::Vision>,
         ),
     )>,
     ghosts: Query<(), With<Ghost>>,
@@ -1226,9 +1227,10 @@ fn send_status(
                 internals: false,
                 body_temperature: GHOST_BODY_TEMPERATURE,
                 pulling: false,
+                vision: rs13_world::Vision::Normal,
             }
         } else {
-            let Ok((vitals, intent, around, lungs, (pulling, dazzled))) = mobs.get(controls.0) else {
+            let Ok((vitals, intent, around, lungs, (pulling, dazzled, vision))) = mobs.get(controls.0) else {
                 continue;
             };
             StatusUpdate {
@@ -1242,6 +1244,7 @@ fn send_status(
                 internals: lungs.internal.is_some(),
                 body_temperature: lungs.body_temperature.round().clamp(0.0, 1000.0) as u16,
                 pulling,
+                vision: vision.copied().unwrap_or_default(),
             }
         };
         if sent.0.as_ref() != Some(&status) {

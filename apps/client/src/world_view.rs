@@ -5,7 +5,8 @@
 //! - short of air, the edges of the view darken; badly hurt, they go dark red;
 //! - when hurt, the view flashes red at the edges;
 //! - unconscious, it blurs and darkens; dead, it turns grey and dark;
-//! - cold, it turns a little blue; overheating, a little warm.
+//! - cold, it turns a little blue; overheating, a little warm;
+//! - blind, it is black (`genetics.md`), at once.
 //!
 //! Each eases in and out over a fraction of a second rather than snapping.
 
@@ -50,7 +51,7 @@ pub struct WorldViewMaterial {
     /// Camera centre x and y (world px), seconds, world px across the square.
     #[uniform(4)]
     pub view: Vec4,
-    /// Map width and height (tiles), sprite px per tile, unused.
+    /// Map width and height (tiles), sprite px per tile, blind (0 or 1).
     #[uniform(5)]
     pub map: Vec4,
     /// Dark edges (short of air), red edges (hurt), red flash, unconscious: each 0 to 1.
@@ -178,6 +179,12 @@ fn update_view(
     effects.dazzle = dazzle;
     effects.now.step(&target, time.delta_secs(), hit, dazzled);
     let fx = effects.now;
+    let blind = f32::from(u8::from(
+        status
+            .0
+            .as_ref()
+            .is_some_and(|s| s.vision == rs13_world::Vision::Blind),
+    ));
     for node in &nodes {
         if let Some(mut material) = materials.get_mut(&node.0) {
             material.view = Vec4::new(
@@ -186,7 +193,7 @@ fn update_view(
                 time.elapsed_secs(),
                 SCREEN_PX,
             );
-            material.map = Vec4::new(size.0 as f32, size.1 as f32, TILE_PX, 0.0);
+            material.map = Vec4::new(size.0 as f32, size.1 as f32, TILE_PX, blind);
             material.effects = Vec4::new(fx.breathless, fx.hurt, fx.flash, fx.unconscious);
             material.more_effects = Vec4::new(fx.dead, fx.cold, fx.hot, fx.dazzled);
         }
@@ -210,6 +217,7 @@ mod tests {
             internals: false,
             body_temperature: kelvin,
             pulling: false,
+            vision: rs13_world::Vision::Normal,
         }
     }
 

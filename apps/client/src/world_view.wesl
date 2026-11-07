@@ -2,7 +2,7 @@
 // world image, sampled with each pixel moved a little where the air is hot, so the heat
 // over fires and the supermatter bends whatever is behind it. Then how the player is
 // (`docs/reference/hud.md`, Screen effects): dark or red edges, a red flash, blur, grey,
-// a cold or warm tint.
+// a cold or warm tint, and nothing at all for the blind.
 
 import bevy_ui_render::ui_vertex_output::UiVertexOutput;
 
@@ -21,10 +21,10 @@ struct View {
 @group(1) @binding(4) var<uniform> view: View;
 
 struct Map {
-    // Width and height in tiles, sprite px per tile, unused.
+    // Width and height in tiles, sprite px per tile, blind (0 or 1).
     size: vec2<f32>,
     tile: f32,
-    _pad: f32,
+    blind: f32,
 }
 @group(1) @binding(5) var<uniform> map: Map;
 
@@ -105,5 +105,7 @@ fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
     colour = mix(colour, vec3<f32>(0.7, 0.02, 0.02), fx.flash * (0.12 + 0.5 * edge));
     // Dazzled by a flash: white, fading.
     colour = mix(colour, vec3<f32>(1.0), clamp(fx.dazzled, 0.0, 1.0));
+    // Blind: Luna's black screen over the map.
+    colour = mix(colour, vec3<f32>(0.0), map.blind);
     return vec4<f32>(colour, 1.0);
 }

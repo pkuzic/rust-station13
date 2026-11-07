@@ -20,6 +20,7 @@ use rs13_classic::objects::{spawn_map, spawn_object, spawn_player_mob};
 use rs13_classic::power::PowerUser;
 use rs13_world::{
     Appearance, DisplayName, GeneOp, GenePage, GridPos, Hidden, HumanLook, ObjectSpec, TileMap, TilePos,
+    Vision,
 };
 
 const MAP: &str = r#"(
@@ -384,4 +385,21 @@ fn pulled_into_the_scanner_by_hand_the_console_reads_them() {
         .and_then(|o| o.0.clone())
         .expect("open");
     assert!(view.occupant.is_some(), "{view:?}");
+}
+
+#[test]
+fn x_ray_and_blindness_change_how_they_see_and_blindness_wins() {
+    let (mut app, ..) = setup();
+    let mob = person(&mut app, GENETICIST_AT);
+    let vision = |app: &App| app.world().get::<Vision>(mob).copied();
+    set_gene(&mut app, mob, Gene::Xray, true);
+    powers::check(app.world_mut(), mob, true);
+    assert_eq!(vision(&app), Some(Vision::Xray));
+    set_gene(&mut app, mob, Gene::Blind, true);
+    powers::check(app.world_mut(), mob, true);
+    assert_eq!(vision(&app), Some(Vision::Blind));
+    set_gene(&mut app, mob, Gene::Xray, false);
+    set_gene(&mut app, mob, Gene::Blind, false);
+    powers::check(app.world_mut(), mob, true);
+    assert_eq!(vision(&app), None);
 }

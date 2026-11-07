@@ -14,8 +14,8 @@ pub use components::{
     LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, NukePanelView, Opaque, PaperMode,
     PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView,
     SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellAim, SpellLine, SpellPanelView,
-    SpellbookView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView, VendingRow, VoteView,
-    WirePanelView, WornView,
+    SpellbookView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView, VendingRow, Vision,
+    VoteView, WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, OPEN_SPACE, ObjectSpec, TileDef, TileMap};
 

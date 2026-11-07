@@ -113,9 +113,11 @@ impl Material2d for LightMaterial {
 fn toggle_lighting(
     keys: Res<ButtonInput<KeyCode>>,
     chat: Res<ChatInput>,
+    status: Res<crate::OwnStatus>,
     became_ghost: Query<(), (Added<OwnPlayer>, With<rs13_world::Ghost>)>,
     became_person: Query<(), (Added<OwnPlayer>, Without<rs13_world::Ghost>)>,
     mut on: ResMut<LightingOn>,
+    mut xray: Local<bool>,
 ) {
     // Ghosts see in the dark and through walls (`ghosts.md`). F4 brings the dark back. A new
     // character after that sees as anyone does.
@@ -124,6 +126,15 @@ fn toggle_lighting(
     }
     if !became_person.is_empty() {
         on.0 = true;
+    }
+    // So does X-ray, while they have it (`genetics.md`).
+    let now = status
+        .0
+        .as_ref()
+        .is_some_and(|s| s.vision == rs13_world::Vision::Xray);
+    if now != *xray {
+        *xray = now;
+        on.0 = !now;
     }
     if !chat.open && keys.just_pressed(KeyCode::F4) {
         on.0 = !on.0;
