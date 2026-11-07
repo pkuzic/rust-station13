@@ -413,6 +413,10 @@ pub fn resolve_attacks(
                 _ => {}
             }
             body.take_damage(zone, damage, 0.0);
+            // A hulk hits harder (`genetics.md`).
+            commands.queue(move |world: &mut World| {
+                crate::genetics::powers::hulk_punch(world, attacker, target, zone);
+            });
         } else if intent == Intent::Grab {
             commands.queue(move |world: &mut World| crate::grabs::start(world, attacker, target));
             continue;

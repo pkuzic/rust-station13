@@ -176,6 +176,7 @@ pub fn life(
         &Vitals,
         Option<&mut Outbox>,
         Option<&Equipment>,
+        Option<&crate::genetics::Mutations>,
     )>,
     mut tanks: Query<(&mut TankGas, Option<&HeldBy>, Option<&WornBy>)>,
     wearables: Query<&Wearable>,
@@ -185,9 +186,12 @@ pub fn life(
     if !tick.is_multiple_of(LIFE_TICKS) {
         return;
     }
-    let breathe_now = (tick / LIFE_TICKS).is_multiple_of(LIFE_CYCLES_PER_BREATH);
+    let cycle_breath = (tick / LIFE_TICKS).is_multiple_of(LIFE_CYCLES_PER_BREATH);
 
-    for (mob, pos, mut body, mut lungs, vitals, outbox, equipment) in &mut mobs {
+    for (mob, pos, mut body, mut lungs, vitals, outbox, equipment, genes) in &mut mobs {
+        // Those with the gene don't breathe at all (Luna `mNobreath`, `genetics.md`).
+        let breathe_now =
+            cycle_breath && !genes.is_some_and(|g| g.0.contains(&crate::genetics::Gene::NoBreath));
         if vitals.stat == MobStat::Dead {
             continue;
         }

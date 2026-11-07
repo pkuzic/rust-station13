@@ -228,7 +228,14 @@ pub fn run_picks(world: &mut World) {
         .map(|(mob, mut p)| (mob, std::mem::take(&mut p.0)))
         .collect();
     for (mob, list) in picks {
+        let mut others = Vec::new();
         for (target, line) in list {
+            let ours = matches!(sprite(world, target), Some(SPELLBOOK | TELEPORT_SCROLL));
+            if !ours {
+                // A DNA console's, after.
+                others.push((target, line));
+                continue;
+            }
             if !within(world, mob, target) || !able(world, mob) {
                 continue;
             }
@@ -237,6 +244,11 @@ pub fn run_picks(world: &mut World) {
                 Some(TELEPORT_SCROLL) => scroll_pick(world, mob, target, line),
                 _ => {}
             }
+        }
+        if !others.is_empty()
+            && let Some(mut pending) = world.get_mut::<PendingPicks>(mob)
+        {
+            pending.0.extend(others);
         }
     }
 }

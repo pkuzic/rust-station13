@@ -9,12 +9,13 @@ pub use components::{
     AutolatheRow, BodyScanView, BrigPanelView, BuildPanelView, CameraPanelView, CameraRow, CameraView,
     ChangelingPanelView, ChangelingPower, CharacterPrefs, ChemMasterPanelView, ChemPanelView, ClipboardView,
     CommsPanelView, Dense, DisplayName, EnvAlert, FACIAL_STYLES, Facing, FreezerPanelView, GasMachine,
-    GasPanelView, Ghost, GridPos, HAIR_STYLES, Hand, HandsView, HeaterPanelView, Hidden, HumanLook,
-    IdComputerView, Intent, JobPanelView, LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId,
-    NukePanelView, Opaque, PaperMode, PaperView, PickListView, PixelOffset, PowerMonitorRow,
-    PowerMonitorView, RecordRow, RecordsPanelView, SandboxPanelView, Silhouette, SleeperPanelView, Slot,
-    SmesPanelView, SpellAim, SpellLine, SpellPanelView, SpellbookView, StorageView, UNDERWEAR_KINDS,
-    UplinkPanelView, VendingPanelView, VendingRow, VoteView, WirePanelView, WornView,
+    GasPanelView, GeneBuffer, GeneOccupant, GeneOp, GenePage, GeneticsPanelView, Ghost, GridPos, HAIR_STYLES,
+    Hand, HandsView, HeaterPanelView, Hidden, HumanLook, IdComputerView, Intent, JobPanelView,
+    LaserPanelView, LightSource, LobbyView, MapLayer, MobStat, NetId, NukePanelView, Opaque, PaperMode,
+    PaperView, PickListView, PixelOffset, PowerMonitorRow, PowerMonitorView, RecordRow, RecordsPanelView,
+    SandboxPanelView, Silhouette, SleeperPanelView, Slot, SmesPanelView, SpellAim, SpellLine, SpellPanelView,
+    SpellbookView, StorageView, UNDERWEAR_KINDS, UplinkPanelView, VendingPanelView, VendingRow, VoteView,
+    WirePanelView, WornView,
 };
 pub use map::{Dir, MapError, OPEN_SPACE, ObjectSpec, TileDef, TileMap};
 
