@@ -33,5 +33,6 @@ and the old body stays where it was.
 | A clone comes out with 101 or more toxin damage, relying on chemicals to recover | It comes out as healed as the pod got it, as there are no chemicals yet |
 | Brain damage, and random genetic defects | Not built |
 | Early release with a card, emag, gibs when it fails | Not built |
-| Saving records to disks, locking the scanner, mutations | Not built |
+| Saving records to disks | Not built |
+| Mutations | The scanner and genes are `genetics.md`'s; cloning doesn't use them yet |
 | Cloning brings back their mind's job and antagonist status | There are neither yet |

@@ -53,6 +53,7 @@ pub mod freezers;
 pub mod furniture;
 pub mod gas_panel;
 pub mod generators;
+pub mod genetics;
 pub mod ghosts;
 pub mod grabs;
 pub mod hands;
@@ -473,6 +474,16 @@ impl Plugin for ClassicPlugin {
                                 spells::clear_closed_spell_views,
                             ),
                             (wizard_items::run_picks, wizard_items::update_views).chain(),
+                            (
+                                genetics::run_picks,
+                                genetics::run_consoles,
+                                genetics::run_injections,
+                                genetics::powers::run_genes,
+                                genetics::powers::shrug_off,
+                                genetics::update_views,
+                                genetics::clear_closed_views,
+                            )
+                                .chain(),
                             (construction::run_jobs, construction::update_build_views).chain(),
                             traitor::run_traitors,
                             traitor::update_uplink_views,

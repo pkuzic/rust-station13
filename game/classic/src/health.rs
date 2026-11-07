@@ -119,6 +119,9 @@ pub struct Body {
     organs: [Organ; 11],
     pub oxy: f32,
     pub tox: f32,
+    /// Takes no burns: the cold resistance gene (Luna's `COLD_RESISTANCE` in `apply_damage`
+    /// and `burn_skin`).
+    pub burn_proof: bool,
 }
 
 impl Body {
@@ -128,6 +131,7 @@ impl Body {
 
     /// Luna's `take_damage`: add damage to one organ, never past its `max_damage`.
     pub fn take_damage(&mut self, zone: Zone, brute: f32, burn: f32) {
+        let burn = if self.burn_proof { 0.0 } else { burn };
         let (brute, burn) = (brute.max(0.0), burn.max(0.0));
         if brute == 0.0 && burn == 0.0 {
             return;

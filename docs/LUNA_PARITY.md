@@ -53,7 +53,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.2 Surgery and the operating table | M | `modules/surgery` | Table is scenery |
 | [ ] | 3.3 Fractures, bleeding, limb loss, pain | L | `organs.dm`, `human_life` | |
 | [ ] | 3.4 Viruses and PanD.E.M.I.C. | L | `datums/diseases` | |
-| [ ] | 3.5 Genetics: scanner console, injectors, powers | L | `dnaconsole_new`, `game/dna` | Cloning exists |
+| [~] | 3.5 Genetics: scanner console, injectors, powers | L | `dnaconsole_new`, `game/dna` | Genes, the DNA console, injectors, radiation, the monkey block, and hulk, cold resistance, no breathing, regeneration, deafness, epilepsy, cough, twitch (`genetics.md`). Left: X-ray and blindness (sight), telekinesis, clumsiness and the rest under Not built |
 | [ ] | 3.6 Chemistry: the other ~170 reagents and ~155 recipes, splash, grinder | XL | `modules/Chemistry` | ~30 reagents, 10 recipes now |
 | [ ] | 3.7 Kitchen and bar: recipes, drinks, drink mixing, gibber | L | `machinery/microwave`, `WIP/food`, `gibber` | Donk-pockets only |
 | [~] | 3.8 Botany: ~25 more plants, genes, mutation, compost, extractor | L | `ISaidNo Release/hydroponics` | 8 plants, `hydroponics.md` |

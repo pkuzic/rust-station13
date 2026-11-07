@@ -269,7 +269,13 @@ pub fn process_actions(
                     >,
                     (
                         Query<(), With<crate::cloning::DnaScanner>>,
-                        Query<(), With<crate::cloning::CloningConsole>>,
+                        Query<
+                            (),
+                            Or<(
+                                With<crate::cloning::CloningConsole>,
+                                With<crate::genetics::GeneticsConsole>,
+                            )>,
+                        >,
                         Query<(), With<crate::brig::DoorTimer>>,
                         Query<(), With<crate::weapons::Recharger>>,
                         Query<(), With<crate::security::Cuffed>>,
@@ -614,6 +620,19 @@ pub fn process_actions(
                         && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
                 {
                     commands.queue(move |world: &mut World| crate::chem_dispenser::click(world, mob, target));
+                }
+                // DNA injectors (`genetics.md`).
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::genetics::is_injector)
+                        && people.contains(target)
+                        && (target == mob || places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        if let Some(held) = held {
+                            crate::genetics::use_injector(world, mob, held, target);
+                        }
+                    });
                 }
                 // Syringes, pills, hyposprays and glassware (`chemistry.md`).
                 Action::UseOn(target)
@@ -1151,6 +1170,9 @@ pub fn process_actions(
                     commands.queue(move |world: &mut World| {
                         if scanner {
                             crate::cloning::click_scanner(world, mob, target);
+                        } else if world.get::<crate::genetics::GeneticsConsole>(target).is_some() {
+                            // The DNA modifier (`genetics.md`).
+                            crate::genetics::click_console(world, mob, target);
                         } else {
                             crate::cloning::click_console(world, mob, target);
                         }

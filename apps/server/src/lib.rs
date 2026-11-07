@@ -62,8 +62,8 @@ use rs13_network::protocol::{
     ArcadePanel, AutolathePanel, BodyScanPanel, BrigCommand, BrigPanel, BuildPanel, CameraPanel,
     ChangelingCommand, ChangelingPanel, ChemCommand, ChemMasterCommand, ChemMasterPanel, ChemPanel,
     ClipboardCommand, ClipboardPanel, CommsCommand, CommsPanel, FreezerCommand, FreezerPanel, GasCommand,
-    GasPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand, LaserPanel, MoveInput,
-    Notice, NoticeChannel, NukeCommand, NukePanel, PaperPanel, PickListPanel, PlaySound, Player,
+    GasPanel, GeneticsPanel, HeaterCommand, HeaterPanel, IdComputerPanel, JobPanel, LaserCommand, LaserPanel,
+    MoveInput, Notice, NoticeChannel, NukeCommand, NukePanel, PaperPanel, PickListPanel, PlaySound, Player,
     PowerMonitorPanel, RecordsPanel, RevAskPanel, RevIcons, SleeperPanel, SmesCommand, SmesLevel, SmesPanel,
     SoundChannel, SpellCommand, SpellPanel, SpellbookPanel, StatusUpdate, StoragePanel, UplinkPanel,
     VendingPanel, WirePanel,
@@ -206,6 +206,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .add_systems(FixedPostUpdate, send_ling_panels)
     .add_systems(FixedPostUpdate, send_spell_panels)
     .add_systems(FixedPostUpdate, send_spellbook_panels)
+    .add_systems(FixedPostUpdate, send_genetics_panels)
     .add_systems(
         FixedUpdate,
         (
@@ -391,6 +392,28 @@ fn send_spellbook_panels(
         let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
         if sent.get(&link) != now.as_ref() {
             sender.send::<NoticeChannel>(SpellbookPanel(now.clone()));
+            match now {
+                Some(view) => {
+                    sent.insert(link, view);
+                }
+                None => {
+                    sent.remove(&link);
+                }
+            }
+        }
+    }
+}
+
+/// Show each player the DNA console they have open.
+fn send_genetics_panels(
+    mut links: Query<(Entity, &Controls, &mut MessageSender<GeneticsPanel>)>,
+    mobs: Query<&rs13_classic::genetics::GeneticsPanelOut>,
+    mut sent: Local<std::collections::HashMap<Entity, rs13_world::GeneticsPanelView>>,
+) {
+    for (link, controls, mut sender) in &mut links {
+        let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
+        if sent.get(&link) != now.as_ref() {
+            sender.send::<NoticeChannel>(GeneticsPanel(now.clone()));
             match now {
                 Some(view) => {
                     sent.insert(link, view);

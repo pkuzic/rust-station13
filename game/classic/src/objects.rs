@@ -294,6 +294,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::brig::spawn_door_timer(world, spec, pos, id));
     }
+    if proto == crate::genetics::CONSOLE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::genetics::spawn_console(world, pos, id));
+    }
     if crate::cloning::is_cloning_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::cloning::spawn_part(world, proto, pos, id));

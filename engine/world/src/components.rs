@@ -778,6 +778,173 @@ pub struct SleeperPanelView {
     pub reagents: Vec<(String, u16)>,
 }
 
+/// Who lies in a DNA scanner, as its console shows them.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GeneOccupant {
+    pub stat: MobStat,
+    pub health: i16,
+    pub radiation: u16,
+    /// Unique enzymes, unique identifier and structural enzymes, in hex.
+    pub ue: String,
+    pub ui: String,
+    pub se: String,
+    /// A husk's genes can't be read (Luna's "ruined beyond recognition").
+    pub ruined: bool,
+}
+
+/// A buffer of a DNA console.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GeneBuffer {
+    pub data: String,
+    /// Structural enzymes rather than an identifier.
+    pub se: bool,
+    /// The identifier was saved with its enzymes, and so its name.
+    pub with_ue: bool,
+    pub owner: String,
+}
+
+/// Which page of a DNA console is up (Luna's `temphtml`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum GenePage {
+    Main,
+    Identity,
+    Enzymes,
+    Buffers,
+    Emitter,
+    /// The beam is on: seconds it takes.
+    Working(u8),
+    /// A line of text, by message id, with Main Menu under it.
+    Note(String),
+}
+
+/// An open DNA modifier console's window (Luna's `scan_consolenew` window).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GeneticsPanelView {
+    /// The console.
+    pub target: NetId,
+    /// No scanner beside it.
+    pub no_scanner: bool,
+    pub occupant: Option<GeneOccupant>,
+    pub page: GenePage,
+    pub locked: bool,
+    /// Blocks and digit selected, from 1, and the digit aimed at (0 to 15).
+    pub ui_block: u8,
+    pub se_block: u8,
+    pub sub: u8,
+    pub target_digit: u8,
+    /// The emitter: seconds and strength.
+    pub duration: u8,
+    pub strength: u8,
+    pub buffers: [Option<GeneBuffer>; 3],
+}
+
+/// A button of a DNA console, sent as a line of `ActionInput::Pick`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GeneOp {
+    Main,
+    Identity,
+    Enzymes,
+    Buffers,
+    Emitter,
+    Lock,
+    Pulse,
+    Inject,
+    DurationUp,
+    DurationDown,
+    StrengthUp,
+    StrengthDown,
+    /// Next or previous block (`true` forward), on the identifier or the enzymes page.
+    Block(bool),
+    Sub(bool),
+    Target(bool),
+    /// A digit clicked: its block and place, from 1.
+    Select(u8, u8),
+    Irradiate,
+    /// Into a buffer (0 to 2): the identifier, with its enzymes, or the structural enzymes.
+    SaveUi(u8),
+    SaveUiUe(u8),
+    SaveSe(u8),
+    Transfer(u8),
+    Injector(u8),
+    /// An injector of one block of a buffer, from 1.
+    IsoInjector(u8, u8),
+    Clear(u8),
+}
+
+impl GeneOp {
+    const SIMPLE: [GeneOp; 19] = [
+        GeneOp::Main,
+        GeneOp::Identity,
+        GeneOp::Enzymes,
+        GeneOp::Buffers,
+        GeneOp::Emitter,
+        GeneOp::Lock,
+        GeneOp::Pulse,
+        GeneOp::Inject,
+        GeneOp::DurationUp,
+        GeneOp::DurationDown,
+        GeneOp::StrengthUp,
+        GeneOp::StrengthDown,
+        GeneOp::Block(true),
+        GeneOp::Block(false),
+        GeneOp::Sub(true),
+        GeneOp::Sub(false),
+        GeneOp::Target(true),
+        GeneOp::Target(false),
+        GeneOp::Irradiate,
+    ];
+
+    /// As a line: the plain buttons first, then a buffer's (by tens), then a digit picked
+    /// (by blocks of 4), then a buffer's single block.
+    pub fn line(self) -> u16 {
+        if let Some(i) = Self::SIMPLE.iter().position(|o| *o == self) {
+            return i as u16;
+        }
+        let buffer = |kind: u16, b: u8| 100 + u16::from(b) * 10 + kind;
+        match self {
+            GeneOp::SaveUi(b) => buffer(0, b),
+            GeneOp::SaveUiUe(b) => buffer(1, b),
+            GeneOp::SaveSe(b) => buffer(2, b),
+            GeneOp::Transfer(b) => buffer(3, b),
+            GeneOp::Injector(b) => buffer(4, b),
+            GeneOp::Clear(b) => buffer(5, b),
+            GeneOp::Select(block, sub) => 200 + u16::from(block) * 4 + u16::from(sub),
+            GeneOp::IsoInjector(b, block) => 400 + u16::from(b) * 100 + u16::from(block),
+            _ => u16::MAX,
+        }
+    }
+
+    pub fn from_line(line: u16) -> Option<Self> {
+        match line {
+            0..100 => Self::SIMPLE.get(usize::from(line)).copied(),
+            100..200 => {
+                let b = ((line - 100) / 10) as u8;
+                if b > 2 {
+                    return None;
+                }
+                Some(match (line - 100) % 10 {
+                    0 => GeneOp::SaveUi(b),
+                    1 => GeneOp::SaveUiUe(b),
+                    2 => GeneOp::SaveSe(b),
+                    3 => GeneOp::Transfer(b),
+                    4 => GeneOp::Injector(b),
+                    5 => GeneOp::Clear(b),
+                    _ => return None,
+                })
+            }
+            200..400 => {
+                let n = line - 200;
+                Some(GeneOp::Select((n / 4) as u8, (n % 4) as u8))
+            }
+            400..700 => {
+                let n = line - 400;
+                Some(GeneOp::IsoInjector((n / 100) as u8, (n % 100) as u8))
+            }
+            _ => None,
+        }
+    }
+}
+
 /// An open brig door timer's window, as shown to the player (Luna's `door_timer` window).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrigPanelView {
@@ -932,5 +1099,36 @@ pub struct WornView(pub Vec<(Slot, NetId)>);
 impl WornView {
     pub fn get(&self, slot: Slot) -> Option<NetId> {
         self.0.iter().find(|(s, _)| *s == slot).map(|(_, id)| *id)
+    }
+}
+
+#[cfg(test)]
+mod gene_op_tests {
+    use super::GeneOp;
+
+    #[test]
+    fn every_button_survives_being_sent_as_a_line() {
+        let mut ops = GeneOp::SIMPLE.to_vec();
+        for b in 0..3 {
+            ops.extend([
+                GeneOp::SaveUi(b),
+                GeneOp::SaveUiUe(b),
+                GeneOp::SaveSe(b),
+                GeneOp::Transfer(b),
+                GeneOp::Injector(b),
+                GeneOp::Clear(b),
+            ]);
+            for block in 1..=25 {
+                ops.push(GeneOp::IsoInjector(b, block));
+            }
+        }
+        for block in 1..=25 {
+            for sub in 1..=3 {
+                ops.push(GeneOp::Select(block, sub));
+            }
+        }
+        for op in ops {
+            assert_eq!(GeneOp::from_line(op.line()), Some(op), "{op:?}");
+        }
     }
 }
