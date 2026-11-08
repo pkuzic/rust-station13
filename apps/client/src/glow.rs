@@ -144,7 +144,7 @@ fn screen_colours(atlas: &SpriteAtlas) -> HashMap<(String, String), [f32; 3]> {
 
 /// On a glowing copy: the sprite it shines over.
 #[derive(Component)]
-struct GlowOf;
+pub struct GlowOf;
 
 /// On a sprite with a glowing copy.
 #[derive(Component)]
