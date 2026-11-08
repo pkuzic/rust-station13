@@ -156,6 +156,7 @@ impl Plugin for GlowPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PostStartup, make_glow_atlas)
             .add_systems(Update, (add_glows, follow).chain().after(crate::sprites::animate));
+        app.add_systems(Update, stutter.after(follow));
     }
 }
 
@@ -299,6 +300,32 @@ fn follow(
         } else {
             Visibility::Hidden
         });
+    }
+}
+
+/// A worn light's glow stutters with its light (`lighting.rs`, `worn_light`).
+fn stutter(
+    time: Res<Time>,
+    lamps: Query<(&Appearance, &rs13_world::GridPos), With<LightSource>>,
+    mut glows: Query<(&ChildOf, &mut Sprite), With<GlowOf>>,
+) {
+    let now = time.elapsed_secs();
+    for (parent, mut sprite) in &mut glows {
+        let Ok((look, pos)) = lamps.get(parent.parent()) else {
+            continue;
+        };
+        if glow_kind(&look.sprite) != Some(GlowKind::Lamp) || !crate::lighting::worn_light(pos.0) {
+            continue;
+        }
+        let level = crate::lighting::worn_flicker(now, pos.0);
+        let color = Color::LinearRgba(LinearRgba::rgb(
+            GLOW_BOOST * level[0],
+            GLOW_BOOST * level[1],
+            GLOW_BOOST * level[2],
+        ));
+        if sprite.color != color {
+            sprite.color = color;
+        }
     }
 }
 

@@ -45,6 +45,7 @@ mod monitor_panel;
 mod normals;
 mod nuke_panel;
 mod paper_panel;
+mod particles;
 mod pick_panel;
 mod records_panel;
 mod rev_panel;
@@ -534,6 +535,7 @@ fn main() {
             fov::FovPlugin,
             glow::GlowPlugin,
             normals::NormalsPlugin,
+            particles::ParticlesPlugin,
             depth::DepthPlugin,
             sprite_shadows::SpriteShadowsPlugin,
             gas::GasPlugin,
@@ -1947,17 +1949,16 @@ fn glide(
         Entity,
         &GridPos,
         &mut Transform,
-        Has<Player>,
-        Has<rs13_world::Silhouette>,
-        Option<&Appearance>,
+        Has<rs13_world::Hidden>,
         Option<&mut Glided>,
         Option<&rs13_world::PixelOffset>,
     )>,
 ) {
     let dt = time.delta_secs();
-    for (entity, pos, mut transform, player, shape, look, glided, offset) in &mut movers {
-        // Someone in the dark glides like anyone else (`sprite_shadows.rs`, Silhouettes).
-        let is_player = player || shape || look.is_some_and(|a| a.sprite == "monkey");
+    // Everything that moves glides: people, silhouettes (`sprite_shadows.rs`), monkeys, and
+    // what is pulled, pushed or thrown. What is out of sight (in a hand, a bag, a closet)
+    // only snaps, so it doesn't slide over from where it was picked up when it comes back.
+    for (entity, pos, mut transform, hidden, glided, offset) in &mut movers {
         // Hung on a wall: drawn shifted onto it (BYOND `pixel_x`, `pixel_y`).
         let shift = offset.map_or(Vec3::ZERO, |o| {
             Vec3::new(f32::from(o.0[0]), f32::from(o.0[1]), 0.0)
@@ -1966,7 +1967,7 @@ fn glide(
         let at = glided.as_ref().map_or(transform.translation, |g| g.0);
         let offset = target - at;
         // Teleports and large corrections snap instead of sliding across the map.
-        if !is_player || offset.length() > TILE_PX * 2.0 {
+        if hidden || offset.length() > TILE_PX * 2.0 {
             transform.translation = target;
             if glided.is_some() {
                 commands.entity(entity).remove::<Glided>();

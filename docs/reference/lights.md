@@ -73,6 +73,8 @@ A light is lit while all three hold:
   travels with the tube.
 - **Coloured lights:** Luna's blue and red tubes and red bulbs keep their colours
   (`light-blue`, `light-red`, `light-small-red`); floor lights have no prototype yet.
+- **Worn lights and emergency glow:** some lit lights stutter, and working lights glow faintly
+  red where the lighting has no power. Both are drawn only on the client (`lighting.md`).
 - **Not implemented:**
   - building and taking apart fixtures (the screwdriver, frames, wiring);
   - smashing a held tube;
