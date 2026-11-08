@@ -6,7 +6,8 @@
 //! - when hurt, the view flashes red at the edges;
 //! - unconscious, it blurs and darkens; dead, it turns grey and dark;
 //! - cold, it turns a little blue; overheating, a little warm;
-//! - blind, it is black (`genetics.md`), at once.
+//! - blind, it is black (`genetics.md`), at once;
+//! - blurred eyes blur it; nearsighted, all but the middle is dim and blurred (`eyes.md`).
 //!
 //! Each eases in and out over a fraction of a second rather than snapping.
 
@@ -60,6 +61,9 @@ pub struct WorldViewMaterial {
     /// Dead, cold, overheating, dazzled: each 0 to 1.
     #[uniform(7)]
     pub more_effects: Vec4,
+    /// Blurred, nearsighted: each 0 to 1.
+    #[uniform(8)]
+    pub eyes: Vec4,
 }
 
 /// Where each screen effect is heading for the player's state, each from 0 to 1.
@@ -73,6 +77,8 @@ pub struct ScreenEffects {
     pub cold: f32,
     pub hot: f32,
     pub dazzled: f32,
+    pub blurry: f32,
+    pub nearsighted: f32,
 }
 
 impl ScreenEffects {
@@ -93,6 +99,8 @@ impl ScreenEffects {
             cold: ((COLD_FROM - temperature) / COLD_SPAN).clamp(0.0, 1.0),
             hot: ((temperature - HOT_FROM) / HOT_SPAN).clamp(0.0, 1.0),
             dazzled: 0.0,
+            blurry: f32::from(u8::from(status.eyes.blurry)),
+            nearsighted: f32::from(u8::from(status.eyes.nearsighted)),
         }
     }
 
@@ -111,6 +119,8 @@ impl ScreenEffects {
         ease(&mut self.dead, target.dead);
         ease(&mut self.cold, target.cold);
         ease(&mut self.hot, target.hot);
+        ease(&mut self.blurry, target.blurry);
+        ease(&mut self.nearsighted, target.nearsighted);
         self.flash = if hit {
             1.0
         } else {
@@ -128,6 +138,7 @@ impl WorldViewMaterial {
             map: Vec4::new(1.0, 1.0, TILE_PX, 0.0),
             effects: Vec4::ZERO,
             more_effects: Vec4::ZERO,
+            eyes: Vec4::ZERO,
         }
     }
 }
@@ -196,6 +207,7 @@ fn update_view(
             material.map = Vec4::new(size.0 as f32, size.1 as f32, TILE_PX, blind);
             material.effects = Vec4::new(fx.breathless, fx.hurt, fx.flash, fx.unconscious);
             material.more_effects = Vec4::new(fx.dead, fx.cold, fx.hot, fx.dazzled);
+            material.eyes = Vec4::new(fx.blurry, fx.nearsighted, 0.0, 0.0);
         }
     }
 }
@@ -218,6 +230,7 @@ mod tests {
             body_temperature: kelvin,
             pulling: false,
             vision: rs13_world::Vision::Normal,
+            eyes: rs13_world::EyeTrouble::default(),
         }
     }
 

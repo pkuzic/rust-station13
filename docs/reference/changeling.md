@@ -24,7 +24,7 @@ those owned used with chemicals.
 | Lesser Form | 1 | 1 | Everything falls off, and you're a monkey until you Transform. 30 genetic damage |
 | Anatomic Panacea | 1 | 25 | Clears toxins and suffocation |
 | Deaf Sting | 1 | 5 | 30 seconds of hearing no one speak |
-| Blind Sting | 2 | 20 | A flash of white. See below |
+| Blind Sting | 2 | 20 | "Your eyes burn horrifically!" Blind for 40 seconds, blurred for 80, nearsighted for 30 (`eyes.md`) |
 | Silence Sting | 2 | 10 | 100 seconds unable to speak, with no warning |
 | Mimic Voice | 3 | 1 per 4 s | Speak as a name you type |
 | Extract DNA Sting | 4 | 40 | Their genome, without harm |
@@ -53,7 +53,6 @@ in a changeling round, and the round ends.
 | Luna | Here |
 |---|---|
 | Hallucination Sting | Left out: nothing here hallucinates yet |
-| Blind Sting blinds and blurs for a while | Whites out the screen once: no blindness yet |
 | Digital Camouflage changes how you look when examined, and hides you from the AI | Only costs chemicals: neither's built yet |
 | Lesser Form is a real monkey, which can't do what a human can | Looks like one, but keeps a person's abilities, and the powers it can use aren't limited |
 | The grab must be "tighter", but the check is written so that any will do | Any will do |

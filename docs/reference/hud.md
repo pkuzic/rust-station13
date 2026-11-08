@@ -94,6 +94,9 @@ and each eases in and out over about a quarter of a second.
 | Dead | the view turns grey and dark |
 | Body temperature below 300 K | a blue tint, strongest 25 K lower |
 | Body temperature above 320 K | a warm tint, strongest 40 K higher |
+| Blurred eyes (`eyes.md`) | the view blurs (3.5 sprite px) |
+| Nearsighted | all but the middle third goes dim and blurred |
+| Blind | the map is black, at once |
 
 The HUD and the text panel are not affected.
 
