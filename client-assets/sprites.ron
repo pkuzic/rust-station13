@@ -2873,6 +2873,8 @@
         "shuttle-heater": { "": (dmi: "icons/turf/shuttle.dmi", state: "heater") },
         "holopad": { "": (dmi: "icons/obj/stationobjs.dmi", state: "holopad0") },
         "plastic-flaps": { "": (dmi: "icons/obj/stationobjs.dmi", state: "plasticflaps") },
+        // A portal storm's wormhole (`events.md`).
+        "wormhole": { "": (dmi: "icons/obj/objects.dmi", state: "anom") },
         "mirror": {
             "": (dmi: "icons/obj/watercloset.dmi", state: "mirror"),
             "broken": (dmi: "icons/obj/watercloset.dmi", state: "mirror_broke"),

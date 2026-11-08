@@ -585,7 +585,7 @@ admin-your-key = Ваш ключ: { $key }.
 admin-not-admin = Вы не администратор.
 admin-low-rank = Для этого нужен ранг выше.
 admin-unknown = Нет такой команды: { $verb }. Попробуйте help.
-admin-help = Команды: who, asay ТЕКСТ, dsay ТЕКСТ, pm КТО ТЕКСТ, announce ТЕКСТ, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto КТО, kick КТО [ЗА ЧТО], ban КТО МИНУТЫ [ЗА ЧТО] (0 навсегда), unban КЛЮЧ, bans, restart, mute КТО, explode РАЗМЕР, emp СИЛЬНО СЛАБО, spell КТО ЗАКЛИНАНИЕ, get КТО, spawn ЧТО, delete ЧТО, god КТО, rejuv КТО.
+admin-help = Команды: who, asay ТЕКСТ, dsay ТЕКСТ, pm КТО ТЕКСТ, announce ТЕКСТ, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto КТО, kick КТО [ЗА ЧТО], ban КТО МИНУТЫ [ЗА ЧТО] (0 навсегда), unban КЛЮЧ, bans, restart, mute КТО, explode РАЗМЕР, emp СИЛЬНО СЛАБО, spell КТО ЗАКЛИНАНИЕ, toggleevents, event [СОБЫТИЕ], get КТО, spawn ЧТО, delete ЧТО, god КТО, rejuv КТО.
 admin-welcome = Вы администратор. Нажмите F2 для строки команд и введите help.
 admin-no-one = Нет никого по имени { $name }.
 admin-no-thing = Здесь нет такого: { $name }.
@@ -1794,6 +1794,26 @@ genetics-iso-injector = Изолированный инъектор
 genetics-iso-pick = Блок для инъектора:
 genetics-clear = Очистить буфер
 
+## Random events (`events.md`)
+command-alert = Сообщение NanoTrasen. { $title }: { $text }
+alert-anomaly = Аномалия
+alert-meteor = Метеоритная угроза
+alert-maintenance = Техобслуживание
+alert-medical = Медицинская тревога
+event-storm-start = Корабль проходит сквозь электрическую бурю. Возможны перебои радиосвязи.
+event-storm-end = Корабль вышел из электрической бури. Радиосвязь восстановлена.
+event-meteors-start = Корабль входит в метеорный поток.
+event-meteors-end = Корабль вышел из метеорного потока.
+event-portals-start = Вокруг корабля обнаружены подпространственные возмущения.
+event-grid-check = Идёт автоматическая проверка энергосети корабля, ожидайте.
+event-radiation-start = Корабль входит в радиационный пояс.
+event-radiation-end = Корабль вышел из радиационного пояса.
+admin-events-on = { $name } включает случайные события.
+admin-events-off = { $name } выключает случайные события.
+admin-events-disabled = Случайные события выключены.
+admin-event-started = Событие запущено: { $name }.
+admin-event-busy = Сейчас уже идёт событие.
+admin-no-event = Нет события { $name }. События: { $text }.
 ## Sinks, showers, toilets and mirrors (`plumbing.md`)
 sink-busy = Здесь уже кто-то моется.
 sink-start-hands = Вы начинаете мыть руки.

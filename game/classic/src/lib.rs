@@ -37,6 +37,7 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod escape;
+pub mod events;
 pub mod explosions;
 pub mod extinguishers;
 pub mod eyes;
@@ -499,7 +500,7 @@ impl Plugin for ClassicPlugin {
                         chem_master::update_master_views,
                         microwaves::run_microwaves,
                         monkeys::run_monkeys,
-                        (flashes::run_flashers, plumbing::run_plumbing),
+                        (flashes::run_flashers, plumbing::run_plumbing, events::run_events),
                         flashes::recover,
                         ghosts::leave_dead_bodies,
                         ghosts::move_ghosts,

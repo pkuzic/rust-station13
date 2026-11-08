@@ -595,7 +595,7 @@ admin-your-key = Your key is { $key }.
 admin-not-admin = You aren't an admin.
 admin-low-rank = You need a higher rank for that.
 admin-unknown = There's no admin verb "{ $verb }". Try help.
-admin-help = Verbs: who, asay TEXT, dsay TEXT, pm WHO TEXT, announce TEXT, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto WHO, kick WHO [WHY], ban WHO MINUTES [WHY] (0 for good), unban KEY, bans, restart, mute WHO, explode SIZE, emp HEAVY LIGHT, spell WHO SPELL, get WHO, spawn THING, delete THING, god WHO, rejuv WHO.
+admin-help = Verbs: who, asay TEXT, dsay TEXT, pm WHO TEXT, announce TEXT, startnow, toggleooc, togglespawning, jump X Y [Z], jumpto WHO, kick WHO [WHY], ban WHO MINUTES [WHY] (0 for good), unban KEY, bans, restart, mute WHO, explode SIZE, emp HEAVY LIGHT, spell WHO SPELL, toggleevents, event [NAME], get WHO, spawn THING, delete THING, god WHO, rejuv WHO.
 admin-welcome = You are an admin. Press F2 for the admin line, then type help.
 admin-no-one = There's nobody called { $name }.
 admin-no-thing = There's no { $name } here.
@@ -1787,6 +1787,26 @@ genetics-iso-injector = Iso Injector
 genetics-iso-pick = Block for the injector:
 genetics-clear = Clear Buffer
 
+## Random events (`events.md`)
+command-alert = NanoTrasen Update. { $title }: { $text }
+alert-anomaly = Anomaly Alert
+alert-meteor = Meteor Alert
+alert-maintenance = Maintenance alert
+alert-medical = Medical Alert
+event-storm-start = The ship is flying through an electrical storm. Radio communications may be disrupted.
+event-storm-end = The ship has cleared the electrical storm. Radio communications restored.
+event-meteors-start = The ship is now travelling through a meteor shower.
+event-meteors-end = The ship has cleared the meteor shower.
+event-portals-start = Subspace disruption detected around the vessel.
+event-grid-check = The ship is performing an automated power system grid check, please stand by.
+event-radiation-start = The ship is now travelling through a radiation belt.
+event-radiation-end = The ship has cleared the radiation belt.
+admin-events-on = Events toggled on by { $name }.
+admin-events-off = Events toggled off by { $name }.
+admin-events-disabled = Events are not enabled.
+admin-event-started = Started event: { $name }.
+admin-event-busy = There is an active event.
+admin-no-event = There's no event called { $name }. Events: { $text }.
 ## Sinks, showers, toilets and mirrors (`plumbing.md`)
 sink-busy = Someone's already washing here.
 sink-start-hands = You start washing your hands.
