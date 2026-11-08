@@ -264,6 +264,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::autolathe::spawn_autolathe(world, pos, id));
     }
+    if crate::plumbing::is_plumbing(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::plumbing::spawn_plumbing(world, proto, pos, id));
+    }
     if crate::scenery::is_scenery(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::scenery::spawn_scenery(world, proto, pos, id));

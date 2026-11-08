@@ -1786,3 +1786,27 @@ genetics-full-injector = Full Injector
 genetics-iso-injector = Iso Injector
 genetics-iso-pick = Block for the injector:
 genetics-clear = Clear Buffer
+
+## Sinks, showers, toilets and mirrors (`plumbing.md`)
+sink-busy = Someone's already washing here.
+sink-start-hands = You start washing your hands.
+sink-start-item = You start washing the { NOUN($item) }.
+sink-washed-hands = { $name } washes their hands using the { NOUN($sink) }.
+sink-washed-item = { $name } washes { NOUN($item, case: "indef") } using the { NOUN($sink) }.
+sink-washed-item-self = You wash { NOUN($item, case: "indef") } using the { NOUN($sink) }.
+sink-fills = { $name } fills the { NOUN($item) } using the { NOUN($sink) }.
+sink-fills-self = You fill the { NOUN($item) } using the { NOUN($sink) }.
+shower-reads = The water temperature seems to be { $temp }.
+shower-temp-normal = normal
+shower-temp-freezing = freezing
+shower-temp-boiling = boiling
+shower-valve-start = You begin to adjust the temperature valve with the wrench.
+shower-adjusted = { $name } adjusts the shower with the wrench.
+shower-adjusted-self = You adjust the shower with the wrench.
+shower-freezing = The water is freezing!
+shower-searing = The water is searing!
+toilet-tighter-grip = You need a tighter grip.
+toilet-slam = { $name } slams { $victim } into the toilet!
+toilet-slam-self = You slam { $victim } into the toilet!
+mirror-smashed = { $name } smashes the mirror with the { NOUN($item) }!
+mirror-hit = { $name } hits the mirror with the { NOUN($item) }!

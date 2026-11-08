@@ -664,6 +664,12 @@
         (path: "/obj/item/ammo_magazine/box/c38", id: "speed-loader-38"),
         (path: "/obj/item/ammo_magazine/box/shotgun", id: "slug-box"),
         (path: "/obj/item/ammo_magazine/box/shotgun/bean", id: "beanbag-box"),
+        // Sinks, showers, toilets and mirrors (`plumbing.md`).
+        (path: "/obj/structure/sink", id: "sink", dir: true, vars: ["pixel_x", "pixel_y"]),
+        (path: "/obj/structure/sink/kitchen", id: "kitchen-sink", vars: ["pixel_x", "pixel_y"]),
+        (path: "/obj/structure/toilet", id: "toilet", dir: true),
+        (path: "/obj/machinery/shower", id: "shower", dir: true),
+        (path: "/obj/structure/mirror", id: "mirror", vars: ["pixel_x", "pixel_y"]),
         // Fixtures that only stand there (`scenery.md`).
         (path: "/obj/machinery/shuttle/engine/propulsion", id: "shuttle-engine"),
         (path: "/obj/machinery/shuttle/engine/propulsion/burst/left", id: "shuttle-engine-left"),
@@ -672,7 +678,6 @@
         (path: "/obj/machinery/shuttle/engine/heater", id: "shuttle-heater"),
         (path: "/obj/machinery/hologram_ai", id: "holopad"),
         (path: "/obj/structure/plasticflaps", id: "plastic-flaps"),
-        (path: "/obj/structure/mirror", id: "mirror", vars: ["pixel_x", "pixel_y"]),
         (path: "/obj/structure/noticeboard", id: "noticeboard", vars: ["pixel_x", "pixel_y"]),
         (path: "/obj/structure/mopbucket", id: "mop-bucket"),
         (path: "/obj/structure/sign/deathsposal", id: "sign-deathsposal", vars: ["pixel_x", "pixel_y"]),

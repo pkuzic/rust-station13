@@ -1793,3 +1793,27 @@ genetics-full-injector = Полный инъектор
 genetics-iso-injector = Изолированный инъектор
 genetics-iso-pick = Блок для инъектора:
 genetics-clear = Очистить буфер
+
+## Sinks, showers, toilets and mirrors (`plumbing.md`)
+sink-busy = Здесь уже кто-то моется.
+sink-start-hands = Вы начинаете мыть руки.
+sink-start-item = Вы начинаете мыть { NOUN($item, case: "acc") }.
+sink-washed-hands = { $name } моет руки: { NOUN($sink) }.
+sink-washed-item = { $name } моет { NOUN($item, case: "acc") } под краном: { NOUN($sink) }.
+sink-washed-item-self = Вы моете { NOUN($item, case: "acc") } под краном: { NOUN($sink) }.
+sink-fills = { $name } наполняет { NOUN($item, case: "acc") } водой: { NOUN($sink) }.
+sink-fills-self = Вы наполняете { NOUN($item, case: "acc") } водой: { NOUN($sink) }.
+shower-reads = Вода, похоже, { $temp }.
+shower-temp-normal = обычной температуры
+shower-temp-freezing = ледяная
+shower-temp-boiling = кипяток
+shower-valve-start = Вы начинаете поворачивать гаечным ключом вентиль температуры.
+shower-adjusted = { $name } настраивает душ гаечным ключом.
+shower-adjusted-self = Вы настраиваете душ гаечным ключом.
+shower-freezing = Вода ледяная!
+shower-searing = Вода обжигает!
+toilet-tighter-grip = Нужно держать крепче.
+toilet-slam = { $name } бьёт { $victim } об унитаз!
+toilet-slam-self = Вы бьёте { $victim } об унитаз!
+mirror-smashed = { $name } разбивает зеркало: { NOUN($item, case: "ins") }!
+mirror-hit = { $name } бьёт по зеркалу: { NOUN($item, case: "ins") }!

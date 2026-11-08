@@ -14,6 +14,10 @@ to files in `apps/client/src/audio.rs`.
 | `machines/buzz-two.ogg` | `sound/machines/buzz-two.ogg` | `door-deny` | CC-BY-SA 3.0 |
 | `machines/click.ogg` | `sound/machines/click.ogg` | `closet-click` | CC-BY-SA 3.0 |
 | `effects/Glasshit.ogg` | `sound/effects/Glasshit.ogg` | `glass-hit` | CC-BY-SA 3.0 |
+| `effects/Glassbr1.ogg` | `sound/effects/Glassbr1.ogg` | `shatter` | CC-BY-SA 3.0 |
+| `effects/Glassbr2.ogg` | `sound/effects/Glassbr2.ogg` | `shatter` | CC-BY-SA 3.0 |
+| `effects/Glassbr3.ogg` | `sound/effects/Glassbr3.ogg` | `shatter` | CC-BY-SA 3.0 |
+| `effects/hit_on_shattered_glass.ogg` | `sound/effects/hit_on_shattered_glass.ogg` | `shattered-hit` | CC-BY-SA 3.0 |
 | `items/Ratchet.ogg` | `sound/items/Ratchet.ogg` | `ratchet` | CC-BY-SA 3.0 |
 | `items/Crowbar.ogg` | `sound/items/Crowbar.ogg` | `crowbar` | CC-BY-SA 3.0 |
 | `items/Screwdriver.ogg` | `sound/items/Screwdriver.ogg` | `screwdriver` | CC-BY-SA 3.0 |
