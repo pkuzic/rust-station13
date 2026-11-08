@@ -170,6 +170,38 @@ What gives off light of its own stays bright in the dark and glows
 - **Darkness is dim, not black:** the darkest a tile is drawn is dim but readable and a
   little cool, so a dark room still shows its shape; only what is out of sight is black.
 
+## Normal maps (experiment)
+
+Sprites catch the light on the side that faces it and fall into shade on the side away
+from it (`apps/client/src/normals.rs`). No new art: Luna's sprites stay as drawn. **F8**
+turns it off and on, and `rs13-client --normals off` starts with it off.
+
+- **Made from the atlas at start.** Each frame's shape is guessed from its own pixels:
+  - its edges round off over 3 px where it meets transparency;
+  - darker pixels sit a little lower than lighter ones, so outlines and panel lines read
+    as grooves.
+
+  A frame that fills its whole cell (floors, walls) gets no rounded edge, so tiles still
+  join. Mirrored sprites use a copy with the normals turned the other way across.
+- **Drawn into their own image.** Every map sprite drawn from the atlas has a copy drawn
+  from the normal atlas, on its own render layer. A second camera, a child of the world
+  camera, draws only that layer, into an image the size of the world image, before the
+  world camera draws.
+- **Which way the light falls.** For every tile, each light that reaches it (the same
+  sight test as the light itself) pulls it towards that light, as strongly as it lights
+  the tile. Lights stand one tile above the floor, so a light right overhead leans the
+  tile little and one off to the side leans it a lot. Lights on opposite sides cancel.
+  This is worked out with the light, one texel per tile.
+- **Shading.** The darkness pass reads each pixel's normal and its tile's lean. It turns
+  the light up on faces turned towards the lean and down on faces turned away, between
+  0.55× and 1.4× of the light. Faces in light that falls evenly keep the tile's light
+  exactly, so turning it on never darkens a room as a whole. The light can't go brighter
+  than full, so in a fully lit spot only the shaded side shows.
+- **Known limits:**
+  - people lying down are turned on their side, but their normals aren't turned with them;
+  - glowing parts and the ghost image have no normals;
+  - fires' flickering light gives no lean.
+
 ## Differences from Luna
 
 - **Light levels:** Luna lights whole tiles in seven steps; here each tile's light is

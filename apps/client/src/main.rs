@@ -42,6 +42,7 @@ mod lighting;
 mod lobby_panel;
 mod master_panel;
 mod monitor_panel;
+mod normals;
 mod nuke_panel;
 mod paper_panel;
 mod pick_panel;
@@ -120,6 +121,8 @@ struct Args {
     size: Option<(f32, f32)>,
     /// For checking windows in screenshots: what to do once joined (`--use`, repeatable).
     use_at: Vec<UseStep>,
+    /// Whether sprites are shaded by their normals at start (`--normals off`; F8 in play).
+    normals: bool,
 }
 
 /// One `--use` step, half a second apart.
@@ -530,6 +533,7 @@ fn main() {
             shadows::ShadowPlugin,
             fov::FovPlugin,
             glow::GlowPlugin,
+            normals::NormalsPlugin,
             depth::DepthPlugin,
             sprite_shadows::SpriteShadowsPlugin,
             gas::GasPlugin,
@@ -542,6 +546,7 @@ fn main() {
         .insert_resource(WantedName(args.name))
         .insert_resource(ScreenshotPlan(args.screenshot, args.shot_after))
         .insert_resource(ScriptedUse(args.use_at.into()))
+        .insert_resource(normals::NormalsOn(args.normals))
         .init_resource::<ChatInput>()
         .init_resource::<OwnStatus>()
         .init_resource::<ToldToLeave>()
@@ -745,6 +750,7 @@ fn parse_args() -> Args {
         shot_after: 4.0,
         size: None,
         use_at: Vec::new(),
+        normals: true,
     };
     let mut it = std::env::args().skip(1);
     while let Some(arg) = it.next() {
@@ -758,6 +764,7 @@ fn parse_args() -> Args {
             "--name" => args.name = it.next(),
             "--screenshot" => args.screenshot = it.next(),
             "--key-file" => args.key_file = it.next(),
+            "--normals" => args.normals = it.next().as_deref() != Some("off"),
             "--prefs-file" => args.prefs_file = it.next(),
             "--shot-after" => {
                 if let Some(secs) = it.next().and_then(|s| s.parse().ok()) {

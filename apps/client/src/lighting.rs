@@ -4,7 +4,8 @@
 //! per tile by `rs13_simulation::lighting` as Luna does, plus the faint light of glowing
 //! screens (`glow.rs`). It is drawn as a texture with one texel per tile, blended smoothly
 //! between the tiles the player sees and multiplied over everything on the map. F4 turns
-//! it off.
+//! it off. Where the light comes from on each tile shades sprites by their normals
+//! (`normals.rs`).
 
 use std::hash::{Hash, Hasher};
 
@@ -36,6 +37,17 @@ const EYE_FULL_DARK: f32 = 5.5;
 /// See `shown_light`.
 const LIGHT_SCALE: f32 = 0.85;
 const LIGHT_CURVE: f32 = 1.3;
+/// Normal shading (`normals.rs`): how much of it is shown, from 0 to 1.
+const NORMAL_STRENGTH: f32 = 1.0;
+/// How far the light leans over where it falls strongly one way: higher lights the faces
+/// turned towards it more, and shades those turned away more.
+const NORMAL_TILT: f32 = 1.2;
+/// The most shade and the most extra light normals give, as factors of the light.
+const NORMAL_SHADE_MIN: f32 = 0.55;
+const NORMAL_SHADE_MAX: f32 = 1.4;
+/// How high above the floor lights stand, in tiles, for which way their light falls
+/// (`light_directions`).
+const LAMP_HEIGHT: f32 = 1.0;
 
 pub struct LightingPlugin;
 
@@ -47,7 +59,12 @@ impl Plugin for LightingPlugin {
             .init_resource::<LightCache>()
             .add_systems(
                 Update,
-                (toggle_lighting, update_lighting, present_light)
+                (
+                    toggle_lighting,
+                    update_lighting,
+                    present_light,
+                    shade_with_normals,
+                )
                     .chain()
                     .in_set(DrawLight),
             );
@@ -68,13 +85,23 @@ struct LightOverlay {
     width: u32,
     height: u32,
     image: Handle<Image>,
+    /// Which way the light falls on each tile (`light_directions`).
+    direction: Handle<Image>,
 }
 
-/// Multiplies the light texture over what is drawn under it.
+/// Multiplies the light texture over what is drawn under it, shaded by the normals.
 #[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
 struct LightMaterial {
     #[texture(0)]
     light: Handle<Image>,
+    /// The normal of each pixel of the world image (`normals.rs`).
+    #[texture(1)]
+    normal: Handle<Image>,
+    #[texture(2)]
+    direction: Handle<Image>,
+    /// Normal strength (0 off), tilt, least and most shade.
+    #[uniform(3)]
+    normal_params: Vec4,
 }
 
 impl Material2d for LightMaterial {
@@ -156,6 +183,8 @@ struct LightCache {
     /// Fires on our deck, whose light flickers.
     fires: Vec<Emitter>,
     opaque: Vec<TilePos>,
+    /// Which way the light falls on each tile, as texture bytes (`light_directions`).
+    directions: Vec<u8>,
 }
 
 /// How fast shown light eases to a change, per second: about a third of a second to settle.
@@ -173,6 +202,81 @@ fn eye_level(distance: f32) -> [f32; 3] {
 /// rooms have more shade. It's only how it's drawn: what counts as dark doesn't change.
 fn shown_light(level: f32) -> f32 {
     level.powf(LIGHT_CURVE) * LIGHT_SCALE
+}
+
+/// Which way the light falls on each tile: per texel, top row first, the way towards the
+/// light east and north (0 to 255, 128 none) and how far it leans that way (0 to 255).
+/// Each light that reaches a tile pulls it towards itself, as strongly as it lights it; a
+/// light stands `LAMP_HEIGHT` tiles above the floor, so one right overhead leans little
+/// and one off to the side a lot, and lights on opposite sides cancel.
+fn light_directions(world: &MapDecks, emitters: &[Emitter], z: i32, width: u32, height: u32) -> Vec<u8> {
+    let (w, h) = (width as i32, height as i32);
+    // Per tile, bottom row first: the pull east and north, and the total light.
+    let mut pull = vec![[0.0_f32; 3]; (width * height) as usize];
+    for e in emitters.iter().filter(|e| e.pos.z == z) {
+        let reach = e.rgb.iter().copied().fold(0.0_f32, f32::max);
+        let r = reach.ceil() as i32;
+        for dy in -r..=r {
+            for dx in -r..=r {
+                let at = TilePos::new(e.pos.x + dx, e.pos.y + dy, z);
+                let dist = ((dx * dx + dy * dy) as f32).sqrt();
+                let weight = reach - dist;
+                if weight <= 0.0 || !(0..w).contains(&at.x) || !(0..h).contains(&at.y) {
+                    continue;
+                }
+                if !rs13_simulation::lighting::can_see(world, e.pos, at) {
+                    continue;
+                }
+                // From the tile up to the light.
+                let to = Vec3::new(-dx as f32, -dy as f32, LAMP_HEIGHT).normalize();
+                let cell = &mut pull[(at.y * w + at.x) as usize];
+                cell[0] += weight * to.x;
+                cell[1] += weight * to.y;
+                cell[2] += weight;
+            }
+        }
+    }
+    let mut data = Vec::with_capacity((width * height * 4) as usize);
+    for row in 0..h {
+        let y = h - 1 - row;
+        for x in 0..w {
+            let [px, py, total] = pull[(y * w + x) as usize];
+            let lean = if total > 0.0 {
+                Vec2::new(px, py) / total
+            } else {
+                Vec2::ZERO
+            };
+            let size = lean.length().min(1.0);
+            let way = lean.normalize_or_zero();
+            let encode = |v: f32| (v * 127.0 + 128.0).round().clamp(1.0, 255.0) as u8;
+            data.extend([encode(way.x), encode(way.y), (size * 255.0).round() as u8, 255]);
+        }
+    }
+    data
+}
+
+/// Tell the light pass whether to shade by normals.
+fn shade_with_normals(
+    on: Res<LightingOn>,
+    normals: Option<Res<crate::normals::NormalsOn>>,
+    overlays: Query<&MeshMaterial2d<LightMaterial>>,
+    mut materials: ResMut<Assets<LightMaterial>>,
+) {
+    let strength = if on.0 && normals.is_some_and(|n| n.0) {
+        NORMAL_STRENGTH
+    } else {
+        0.0
+    };
+    let params = Vec4::new(strength, NORMAL_TILT, NORMAL_SHADE_MIN, NORMAL_SHADE_MAX);
+    for handle in &overlays {
+        if materials
+            .get(&handle.0)
+            .is_some_and(|m| m.normal_params != params)
+            && let Some(mut material) = materials.get_mut(&handle.0)
+        {
+            material.normal_params = params;
+        }
+    }
 }
 
 /// The texture's bytes: light per texel, and in alpha whether
@@ -335,6 +439,7 @@ fn update_lighting(
     mut images: ResMut<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<LightMaterial>>,
+    normal_image: Option<Res<crate::normals::NormalImage>>,
 ) {
     for (_, _, mut visibility) in &mut overlays {
         visibility.set_if_neq(if on.0 {
@@ -426,6 +531,16 @@ fn update_lighting(
         cache.width = width;
         cache.height = height;
         cache.z = map.z;
+        let world = MapDecks::new(decks.iter().copied(), opaque.iter().copied());
+        cache.directions = light_directions(&world, &emitters, map.z, width, height);
+        for (_, overlay, _) in &overlays {
+            if overlay.width == width
+                && overlay.height == height
+                && let Some(mut image) = images.get_mut(&overlay.direction)
+            {
+                image.data = Some(cache.directions.clone());
+            }
+        }
     }
 
     let level = |x: i32, y: i32| {
@@ -474,6 +589,9 @@ fn update_lighting(
     let existing = overlays
         .iter()
         .any(|(_, o, _)| o.width == width && o.height == height);
+    let Some(normal_image) = normal_image else {
+        return;
+    };
     if existing {
         return;
     }
@@ -495,6 +613,19 @@ fn update_lighting(
     );
     image.sampler = ImageSampler::nearest();
     let image = images.add(image);
+    let mut direction = Image::new(
+        Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        cache.directions.clone(),
+        TextureFormat::Rgba8Unorm,
+        RenderAssetUsages::RENDER_WORLD | RenderAssetUsages::MAIN_WORLD,
+    );
+    direction.sampler = ImageSampler::nearest();
+    let direction = images.add(direction);
     let size = Vec2::new(width as f32, height as f32) * TILE_PX;
     // Tile (x, y) is centred on (x, y) tiles; the texture's texels on the tile centres.
     let centre = (Vec2::new(width as f32, height as f32) - 1.0) * TILE_PX / 2.0;
@@ -503,9 +634,15 @@ fn update_lighting(
             width,
             height,
             image: image.clone(),
+            direction: direction.clone(),
         },
         Mesh2d(meshes.add(Rectangle::from_size(size))),
-        MeshMaterial2d(materials.add(LightMaterial { light: image })),
+        MeshMaterial2d(materials.add(LightMaterial {
+            light: image,
+            normal: normal_image.0.clone(),
+            direction,
+            normal_params: Vec4::ZERO,
+        })),
         Transform::from_translation(centre.extend(LIGHT_Z)),
     ));
 }
@@ -540,10 +677,12 @@ mod tests {
             .world_mut()
             .resource_mut::<Assets<Image>>()
             .add(Image::default());
+        let direction = image.clone();
         app.world_mut().spawn(LightOverlay {
             width: 3,
             height: 1,
             image,
+            direction,
         });
         app.insert_resource(LightingOn(true)).insert_resource(LightCache {
             width: 3,
@@ -658,6 +797,59 @@ mod tests {
             wall_light(TilePos::new(0, 0, 0), None, light_at, blocks, ours),
             Some([0.1; 3])
         );
+    }
+}
+
+#[cfg(test)]
+mod direction_tests {
+    use super::*;
+
+    fn texel(data: &[u8], width: u32, row: u32, x: u32) -> [u8; 4] {
+        let i = ((row * width + x) * 4) as usize;
+        [data[i], data[i + 1], data[i + 2], data[i + 3]]
+    }
+
+    fn deck(rows: &str) -> TileMap {
+        let rows: Vec<String> = rows.split('|').map(|r| format!("\"{r}\"")).collect();
+        let ron = format!(
+            r#"(legend: {{ '.': (tile: (id: "floor")), 'W': (tile: (id: "wall", solid: true)) }}, rows: [{}])"#,
+            rows.join(",")
+        );
+        TileMap::from_ron(&ron, 0).unwrap()
+    }
+
+    fn lamp(x: i32, y: i32) -> Emitter {
+        Emitter {
+            pos: TilePos::new(x, y, 0),
+            rgb: [6.0; 3],
+        }
+    }
+
+    #[test]
+    fn light_falls_from_the_lamp() {
+        // 5 x 1, a lamp at the east end: the tiles west of it are lit from the east, more
+        // the further off they are; the lamp's own tile from no way.
+        let map = deck(".....");
+        let world = MapDecks::new([&map], []);
+        let data = light_directions(&world, &[lamp(4, 0)], 0, 5, 1);
+        let near = texel(&data, 5, 0, 3);
+        let far = texel(&data, 5, 0, 0);
+        assert_eq!((near[0], near[1]), (255, 128), "east: {near:?}");
+        assert!(far[2] > near[2], "leans more further off: {far:?} {near:?}");
+        assert_eq!(texel(&data, 5, 0, 4)[2], 0, "right under it");
+    }
+
+    #[test]
+    fn lights_on_both_sides_cancel_and_walls_block() {
+        let map = deck(".....");
+        let world = MapDecks::new([&map], []);
+        let data = light_directions(&world, &[lamp(0, 0), lamp(4, 0)], 0, 5, 1);
+        assert_eq!(texel(&data, 5, 0, 2)[2], 0, "between two lamps");
+        // A wall between: only the near lamp counts.
+        let map = deck("..W..");
+        let world = MapDecks::new([&map], []);
+        let data = light_directions(&world, &[lamp(0, 0), lamp(4, 0)], 0, 5, 1);
+        assert_eq!(texel(&data, 5, 0, 1)[0], 1, "lit from the west only");
     }
 }
 
