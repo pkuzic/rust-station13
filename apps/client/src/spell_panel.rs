@@ -111,8 +111,13 @@ pub fn show_spells(
     ));
     if let Some(line) = open.picking {
         let aim = view.spells.get(usize::from(line)).map(|s| s.aim);
+        let ask = if aim == Some(SpellAim::Someone) {
+            "spell-choose-target"
+        } else {
+            "spell-choose-area"
+        };
         commands.spawn((
-            Text::new(text(LocMsg::new("spell-choose-area"))),
+            Text::new(text(LocMsg::new(ask))),
             ui_text_font(14.0),
             TextColor(TEXT),
             ChildOf(window),

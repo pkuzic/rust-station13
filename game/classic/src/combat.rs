@@ -530,6 +530,7 @@ pub fn deliver_visible(
             &mut Outbox,
             Option<&Vitals>,
             Has<rs13_world::Ghost>,
+            Option<&rs13_world::Vision>,
         ),
         Or<(With<Mob>, With<rs13_world::Ghost>)>,
     >,
@@ -540,12 +541,17 @@ pub fn deliver_visible(
     }
     let opaque: Vec<TilePos> = opaque.iter().map(|p| p.0).collect();
     for (at, msg, except) in visible.0.drain(..) {
-        for (viewer, pos, mut outbox, vitals, ghost) in &mut viewers {
+        for (viewer, pos, mut outbox, vitals, ghost, vision) in &mut viewers {
             if except == Some(viewer) {
                 continue;
             }
             let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
-            let seen = if ghost {
+            let vision = vision.copied().unwrap_or_default();
+            // The blind see none of it (Luna's `visible_message`); X-ray sees through walls.
+            if vision == rs13_world::Vision::Blind && !ghost {
+                continue;
+            }
+            let seen = if ghost || vision == rs13_world::Vision::Xray {
                 within_range(at, pos.0, HEARING_RANGE)
             } else {
                 can_see(map.at(at.z), &opaque, at, pos.0, HEARING_RANGE)

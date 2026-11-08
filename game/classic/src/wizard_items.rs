@@ -50,13 +50,15 @@ pub enum Choice {
     Rememorize,
 }
 
-pub const BOOK_SPELLS: [&str; 7] = [
+pub const BOOK_SPELLS: [&str; 9] = [
     "magic-missile",
     "fireball",
     "disable-tech",
+    "blind",
     "forcewall",
     "blink",
     "teleport",
+    "mutate",
     "knock",
 ];
 const ARTEFACTS: [(&str, Choice); 2] = [("armor", Choice::Armor), ("scrying", Choice::Scrying)];
@@ -320,6 +322,11 @@ fn book_pick(world: &mut World, mob: Entity, book: Entity, line: usize) {
         Choice::Scrying => {
             let _ = spawn_object(world, &ObjectSpec::new(SCRYING_ORB), at);
             state.max -= 1;
+            // The orb comes with X-ray, for good.
+            if !crate::genetics::powers::has(world, mob, crate::genetics::Gene::Xray) {
+                crate::genetics::powers::grant(world, mob, &[crate::genetics::Gene::Xray], f32::INFINITY);
+                tell(world, mob, LocMsg::new("gene-xray"));
+            }
             tell(world, mob, LocMsg::new("book-bought-orb"));
         }
         Choice::Rememorize => {}

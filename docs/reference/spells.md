@@ -41,6 +41,8 @@ Casting checks, in Luna's order:
 | Fireball | 6 s | no | ONI SOMA | A fireball the way the caster faces, a tile a decisecond. It bursts (light 2, flash 3) when it meets something solid or dense, when anyone else is beside it, or after 200 tiles. |
 | Knock | 10 s | no | AULIE OXIN FIERA (whispered) | Every airlock within 3 unbolted and opened, if it has power. |
 | Invisible Wall | 30 s | no | — | The mime's: a wall nobody can see on the caster's tile, for 30 s. |
+| Blind | 30 s | no | STI KALY (whispered) | Someone living in sight within 7, picked from a list: "Your eyes cry out in pain!" Blind for 20 s, blurred for 40 s, nearsighted for 30 s (`eyes.md`). With nobody picked in sight, the charge comes back. |
+| Mutate | 40 s | yes | BIRUZ BENNAR | The caster only: "You feel strong!" Hulk, X-ray, cold resistance and no breathing for 30 s (`genetics.md`), on top of their own genes. |
 
 ## The wizard's things
 
@@ -82,7 +84,8 @@ with no words:
 - a person: Luna hands its fireball the person instead of their floor, so nothing flies. Here too.
 - used in the hand, Luna's ethereal jaunt: waits on passing through walls.
 
-**Scrying orb** (Luna `scrying`). "You can see... everything!", and those around see them stare
+**Scrying orb** (Luna `scrying`). Buying it also gives X-ray vision for good ("The walls suddenly
+disappear."), unless they have it. "You can see... everything!", and those around see them stare
 into it. They leave their body as a ghost. Clicking their own body, while it lives, puts them
 back in it. It hits like a heavy object: force 15.
 
@@ -92,11 +95,9 @@ These spells wait on systems that don't exist yet:
 
 | Spell | Waits on |
 |---|---|
-| Mutate | Genetic powers: hulk, X-ray, cold resistance, no breath (3.5) |
 | Disintegrate | Gibbing |
 | Smoke | Smoke clouds |
 | Ethereal Jaunt, Phase Shift | Passing through walls unseen |
-| Blind | Blindness and blurred sight |
 | Curse of the Horseman | The horse mask and its voice |
 | Mind Transfer | Swapping bodies. Luna's is broken: it ghosts the target and swaps nothing |
 | The construct spells | Cult floors and walls (cult isn't compiled) |
@@ -113,9 +114,9 @@ These spells wait on systems that don't exist yet:
 | A Magic Missile's burn is spread over the body | It's on the chest |
 | The mime is also silenced for good | Not yet |
 | The spellbook lists every spell | Only the ones built |
+| The spellbook says Mutate gives telekinesis, and that it recharges in 60 s | It says what it does: X-ray, 40 s |
 | The spellbook's answers replace its window until Clear | They go to chat, and the window stays |
 | A magic scroll teaches a spell they know again, as a second copy | They just know it |
-| Buying the scrying orb also gives X-ray vision | Not yet: no genetic powers (3.5) |
 | Smoke when the teleportation scroll jumps | No smoke yet |
 | The scrying orb burns | Brute, like anything thrown or swung |
 | The hardsuit reflects a fifth of shots | Nothing reflects yet |

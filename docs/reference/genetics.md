@@ -121,7 +121,6 @@ Their block is this round's. `box-dna-injectors` holds three of each of the last
 | Tourette's makes them shout swear words two times in three | They only twitch |
 | A hulk's punch pushes them two steps | One |
 | Hulks are green | They look the same |
-| The blind are spared what's seen in messages (a visible message comes as what's heard, or not at all) | They still read what others do in the chat |
 
 ## Not built
 

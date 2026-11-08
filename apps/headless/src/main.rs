@@ -4,11 +4,12 @@
 //! player it can see and exits.
 //!
 //! Usage: `rs13-headless [--server ADDR] [--dir north|east|...] [--seconds N] [--examine SPRITE]
-//! [--name NAME] [--say TEXT] [--use SPRITE]... [--pull SPRITE]... [--equip SLOT]... [--use-held] [--wait SECONDS]...`
+//! [--name NAME] [--say TEXT] [--use SPRITE]... [--pull SPRITE]... [--cast LINE:SPRITE]... [--equip SLOT]... [--use-held] [--wait SECONDS]...`
 //!
 //! `--use` and `--wait` make a script, run in order: `--use` clicks the first thing with
 //! that sprite on the map (picking it up), `--pull` starts pulling one, `--use-held` clicks the item in the active hand
-//! (lighting a welding tool), `--wait` pauses.
+//! (lighting a welding tool), `--cast` casts the bot's spell LINE (from 0) at the first thing with that
+//! sprite, `--wait` pauses.
 //!
 //! Output (stdout): one line per player, `player <client_id> <x> <y> [self]`, then one
 //! line per notice received, `notice <message id>`.
@@ -77,6 +78,11 @@ fn parse_args() -> Result<BotConfig, String> {
             "--say" => config.say = Some(value),
             "--use" => config.script.push(Step::UseOn(value)),
             "--pull" => config.script.push(Step::Pull(value)),
+            "--cast" => {
+                let (line, sprite) = value.split_once(':').ok_or("--cast: LINE:SPRITE")?;
+                let line = line.parse().map_err(|e| format!("--cast: {e}"))?;
+                config.script.push(Step::CastOn(line, sprite.to_owned()));
+            }
             "--equip" => config
                 .script
                 .push(Step::Act(ActionInput::Equip(match value.as_str() {
