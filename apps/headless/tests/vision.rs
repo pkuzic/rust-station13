@@ -1,15 +1,17 @@
 //! X-ray and blindness over the network (`docs/reference/genetics.md`): with X-ray, one bot sees a
 //! monkey shut behind two walls that the other doesn't; then it's injected with blindness and sees
 //! nothing but itself. An injector's X-ray only takes at its chance, so the server gives it here.
+//! Then the Blind spell (`docs/reference/eyes.md`), cast by one bot at another.
 
 use std::net::SocketAddr;
 use std::thread;
 use std::time::Duration;
 
 use bevy::prelude::*;
+use rs13_classic::genetics::powers::{self, Gene, GrantedGenes};
 use rs13_classic::movement::Mob;
 use rs13_headless::{BotConfig, BotReport, BotResult, Snapshot, Step, bot_app, unique_client_id};
-use rs13_world::{DisplayName, Vision};
+use rs13_world::{DisplayName, EyeTrouble, Vision};
 
 /// Two start points side by side, the blinding injector beside both, and a monkey in a room of
 /// its own.
@@ -47,11 +49,30 @@ fn bot(server: SocketAddr, name: &str, hold: u64, script: Vec<Step>) -> BotResul
     report.lock().unwrap().take().unwrap()
 }
 
-/// Ann has X-ray from the start, until her genes say otherwise.
-fn give_x_ray(mut commands: Commands, mobs: Query<(Entity, &DisplayName), (With<Mob>, Without<Vision>)>) {
-    for (mob, name) in &mobs {
-        if name.0 == "Ann Subject" {
-            commands.entity(mob).insert(Vision::Xray);
+/// Ann has X-ray from the start.
+fn give_x_ray(world: &mut World) {
+    let mut q = world.query_filtered::<(Entity, &DisplayName), (With<Mob>, Without<GrantedGenes>)>();
+    let ann: Vec<Entity> = q
+        .iter(world)
+        .filter(|(_, n)| n.0 == "Ann Subject")
+        .map(|(e, _)| e)
+        .collect();
+    for mob in ann {
+        powers::grant(world, mob, &[Gene::Xray], f32::INFINITY);
+    }
+}
+
+/// Merlin knows the Blind spell from the start.
+fn give_blind(world: &mut World) {
+    let mut q = world.query_filtered::<(Entity, &DisplayName), With<Mob>>();
+    let merlin: Vec<Entity> = q
+        .iter(world)
+        .filter(|(_, n)| n.0 == "Merlin Wiz")
+        .map(|(e, _)| e)
+        .collect();
+    for mob in merlin {
+        if !rs13_classic::spells::knows(world, mob, "blind") {
+            rs13_classic::spells::give(world, mob, "blind");
         }
     }
 }
@@ -120,5 +141,66 @@ fn x_ray_sees_through_walls_and_the_blind_see_nothing() {
     assert!(
         !sees(&blind, "monkey") && !sees(&blind, "light") && others(&blind) == 0,
         "only herself: {blind:?}"
+    );
+}
+
+#[test]
+fn the_blind_spell_blinds_and_blurs_another_player() {
+    let port = 20_000 + ((std::process::id() + 4_211) % 20_000) as u16;
+    let server: SocketAddr = ([127, 0, 0, 1], port).into();
+    thread::spawn(move || {
+        let mut app = rs13_server::server_app_with_map(port, MAP);
+        app.add_systems(Update, give_blind);
+        app.run()
+    });
+    thread::sleep(Duration::from_millis(500));
+
+    let wait = |ms| Step::Wait(Duration::from_millis(ms));
+    let target = vec![
+        wait(1_500),
+        Step::Snapshot("before".into()),
+        wait(3_000),
+        Step::Snapshot("after".into()),
+    ];
+    let wizard = vec![wait(2_000), Step::CastOn(0, "human".into()), wait(1_000)];
+    let target = thread::spawn(move || bot(server, "Tara Get", 6, target));
+    thread::sleep(Duration::from_millis(300));
+    let wizard = bot(server, "Merlin Wiz", 4, wizard);
+    let target = target.join().unwrap();
+
+    let snap = |label: &str| -> Snapshot {
+        target
+            .snapshots
+            .iter()
+            .find(|s| s.label == label)
+            .unwrap_or_else(|| panic!("no snapshot {label}: {:?}", target.snapshots))
+            .clone()
+    };
+    let before = snap("before");
+    let status = before.status.as_ref().unwrap();
+    assert_eq!(
+        (status.vision, status.eyes),
+        (Vision::Normal, EyeTrouble::default())
+    );
+    let after = snap("after");
+    let status = after.status.as_ref().unwrap();
+    assert_eq!(
+        status.vision,
+        Vision::Blind,
+        "{after:?}
+{:?}",
+        wizard.notices
+    );
+    assert_eq!(
+        status.eyes,
+        EyeTrouble {
+            blurry: true,
+            nearsighted: true
+        }
+    );
+    assert!(
+        target.notices.iter().any(|n| n.id == "spell-blind-eyes"),
+        "{:?}",
+        target.notices
     );
 }

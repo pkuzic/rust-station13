@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 
 use bevy_ecs::prelude::*;
 use rs13_i18n::LocMsg;
-use rs13_world::{Appearance, DisplayName, GridPos, HumanLook, MobStat, Vision};
+use rs13_world::{Appearance, DisplayName, GridPos, HumanLook, MobStat};
 
 use super::dna::{self, MONKEY_BLOCK, Threshold};
 use super::{Genome, Radiation, genome, layout, random_bad, random_good, random_identity, tell};
@@ -166,6 +166,64 @@ const CHECK_ORDER: [Gene; 23] = [
 #[derive(Component, Debug, Clone, Default, PartialEq, Eq)]
 pub struct Mutations(pub BTreeSet<Gene>);
 
+/// Powers given for a while rather than by the enzymes (Luna's Mutate spell, the scrying orb),
+/// each until when, ds. They outlast a reading of the enzymes.
+#[derive(Component, Debug, Clone, Default, PartialEq)]
+pub struct GrantedGenes(pub Vec<(Gene, f32)>);
+
+/// Give someone powers until `until` (ds; `f32::INFINITY` for good), whatever their enzymes say.
+pub fn grant(world: &mut World, mob: Entity, genes: &[Gene], until: f32) {
+    let mut granted = world.get::<GrantedGenes>(mob).cloned().unwrap_or_default();
+    let mut now = world.get::<Mutations>(mob).cloned().unwrap_or_default();
+    for gene in genes {
+        now.0.insert(*gene);
+        match granted.0.iter_mut().find(|(g, _)| g == gene) {
+            Some((_, t)) => *t = t.max(until),
+            None => granted.0.push((*gene, until)),
+        }
+    }
+    world.entity_mut(mob).insert((granted, now));
+    apply(world, mob);
+}
+
+/// Granted powers wear off.
+pub fn run_granted(world: &mut World) {
+    let now = world.resource::<WorldTime>().deciseconds();
+    let mut q = world.query::<(Entity, &GrantedGenes)>();
+    let due: Vec<(Entity, Vec<Gene>)> = q
+        .iter(world)
+        .filter(|(_, g)| g.0.iter().any(|(_, t)| now >= *t))
+        .map(|(e, g)| {
+            (
+                e,
+                g.0.iter().filter(|(_, t)| now >= *t).map(|(g, _)| *g).collect(),
+            )
+        })
+        .collect();
+    for (mob, gone) in due {
+        if let Some(mut granted) = world.get_mut::<GrantedGenes>(mob) {
+            granted.0.retain(|(_, t)| now < *t);
+        }
+        // What the enzymes give stays.
+        let kept: Vec<Gene> = gone.into_iter().filter(|g| !block_on(world, mob, *g)).collect();
+        if let Some(mut m) = world.get_mut::<Mutations>(mob) {
+            for gene in kept {
+                m.0.remove(&gene);
+            }
+        }
+        apply(world, mob);
+    }
+}
+
+/// What the powers someone has change about their body.
+fn apply(world: &mut World, mob: Entity) {
+    let cold = has(world, mob, Gene::ColdResist);
+    if let Some(mut body) = world.get_mut::<Body>(mob) {
+        body.burn_proof = cold;
+    }
+    crate::eyes::refresh(world, mob);
+}
+
 pub fn has(world: &World, mob: Entity, gene: Gene) -> bool {
     world.get::<Mutations>(mob).is_some_and(|m| m.0.contains(&gene))
 }
@@ -221,18 +279,11 @@ pub fn check_in(world: &mut World, mob: Entity, injected: bool, _in_scanner: boo
             tell(world, mob, LocMsg::new(format!("gene-{}", gene.id())));
         }
     }
-    world.entity_mut(mob).insert(Mutations(now.clone()));
-    if let Some(mut body) = world.get_mut::<Body>(mob) {
-        body.burn_proof = now.contains(&Gene::ColdResist);
+    if let Some(granted) = world.get::<GrantedGenes>(mob) {
+        now.extend(granted.0.iter().map(|(g, _)| *g));
     }
-    // Luna's blindness covers the screen whatever else they could see.
-    if now.contains(&Gene::Blind) {
-        world.entity_mut(mob).insert(Vision::Blind);
-    } else if now.contains(&Gene::Xray) {
-        world.entity_mut(mob).insert(Vision::Xray);
-    } else {
-        world.entity_mut(mob).remove::<Vision>();
-    }
+    world.entity_mut(mob).insert(Mutations(now));
+    apply(world, mob);
     if fake {
         // Something else goes wrong, or now and then right.
         let (bad, ident) = {

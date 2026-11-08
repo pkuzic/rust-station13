@@ -39,6 +39,7 @@ pub mod equipment;
 pub mod escape;
 pub mod explosions;
 pub mod extinguishers;
+pub mod eyes;
 pub mod filing;
 pub mod firealarms;
 pub mod firedoors;
@@ -479,7 +480,9 @@ impl Plugin for ClassicPlugin {
                                 genetics::run_consoles,
                                 genetics::run_injections,
                                 genetics::powers::run_genes,
+                                genetics::powers::run_granted,
                                 genetics::powers::shrug_off,
+                                eyes::run_eyes,
                                 genetics::update_views,
                                 genetics::clear_closed_views,
                             )

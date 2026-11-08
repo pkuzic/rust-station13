@@ -38,12 +38,12 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 2.1 Extended and sandbox | S | `gamemodes/extended`, `sandbox` | `round.md`. Luna's list of offsets and counts for spawned items left out: one at your feet |
 | [x] | 2.2 Nuke: team, bomb, disk, pinpointer, base | M | `gamemodes/nuclear` | `nuke.md`. Goods the closets lack wait on their systems |
 | [x] | 2.3 Revolution and rp-revolution | M | `gamemodes/revolution` | `revolution.md`. No intercept report: Centcom's messages aren't built |
-| [x] | 2.4 Changeling | L | `gamemodes/changeling` | `changeling.md`. No hallucinations or real blindness yet, so those stings do less |
+| [x] | 2.4 Changeling | L | `gamemodes/changeling` | `changeling.md`. No hallucinations yet, so that sting is left out |
 | [ ] | 2.5 Malfunction | M | `gamemodes/malfunction` | Blocked: needs 3.9 AI |
 | [x] | 2.6 Meteor | S-M | `gamemodes/meteor` | `meteor-blob.md` |
 | [x] | 2.7 Blob | M | `gamemodes/blob` | `meteor-blob.md`. Probability 0 in Luna's config. Guns don't hurt it yet |
 | [~] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Monkey, restructuring (`monkey-restructuring.md`), AutoTraitor (`autotraitor.md`) and derelict (`derelict.md`) built. Takeover needs 3.4 viruses, 3.5 powers and 3.9 AI |
-| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall; the spellbook, magic and teleportation scrolls, staffs, scrying orb, hardsuit and wizard crate (`spells.md`). Left: the spells that wait on genetics, gibbing, smoke and blindness, and the orb's X-ray |
+| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall; the spellbook, magic and teleportation scrolls, staffs, scrying orb, hardsuit and wizard crate (`spells.md`). Blind, Mutate and the orb's X-ray too (`eyes.md`). Left: the spells that wait on gibbing, smoke and passing through walls |
 
 ## 3. Departments
 
