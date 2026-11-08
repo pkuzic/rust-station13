@@ -413,6 +413,8 @@ pub struct StatusUpdate {
     pub pulling: bool,
     /// Seeing through walls, or nothing at all (`genetics.md`).
     pub vision: Vision,
+    /// Blurred or nearsighted (`eyes.md`).
+    pub eyes: rs13_world::EyeTrouble,
 }
 
 /// Server → one client: a message for the player, formatted by the client in its

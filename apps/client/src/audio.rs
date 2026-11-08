@@ -37,6 +37,15 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("door-deny", &[ogg!("machines/buzz-two.ogg")]),
     ("closet-click", &[ogg!("machines/click.ogg")]),
     ("glass-hit", &[ogg!("effects/Glasshit.ogg")]),
+    (
+        "shatter",
+        &[
+            ogg!("effects/Glassbr1.ogg"),
+            ogg!("effects/Glassbr2.ogg"),
+            ogg!("effects/Glassbr3.ogg"),
+        ],
+    ),
+    ("shattered-hit", &[ogg!("effects/hit_on_shattered_glass.ogg")]),
     ("ratchet", &[ogg!("items/Ratchet.ogg")]),
     ("crowbar", &[ogg!("items/Crowbar.ogg")]),
     ("screwdriver", &[ogg!("items/Screwdriver.ogg")]),

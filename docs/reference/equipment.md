@@ -114,6 +114,6 @@ hand. "Lying" uses Luna's `…2` or `_l` states.
 Luna's decks hold about a hundred more kinds of clothing: uniforms, costumes, hats, shoes, gloves,
 armour and masks. They can all be picked up and worn in their slot, and shoes make you a little
 faster, like the black shoes. For now that's all they do: armour doesn't protect, a muzzle doesn't
-stop speech, a straight jacket doesn't bind, and a blindfold doesn't blind. Most coloured and
+stop speech, and a straight jacket doesn't bind. A blindfold blinds (`eyes.md`), and glasses put nearsightedness right. Most coloured and
 boxing gloves have no worn sprite in Luna's `hands.dmi`, so they don't show on the hands.
 Space suits and helmets outside hardsuits import as the existing `space-suit` and `space-helmet`.

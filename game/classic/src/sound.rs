@@ -48,6 +48,9 @@ pub const AIRLOCK: &str = "airlock";
 pub const DOOR_DENY: &str = "door-deny";
 pub const CLOSET_CLICK: &str = "closet-click";
 pub const GLASS_HIT: &str = "glass-hit";
+/// Glass breaking, and something hitting glass already broken.
+pub const SHATTER: &str = "shatter";
+pub const SHATTERED_HIT: &str = "shattered-hit";
 pub const RATCHET: &str = "ratchet";
 pub const CROWBAR: &str = "crowbar";
 pub const SCREWDRIVER: &str = "screwdriver";
@@ -88,6 +91,8 @@ pub const ALL_SOUNDS: &[&str] = &[
     DOOR_DENY,
     CLOSET_CLICK,
     GLASS_HIT,
+    SHATTER,
+    SHATTERED_HIT,
     RATCHET,
     CROWBAR,
     SCREWDRIVER,

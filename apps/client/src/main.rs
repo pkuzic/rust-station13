@@ -1077,6 +1077,8 @@ fn object_look(appearance: &Appearance) -> (Color, f32, f32) {
             (Color::srgb(0.55, 0.35, 0.20), TILE_PX - 6.0, 3.15)
         }
         // On the wall, above people.
+        // A shower's water and mist fall over whoever stands under it (Luna `MOB_LAYER + 1`).
+        ("shower-water" | "mist", _) => (Color::srgb(0.6, 0.75, 0.95), TILE_PX, 3.05),
         ("light" | "light-small", _) => (Color::srgb(0.95, 0.95, 0.75), 10.0, 3.5),
         ("light-switch", _) => (Color::srgb(0.80, 0.80, 0.70), 8.0, 3.5),
         // Up on the wall, above people (Luna `layer = 5`).

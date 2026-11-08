@@ -2,7 +2,7 @@
 // world image, sampled with each pixel moved a little where the air is hot, so the heat
 // over fires and the supermatter bends whatever is behind it. Then how the player is
 // (`docs/reference/hud.md`, Screen effects): dark or red edges, a red flash, blur, grey,
-// a cold or warm tint, and nothing at all for the blind.
+// a cold or warm tint, blurred or nearsighted eyes, and nothing at all for the blind.
 
 import bevy_ui_render::ui_vertex_output::UiVertexOutput;
 
@@ -41,9 +41,24 @@ struct Effects {
 }
 @group(1) @binding(6) var<uniform> fx_a: vec4<f32>;
 @group(1) @binding(7) var<uniform> fx_b: vec4<f32>;
+// Blurred, nearsighted: each 0 to 1.
+@group(1) @binding(8) var<uniform> eyes: vec4<f32>;
 
 // How far unconscious blur reaches, world px.
 const BLUR: f32 = 2.5;
+// How far blurred eyes blur, world px.
+const EYE_BLUR: f32 = 3.5;
+
+// The world image around `at`, blurred `r` (in uv) wide.
+fn blurred(at: vec2<f32>, r: f32) -> vec3<f32> {
+    var sum = vec3<f32>(0.0);
+    for (var i = 0; i < 8; i++) {
+        let a = f32(i) * 0.785398;
+        sum += textureSampleLevel(world_texture, world_sampler, at + vec2<f32>(cos(a), sin(a)) * r, 0.0).rgb;
+        sum += textureSampleLevel(world_texture, world_sampler, at + vec2<f32>(cos(a + 0.39), sin(a + 0.39)) * r * 0.5, 0.0).rgb;
+    }
+    return sum / 16.0;
+}
 
 // How far heat moves the picture at most, world px.
 const SWAY: f32 = 1.6;
@@ -89,6 +104,18 @@ fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
             blur += textureSampleLevel(world_texture, world_sampler, at + vec2<f32>(cos(a), sin(a)) * r, 0.0).rgb;
         }
         colour = mix(colour, blur / 8.0, fx.unconscious) * (1.0 - 0.55 * fx.unconscious);
+    }
+    // Blurred eyes (Luna's `blurry` overlay over the whole view).
+    if eyes.x > 0.001 {
+        colour = mix(colour, blurred(at, EYE_BLUR / view.span), eyes.x);
+    }
+    // Nearsighted (Luna's `vimpaired`): only the middle is clear, the rest dim and blurred.
+    if eyes.y > 0.001 {
+        let d = max(abs(uv.x - 0.5), abs(uv.y - 0.5));
+        let off = smoothstep(0.12, 0.2, d) * eyes.y;
+        if off > 0.001 {
+            colour = mix(colour, blurred(at, EYE_BLUR / view.span) * 0.45, off);
+        }
     }
     // Dead: grey and dark.
     let grey = dot(colour, vec3<f32>(0.3, 0.59, 0.11));

@@ -42,6 +42,8 @@ pub enum Effect {
     Fireball,
     Knock,
     InvisibleWall,
+    Blind,
+    Mutate,
 }
 
 /// One of `content/spells.ron`.
@@ -83,6 +85,21 @@ pub const FIREBALL_STEP_DS: f32 = 1.0;
 pub const WALL_DS: f32 = 300.0;
 /// How far Knock reaches, and how far Blink can go and how close to the edge of the map it lands.
 pub const KNOCK_RANGE: i32 = 3;
+/// How far a spell aimed at someone reaches (Luna's targeted `range`, in view).
+pub const TARGET_RANGE: i32 = 7;
+/// Blind: blind for 10 life ticks, blurred for 20, nearsighted for 30 s (Luna `inflict_handler/blind`
+/// and `genetic/blind`).
+pub const BLIND_COUNTS: f32 = 10.0;
+pub const BLIND_BLUR_COUNTS: f32 = 20.0;
+pub const BLIND_NEARSIGHTED_DS: f32 = 300.0;
+/// Mutate: hulk, X-ray, cold resistance and no breathing for 30 s (Luna `genetic/mutate`).
+pub const MUTATE_DS: f32 = 300.0;
+pub const MUTATE_GENES: [crate::genetics::Gene; 4] = [
+    crate::genetics::Gene::Hulk,
+    crate::genetics::Gene::Xray,
+    crate::genetics::Gene::ColdResist,
+    crate::genetics::Gene::NoBreath,
+];
 pub const BLINK_RANGE: i32 = 6;
 
 /// Sprites.
@@ -230,7 +247,7 @@ fn missing_clothes(world: &World, mob: Entity) -> Option<&'static str> {
 }
 
 /// Luna's `cast_check`, `choose_targets`, `invocation` and `cast`.
-fn cast(world: &mut World, mob: Entity, line: usize, _target: Option<Entity>, area: Option<u16>) {
+fn cast(world: &mut World, mob: Entity, line: usize, target: Option<Entity>, area: Option<u16>) {
     let Some(known) = world
         .get::<Spellcaster>(mob)
         .and_then(|c| c.known.get(line).cloned())
@@ -270,7 +287,7 @@ fn cast(world: &mut World, mob: Entity, line: usize, _target: Option<Entity>, ar
         }
         set_ready(world, mob, line, now + def.cooldown);
     }
-    let Some(extra_words) = perform(world, mob, def.effect, area) else {
+    let Some(extra_words) = perform(world, mob, def.effect, target, area) else {
         // No targets: the charge comes back.
         if person {
             set_ready(world, mob, line, known.ready_at);
@@ -314,7 +331,13 @@ fn at(world: &World, mob: Entity) -> Option<TilePos> {
 }
 
 /// Do it. `None` if it found nothing to act on; otherwise any words to add to the spell's.
-fn perform(world: &mut World, mob: Entity, effect: Effect, area: Option<u16>) -> Option<Option<String>> {
+fn perform(
+    world: &mut World,
+    mob: Entity,
+    effect: Effect,
+    target: Option<Entity>,
+    area: Option<u16>,
+) -> Option<Option<String>> {
     let here = at(world, mob)?;
     match effect {
         Effect::MagicMissile => {
@@ -369,6 +392,18 @@ fn perform(world: &mut World, mob: Entity, effect: Effect, area: Option<u16>) ->
             ));
         }
         Effect::Knock => knock(world, here, KNOCK_RANGE),
+        Effect::Blind => {
+            let target = target.filter(|t| living_in_view(world, mob, here, TARGET_RANGE).contains(t))?;
+            crate::eyes::blind(world, target, BLIND_COUNTS);
+            crate::eyes::blur(world, target, BLIND_BLUR_COUNTS);
+            crate::eyes::nearsight(world, target, BLIND_NEARSIGHTED_DS);
+            tell(world, target, LocMsg::new("spell-blind-eyes"));
+        }
+        Effect::Mutate => {
+            let until = world.resource::<WorldTime>().deciseconds() + MUTATE_DS;
+            crate::genetics::powers::grant(world, mob, &MUTATE_GENES, until);
+            tell(world, mob, LocMsg::new("spell-mutate-strong"));
+        }
     }
     Some(None)
 }
@@ -637,6 +672,19 @@ pub fn update_spell_views(world: &mut World) {
     let now = world.resource::<WorldTime>().deciseconds();
     let areas = teleport_areas(world);
     for mob in list {
+        let nearby: Vec<(rs13_world::NetId, String)> = match at(world, mob) {
+            Some(here) => living_in_view(world, mob, here, TARGET_RANGE)
+                .into_iter()
+                .filter_map(|e| {
+                    let id = *world.get::<rs13_world::NetId>(e)?;
+                    let name = world
+                        .get::<rs13_world::DisplayName>(e)
+                        .map_or_else(String::new, |n| n.0.clone());
+                    Some((id, name))
+                })
+                .collect(),
+            None => Vec::new(),
+        };
         let Some(caster) = world.get::<Spellcaster>(mob).cloned() else {
             continue;
         };
@@ -654,17 +702,17 @@ pub fn update_spell_views(world: &mut World) {
                     now: if now >= k.ready_at { max } else { so_far },
                     max,
                     charges: false,
-                    aim: if def.effect == Effect::Teleport {
-                        SpellAim::Area
-                    } else {
-                        SpellAim::None
+                    aim: match def.effect {
+                        Effect::Teleport => SpellAim::Area,
+                        Effect::Blind => SpellAim::Someone,
+                        _ => SpellAim::None,
                     },
                 })
             })
             .collect();
         let view = SpellPanelView {
             spells,
-            nearby: Vec::new(),
+            nearby,
             areas: areas.clone(),
         };
         if let Some(mut out) = world.get_mut::<SpellPanelOut>(mob)

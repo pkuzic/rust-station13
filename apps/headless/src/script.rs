@@ -25,6 +25,9 @@ pub enum Step {
     /// an extinguisher's safety). Held items aren't sent as things on the map, so `UseOn`
     /// can't find them. Waits until the hand holds something.
     UseHeld,
+    /// Cast line `N` of the bot's spells at the first thing with this sprite it has been sent
+    /// (not its own mob). Waits until there is one.
+    CastOn(u8, String),
     /// Send any other action.
     Act(ActionInput),
     Wait(Duration),
@@ -124,6 +127,19 @@ pub(crate) fn run_script(
                 actions.send::<IntentChannel>(ActionInput::UseOn(id));
             }
             held.is_some()
+        }
+        Step::CastOn(line, sprite) => {
+            let target = find(sprite);
+            if let Some(id) = target {
+                actions.send::<IntentChannel>(ActionInput::Spell(
+                    rs13_network::protocol::SpellCommand::Cast {
+                        spell: *line,
+                        target: Some(id),
+                        area: None,
+                    },
+                ));
+            }
+            target.is_some()
         }
         Step::Act(action) => {
             actions.send::<IntentChannel>(action.clone());

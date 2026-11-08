@@ -11,7 +11,7 @@ use rs13_world::{
 use crate::actions::Outbox;
 use crate::chemistry::Reagents;
 use crate::combat::{Muted, Paralyzed, VisibleEvents};
-use crate::flashes::{Dazzled, Weakened};
+use crate::flashes::Weakened;
 use crate::grabs::Grab;
 use crate::hands::Hands;
 use crate::health::{Body, Vitals};
@@ -680,8 +680,10 @@ fn use_power(world: &mut World, mob: Entity, line: u8, target: Option<Entity>, d
                     tell(world, target, LocMsg::new("ling-ears-pop"));
                 }
                 "blind-sting" => {
-                    let times = world.get::<Dazzled>(target).map_or(0, |d| d.0);
-                    world.entity_mut(target).insert(Dazzled(times.wrapping_add(1)));
+                    // Luna: blind for 20 life ticks, blurred for 40, nearsighted for 30 s.
+                    crate::eyes::blind(world, target, 20.0);
+                    crate::eyes::blur(world, target, 40.0);
+                    crate::eyes::nearsight(world, target, 300.0);
                     tell(world, target, LocMsg::new("ling-eyes-burn"));
                 }
                 "silence-sting" => {

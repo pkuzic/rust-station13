@@ -498,6 +498,16 @@ pub fn process_actions(
                     commands
                         .queue(move |world: &mut World| crate::events::click_wormhole(world, mob, target));
                 }
+                // Sinks, showers and mirrors (`plumbing.md`). A grab on a toilet is the grab's.
+                Action::UseOn(target)
+                    if tool != Some(crate::grabs::GRAB)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::plumbing::is_plumbing(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::plumbing::click(world, mob, target));
+                }
                 Action::UseOn(target) if tool == Some(crate::grabs::GRAB) => {
                     // Tightening a grab, or putting them on a table (`combat.md`).
                     if let Some(grab) = hands.active_item() {
