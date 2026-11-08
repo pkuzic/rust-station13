@@ -861,6 +861,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `jetpack-syndie:on` | `icons/obj/tank.dmi : "jetpack1_s"` | CC-BY-SA 3.0 |
 | `ketchup:` | `icons/obj/food.dmi : "ketchup"` | CC-BY-SA 3.0 |
 | `kilt:` | `icons/obj/clothing/uniforms.dmi : "kilt"` | CC-BY-SA 3.0 |
+| `kitchen-sink:` | `icons/obj/watercloset.dmi : "sink_alt"` | CC-BY-SA 3.0 |
 | `knife:` | `icons/obj/kitchen.dmi : "knife"` | CC-BY-SA 3.0 |
 | `labcoat:` | `icons/obj/clothing/suits.dmi : "labcoat"` | CC-BY-SA 3.0 |
 | `labeler-refill:` | `icons/obj/bureaucracy.dmi : "labeler_refill"` | CC-BY-SA 3.0 |
@@ -1101,6 +1102,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `miner-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "miner"` | CC-BY-SA 3.0 |
 | `mining-laser:` | `icons/obj/singularity.dmi : "emitter"` | CC-BY-SA 3.0 |
 | `mirror:` | `icons/obj/watercloset.dmi : "mirror"` | CC-BY-SA 3.0 |
+| `mirror:broken` | `icons/obj/watercloset.dmi : "mirror_broke"` | CC-BY-SA 3.0 |
+| `mist:` | `icons/obj/watercloset.dmi : "mist"` | CC-BY-SA 3.0 |
 | `monkey:` | `icons/mob/monkey.dmi : "monkey1"` | CC-BY-SA 3.0 |
 | `monkey:lying` | `icons/mob/monkey.dmi : "monkey0"` | CC-BY-SA 3.0 |
 | `monkey-suit:` | `icons/obj/clothing/suits.dmi : "monkeysuit"` | CC-BY-SA 3.0 |
@@ -1347,6 +1350,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shot:bullet` | `icons/obj/projectiles.dmi : "bullet"` | CC-BY-SA 3.0 |
 | `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
 | `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |
+| `shower:` | `icons/obj/watercloset.dmi : "shower"` | CC-BY-SA 3.0 |
+| `shower-water:` | `icons/obj/watercloset.dmi : "water"` | CC-BY-SA 3.0 |
 | `shuttle-door:closed` | `icons/turf/shuttle.dmi : "door1"` | CC-BY-SA 3.0 |
 | `shuttle-door:closing` | `icons/turf/shuttle.dmi : "doorc1"` | CC-BY-SA 3.0 |
 | `shuttle-door:deny` | `icons/turf/shuttle.dmi : "door1"` | CC-BY-SA 3.0 |
@@ -1359,6 +1364,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `sign-deathsposal:` | `icons/obj/decals.dmi : "deathsposal"` | CC-BY-SA 3.0 |
 | `sign-fire:` | `icons/obj/decals.dmi : "fire"` | CC-BY-SA 3.0 |
 | `sign-nosmoking:` | `icons/obj/decals.dmi : "nosmoking"` | CC-BY-SA 3.0 |
+| `sink:` | `icons/obj/watercloset.dmi : "sink"` | CC-BY-SA 3.0 |
 | `sleeper:sleeper` | `icons/obj/Cryogenic2.dmi : "sleeper"` | CC-BY-SA 3.0 |
 | `sleeper:sleeper-open` | `icons/obj/Cryogenic2.dmi : "sleeper-open"` | CC-BY-SA 3.0 |
 | `sleeper-console:console` | `icons/obj/Cryogenic2.dmi : "console"` | CC-BY-SA 3.0 |
@@ -1730,6 +1736,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `tile:window:` | `icons/obj/structures.dmi : "fwindow"` | CC-BY-SA 3.0 |
 | `timer:` | `icons/obj/device.dmi : "timer0"` | CC-BY-SA 3.0 |
 | `timer-igniter:` | `icons/obj/assemblies.dmi : "timer-igniter0"` | CC-BY-SA 3.0 |
+| `toilet:` | `icons/obj/watercloset.dmi : "toilet10"` | CC-BY-SA 3.0 |
 | `tomato:` | `icons/GoonHydroPort/hydroponics.dmi : "tomato"` | CC-BY-SA 3.0 |
 | `toolbox-electrical:` | `icons/obj/storage.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `toolbox-emergency:` | `icons/obj/storage.dmi : "red"` | CC-BY-SA 3.0 |
@@ -1875,6 +1882,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `wizard-hardsuit-helmet:` | `icons/obj/clothing/hats.dmi : "rig0-wiz"` | CC-BY-SA 3.0 |
 | `wizard-hat:` | `icons/obj/clothing/hats.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
 | `wizard-robe:` | `icons/obj/clothing/suits.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
+| `wormhole:` | `icons/obj/objects.dmi : "anom"` | CC-BY-SA 3.0 |
 | `worn-shirt:` | `icons/obj/clothing/suits.dmi : "ianshirt"` | CC-BY-SA 3.0 |
 | `worn:ablative-vest:` | `icons/mob/suit.dmi : "armor_reflec"` | CC-BY-SA 3.0 |
 | `worn:ablative-vest:lying` | `icons/mob/suit.dmi : "armor_reflec2"` | CC-BY-SA 3.0 |

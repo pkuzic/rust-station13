@@ -14,4 +14,6 @@
     (id: "fireball", cooldown: 60, clothes: false, words: Some(("ONI SOMA", Shout)), effect: Fireball),
     (id: "knock", cooldown: 100, clothes: false, words: Some(("AULIE OXIN FIERA", Whisper)), effect: Knock),
     (id: "invisible-wall", cooldown: 300, clothes: false, words: None, effect: InvisibleWall),
+    (id: "blind", cooldown: 300, clothes: false, words: Some(("STI KALY", Whisper)), effect: Blind),
+    (id: "mutate", cooldown: 400, clothes: true, words: Some(("BIRUZ BENNAR", Shout)), effect: Mutate),
 ]

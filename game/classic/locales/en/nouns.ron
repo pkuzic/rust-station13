@@ -364,6 +364,12 @@
     "holopad": (gender: neuter, sg: (nom: "hologram projector", indef: "a hologram projector"), pl: Some((nom: "hologram projectors"))),
     "plastic-flaps": (gender: neuter, sg: (nom: "plastic flaps", indef: "plastic flaps"), pl: Some((nom: "plastic flaps"))),
     "mirror": (gender: neuter, sg: (nom: "mirror", indef: "a mirror"), pl: Some((nom: "mirrors"))),
+    "sink": (gender: neuter, sg: (nom: "sink", indef: "a sink"), pl: Some((nom: "sinks"))),
+    "kitchen-sink": (gender: neuter, sg: (nom: "kitchen sink", indef: "a kitchen sink"), pl: Some((nom: "kitchen sinks"))),
+    "toilet": (gender: neuter, sg: (nom: "toilet", indef: "a toilet"), pl: Some((nom: "toilets"))),
+    "shower": (gender: neuter, sg: (nom: "shower", indef: "a shower"), pl: Some((nom: "showers"))),
+    "shower-water": (gender: neuter, sg: (nom: "water", indef: "water"), pl: Some((nom: "waters"))),
+    "mist": (gender: neuter, sg: (nom: "mist", indef: "mist"), pl: Some((nom: "mists"))),
     "noticeboard": (gender: neuter, sg: (nom: "notice board", indef: "a notice board"), pl: Some((nom: "notice boards"))),
     "mop-bucket": (gender: neuter, sg: (nom: "mop bucket", indef: "a mop bucket"), pl: Some((nom: "mop buckets"))),
     "sign-deathsposal": (gender: neuter, sg: (nom: "DISPOSAL LEADS TO SPACE sign", indef: "a DISPOSAL LEADS TO SPACE sign"), pl: Some((nom: "DISPOSAL LEADS TO SPACE signs"))),
@@ -751,4 +757,5 @@
     "teleporter-hub": (gender: neuter, sg: (nom: "teleporter hub", indef: "a teleporter hub"), pl: Some((nom: "teleporter hubs"))),
     "teleporter-station": (gender: neuter, sg: (nom: "teleporter station", indef: "a teleporter station"), pl: Some((nom: "teleporter stations"))),
     "portal": (gender: neuter, sg: (nom: "portal", indef: "a portal"), pl: Some((nom: "portals"))),
+    "wormhole": (gender: neuter, sg: (nom: "wormhole", indef: "a wormhole"), pl: Some((nom: "wormholes"))),
 }

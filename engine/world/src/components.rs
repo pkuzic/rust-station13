@@ -128,6 +128,16 @@ pub enum Vision {
     Blind,
 }
 
+/// Eyes that see, but badly (`docs/reference/eyes.md`). On the mob, server side; the player's
+/// own is sent in their status.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct EyeTrouble {
+    /// Everything blurred (Luna `eye_blurry`).
+    pub blurry: bool,
+    /// Only the middle of the view is clear (Luna's nearsightedness, `vimpaired`).
+    pub nearsighted: bool,
+}
+
 /// How a mob acts on others (BYOND `a_intent`). Disarm and grab come later.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Intent {

@@ -37,8 +37,10 @@ pub mod doors;
 pub mod environment;
 pub mod equipment;
 pub mod escape;
+pub mod events;
 pub mod explosions;
 pub mod extinguishers;
+pub mod eyes;
 pub mod filing;
 pub mod firealarms;
 pub mod firedoors;
@@ -82,6 +84,7 @@ pub mod navbeacons;
 pub mod nuke;
 pub mod objects;
 pub mod paperwork;
+pub mod plumbing;
 pub mod portables;
 pub mod power;
 pub mod power_monitor;
@@ -488,7 +491,9 @@ impl Plugin for ClassicPlugin {
                                 genetics::run_consoles,
                                 genetics::run_injections,
                                 genetics::powers::run_genes,
+                                genetics::powers::run_granted,
                                 genetics::powers::shrug_off,
+                                eyes::run_eyes,
                                 genetics::update_views,
                                 genetics::clear_closed_views,
                             )
@@ -504,7 +509,7 @@ impl Plugin for ClassicPlugin {
                         chem_master::update_master_views,
                         microwaves::run_microwaves,
                         monkeys::run_monkeys,
-                        flashes::run_flashers,
+                        (flashes::run_flashers, plumbing::run_plumbing, events::run_events),
                         flashes::recover,
                         ghosts::leave_dead_bodies,
                         ghosts::move_ghosts,

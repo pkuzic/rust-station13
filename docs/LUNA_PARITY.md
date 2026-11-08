@@ -38,12 +38,12 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [x] | 2.1 Extended and sandbox | S | `gamemodes/extended`, `sandbox` | `round.md`. Luna's list of offsets and counts for spawned items left out: one at your feet |
 | [x] | 2.2 Nuke: team, bomb, disk, pinpointer, base | M | `gamemodes/nuclear` | `nuke.md`. Goods the closets lack wait on their systems |
 | [x] | 2.3 Revolution and rp-revolution | M | `gamemodes/revolution` | `revolution.md`. No intercept report: Centcom's messages aren't built |
-| [x] | 2.4 Changeling | L | `gamemodes/changeling` | `changeling.md`. No hallucinations or real blindness yet, so those stings do less |
+| [x] | 2.4 Changeling | L | `gamemodes/changeling` | `changeling.md`. No hallucinations yet, so that sting is left out |
 | [ ] | 2.5 Malfunction | M | `gamemodes/malfunction` | Blocked: needs 3.9 AI |
 | [x] | 2.6 Meteor | S-M | `gamemodes/meteor` | `meteor-blob.md` |
 | [x] | 2.7 Blob | M | `gamemodes/blob` | `meteor-blob.md`. Probability 0 in Luna's config. Guns don't hurt it yet |
 | [~] | 2.8 Monkey, takeover, restructuring, derelict, Extend-A-Traitormongous | M | `gamemodes/*` | Monkey, restructuring (`monkey-restructuring.md`), AutoTraitor (`autotraitor.md`) and derelict (`derelict.md`) built. Takeover needs 3.4 viruses, 3.5 powers and 3.9 AI |
-| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall; the spellbook, magic and teleportation scrolls, staffs, scrying orb, hardsuit and wizard crate (`spells.md`). Left: the spells that wait on genetics, gibbing, smoke and blindness, and the orb's X-ray |
+| [~] | 2.9 Wizard items and spells | L | `spellbook`, `datums/spells` | Luna's mode datum isn't compiled. Spells built on what exists, with the admin's Give Spell and the mime's wall; the spellbook, magic and teleportation scrolls, staffs, scrying orb, hardsuit and wizard crate (`spells.md`). Blind, Mutate and the orb's X-ray too (`eyes.md`). Left: the spells that wait on gibbing, smoke and passing through walls |
 
 ## 3. Departments
 
@@ -85,12 +85,12 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.8 Paperwork: stamps, photocopier, folders, burning | S | `paperwork` | |
 | [ ] | 4.9 Photography | S | `WIP/Cameras` | |
 | [ ] | 4.10 Library: books, writer's desk | S | `head/books` | Bookcases are scenery |
-| [ ] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | |
+| [x] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | `events.md`. The ion storm waits on 3.9 AI, the epidemic on 3.4 viruses |
 | [x] | 4.12 Teleporters | S-M | `teleporter` | `teleporters.md`: computer, station, hub, beacons, hand teleporter and portals. Implants wait on 3.20 |
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |
-| [ ] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | |
-| [ ] | 4.16 Remaining scenery behaviour: mirrors, washers, spikes, holopads, sensors | M | `scenery.md` | |
+| [x] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | `plumbing.md`, with mirrors. No blood or dirt yet to wash off |
+| [ ] | 4.16 Remaining scenery behaviour: washers, spikes, holopads, sensors | M | `scenery.md` | Mirrors done with 4.15 |
 | [ ] | 4.17 Mass drivers, cyborg chargers, remaining map objects | M | `zcount`: 106 kinds, 290 objects | |
 
 ## Not gaps
