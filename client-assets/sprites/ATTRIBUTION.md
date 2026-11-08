@@ -1867,6 +1867,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `wizard-hardsuit-helmet:` | `icons/obj/clothing/hats.dmi : "rig0-wiz"` | CC-BY-SA 3.0 |
 | `wizard-hat:` | `icons/obj/clothing/hats.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
 | `wizard-robe:` | `icons/obj/clothing/suits.dmi : "wizard-fake"` | CC-BY-SA 3.0 |
+| `wormhole:` | `icons/obj/objects.dmi : "anom"` | CC-BY-SA 3.0 |
 | `worn-shirt:` | `icons/obj/clothing/suits.dmi : "ianshirt"` | CC-BY-SA 3.0 |
 | `worn:ablative-vest:` | `icons/mob/suit.dmi : "armor_reflec"` | CC-BY-SA 3.0 |
 | `worn:ablative-vest:lying` | `icons/mob/suit.dmi : "armor_reflec2"` | CC-BY-SA 3.0 |

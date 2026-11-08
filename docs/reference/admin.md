@@ -32,8 +32,9 @@ F1 asks the admins for help: every admin online sees it. F2 is the admin line, w
 |---|---|
 | Moderator | `help`, `who` (names, keys, jobs, addresses), `asay`, `dsay`, `pm`, `announce`, `startnow`, `toggleooc`, `jump X Y [Z]`, `jumpto WHO`, `kick WHO [WHY]`, `ban WHO MINUTES [WHY]` (0 for good), `unban KEY`, `bans` |
 | Secondary Administrator | `restart` |
-| Administrator | `mute WHO`, `explode SIZE`, `emp HEAVY LIGHT` |
-| Super Administrator | `get WHO`, `spawn THING`, `delete THING` (on your tile), `god WHO`, `rejuv WHO` |
+| Administrator | `mute WHO`, `explode SIZE`, `emp HEAVY LIGHT`, `toggleevents` (random events on or off, `events.md`) |
+| Super Administrator | `get WHO`, `spawn THING`, `delete THING` (on your tile), `god WHO`, `rejuv WHO`, `event NAME` (start that event now) |
+| Host | `event` (start one at random) |
 
 WHO is the start of a name, or a key. No one can kick, ban or mute an admin of their own rank or higher. A kicked or banned
 client doesn't try to reconnect by itself.

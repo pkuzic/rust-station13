@@ -85,7 +85,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.8 Paperwork: stamps, photocopier, folders, burning | S | `paperwork` | |
 | [ ] | 4.9 Photography | S | `WIP/Cameras` | |
 | [ ] | 4.10 Library: books, writer's desk | S | `head/books` | Bookcases are scenery |
-| [ ] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | |
+| [x] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | `events.md`. The ion storm waits on 3.9 AI, the epidemic on 3.4 viruses |
 | [ ] | 4.12 Teleporters | S-M | `teleporter` | |
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |

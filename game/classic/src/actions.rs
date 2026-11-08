@@ -488,6 +488,16 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::explosions::use_detonator(world, target));
                 }
+                // A wormhole from a portal storm (`events.md`).
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| look.sprite == crate::events::WORMHOLE)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::events::click_wormhole(world, mob, target));
+                }
                 Action::UseOn(target) if tool == Some(crate::grabs::GRAB) => {
                     // Tightening a grab, or putting them on a table (`combat.md`).
                     if let Some(grab) = hands.active_item() {

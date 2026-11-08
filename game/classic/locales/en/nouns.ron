@@ -746,4 +746,5 @@
     "crate-internals-oxy": (gender: neuter, sg: (nom: "internals crate", indef: "an internals crate"), pl: Some((nom: "internals crates"))),
     "crate-engineering": (gender: neuter, sg: (nom: "engineering crate", indef: "an engineering crate"), pl: Some((nom: "engineering crates"))),
     "super-pacman": (gender: neuter, sg: (nom: "S.U.P.E.R.P.A.C.M.A.N.-type portable generator", indef: "a S.U.P.E.R.P.A.C.M.A.N.-type portable generator"), pl: Some((nom: "S.U.P.E.R.P.A.C.M.A.N.-type portable generators"))),
+    "wormhole": (gender: neuter, sg: (nom: "wormhole", indef: "a wormhole"), pl: Some((nom: "wormholes"))),
 }

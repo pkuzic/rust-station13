@@ -114,20 +114,28 @@ fn hit(world: &mut World, meteor: Entity, at: TilePos, was_at: TilePos) {
     world.entity_mut(meteor).despawn();
 }
 
+/// Luna's `meteor_wave`: three meteors over the next 1 to 10 seconds, unless a wave came less
+/// than a minute ago. A meteor round calls it, and so does a meteor shower (`events.md`).
+pub fn meteor_wave(world: &mut World) {
+    world.init_resource::<MeteorWaves>();
+    let now = world.resource::<WorldTime>().deciseconds();
+    if now < world.resource::<MeteorWaves>().next_wave {
+        return;
+    }
+    let mut rng = world.resource_mut::<GameRng>();
+    let coming: Vec<f32> = (0..IN_WAVE)
+        .map(|_| now + rng.range(WAVE_SPREAD_MIN, WAVE_SPREAD_MAX) as f32)
+        .collect();
+    let mut waves = world.resource_mut::<MeteorWaves>();
+    waves.next_wave = now + WAVE_DS;
+    waves.coming.extend(coming);
+}
+
 /// Waves in a meteor round, and every meteor's flight.
 pub fn run_meteors(world: &mut World) {
     let now = world.resource::<WorldTime>().deciseconds();
     if is_meteor_round(world) {
-        let due = now >= world.resource::<MeteorWaves>().next_wave;
-        if due {
-            let mut rng = world.resource_mut::<GameRng>();
-            let coming: Vec<f32> = (0..IN_WAVE)
-                .map(|_| now + rng.range(WAVE_SPREAD_MIN, WAVE_SPREAD_MAX) as f32)
-                .collect();
-            let mut waves = world.resource_mut::<MeteorWaves>();
-            waves.next_wave = now + WAVE_DS;
-            waves.coming.extend(coming);
-        }
+        meteor_wave(world);
     }
     let mut waves = world.resource_mut::<MeteorWaves>();
     let before = waves.coming.len();

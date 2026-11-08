@@ -263,7 +263,10 @@ fn needs(verb: &str) -> Option<i32> {
         "help" | "who" | "asay" | "pm" | "dsay" | "announce" | "startnow" | "toggleooc"
         | "togglespawning" | "jump" | "jumpto" | "kick" | "ban" | "unban" | "bans" => 0,
         "restart" => 1,
-        "mute" | "explode" | "emp" | "spell" => 2,
+        "mute" | "explode" | "emp" | "spell" | "toggleevents" => 2,
+        // Naming one is a Super Administrator's "Force Event"; with no name, the Host's
+        // "Spawn event", checked below.
+        "event" => 4,
         "get" | "spawn" | "god" | "rejuv" | "delete" => 4,
         _ => return None,
     })
@@ -343,6 +346,49 @@ fn run_command(world: &mut World, link: Entity, line: &str) {
                 .arg("target", who_said(world, target))
                 .arg("text", tail);
             tell_admins(world, &msg);
+        }
+        // Random events (`events.md`).
+        "toggleevents" => {
+            world.init_resource::<rs13_classic::events::RandomEvents>();
+            let mut events = world.resource_mut::<rs13_classic::events::RandomEvents>();
+            events.on = !events.on;
+            let id = if events.on {
+                "admin-events-on"
+            } else {
+                "admin-events-off"
+            };
+            tell_admins(world, &LocMsg::new(id).arg("name", by));
+        }
+        "event" => {
+            use rs13_classic::events::{self, EventKind};
+            world.init_resource::<events::RandomEvents>();
+            if !world.resource::<events::RandomEvents>().on {
+                return tell(world, link, LocMsg::new("admin-events-disabled"));
+            }
+            let started = if first.is_empty() {
+                if level < 6 {
+                    return tell(world, link, LocMsg::new("admin-low-rank"));
+                }
+                events::start_random(world)
+            } else {
+                let Some(kind) = EventKind::from_id(first) else {
+                    let all: Vec<&str> = EventKind::ALL.iter().map(|k| k.id()).collect();
+                    return tell(
+                        world,
+                        link,
+                        LocMsg::new("admin-no-event")
+                            .arg("name", first)
+                            .arg("text", all.join(", ")),
+                    );
+                };
+                events::start(world, kind)
+            };
+            let id = if started {
+                "admin-event-started"
+            } else {
+                "admin-event-busy"
+            };
+            tell(world, link, LocMsg::new(id).arg("name", first));
         }
         "announce" => {
             let msg = LocMsg::new("admin-announce").arg("text", rest);
