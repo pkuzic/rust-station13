@@ -2689,6 +2689,21 @@
         "space-law": { "": (dmi: "icons/obj/books.dmi", state: "spacelaws") },
         "police-tape": { "": (dmi: "icons/policetape.dmi", state: "rollstart") },
         "hand-tele": { "": (dmi: "icons/obj/device.dmi", state: "hand_tele") },
+        // Teleporters (`teleporters.md`).
+        "tracking-beacon": { "": (dmi: "icons/obj/radio.dmi", state: "beacon") },
+        "teleporter-console": { "teleport": (dmi: "icons/obj/computer.dmi", state: "teleport") },
+        "teleporter-hub": {
+            "tele0": (dmi: "icons/obj/stationobjs.dmi", state: "tele0"),
+            "tele1": (dmi: "icons/obj/stationobjs.dmi", state: "tele1"),
+        },
+        "teleporter-station": {
+            "controller": (dmi: "icons/obj/stationobjs.dmi", state: "controller"),
+            "controller-p": (dmi: "icons/obj/stationobjs.dmi", state: "controller-p"),
+        },
+        "portal": {
+            "": (dmi: "icons/obj/stationobjs.dmi", state: "portal"),
+            "broken": (dmi: "icons/obj/stationobjs.dmi", state: "portal1"),
+        },
         "genetics-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "genetics") },
         "wrapping-paper": { "": (dmi: "icons/obj/items.dmi", state: "wrap_paper") },
         "banana-peel": { "": (dmi: "icons/obj/items.dmi", state: "banana_peel") },

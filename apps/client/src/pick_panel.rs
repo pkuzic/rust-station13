@@ -88,13 +88,15 @@ pub fn show_pick_list(
         ChildOf(window),
     ));
     for (i, row) in view.rows.iter().enumerate() {
-        button(
-            &mut commands,
-            window,
-            row.clone(),
-            PickButton::Line(i as u16),
-            LINK,
-        );
+        // `msg:ID[:VALUE]` is a line of the locale, with `$value` (`PickListView`).
+        let shown = match row.strip_prefix("msg:") {
+            Some(rest) => {
+                let (id, value) = rest.split_once(':').unwrap_or((rest, ""));
+                loc.0.format_msg(&LocMsg::new(id).arg("value", value))
+            }
+            None => row.clone(),
+        };
+        button(&mut commands, window, shown, PickButton::Line(i as u16), LINK);
     }
     let close = loc.0.format("panel-close", None).unwrap_or_default();
     button(&mut commands, window, close, PickButton::Close, TEXT);

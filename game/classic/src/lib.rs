@@ -107,6 +107,7 @@ pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
 pub mod teg;
+pub mod teleporters;
 pub mod time;
 pub mod traitor;
 pub mod vending;
@@ -171,6 +172,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
+            .init_resource::<movement::Bumps>()
             .init_resource::<pulling::PendingPulls>()
             .init_resource::<objects::ItemProtos>()
             .init_resource::<access::AccessIds>()
@@ -473,7 +475,14 @@ impl Plugin for ClassicPlugin {
                                 spells::update_spell_views,
                                 spells::clear_closed_spell_views,
                             ),
-                            (wizard_items::run_picks, wizard_items::update_views).chain(),
+                            (
+                                wizard_items::run_picks,
+                                wizard_items::update_views,
+                                teleporters::run_picks,
+                                teleporters::run_teleporters,
+                                teleporters::update_views,
+                            )
+                                .chain(),
                             (
                                 genetics::run_picks,
                                 genetics::run_consoles,

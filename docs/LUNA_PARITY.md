@@ -86,7 +86,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.9 Photography | S | `WIP/Cameras` | |
 | [ ] | 4.10 Library: books, writer's desk | S | `head/books` | Bookcases are scenery |
 | [ ] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | |
-| [ ] | 4.12 Teleporters | S-M | `teleporter` | |
+| [x] | 4.12 Teleporters | S-M | `teleporter` | `teleporters.md`: computer, station, hub, beacons, hand teleporter and portals. Implants wait on 3.20 |
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |
 | [ ] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | |

@@ -136,6 +136,9 @@ pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Resul
     {
         crate::jobs::set_aside(world, entity, &job);
     }
+    if spec.id == crate::teleporters::BEACON {
+        world.entity_mut(entity).insert(crate::teleporters::Beacon);
+    }
     if spec.id == "airlock"
         && let Some(tag) = tag("id_tag")
     {
@@ -263,6 +266,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::autolathe::AUTOLATHE {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::autolathe::spawn_autolathe(world, pos, id));
+    }
+    if crate::teleporters::is_teleporter_part(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::teleporters::spawn_part(world, proto, pos, id));
     }
     if crate::scenery::is_scenery(proto) {
         let id = world.resource_mut::<NetIds>().alloc();

@@ -1008,7 +1008,8 @@ pub struct PickListView {
     pub target: NetId,
     /// Its noun id, for the window's title.
     pub title: String,
-    /// Each thing's name, in the order listed.
+    /// Each thing's name, in the order listed. A row `msg:ID` or `msg:ID:VALUE` is shown as the
+    /// locale's message ID, with VALUE as its `$value`.
     pub rows: Vec<String>,
 }
 
