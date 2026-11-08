@@ -161,6 +161,13 @@ What gives off light of its own stays bright in the dark and glows
   that stands, so a shadow never falls over another object. A person's shadow is their
   body's alone. Frames under 14 px tall (small things lying on the floor), what lies
   flat (pipes, cables, vents), what hangs on a wall and light itself have none.
+- **Cast shadows** (`apps/client/src/sprite_shadows.rs`): where the light leans one way
+  on a tile (Normal maps, below), what has a contact shadow also casts a long soft one
+  away from the light, from its feet. It is up to 26 px longer than wide and up to 45 %
+  dark, both in step with how far the light leans. It fades out below 15–45 %
+  brightness, and is gone in even light, with lighting off (F4), and under a light right
+  overhead. Its lean is blended between the four nearest tiles, so it swings smoothly as
+  people walk past a lamp.
 - **Silhouettes** (`apps/server/src/silhouettes.rs`): someone standing on a tile darker
   than 20 % (the server's "dark") is sent to everyone else as a stand-in, a `Silhouette`
   with only their place, facing and body pose: never their name, clothes or what they

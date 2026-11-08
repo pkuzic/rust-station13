@@ -57,6 +57,7 @@ impl Plugin for LightingPlugin {
         app.add_plugins(Material2dPlugin::<LightMaterial>::default())
             .insert_resource(LightingOn(true))
             .init_resource::<LightCache>()
+            .init_resource::<LightLean>()
             .add_systems(
                 Update,
                 (
@@ -78,6 +79,47 @@ pub struct DrawLight;
 /// Whether lighting is drawn (F4).
 #[derive(Resource)]
 pub struct LightingOn(pub bool);
+
+/// Which way the light leans on each tile of the deck the player is on, and how bright it
+/// is there as drawn, for what leans with the light (cast shadows, `sprite_shadows.rs`).
+#[derive(Resource, Default)]
+pub struct LightLean {
+    width: u32,
+    height: u32,
+    z: i32,
+    /// Bottom row first (`light_leans`).
+    leans: Vec<Vec2>,
+    brightness: Vec<f32>,
+}
+
+impl LightLean {
+    /// The lean and brightness at a point on deck `z`, in tiles, blended between the four
+    /// nearest tiles so it changes smoothly as something moves. Nothing off the deck.
+    pub fn at(&self, p: Vec2, z: i32) -> (Vec2, f32) {
+        if z != self.z || self.leans.is_empty() {
+            return (Vec2::ZERO, 0.0);
+        }
+        let (x0, y0) = (p.x.floor(), p.y.floor());
+        let (fx, fy) = (p.x - x0, p.y - y0);
+        let mut lean = Vec2::ZERO;
+        let mut bright = 0.0;
+        for (dx, dy, weight) in [
+            (0, 0, (1.0 - fx) * (1.0 - fy)),
+            (1, 0, fx * (1.0 - fy)),
+            (0, 1, (1.0 - fx) * fy),
+            (1, 1, fx * fy),
+        ] {
+            let (x, y) = (x0 as i32 + dx, y0 as i32 + dy);
+            if !(0..self.width as i32).contains(&x) || !(0..self.height as i32).contains(&y) {
+                continue;
+            }
+            let i = (y as u32 * self.width + x as u32) as usize;
+            lean += self.leans[i] * weight;
+            bright += self.brightness[i] * weight;
+        }
+        (lean, bright)
+    }
+}
 
 /// The darkness over the map.
 #[derive(Component)]
@@ -204,12 +246,18 @@ fn shown_light(level: f32) -> f32 {
     level.powf(LIGHT_CURVE) * LIGHT_SCALE
 }
 
-/// Which way the light falls on each tile: per texel, top row first, the way towards the
-/// light east and north (0 to 255, 128 none) and how far it leans that way (0 to 255).
-/// Each light that reaches a tile pulls it towards itself, as strongly as it lights it; a
-/// light stands `LAMP_HEIGHT` tiles above the floor, so one right overhead leans little
-/// and one off to the side a lot, and lights on opposite sides cancel.
+/// Which way the light falls on each tile, as texture bytes (`lean_texture`).
+#[cfg(test)]
 fn light_directions(world: &MapDecks, emitters: &[Emitter], z: i32, width: u32, height: u32) -> Vec<u8> {
+    lean_texture(&light_leans(world, emitters, z, width, height), width, height)
+}
+
+/// Which way the light leans on each tile, bottom row first: towards the light, east and
+/// north, as long as it leans (0 to 1). Each light that reaches a tile pulls it towards
+/// itself, as strongly as it lights it; a light stands `LAMP_HEIGHT` tiles above the floor,
+/// so one right overhead leans little and one off to the side a lot, and lights on
+/// opposite sides cancel.
+fn light_leans(world: &MapDecks, emitters: &[Emitter], z: i32, width: u32, height: u32) -> Vec<Vec2> {
     let (w, h) = (width as i32, height as i32);
     // Per tile, bottom row first: the pull east and north, and the total light.
     let mut pull = vec![[0.0_f32; 3]; (width * height) as usize];
@@ -236,16 +284,26 @@ fn light_directions(world: &MapDecks, emitters: &[Emitter], z: i32, width: u32, 
             }
         }
     }
+    pull.iter()
+        .map(|&[px, py, total]| {
+            if total > 0.0 {
+                (Vec2::new(px, py) / total).clamp_length_max(1.0)
+            } else {
+                Vec2::ZERO
+            }
+        })
+        .collect()
+}
+
+/// Leans (`light_leans`) as texture bytes: per texel, top row first, the way towards the
+/// light east and north (1 to 255, 128 none) and how far it leans (0 to 255).
+fn lean_texture(leans: &[Vec2], width: u32, height: u32) -> Vec<u8> {
+    let (w, h) = (width as i32, height as i32);
     let mut data = Vec::with_capacity((width * height * 4) as usize);
     for row in 0..h {
         let y = h - 1 - row;
         for x in 0..w {
-            let [px, py, total] = pull[(y * w + x) as usize];
-            let lean = if total > 0.0 {
-                Vec2::new(px, py) / total
-            } else {
-                Vec2::ZERO
-            };
+            let lean = leans.get((y * w + x) as usize).copied().unwrap_or(Vec2::ZERO);
             let size = lean.length().min(1.0);
             let way = lean.normalize_or_zero();
             let encode = |v: f32| (v * 127.0 + 128.0).round().clamp(1.0, 255.0) as u8;
@@ -532,7 +590,20 @@ fn update_lighting(
         cache.height = height;
         cache.z = map.z;
         let world = MapDecks::new(decks.iter().copied(), opaque.iter().copied());
-        cache.directions = light_directions(&world, &emitters, map.z, width, height);
+        let leans = light_leans(&world, &emitters, map.z, width, height);
+        cache.directions = lean_texture(&leans, width, height);
+        let brightness = cache
+            .levels
+            .iter()
+            .map(|c| shown_light(c.iter().copied().fold(0.0_f32, f32::max)))
+            .collect();
+        commands.insert_resource(LightLean {
+            width,
+            height,
+            z: map.z,
+            leans,
+            brightness,
+        });
         for (_, overlay, _) in &overlays {
             if overlay.width == width
                 && overlay.height == height
