@@ -177,6 +177,34 @@ What gives off light of its own stays bright in the dark and glows
 - **Darkness is dim, not black:** the darkest a tile is drawn is dim but readable and a
   little cool, so a dark room still shows its shape; only what is out of sight is black.
 
+## Worn lights, emergency glow and starlight
+
+All three are drawn only on the client (`apps/client/src/lighting.rs`). The server's
+darkness, and what it sends of people in it, doesn't change.
+
+- **Worn lights:** one lit light fixture in 23 is worn, the same ones for every player,
+  chosen by where it hangs. Its light is steady most of the time. Every 3 to 6 s it stutters
+  for a third of a second: two quick dips, down to about a third. Its colour drifts slowly
+  a little towards green. Its glow (Glow) stutters with it.
+- **Emergency glow:** in an area whose lighting has no power (its light switches show
+  `light-p`, `lights.md`), every light fixture with a working tube or bulb glows faintly
+  red. Burnt-out, broken and empty fixtures don't.
+- **Starlight:** every window that looks out on space lets in a faint cool light, reaching
+  about two tiles into the room. Like any light, it gives a lean for normal maps and
+  cast shadows.
+
+## Particles
+
+Short bursts of a few square pixels in the sprites' own palette, drawn only on the client
+(`apps/client/src/particles.rs`), started by what the server already sends:
+
+| Burst | Started by | Looks like |
+|---|---|---|
+| Sparks | the `sparks` sound; a lit light fixture breaking | about 10 bright orange flecks that glow over the darkness and fall, 0.25–0.55 s |
+| Glass | the `shatter` sound | 6 pale shards, 0.4–0.7 s |
+| Dust | the `deconstruct` sound; a wall tile turning into anything else | a slow grey cloud of 14 specks, about a second |
+| Steam | a shower's mist (`plumbing.md`) | 2 wisps every 0.3 s, rising from the top of the mist, about 1.5 s |
+
 ## Normal maps (experiment)
 
 Sprites catch the light on the side that faces it and fall into shade on the side away

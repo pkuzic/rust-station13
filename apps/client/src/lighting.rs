@@ -45,6 +45,15 @@ const NORMAL_TILT: f32 = 1.2;
 /// The most shade and the most extra light normals give, as factors of the light.
 const NORMAL_SHADE_MIN: f32 = 0.55;
 const NORMAL_SHADE_MAX: f32 = 1.4;
+/// Starlight through a window that looks out on space, as strengths in tiles of reach per
+/// colour: a faint cool light just inside.
+const STARLIGHT: [f32; 3] = [1.5, 1.7, 2.1];
+/// One lit light fixture in this many is worn (`worn_light`): it flickers now and then and
+/// its colour drifts.
+const WORN_ONE_IN: i32 = 23;
+/// Emergency glow: a working light in an area whose lighting has no power glows faintly red,
+/// strengths in tiles of reach per colour.
+const EMERGENCY_GLOW: [f32; 3] = [2.2, 0.4, 0.3];
 /// How high above the floor lights stand, in tiles, for which way their light falls
 /// (`light_directions`).
 const LAMP_HEIGHT: f32 = 1.0;
@@ -222,8 +231,8 @@ struct LightCache {
     target: Vec<([f32; 3], bool)>,
     /// The light shown now, easing towards `target` (and the fires).
     shown: Vec<[f32; 3]>,
-    /// Fires on our deck, whose light flickers.
-    fires: Vec<Emitter>,
+    /// Fires and worn lights on our deck, whose light flickers.
+    fires: Vec<(Emitter, Flicker)>,
     opaque: Vec<TilePos>,
     /// Which way the light falls on each tile, as texture bytes (`light_directions`).
     directions: Vec<u8>,
@@ -350,6 +359,52 @@ fn texture_data(texels: impl Iterator<Item = ([f32; 3], bool)>) -> Vec<u8> {
     data
 }
 
+/// Light whose strength changes every frame.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Flicker {
+    Fire,
+    Worn,
+}
+
+impl Flicker {
+    /// Each colour's strength this moment, from 0 to 1.
+    fn now(self, seconds: f32, pos: TilePos) -> [f32; 3] {
+        match self {
+            Flicker::Fire => [flicker(seconds, pos); 3],
+            Flicker::Worn => worn_flicker(seconds, pos),
+        }
+    }
+}
+
+/// Whether a lit light fixture is worn: one in `WORN_ONE_IN`, the same ones for everyone,
+/// chosen by where it hangs.
+pub fn worn_light(pos: TilePos) -> bool {
+    let h = (pos.x.wrapping_mul(374_761_393)
+        ^ pos.y.wrapping_mul(668_265_263)
+        ^ pos.z.wrapping_mul(2_147_483_647))
+    .wrapping_mul(1_274_126_177);
+    (h >> 8).rem_euclid(WORN_ONE_IN) == 0
+}
+
+/// How strongly a worn light shines this moment, per colour: steady most of the time, and
+/// every few seconds a stutter of a third of a second where it drops and catches; its
+/// colour drifts slowly a little towards green. Offset per light so they stutter apart.
+pub fn worn_flicker(seconds: f32, pos: TilePos) -> [f32; 3] {
+    let phase = ((pos.x.wrapping_mul(97) ^ pos.y.wrapping_mul(193)) & 1023) as f32 / 1024.0;
+    // A cycle of 3 to 6 s, different per light.
+    let cycle = 3.0 + 3.0 * phase;
+    let t = (seconds + phase * 17.0).rem_euclid(cycle);
+    let level = if t < 0.35 {
+        // Drops and catches: two quick dips.
+        let dip = (t / 0.35 * std::f32::consts::TAU * 2.0).sin().abs();
+        0.35 + 0.65 * (1.0 - dip)
+    } else {
+        1.0
+    };
+    let drift = 0.5 + 0.5 * (seconds * 0.4 + phase * 6.0).sin();
+    [level * (1.0 - 0.12 * drift), level, level * (1.0 - 0.2 * drift)]
+}
+
 /// How strongly a fire burns this moment, from 0.75 to 1: two quick waves, offset per tile
 /// so fires don't flicker in step.
 pub fn flicker(seconds: f32, pos: TilePos) -> f32 {
@@ -385,9 +440,12 @@ fn present_light(
         let lit: Vec<Emitter> = cache
             .fires
             .iter()
-            .map(|e| Emitter {
-                pos: e.pos,
-                rgb: e.rgb.map(|c| c * flicker(now, e.pos)),
+            .map(|(e, kind)| {
+                let level = kind.now(now, e.pos);
+                Emitter {
+                    pos: e.pos,
+                    rgb: std::array::from_fn(|c| e.rgb[c] * level[c]),
+                }
             })
             .collect();
         let field = MapDecks::new([&map.0], cache.opaque.iter().copied()).light(&lit);
@@ -477,6 +535,59 @@ pub fn wall_light(
         .or_else(|| brightest(&[(1, 1), (1, -1), (-1, 1), (-1, -1)]))
 }
 
+/// Starlight: a faint cool light on every window that looks out on space, so it reaches a
+/// little way into the room.
+fn starlight(map: &TileMap) -> Vec<Emitter> {
+    let mut out = Vec::new();
+    for y in 0..map.height as i32 {
+        for x in 0..map.width as i32 {
+            let pos = TilePos::new(x, y, map.z);
+            if map.tile(pos).is_none_or(|t| t.id != "window") {
+                continue;
+            }
+            let space = [(1, 0), (-1, 0), (0, 1), (0, -1)].iter().any(|(dx, dy)| {
+                map.tile(TilePos::new(x + dx, y + dy, map.z))
+                    .is_some_and(|t| t.id == rs13_simulation::lighting::SPACE)
+            });
+            if space {
+                out.push(Emitter { pos, rgb: STARLIGHT });
+            }
+        }
+    }
+    out
+}
+
+/// Emergency glow: a working light that is off in an area whose lighting has no power (its
+/// light switches show `light-p`, `lights.md`) glows faintly red.
+/// `things`: what is on the map and how it looks; `unlit`: those of them not giving light.
+fn emergency_glow<'a>(
+    map: &TileMap,
+    things: impl Iterator<Item = (TilePos, &'a rs13_world::Appearance)>,
+    unlit: impl Iterator<Item = (TilePos, &'a rs13_world::Appearance)>,
+) -> Vec<Emitter> {
+    let unpowered: std::collections::HashSet<&str> = things
+        .filter(|(p, a)| p.z == map.z && a.sprite == "light-switch" && a.state == "light-p")
+        .filter_map(|(p, _)| map.area(p))
+        .collect();
+    if unpowered.is_empty() {
+        return Vec::new();
+    }
+    let mut out: Vec<Emitter> = unlit
+        .filter(|(p, a)| {
+            p.z == map.z
+                && matches!(a.sprite.as_str(), "light" | "light-small")
+                && (a.state.starts_with("tube0") || a.state.starts_with("bulb0"))
+                && map.area(*p).is_some_and(|area| unpowered.contains(area))
+        })
+        .map(|(p, _)| Emitter {
+            pos: p,
+            rgb: EMERGENCY_GLOW,
+        })
+        .collect();
+    out.sort_by_key(|e| e.pos);
+    out
+}
+
 /// Work out the light again when the map, a light or a door changed, and redraw it when
 /// what the player sees changes.
 #[allow(clippy::too_many_arguments)]
@@ -492,6 +603,10 @@ fn update_lighting(
         Option<Res<crate::glow::GlowAtlas>>,
     ),
     doors: Query<&GridPos, With<Opaque>>,
+    (switches, unlit): (
+        Query<(&GridPos, &rs13_world::Appearance)>,
+        Query<(&GridPos, &rs13_world::Appearance), (Without<LightSource>, Without<Hidden>)>,
+    ),
     own: Query<(&GridPos, Option<&rs13_world::CameraView>), With<OwnPlayer>>,
     mut overlays: Query<(Entity, &LightOverlay, &mut Visibility)>,
     mut images: ResMut<Assets<Image>>,
@@ -520,7 +635,8 @@ fn update_lighting(
         return;
     };
 
-    // Fires flicker, so their light is added afresh every frame (`present_light`).
+    // Fires and worn lights flicker, so their light is added afresh every frame
+    // (`present_light`).
     let (fires, steady): (Vec<_>, Vec<_>) = sources
         .iter()
         .map(|(pos, LightSource(rgb), look)| {
@@ -528,16 +644,27 @@ fn update_lighting(
                 pos: pos.0,
                 rgb: rgb.map(f32::from),
             };
-            (emitter, look.is_some_and(|a| a.sprite == "fire"))
+            let kind = match look.map(|a| a.sprite.as_str()) {
+                Some("fire") => Some(Flicker::Fire),
+                Some("light" | "light-small") if worn_light(pos.0) => Some(Flicker::Worn),
+                _ => None,
+            };
+            (emitter, kind)
         })
-        .partition(|(_, fire)| *fire);
-    let mut fires: Vec<Emitter> = fires
+        .partition(|(_, kind)| kind.is_some());
+    let mut fires: Vec<(Emitter, Flicker)> = fires
         .into_iter()
-        .map(|(e, _)| e)
-        .filter(|e| e.pos.z == map.z)
+        .filter_map(|(e, kind)| Some((e, kind?)))
+        .filter(|(e, _)| e.pos.z == map.z)
         .collect();
-    fires.sort_by_key(|e| e.pos);
+    fires.sort_by_key(|(e, _)| e.pos);
     let mut emitters: Vec<Emitter> = steady.into_iter().map(|(e, _)| e).collect();
+    emitters.extend(starlight(map));
+    emitters.extend(emergency_glow(
+        map,
+        switches.iter().map(|(p, a)| (p.0, a)),
+        unlit.iter().map(|(p, a)| (p.0, a)),
+    ));
     // Glowing screens cast a faint light of their own colour (`glow.rs`).
     if let Some(glow) = &glow {
         emitters.extend(screens.iter().filter_map(|(pos, look)| {
@@ -561,9 +688,10 @@ fn update_lighting(
         e.rgb.map(f32::to_bits).hash(&mut digest);
     }
     opaque.hash(&mut digest);
-    for e in &fires {
+    for (e, kind) in &fires {
         e.pos.hash(&mut digest);
         e.rgb.map(f32::to_bits).hash(&mut digest);
+        (*kind == Flicker::Worn).hash(&mut digest);
     }
     let digest = digest.finish();
     let relit = cache.digest != Some(digest);
@@ -590,7 +718,9 @@ fn update_lighting(
         cache.height = height;
         cache.z = map.z;
         let world = MapDecks::new(decks.iter().copied(), opaque.iter().copied());
-        let leans = light_leans(&world, &emitters, map.z, width, height);
+        let mut leaning = emitters.clone();
+        leaning.extend(fires.iter().map(|(e, _)| *e));
+        let leans = light_leans(&world, &leaning, map.z, width, height);
         cache.directions = lean_texture(&leans, width, height);
         let brightness = cache
             .levels
@@ -759,7 +889,7 @@ mod tests {
             width: 3,
             height: 1,
             target: vec![(target, true); 3],
-            fires,
+            fires: fires.into_iter().map(|e| (e, Flicker::Fire)).collect(),
             ..default()
         });
         app.add_systems(Update, present_light);
@@ -921,6 +1051,67 @@ mod direction_tests {
         let world = MapDecks::new([&map], []);
         let data = light_directions(&world, &[lamp(0, 0), lamp(4, 0)], 0, 5, 1);
         assert_eq!(texel(&data, 5, 0, 1)[0], 1, "lit from the west only");
+    }
+}
+
+#[cfg(test)]
+mod effect_tests {
+    use super::*;
+
+    #[test]
+    fn a_few_lights_are_worn_and_stutter_now_and_then() {
+        let worn = (0..60)
+            .flat_map(|x| (0..60).map(move |y| TilePos::new(x, y, 0)))
+            .filter(|p| worn_light(*p))
+            .count();
+        // About one in 23 of 3600.
+        assert!((100..250).contains(&worn), "{worn}");
+        let pos = TilePos::new(5, 7, 0);
+        let samples: Vec<[f32; 3]> = (0..1200).map(|i| worn_flicker(i as f32 * 0.01, pos)).collect();
+        let steady = samples.iter().filter(|s| s[1] == 1.0).count();
+        assert!(steady > 800, "mostly steady: {steady}");
+        assert!(samples.iter().any(|s| s[1] < 0.6), "but it dips");
+        assert!(samples.iter().all(|s| s.iter().all(|c| (0.0..=1.0).contains(c))));
+    }
+
+    #[test]
+    fn windows_onto_space_let_starlight_in() {
+        let map = TileMap::from_ron(
+            r#"(legend: {
+                ' ': (tile: (id: "space")),
+                '#': (tile: (id: "window")),
+                'W': (tile: (id: "wall", solid: true)),
+                '.': (tile: (id: "floor")),
+            }, rows: ["   ", "W#W", "...", ".#."])"#,
+            0,
+        )
+        .unwrap();
+        let stars = starlight(&map);
+        assert_eq!(stars.len(), 1, "only the window by space: {stars:?}");
+    }
+
+    #[test]
+    fn working_lights_glow_red_where_the_lighting_has_no_power() {
+        let map = TileMap::from_ron(
+            r#"(legend: { '.': (tile: (id: "floor")) },
+                area_legend: { 'a': "dark", 'b': "lit" },
+                area_rows: ["aabb"],
+                rows: ["...."])"#,
+            0,
+        )
+        .unwrap();
+        let at = |x| TilePos::new(x, 0, 0);
+        let switch = rs13_world::Appearance::new("light-switch", "light-p");
+        let off = rs13_world::Appearance::new("light", "tube0-north");
+        let burned = rs13_world::Appearance::new("light", "tube-burned-north");
+        let things = [(at(0), &switch)];
+        // A working light that's off in the dark area glows; a burnt-out one and one in the
+        // powered area don't.
+        let unlit = [(at(1), &off), (at(0), &burned), (at(3), &off)];
+        let glow = emergency_glow(&map, things.into_iter(), unlit.into_iter());
+        assert_eq!(glow.len(), 1);
+        assert_eq!(glow[0].pos, at(1));
+        assert!(emergency_glow(&map, std::iter::empty(), unlit.into_iter()).is_empty());
     }
 }
 

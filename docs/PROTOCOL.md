@@ -54,8 +54,10 @@ Player mobs are despawned on the server when their client disconnects.
 ## Rules
 
 - The server is authoritative. Clients only send intentions; the server decides positions.
-- Clients render `GridPos` with a short glide between tiles; there is no client-side
-  prediction yet.
+- Clients render `GridPos` with a short glide between tiles, for everything that moves a
+  tile or two (people, and what is pulled, pushed or thrown); what is out of sight
+  (`Hidden`) and moves of more than two tiles snap. There is no client-side prediction
+  yet.
 - Player-visible text is sent as **message id + arguments** (`LocMsg`), never formatted
   strings, so each client renders it in its own locale.
 

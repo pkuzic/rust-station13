@@ -80,10 +80,19 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
 
 pub struct SoundPlugin;
 
+/// A sound this player heard, where it came from: for what else it sets off on the screen
+/// (`particles.rs`).
+#[derive(Message, Debug, Clone)]
+pub struct Heard {
+    pub sound: String,
+    pub at: rs13_world::TilePos,
+}
+
 impl Plugin for SoundPlugin {
     fn build(&self, app: &mut App) {
         app.add_audio_source::<PannedSound>()
             .init_resource::<SoundBank>()
+            .add_message::<Heard>()
             .add_systems(Update, play_sounds);
     }
 }
@@ -146,10 +155,15 @@ fn play_sounds(
     mut receivers: Query<&mut MessageReceiver<PlaySound>, With<Client>>,
     own: Query<&GridPos, (With<Player>, With<Controlled>)>,
     mut commands: Commands,
+    mut heard: MessageWriter<Heard>,
 ) {
     let me = own.iter().next().map(|p| p.0);
     for mut receiver in &mut receivers {
         for sound in receiver.receive() {
+            heard.write(Heard {
+                sound: sound.sound.clone(),
+                at: sound.at,
+            });
             let Some(clips) = bank.clips.get(sound.sound.as_str()).filter(|c| !c.is_empty()) else {
                 debug!(sound = sound.sound, "unknown sound");
                 continue;
