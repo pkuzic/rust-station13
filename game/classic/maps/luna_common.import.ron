@@ -240,8 +240,8 @@
         (path: "/obj/item/device/radio/headset/headset_cargo", id: "headset-cargo"),
         (path: "/obj/item/device/radio/headset/syndicate", id: "headset-syndicate"),
         (path: "/obj/item/clothing/glasses/meson", id: "meson-glasses"),
-        // A tracking beacon is a radio subtype but no radio; nothing to make of it yet.
-        (path: "/obj/item/device/radio/beacon"),
+        // A tracking beacon is a radio subtype but no radio: what a teleporter locks onto.
+        (path: "/obj/item/device/radio/beacon", id: "tracking-beacon"),
         (path: "/obj/item/weapon/tank/jetpack", id: "jetpack"),
         (path: "/obj/item/weapon/tank/jetpack/ce", id: "jetpack-ce"),
         (path: "/obj/item/weapon/cell", id: "power-cell"),
@@ -439,6 +439,10 @@
         // Cloning (`cloning.md`).
         (path: "/obj/machinery/dna_scannernew", id: "dna-scanner"),
         (path: "/obj/machinery/computer/cloning", id: "cloning-console"),
+        // Teleporters (`teleporters.md`).
+        (path: "/obj/machinery/computer/teleporter", id: "teleporter-console"),
+        (path: "/obj/machinery/teleport/hub", id: "teleporter-hub"),
+        (path: "/obj/machinery/teleport/station", id: "teleporter-station"),
         (path: "/obj/machinery/computer/scan_consolenew", id: "genetics-console"),
         (path: "/obj/machinery/clonepod", id: "clone-pod"),
         (path: "/obj/machinery/door_timer", id: "door-timer", vars: ["id"]),

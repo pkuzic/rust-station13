@@ -488,6 +488,27 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::explosions::use_detonator(world, target));
                 }
+                // Teleporters (`teleporters.md`): the console, the station and portals clicked, and
+                // the hand teleporter used in the hand.
+                Action::UseOn(target)
+                    if appearances.get(target).is_ok_and(|(look, _)| {
+                        matches!(
+                            look.sprite.as_str(),
+                            crate::teleporters::CONSOLE
+                                | crate::teleporters::STATION
+                                | crate::teleporters::PORTAL
+                        )
+                    }) && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::teleporters::click(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::teleporters::HAND_TELE) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| {
+                        crate::teleporters::use_hand_tele(world, mob, target)
+                    });
+                }
                 // A wormhole from a portal storm (`events.md`).
                 Action::UseOn(target)
                     if appearances

@@ -83,6 +83,11 @@ pub fn resolve_step(
         .find(|p| free(*p))
 }
 
+/// Players who walked into something they couldn't pass this tick, and the tile they walked into
+/// (Luna's `Bumped`, for what has no handling of its own here: the teleporter hub, portals).
+#[derive(Resource, Debug, Default)]
+pub struct Bumps(pub Vec<(Entity, TilePos)>);
+
 /// Moves every mob whose controller asks to move and whose delay has expired.
 /// A player-controlled mob that walks into a closed airlock opens it.
 /// Mobs are processed in entity order so results are deterministic.
@@ -109,11 +114,12 @@ pub fn move_mobs(
     mut stepped: ResMut<crate::pulling::Stepped>,
     mut exits: ResMut<crate::closets::PendingClosetExits>,
     firedoors: Query<(&GridPos, &crate::firedoors::Firedoor), Without<Mob>>,
-    (jetpacks, mut tanks, panes, stair_tiles, mut commands): (
+    (jetpacks, mut tanks, panes, stair_tiles, mut bumps, mut commands): (
         Query<&crate::jetpacks::Jetpack>,
         Query<&mut crate::equipment::TankGas>,
         crate::windoors::EdgeBarriers<'_>,
         Query<(&GridPos, &crate::multiz::Stairs), Without<Mob>>,
+        ResMut<Bumps>,
         Commands,
     ),
 ) {
@@ -207,6 +213,7 @@ pub fn move_mobs(
             continue;
         }
         let ahead = pos.0.step(dir);
+        bumps.0.push((entity, ahead));
         for (obj_entity, obj_pos, _, airlock) in &mut objects {
             if obj_pos.0 != ahead {
                 continue;

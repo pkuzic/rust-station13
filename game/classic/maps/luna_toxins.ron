@@ -91,7 +91,7 @@
         'v': (tile: (id: "floor"), objects: [(id: "intercom", vars: {"pixel_x": "27"})]),
         'w': (tile: (id: "floor"), objects: [(id: "scrubber", dir: North)]),
         'x': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: East), (id: "id-card", access: ["tox", "tox_storage", "maint_tunnels", "medlab", "laboratories_doors"]), (id: "air-alarm", dir: East, vars: {"pixel_x": "-22"})]),
-        'y': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), "wrapping-paper", "wirecutters"]),
+        'y': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), "wrapping-paper", "wirecutters", "tracking-beacon"]),
         'z': (tile: (id: "floor"), objects: [(id: "table", dir: NorthEast, state: Some("tabledir")), "cell-charger", "igniter-device"]),
         '|': (tile: (id: "floor"), objects: [(id: "connector", dir: North), "empty-canister"]),
         '~': (tile: (id: "floor"), objects: [(id: "connector", dir: North)]),

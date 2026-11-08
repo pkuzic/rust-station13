@@ -1794,6 +1794,15 @@ genetics-iso-injector = Изолированный инъектор
 genetics-iso-pick = Блок для инъектора:
 genetics-clear = Очистить буфер
 
+## Teleporters (`teleporters.md`)
+tele-locked-in = Координаты зафиксированы
+tele-engaged = Телепорт включён!
+tele-disengaged = Телепорт выключен!
+tele-no-lock = Сбой: координаты не зафиксированы. Восстановите координатную матрицу.
+tele-recharging = Ручной телепортер перезаряжается!
+tele-row-active = { $value } (активен)
+tele-row-inactive = { $value } (неактивен)
+tele-row-none = Никуда (опасно)
 ## Random events (`events.md`)
 command-alert = Сообщение NanoTrasen. { $title }: { $text }
 alert-anomaly = Аномалия

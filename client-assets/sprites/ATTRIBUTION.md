@@ -1244,6 +1244,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `portable-pump:siphon-connector` | `icons/obj/atmos.dmi : "siphon-connector"` | CC-BY-SA 3.0 |
 | `portable-scrubber:pscrubber:0` | `icons/obj/atmos.dmi : "pscrubber:0"` | CC-BY-SA 3.0 |
 | `portable-scrubber:pscrubber:1` | `icons/obj/atmos.dmi : "pscrubber:1"` | CC-BY-SA 3.0 |
+| `portal:` | `icons/obj/stationobjs.dmi : "portal"` | CC-BY-SA 3.0 |
+| `portal:broken` | `icons/obj/stationobjs.dmi : "portal1"` | CC-BY-SA 3.0 |
 | `potato:` | `icons/GoonHydroPort/hydroponics.dmi : "potato"` | CC-BY-SA 3.0 |
 | `power-cell:` | `icons/obj/power.dmi : "cell"` | CC-BY-SA 3.0 |
 | `power-cell:cell-o1` | `icons/obj/power.dmi : "cell-o1"` | CC-BY-SA 3.0 |
@@ -1682,6 +1684,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `teg:teg-op8` | `icons/obj/power.dmi : "teg-op8"` | CC-BY-SA 3.0 |
 | `teg:teg-op9` | `icons/obj/power.dmi : "teg-op9"` | CC-BY-SA 3.0 |
 | `teleportation-scroll:` | `icons/obj/wizard.dmi : "scroll"` | CC-BY-SA 3.0 |
+| `teleporter-console:teleport` | `icons/obj/computer.dmi : "teleport"` | CC-BY-SA 3.0 |
+| `teleporter-hub:tele0` | `icons/obj/stationobjs.dmi : "tele0"` | CC-BY-SA 3.0 |
+| `teleporter-hub:tele1` | `icons/obj/stationobjs.dmi : "tele1"` | CC-BY-SA 3.0 |
+| `teleporter-station:controller` | `icons/obj/stationobjs.dmi : "controller"` | CC-BY-SA 3.0 |
+| `teleporter-station:controller-p` | `icons/obj/stationobjs.dmi : "controller-p"` | CC-BY-SA 3.0 |
 | `terminal:` | `icons/obj/power.dmi : "term"` | CC-BY-SA 3.0 |
 | `terror-helmet:` | `icons/obj/clothing/hats.dmi : "syndicate-helm-black-red"` | CC-BY-SA 3.0 |
 | `terror-suit:` | `icons/obj/clothing/suits.dmi : "syndicate-black-red"` | CC-BY-SA 3.0 |
@@ -1740,6 +1747,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `toy-durand:` | `icons/obj/toy.dmi : "durandprize"` | CC-BY-SA 3.0 |
 | `toy-gygax:` | `icons/obj/toy.dmi : "gygaxtoy"` | CC-BY-SA 3.0 |
 | `toy-ripley:` | `icons/obj/toy.dmi : "ripleytoy"` | CC-BY-SA 3.0 |
+| `tracking-beacon:` | `icons/obj/radio.dmi : "beacon"` | CC-BY-SA 3.0 |
 | `transfer-valve:` | `icons/obj/assemblies.dmi : "valve_1"` | CC-BY-SA 3.0 |
 | `trash-candy:` | `icons/obj/janitor.dmi : "candy"` | CC-BY-SA 3.0 |
 | `trash-cheesie:` | `icons/obj/janitor.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |

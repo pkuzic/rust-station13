@@ -1787,6 +1787,15 @@ genetics-iso-injector = Iso Injector
 genetics-iso-pick = Block for the injector:
 genetics-clear = Clear Buffer
 
+## Teleporters (`teleporters.md`)
+tele-locked-in = Locked In
+tele-engaged = Teleporter engaged!
+tele-disengaged = Teleporter disengaged!
+tele-no-lock = Failure: Cannot authenticate locked on coordinates. Please reinstate coordinate matrix.
+tele-recharging = The hand teleporter is recharging!
+tele-row-active = { $value } (Active)
+tele-row-inactive = { $value } (Inactive)
+tele-row-none = None (Dangerous)
 ## Random events (`events.md`)
 command-alert = NanoTrasen Update. { $title }: { $text }
 alert-anomaly = Anomaly Alert

@@ -752,5 +752,10 @@
     "crate-internals-oxy": (gender: neuter, sg: (nom: "internals crate", indef: "an internals crate"), pl: Some((nom: "internals crates"))),
     "crate-engineering": (gender: neuter, sg: (nom: "engineering crate", indef: "an engineering crate"), pl: Some((nom: "engineering crates"))),
     "super-pacman": (gender: neuter, sg: (nom: "S.U.P.E.R.P.A.C.M.A.N.-type portable generator", indef: "a S.U.P.E.R.P.A.C.M.A.N.-type portable generator"), pl: Some((nom: "S.U.P.E.R.P.A.C.M.A.N.-type portable generators"))),
+    "tracking-beacon": (gender: neuter, sg: (nom: "tracking beacon", indef: "a tracking beacon"), pl: Some((nom: "tracking beacons"))),
+    "teleporter-console": (gender: neuter, sg: (nom: "teleporter computer", indef: "a teleporter computer"), pl: Some((nom: "teleporter computers"))),
+    "teleporter-hub": (gender: neuter, sg: (nom: "teleporter hub", indef: "a teleporter hub"), pl: Some((nom: "teleporter hubs"))),
+    "teleporter-station": (gender: neuter, sg: (nom: "teleporter station", indef: "a teleporter station"), pl: Some((nom: "teleporter stations"))),
+    "portal": (gender: neuter, sg: (nom: "portal", indef: "a portal"), pl: Some((nom: "portals"))),
     "wormhole": (gender: neuter, sg: (nom: "wormhole", indef: "a wormhole"), pl: Some((nom: "wormholes"))),
 }
