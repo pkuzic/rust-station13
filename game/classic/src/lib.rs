@@ -82,6 +82,7 @@ pub mod navbeacons;
 pub mod nuke;
 pub mod objects;
 pub mod paperwork;
+pub mod plumbing;
 pub mod portables;
 pub mod power;
 pub mod power_monitor;
@@ -495,7 +496,7 @@ impl Plugin for ClassicPlugin {
                         chem_master::update_master_views,
                         microwaves::run_microwaves,
                         monkeys::run_monkeys,
-                        flashes::run_flashers,
+                        (flashes::run_flashers, plumbing::run_plumbing),
                         flashes::recover,
                         ghosts::leave_dead_bodies,
                         ghosts::move_ghosts,

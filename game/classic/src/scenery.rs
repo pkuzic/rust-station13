@@ -5,7 +5,7 @@ use bevy_ecs::prelude::*;
 use rs13_world::{Appearance, Dense, GridPos, NetId, Opaque, TilePos};
 
 /// Each one: its prototype, whether it's dense, and whether it blocks the view.
-const SCENERY: [(&str, bool, bool); 26] = [
+const SCENERY: [(&str, bool, bool); 25] = [
     ("shuttle-engine", true, true),
     ("shuttle-engine-left", true, true),
     ("shuttle-engine-right", true, true),
@@ -13,7 +13,6 @@ const SCENERY: [(&str, bool, bool); 26] = [
     ("shuttle-heater", true, false),
     ("holopad", false, false),
     ("plastic-flaps", true, true),
-    ("mirror", false, false),
     ("noticeboard", false, false),
     ("mop-bucket", true, false),
     ("sign-deathsposal", false, false),

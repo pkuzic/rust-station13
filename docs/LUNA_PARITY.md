@@ -89,8 +89,8 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.12 Teleporters | S-M | `teleporter` | |
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |
-| [ ] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | |
-| [ ] | 4.16 Remaining scenery behaviour: mirrors, washers, spikes, holopads, sensors | M | `scenery.md` | |
+| [x] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | `plumbing.md`, with mirrors. No blood or dirt yet to wash off |
+| [ ] | 4.16 Remaining scenery behaviour: washers, spikes, holopads, sensors | M | `scenery.md` | Mirrors done with 4.15 |
 | [ ] | 4.17 Mass drivers, cyborg chargers, remaining map objects | M | `zcount`: 106 kinds, 290 objects | |
 
 ## Not gaps

@@ -164,6 +164,11 @@ pub fn use_grab(world: &mut World, mob: Entity, grab: Entity, target: Entity) {
         release(world, grab);
         return;
     }
+    if world.get::<crate::plumbing::Toilet>(target).is_some() {
+        let tight = held.hold >= Hold::Aggressive;
+        crate::plumbing::grab_on_toilet(world, mob, held.victim, tight, target);
+        return;
+    }
     if target != held.victim && target != grab {
         return;
     }

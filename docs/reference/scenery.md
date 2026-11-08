@@ -14,7 +14,6 @@ Code: `game/classic/src/scenery.rs`. Tests: `game/classic/tests/scenery.rs`.
 | `shuttle-heater` | `machinery/shuttle/engine/heater` | yes |  |
 | `holopad` | `machinery/hologram_ai` |  |  |
 | `plastic-flaps` | `structure/plasticflaps` | yes | yes |
-| `mirror` | `structure/mirror` |  |  |
 | `noticeboard` | `structure/noticeboard` |  |  |
 | `mop-bucket` | `structure/mopbucket` | yes |  |
 | `sign-deathsposal` | `structure/sign/deathsposal` |  |  |
@@ -44,7 +43,7 @@ These are real machines or structures in Luna, and each will need its own work t
 | Bookcases hold books to read | No books |
 | Plastic flaps let through someone lying down | They stop anyone walking, and nobody can crawl here yet. What a conveyor carries, what's pulled and shots do get through, and they block air and the view, as in Luna |
 | The operating table holds someone for surgery | No surgery |
-| Washers wash clothes, spikes hang meat, and mirrors change your hair | Nothing |
+| Washers wash clothes and spikes hang meat | Nothing. Mirrors, sinks, showers and toilets are in `plumbing.md` |
 | Holopads, doppler arrays, gas and airlock sensors, and party lights all do something | Nothing |
 
 ## Shuttle doors (`shuttle-door`)
