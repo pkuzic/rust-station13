@@ -622,6 +622,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `face:underwear5_m:lying` | `icons/mob/human.dmi : "underwear5_m_l"` | CC-BY-SA 3.0 |
 | `filing-cabinet:tallcabinet` | `icons/obj/bureaucracy.dmi : "tallcabinet"` | CC-BY-SA 3.0 |
 | `filing-cabinet:tallcabinet-open` | `icons/obj/bureaucracy.dmi : "tallcabinet-open"` | CC-BY-SA 3.0 |
+| `fingerprint-card:` | `icons/obj/card.dmi : "fingerprint0"` | CC-BY-SA 3.0 |
+| `fingerprint-card:fingerprint1` | `icons/obj/card.dmi : "fingerprint1"` | CC-BY-SA 3.0 |
 | `fingerprint-case:` | `icons/obj/items.dmi : "fcardholder0"` | CC-BY-SA 3.0 |
 | `fire:1` | `icons/effects/fire.dmi : "1"` | CC-BY-SA 3.0 |
 | `fire:2` | `icons/effects/fire.dmi : "2"` | CC-BY-SA 3.0 |
@@ -674,8 +676,12 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `folder-white:` | `icons/obj/bureaucracy.dmi : "folder_white"` | CC-BY-SA 3.0 |
 | `folder-yellow:` | `icons/obj/bureaucracy.dmi : "folder_yellow"` | CC-BY-SA 3.0 |
 | `forcewall:` | `icons/effects/effects.dmi : "m_shield"` | CC-BY-SA 3.0 |
+| `forensic-computer:forensic` | `icons/obj/computer.dmi : "forensic"` | CC-BY-SA 3.0 |
+| `forensic-computer-old:old` | `icons/obj/computer.dmi : "old"` | CC-BY-SA 3.0 |
 | `forensic-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "forensicsred"` | CC-BY-SA 3.0 |
 | `forensic-scanner:` | `icons/obj/device.dmi : "forensic0"` | CC-BY-SA 3.0 |
+| `forensic-scanner:forensic0` | `icons/obj/device.dmi : "forensic0"` | CC-BY-SA 3.0 |
+| `forensic-scanner:forensic1` | `icons/obj/device.dmi : "forensic1"` | CC-BY-SA 3.0 |
 | `freezer:freezer` | `icons/obj/Cryogenic2.dmi : "freezer"` | CC-BY-SA 3.0 |
 | `freezer:freezer_1` | `icons/obj/Cryogenic2.dmi : "freezer_1"` | CC-BY-SA 3.0 |
 | `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
