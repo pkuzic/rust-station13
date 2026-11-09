@@ -2692,6 +2692,47 @@
         // Teleporters (`teleporters.md`).
         "tracking-beacon": { "": (dmi: "icons/obj/radio.dmi", state: "beacon") },
         "teleporter-console": { "teleport": (dmi: "icons/obj/computer.dmi", state: "teleport") },
+        // Anomaly research (`anomalies.md`).
+        "alien-artifact": {
+            "ano00": (dmi: "icons/obj/anomaly.dmi", state: "ano00"),
+            "ano01": (dmi: "icons/obj/anomaly.dmi", state: "ano01"),
+            "ano10": (dmi: "icons/obj/anomaly.dmi", state: "ano10"),
+            "ano11": (dmi: "icons/obj/anomaly.dmi", state: "ano11"),
+            "ano20": (dmi: "icons/obj/anomaly.dmi", state: "ano20"),
+            "ano21": (dmi: "icons/obj/anomaly.dmi", state: "ano21"),
+            "ano30": (dmi: "icons/obj/anomaly.dmi", state: "ano30"),
+            "ano31": (dmi: "icons/obj/anomaly.dmi", state: "ano31"),
+            "ano40": (dmi: "icons/obj/anomaly.dmi", state: "ano40"),
+            "ano41": (dmi: "icons/obj/anomaly.dmi", state: "ano41"),
+            "ano50": (dmi: "icons/obj/anomaly.dmi", state: "ano50"),
+            "ano51": (dmi: "icons/obj/anomaly.dmi", state: "ano51"),
+        },
+        "anomaly-analyser": {
+            "": (dmi: "icons/obj/machines/research.dmi", state: "anoscan"),
+            "nopower": (dmi: "icons/obj/machines/research.dmi", state: "anoscan_nopower"),
+        },
+        "anomaly-harvester": {
+            "": (dmi: "icons/obj/machines/research.dmi", state: "anocol"),
+            "nopower": (dmi: "icons/obj/machines/research.dmi", state: "anocol_nopower"),
+        },
+        "anomaly-battery": {
+            "": (dmi: "icons/obj/anomaly.dmi", state: "anobattery0"),
+            "anobattery0": (dmi: "icons/obj/anomaly.dmi", state: "anobattery0"),
+            "anobattery25": (dmi: "icons/obj/anomaly.dmi", state: "anobattery25"),
+            "anobattery50": (dmi: "icons/obj/anomaly.dmi", state: "anobattery50"),
+            "anobattery75": (dmi: "icons/obj/anomaly.dmi", state: "anobattery75"),
+            "anobattery100": (dmi: "icons/obj/anomaly.dmi", state: "anobattery100"),
+        },
+        "anomaly-utilizer": {
+            "": (dmi: "icons/obj/anomaly.dmi", state: "anodev"),
+            "anodev": (dmi: "icons/obj/anomaly.dmi", state: "anodev"),
+            "anodev0": (dmi: "icons/obj/anomaly.dmi", state: "anodev0"),
+            "anodev25": (dmi: "icons/obj/anomaly.dmi", state: "anodev25"),
+            "anodev50": (dmi: "icons/obj/anomaly.dmi", state: "anodev50"),
+            "anodev75": (dmi: "icons/obj/anomaly.dmi", state: "anodev75"),
+            "anodev100": (dmi: "icons/obj/anomaly.dmi", state: "anodev100"),
+        },
+        "artifact-field": { "shieldsparkles0": (dmi: "icons/effects/effects.dmi", state: "shieldsparkles0") },
         "teleporter-hub": {
             "tele0": (dmi: "icons/obj/stationobjs.dmi", state: "tele0"),
             "tele1": (dmi: "icons/obj/stationobjs.dmi", state: "tele1"),

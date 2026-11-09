@@ -392,6 +392,9 @@
     (id: "space-law", force: 0.0, size: 3),
     (id: "police-tape", force: 0.0, size: 2),
     (id: "hand-tele", force: 0.0, size: 2),
+    // Anomaly research (`anomalies.md`).
+    (id: "anomaly-battery", force: 0.0, size: 3),
+    (id: "anomaly-utilizer", force: 0.0, size: 3, slot: "belt"),
     // Luna `radio/beacon`: what a teleporter console locks onto (`teleporters.md`).
     (id: "tracking-beacon", force: 0.0, size: 2),
     (id: "genetics-analyzer", force: 0.0, size: 2),
