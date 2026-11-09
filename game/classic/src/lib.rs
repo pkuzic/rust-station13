@@ -109,6 +109,7 @@ pub mod spells;
 pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
+pub mod surgery;
 pub mod teg;
 pub mod teleporters;
 pub mod time;
@@ -248,6 +249,7 @@ impl Plugin for ClassicPlugin {
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     (
+                        surgery::take_surgery_clicks,
                         combat::resolve_attacks,
                         combat::keep_gods_whole,
                         combat::come_round,
@@ -484,6 +486,10 @@ impl Plugin for ClassicPlugin {
                                 teleporters::run_picks,
                                 teleporters::run_teleporters,
                                 teleporters::update_views,
+                                surgery::run_picks,
+                                surgery::run_operations,
+                                surgery::update_views,
+                                surgery::update_tables,
                             )
                                 .chain(),
                             (

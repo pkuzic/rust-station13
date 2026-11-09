@@ -267,6 +267,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::autolathe::spawn_autolathe(world, pos, id));
     }
+    if proto == crate::surgery::TABLE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::surgery::spawn_table(world, pos, id));
+    }
     if crate::teleporters::is_teleporter_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::teleporters::spawn_part(world, proto, pos, id));

@@ -46,6 +46,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `apc:on` | `icons/obj/power.dmi : "apc0"` | CC-BY-SA 3.0 |
 | `apc:open` | `icons/obj/power.dmi : "apc2"` | CC-BY-SA 3.0 |
 | `apc:open-empty` | `icons/obj/power.dmi : "apc1"` | CC-BY-SA 3.0 |
+| `appendix:` | `icons/obj/surgery.dmi : "appendix"` | CC-BY-SA 3.0 |
 | `apple:` | `icons/GoonHydroPort/hydroponics.dmi : "apple"` | CC-BY-SA 3.0 |
 | `arcade:arcade` | `icons/obj/computer.dmi : "arcade"` | CC-BY-SA 3.0 |
 | `armor-rig-vest:` | `icons/obj/clothing/suits.dmi : "armourrigvest"` | CC-BY-SA 3.0 |
@@ -127,6 +128,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `boxing-gloves-blue:` | `icons/obj/clothing/gloves.dmi : "boxingblue"` | CC-BY-SA 3.0 |
 | `boxing-gloves-green:` | `icons/obj/clothing/gloves.dmi : "boxinggreen"` | CC-BY-SA 3.0 |
 | `boxing-gloves-yellow:` | `icons/obj/clothing/gloves.dmi : "boxingyellow"` | CC-BY-SA 3.0 |
+| `brain:` | `icons/obj/surgery.dmi : "brain2"` | CC-BY-SA 3.0 |
 | `breath-mask:` | `icons/obj/clothing/masks.dmi : "breath"` | CC-BY-SA 3.0 |
 | `briefcase:` | `icons/obj/storage.dmi : "briefcase"` | CC-BY-SA 3.0 |
 | `brig-windoor:leftsecure-east` | `icons/obj/doors/windoor.dmi : "leftsecure"` | CC-BY-SA 3.0 |
@@ -1140,6 +1142,8 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `nuclear-disk:` | `icons/obj/items.dmi : "nucleardisk"` | CC-BY-SA 3.0 |
 | `ointment:` | `icons/obj/items.dmi : "ointment"` | CC-BY-SA 3.0 |
 | `operating-table:` | `icons/obj/surgery.dmi : "table2-idle"` | CC-BY-SA 3.0 |
+| `operating-table:table2-active` | `icons/obj/surgery.dmi : "table2-active"` | CC-BY-SA 3.0 |
+| `operating-table:table2-active-dead` | `icons/obj/surgery.dmi : "table2-active-dead"` | CC-BY-SA 3.0 |
 | `orange:` | `icons/GoonHydroPort/hydroponics.dmi : "orange"` | CC-BY-SA 3.0 |
 | `orange-gloves:` | `icons/obj/clothing/gloves.dmi : "orange"` | CC-BY-SA 3.0 |
 | `orange-shoes:` | `icons/obj/clothing/shoes.dmi : "orange"` | CC-BY-SA 3.0 |

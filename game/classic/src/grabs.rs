@@ -145,6 +145,13 @@ pub fn use_grab(world: &mut World, mob: Entity, grab: Entity, target: Entity) {
     let Some(at) = world.get::<GridPos>(mob).map(|p| p.0) else {
         return;
     };
+    // The operating table lays them down on it (`surgery.md`).
+    if world.get::<crate::surgery::OperatingTable>(target).is_some() {
+        if crate::surgery::lay_on_table(world, mob, held.victim, target) {
+            release(world, grab);
+        }
+        return;
+    }
     let on_table = world
         .get::<Appearance>(target)
         .is_some_and(|look| matches!(look.sprite.as_str(), "table" | "table-reinforced" | "table-wood"));
