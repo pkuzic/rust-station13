@@ -500,6 +500,7 @@
         (path: "/obj/item/weapon/hand_labeler", id: "hand-labeler"),
         (path: "/obj/item/device/transfer_valve", id: "transfer-valve"),
         (path: "/obj/item/device/igniter", id: "igniter-device"),
+        (path: "/obj/item/device/radio/signaler", id: "signaler"),
         (path: "/obj/item/weapon/storage/belt/security", id: "belt-security"),
         (path: "/obj/item/device/timer", id: "timer"),
         (path: "/obj/item/weapon/reagent_containers/glass/beaker/large", id: "beaker-large"),

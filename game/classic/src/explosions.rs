@@ -541,6 +541,7 @@ fn tank_at(world: &World, tank: Entity) -> Option<TilePos> {
     on(tank)
         .or_else(|| world.get::<HeldBy>(tank).and_then(|h| on(h.0)))
         .or_else(|| world.get::<WornBy>(tank).and_then(|w| on(w.0)))
+        .or_else(|| crate::devices::where_is(world, tank))
 }
 
 fn drop_from_hands(world: &mut World, tank: Entity) {

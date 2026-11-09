@@ -509,6 +509,33 @@ pub fn process_actions(
                         crate::teleporters::use_hand_tele(world, mob, target)
                     });
                 }
+                // Devices (`devices.md`): one used in the hand, something used on one held or in
+                // reach, or a secured igniter assembly on a plasma tank.
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::devices::is_device(&look.sprite))
+                        && (hands.active_item() == Some(target)
+                            || (reaches && hands.active_item().is_some())) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| match held {
+                        Some(item) if item != target => crate::devices::use_on(world, mob, item, target),
+                        _ => crate::devices::use_in_hand(world, mob, target),
+                    });
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && tool.is_some_and(crate::devices::is_device)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::devices::is_bomb_tank(&look.sprite)) =>
+                {
+                    if let Some(held) = hands.active_item() {
+                        commands
+                            .queue(move |world: &mut World| crate::devices::use_on(world, mob, held, target));
+                    }
+                }
                 // A wormhole from a portal storm (`events.md`).
                 Action::UseOn(target)
                     if appearances

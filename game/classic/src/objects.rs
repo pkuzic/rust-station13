@@ -124,6 +124,7 @@ const APC_WALL_PX: i32 = 24;
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
+    crate::devices::equip_item(world, entity, &spec.id);
     // Tagged for an airlock console (`airlock-control.md`).
     let tag = |name: &str| {
         spec.vars

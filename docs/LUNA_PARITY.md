@@ -68,7 +68,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
 | [ ] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | Records exist |
-| [ ] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Inert items exist |
+| [~] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`). Left: grenades and implants. Mousetraps and infrared aren't on Luna's station |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 
 ## 4. Depth in what exists
