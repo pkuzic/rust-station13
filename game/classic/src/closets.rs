@@ -168,7 +168,8 @@ pub fn take_in_loose_items(world: &mut World) {
     }
 }
 
-fn put_inside(world: &mut World, closet: Entity, thing: Entity) {
+/// Put a thing inside a closet or crate, out of the world, as closing it over the thing would.
+pub fn put_inside(world: &mut World, closet: Entity, thing: Entity) {
     let is_mob = world.get::<Mob>(thing).is_some();
     let mut e = world.entity_mut(thing);
     if is_mob {

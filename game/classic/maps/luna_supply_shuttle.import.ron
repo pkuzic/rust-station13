@@ -1,0 +1,14 @@
+// Rules for importing NSV Luna's supply shuttle, as it waits at Centcom's dock, with
+// rs13-dmm-import. The game lays it into the supply hangar's empty berth on deck 4 when it
+// arrives, and takes it away again when it leaves (`cargo.md`).
+//
+//   cargo run -p rs13-dmm-import -- ../luna/maps/NSV_Luna.dmm \
+//       game/classic/maps/luna_supply_shuttle.import.ron game/classic/maps/luna_supply_shuttle.ron
+(
+    base: "luna_common.import.ron",
+    source: "NSV Luna (github.com/SS13/luna, commit e13cf12) maps/NSV_Luna.dmm",
+    z: 6,
+    columns: (44, 56),
+    rows: (90, 96),
+    auto_areas: true,
+)

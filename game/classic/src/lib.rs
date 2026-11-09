@@ -18,6 +18,7 @@ pub mod blob;
 pub mod brig;
 pub mod cables;
 pub mod cameras;
+pub mod cargo;
 pub mod cells;
 pub mod chairs;
 pub mod changeling;
@@ -484,6 +485,10 @@ impl Plugin for ClassicPlugin {
                                 teleporters::run_picks,
                                 teleporters::run_teleporters,
                                 teleporters::update_views,
+                                cargo::run_picks,
+                                cargo::run_cargo,
+                                cargo::update_views,
+                                cargo::clear_closed_views,
                             )
                                 .chain(),
                             (
