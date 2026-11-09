@@ -48,8 +48,8 @@ const FACE: Color = Color::srgb(0.96, 0.95, 0.88);
 const EDGE: Color = Color::srgb(0.45, 0.45, 0.45);
 const INK: Color = Color::srgb(0.05, 0.05, 0.2);
 
-/// What a printed sheet says in the reader's language: `[msg:ID]` is that message, and `[job:ID]`
-/// that job's name. Anything else in brackets stays as it is.
+/// What a printed sheet says in the reader's language: `[msg:ID]` is that message, `[job:ID]`
+/// that job's name and `[noun:ID]` that thing's name. Anything else in brackets stays as it is.
 fn filled_in(loc: &Localizer, text: &str) -> String {
     let mut out = String::new();
     let mut rest = text;
@@ -61,10 +61,15 @@ fn filled_in(loc: &Localizer, text: &str) -> String {
             let id = inside
                 .strip_prefix("msg:")
                 .map(str::to_owned)
-                .or_else(|| inside.strip_prefix("job:").map(|job| format!("job-{job}")))?;
+                .or_else(|| inside.strip_prefix("job:").map(|job| format!("job-{job}")))
+                .or_else(|| inside.strip_prefix("noun:").map(|noun| format!("\u{1}{noun}")))?;
             Some((id, end))
         });
-        match id.and_then(|(id, end)| Some((loc.format(&id, None).ok()?, end))) {
+        let said = |id: &str| match id.strip_prefix('\u{1}') {
+            Some(noun) => Some(loc.noun(noun, rs13_i18n::Case::Nom)),
+            None => loc.format(id, None).ok(),
+        };
+        match id.and_then(|(id, end)| Some((said(&id)?, end))) {
             Some((said, end)) => {
                 out.push_str(&said);
                 rest = &rest[end + 1..];

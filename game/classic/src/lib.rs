@@ -7,6 +7,7 @@ pub mod access;
 pub mod actions;
 pub mod airlock_control;
 pub mod alarms;
+pub mod anomalies;
 pub mod apc;
 pub mod arcade;
 pub mod atmos;
@@ -481,6 +482,9 @@ impl Plugin for ClassicPlugin {
                             (
                                 wizard_items::run_picks,
                                 wizard_items::update_views,
+                                anomalies::run_picks,
+                                anomalies::run_anomalies,
+                                anomalies::update_views,
                                 teleporters::run_picks,
                                 teleporters::run_teleporters,
                                 teleporters::update_views,

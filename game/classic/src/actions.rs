@@ -509,6 +509,30 @@ pub fn process_actions(
                         crate::teleporters::use_hand_tele(world, mob, target)
                     });
                 }
+                // Anomalies (`anomalies.md`): the artifact, the analyser and the harvester clicked,
+                // and the utilizer used in the hand or with a battery.
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::anomalies::is_clicked(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    let held = hands.active_item();
+                    commands
+                        .queue(move |world: &mut World| crate::anomalies::click(world, mob, target, held));
+                }
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| look.sprite == crate::anomalies::UTILIZER)
+                        && (hands.active_item() == Some(target)
+                            || (reaches && tool == Some(crate::anomalies::BATTERY))) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        crate::anomalies::use_utilizer(world, mob, target, held)
+                    });
+                }
                 // A wormhole from a portal storm (`events.md`).
                 Action::UseOn(target)
                     if appearances

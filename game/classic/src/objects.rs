@@ -124,6 +124,7 @@ const APC_WALL_PX: i32 = 24;
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
+    crate::anomalies::equip_item(world, entity, &spec.id);
     // Tagged for an airlock console (`airlock-control.md`).
     let tag = |name: &str| {
         spec.vars
@@ -342,6 +343,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::navbeacons::NAVBEACON {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::navbeacons::spawn_navbeacon(world, spec, pos, id));
+    }
+    if crate::anomalies::is_machine(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::anomalies::spawn_machine(world, proto, pos, id));
     }
     if crate::shields::is_shield_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
