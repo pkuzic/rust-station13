@@ -50,7 +50,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
 | [ ] | 3.1 Cargo: orders, supply shuttle, points, crates | M | `supplyshuttle`, `supplypacks` | |
-| [ ] | 3.2 Surgery and the operating table | M | `modules/surgery` | Table is scenery |
+| [x] | 3.2 Surgery and the operating table | M | `modules/surgery` | `surgery.md`; no bones or limbs yet |
 | [ ] | 3.3 Fractures, bleeding, limb loss, pain | L | `organs.dm`, `human_life` | |
 | [ ] | 3.4 Viruses and PanD.E.M.I.C. | L | `datums/diseases` | |
 | [~] | 3.5 Genetics: scanner console, injectors, powers | L | `dnaconsole_new`, `game/dna` | Genes, the DNA console, injectors, radiation, the monkey block, and hulk, X-ray, blindness, cold resistance, no breathing, regeneration, deafness, epilepsy, cough, twitch (`genetics.md`). Left: telekinesis, clumsiness and the rest under Not built |
