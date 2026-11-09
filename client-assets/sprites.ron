@@ -2717,7 +2717,15 @@
         "bike-horn": { "": (dmi: "icons/obj/items.dmi", state: "bike_horn") },
         "rubber-ducky": { "": (dmi: "icons/obj/watercloset.dmi", state: "rubberducky") },
         "atmos-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "atmos") },
-        "forensic-scanner": { "": (dmi: "icons/obj/device.dmi", state: "forensic0") },
+        "forensic-scanner": {
+            "": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic0": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic1": (dmi: "icons/obj/device.dmi", state: "forensic1"),
+        },
+        "fingerprint-card": {
+            "": (dmi: "icons/obj/card.dmi", state: "fingerprint0"),
+            "fingerprint1": (dmi: "icons/obj/card.dmi", state: "fingerprint1"),
+        },
         "infra-sensor": { "": (dmi: "icons/obj/device.dmi", state: "infra_sensor") },
         "worn:handcuffs": {
             "": (dmi: "icons/mob/mob.dmi", state: "handcuff1"),
@@ -3083,6 +3091,8 @@
         "detective-records": { "messyfiles": (dmi: "icons/obj/computer.dmi", state: "messyfiles") },
         "medical-records": { "medical": (dmi: "icons/obj/computer.dmi", state: "medical") },
         "id-computer": { "id": (dmi: "icons/obj/computer.dmi", state: "id") },
+        "forensic-computer": { "forensic": (dmi: "icons/obj/computer.dmi", state: "forensic") },
+        "forensic-computer-old": { "old": (dmi: "icons/obj/computer.dmi", state: "old") },
         "plant-pot": {
             "pot-empty": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "pot-empty"),
             "tomato-G1": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "tomato-G1"),
