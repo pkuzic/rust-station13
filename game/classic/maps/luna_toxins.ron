@@ -57,7 +57,7 @@
         'Q': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: South)]),
         'R': (tile: (id: "r-wall", solid: true), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s"))]),
         'S': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: East), (id: "id-card", access: ["tox", "tox_storage", "maint_tunnels", "medlab", "laboratories_doors"])]),
-        'T': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "radio", (id: "radio", vars: {"pixel_x": "-3", "pixel_y": "4"}), (id: "radio", vars: {"pixel_x": "7", "pixel_y": "6"}), (id: "radio", vars: {"pixel_x": "-6", "pixel_y": "-3"})]),
+        'T': (tile: (id: "floor"), objects: [(id: "table", dir: SouthWest, state: Some("tabledir")), "signaler", (id: "signaler", vars: {"pixel_x": "-3", "pixel_y": "4"}), (id: "signaler", vars: {"pixel_x": "7", "pixel_y": "6"}), (id: "signaler", vars: {"pixel_x": "-6", "pixel_y": "-3"})]),
         'U': (tile: (id: "floor"), objects: [(id: "table", dir: SouthEast, state: Some("tabledir")), "timer"]),
         'V': (tile: (id: "floor"), objects: [(id: "connector", dir: South)]),
         'W': (tile: (id: "floor"), objects: [(id: "manifold", dir: West, above_floor: true), "meter"]),

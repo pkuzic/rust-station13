@@ -316,6 +316,7 @@
     (id: "igniter-device", force: 0.0, size: 1),
     (id: "belt-security", force: 0.0, size: 3, slot: "belt", storage: ()),
     (id: "timer", force: 0.0, size: 2),
+    (id: "signaler", force: 0.0, size: 1, slot: "belt"),
     (id: "beaker-large", force: 0.0, size: 1),
     (id: "drinking-glass", force: 0.0, size: 1),
     (id: "grenade-casing", force: 2.0, size: 2),
