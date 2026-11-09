@@ -3,7 +3,8 @@
 Tool: `tools/dmm-import` (`rs13-dmm-import`).
 Rules: `game/classic/maps/luna_common.import.ron` (what each Luna type becomes, shared) and
 one file per region: `luna_engineering.import.ron`, `luna_toxins.import.ron`,
-`luna_incinerator.import.ron`.
+`luna_incinerator.import.ron`, and `luna_supply_shuttle.import.ron` (the supply shuttle at Centcom's
+dock, laid into the station when it arrives: `cargo.md`).
 Output: `game/classic/maps/luna_<region>.ron`.
 Tests: `tools/dmm-import/src/lib.rs`, `game/classic/tests/luna_map.rs`,
 `game/classic/tests/luna_rooms.rs`.

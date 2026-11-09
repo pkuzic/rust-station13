@@ -551,6 +551,11 @@ pub struct SpellbookPanel(pub Option<SpellbookView>);
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GeneticsPanel(pub Option<GeneticsPanelView>);
 
+/// Server → one player: the cargo console they have open, or `None` when it's closed. Its
+/// buttons go back as `ActionInput::Pick` lines (`CargoOp::line`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CargoPanel(pub Option<rs13_world::CargoPanelView>);
+
 /// Server → one changeling: their window, or `None` when it's closed.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct ChangelingPanel(pub Option<ChangelingPanelView>);
@@ -759,6 +764,8 @@ impl Plugin for ProtocolPlugin {
         app.register_message::<SpellbookPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<GeneticsPanel>()
+            .add_direction(NetworkDirection::ServerToClient);
+        app.register_message::<CargoPanel>()
             .add_direction(NetworkDirection::ServerToClient);
         app.register_message::<RevIcons>()
             .add_direction(NetworkDirection::ServerToClient);
