@@ -210,7 +210,10 @@ pub fn process_picks(
 /// Keep each viewer's cabinet window in step; close it once the cabinet is out of reach or
 /// empty.
 pub fn update_cabinet_views(
-    mut viewers: Query<(Entity, &GridPos, Option<&PanelViewer>, &mut PickListOut)>,
+    mut viewers: Query<
+        (Entity, &GridPos, Option<&PanelViewer>, &mut PickListOut),
+        Without<crate::surgery::DrapeChoice>,
+    >,
     cabinets: Query<(&GridPos, &FilingCabinet, &NetId, &Appearance)>,
     papers: Query<&Paper>,
     looks: Query<&Appearance>,

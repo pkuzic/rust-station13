@@ -257,6 +257,8 @@
     "retractor": (gender: neuter, sg: (nom: "retractor", indef: "a retractor"), pl: Some((nom: "retractors"))),
     "hemostat": (gender: neuter, sg: (nom: "hemostat", indef: "a hemostat"), pl: Some((nom: "hemostats"))),
     "surgical-drapes": (gender: neuter, sg: (nom: "surgical drapes", indef: "a set of surgical drapes"), pl: Some((nom: "surgical drapes"))),
+    "appendix": (gender: neuter, sg: (nom: "appendix", indef: "an appendix"), pl: Some((nom: "appendices"))),
+    "brain": (gender: neuter, sg: (nom: "brain", indef: "a brain"), pl: Some((nom: "brains"))),
     "circular-saw": (gender: neuter, sg: (nom: "circular saw", indef: "a circular saw"), pl: Some((nom: "circular saws"))),
     "cautery": (gender: neuter, sg: (nom: "cautery", indef: "a cautery"), pl: Some((nom: "cauterys"))),
     "bone-gel": (gender: neuter, sg: (nom: "bone gel", indef: "a bone gel"), pl: Some((nom: "bone gels"))),
