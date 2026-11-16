@@ -8,8 +8,6 @@
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      2 /obj/item/weapon/camera_test
 //      1 /obj/item/weapon/secstorage/ssafe
-//      1 /obj/item/weapon/storage/box/grenades/metalfoam
-//      4 /obj/item/weapon/storage/box/grenades/teargas
 //      2 /obj/item/weapon/storage/box/imp_kit/chem
 //      2 /obj/item/weapon/storage/box/imp_kit/track
 //      1 /obj/machinery/bot/secbot/beepsky
@@ -472,7 +470,7 @@
         '丮': (tile: (id: "floor"), objects: [(id: "generator-input", dir: East)]),
         '丯': (tile: (id: "floor"), objects: [(id: "manifold", dir: South, above_floor: true), "meter"]),
         '丰': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("table_1tileendtable")), "insulated-gloves", "utility-belt-loaded"]),
-        '丱': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"})]),
+        '丱': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), "metal-foam-box"]),
         '串': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "space-cleaner"]),
         '丳': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir")), "fishburger", (id: "rootbeer", vars: {"pixel_x": "-5"})]),
         '临': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: [], vars: {"job": "engineer"}), (id: "light", dir: East)]),
@@ -1048,7 +1046,7 @@
         '偮': (tile: (id: "floor"), objects: ["closet-bio-security", (id: "vent", dir: North), "oxygen-tank", "gas-mask", (id: "light", dir: South)]),
         '偯': (tile: (id: "floor"), objects: ["rack", "taser", "taser", "taser", "taser"]),
         '偰': (tile: (id: "floor"), objects: ["rack", "flashbang-box", "flashbang-box", "flashbang-box", "flashbang-box"]),
-        '偱': (tile: (id: "floor"), objects: ["rack", (id: "cable", ends: [North]), (id: "apc", dir: East)]),
+        '偱': (tile: (id: "floor"), objects: ["rack", (id: "cable", ends: [North]), (id: "apc", dir: East), "teargas-box", "teargas-box", "teargas-box", "teargas-box"]),
         '偲': (tile: (id: "floor"), spawn: true, objects: [(id: "chair", dir: East), (id: "id-card", access: [], vars: {"job": "security-officer"}), (id: "cable", ends: [North, East])]),
         '偳': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: West, state: Some("reinf_tabledir")), "space-cleaner", (id: "cable", ends: [East, West])]),
         '側': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: East, state: Some("reinf_tabledir")), (id: "cable", ends: [East, West])]),

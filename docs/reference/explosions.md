@@ -57,6 +57,5 @@ the admin verb and the EMP grenade (`grenades.md`) set one off.
 | Machines take particular damage rather than vanishing, and some items, like tanks, go off themselves | All by the table above |
 | Lattice is left where a floor went | Just space |
 | Window edges still hold air after the window has gone | The same stale edge, for now |
-| Chemical grenades | Not built yet (3.20) |
 | An EMP also breaks computers, opens crates, upsets turrets, radios and sleepers, and reaches the next decks | Cells, energy weapons, batons and locks |
 | Doppler arrays report blasts | Not built |

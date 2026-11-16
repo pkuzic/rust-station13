@@ -70,9 +70,7 @@ Both need power and show the shuttle's whereabouts and the points.
 | Pack | Without |
 |---|---|
 | Medical crate | the sleep toxin bottle |
-| Riot gear crate | tear gas (chemical grenades, 3.20) |
 | Standard costume crate | the bottle of nothing |
-| Janitorial supplies | the cleaner grenades |
 | Bureaucracy crate | the camera |
 
 ## Differences from Luna

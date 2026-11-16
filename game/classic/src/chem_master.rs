@@ -6,7 +6,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, ChemMasterPanelView, Dense, GridPos, MobStat, NetId, ObjectSpec, TilePos};
 
 use crate::actions::{Outbox, in_reach};
-use crate::chemistry::{Reagents, is_glass, is_syringe, react};
+use crate::chemistry::{Reagents, is_glass, is_syringe};
 use crate::closets::InCloset;
 use crate::hands::{Hands, HeldBy};
 use crate::health::Vitals;
@@ -124,7 +124,8 @@ fn move_line(world: &mut World, from: Entity, to: Entity, line: usize, amount: f
         return;
     };
     let moved = into.add(&reagent, amount.min(there));
-    react(&mut into);
+    let fallback = crate::grenades::where_is(world, from);
+    crate::chemistry::react_at(world, to, fallback);
     if let Some(mut out) = world.get_mut::<Reagents>(from) {
         out.remove(&reagent, moved);
     }
@@ -151,8 +152,8 @@ fn make(world: &mut World, machine: Entity, proto: &str, units: f32) {
         for (reagent, amount) in taken {
             into.add(&reagent, amount);
         }
-        react(&mut into);
     }
+    crate::chemistry::react_at(world, made, Some(at));
 }
 
 fn apply(world: &mut World, machine: Entity, op: MasterOp) {

@@ -49,6 +49,10 @@ to files in `apps/client/src/audio.rs`.
 | `weapons/Egloves.ogg` | `sound/weapons/Egloves.ogg` | `baton-hit` | CC-BY-SA 3.0 |
 | `weapons/armbomb.ogg` | `sound/weapons/armbomb.ogg` | `arm-bomb` | CC-BY-SA 3.0 |
 | `effects/bang.ogg` | `sound/effects/bang.ogg` | `bang` | CC-BY-SA 3.0 |
+| `effects/smoke.ogg` | `sound/effects/smoke.ogg` | `smoke` | CC-BY-SA 3.0 |
+| `effects/bubbles2.ogg` | `sound/effects/bubbles2.ogg` | `bubbles` | CC-BY-SA 3.0 |
+| `effects/bamf.ogg` | `sound/effects/bamf.ogg` | `bamf` | CC-BY-SA 3.0 |
+| `misc/slip.ogg` | `sound/misc/slip.ogg` | `slip` | CC-BY-SA 3.0 |
 | `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |
 | `items/eatfood.ogg` | `sound/items/eatfood.ogg` | `eat-food` | CC-BY-SA 3.0 |
 | `items/drink.ogg` | `sound/items/drink.ogg` | `drink` | CC-BY-SA 3.0 |

@@ -4,7 +4,6 @@
 //
 // Skipped (no prototype yet):
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
-//      1 /obj/item/weapon/storage/box/grenades/metalfoam
 //      3 /obj/machinery/computer/gasmon
 //      1 /obj/machinery/computer/general_alert
 //      1 /obj/machinery/pipedispenser/disposal
@@ -169,7 +168,7 @@
         'ĉ': (tile: (id: "floor"), objects: [(id: "manifold", dir: South, above_floor: true), "meter"]),
         'Ċ': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: SouthWest)]),
         'ċ': (tile: (id: "floor"), objects: [(id: "table", dir: East, state: Some("table_1tileendtable")), "insulated-gloves", "utility-belt-loaded"]),
-        'Č': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"})]),
+        'Č': (tile: (id: "floor"), objects: [(id: "table", dir: West, state: Some("table_1tileendtable")), (id: "metal-sheet", vars: {"pixel_x": "-2", "pixel_y": "-2"}), "metal-foam-box"]),
         'č': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthWest, state: Some("reinf_tabledir")), "space-cleaner"]),
         'Ď': (tile: (id: "floor"), objects: [(id: "table-reinforced", dir: SouthEast, state: Some("reinf_tabledir")), "fishburger", (id: "rootbeer", vars: {"pixel_x": "-5"})]),
         'ď': (tile: (id: "floor"), spawn: true, objects: [(id: "comfy-chair-brown", dir: West), (id: "id-card", access: ["engine", "engine_equip", "tech_storage", "maint_tunnels", "external_airlocks"]), "headset-eng", (id: "light", dir: East)]),

@@ -270,6 +270,11 @@ fn into_hand(world: &mut World, mob: Entity, hand: Hand, item: Entity) {
     }
 }
 
+/// Destroy a thing and everything in it (a chemical grenade casing uses up its timer-igniter).
+pub fn destroy(world: &mut World, thing: Entity) {
+    despawn_all(world, thing);
+}
+
 fn despawn_all(world: &mut World, thing: Entity) {
     let parts: Vec<Entity> = {
         let mut q = world.query::<(Entity, &PartOf)>();
