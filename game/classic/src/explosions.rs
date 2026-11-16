@@ -245,6 +245,7 @@ pub fn empulse(world: &mut World, at: TilePos, heavy: i32, light: i32) {
         .resource_mut::<SoundEvents>()
         .0
         .push(SoundEvent::new(EMP, at, 100.0));
+    crate::implants::emp(world, at, heavy, light);
     let mut guns = world.query_filtered::<Entity, Or<(With<Gun>, With<Baton>, With<PowerCell>)>>();
     let charged: Vec<Entity> = guns.iter(world).collect();
     for thing in charged {

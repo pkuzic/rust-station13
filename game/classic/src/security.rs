@@ -152,7 +152,7 @@ fn put_on(world: &mut World, mob: Entity, target: Entity, cuffs: Entity) {
 }
 
 /// Take someone's cuffs off, onto the floor.
-fn take_off(world: &mut World, person: Entity) {
+pub(crate) fn take_off(world: &mut World, person: Entity) {
     let Some(Cuffed(cuffs)) = world.get::<Cuffed>(person).copied() else {
         return;
     };

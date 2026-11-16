@@ -224,6 +224,7 @@ pub fn update_cabinet_views(
             crate::wizard_items::keeps_own_list(&a.sprite)
                 || crate::teleporters::keeps_own_list(&a.sprite)
                 || crate::devices::keeps_own_list(&a.sprite)
+                || crate::implants::keeps_own_list(&a.sprite)
                 || crate::anomalies::keeps_own_list(&a.sprite)
                 || crate::forensics::keeps_own_list(&a.sprite)
         }) {

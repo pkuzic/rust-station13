@@ -412,6 +412,59 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // Implants (`implants.md`): an implanter on someone, the compressed matter one on an
+                // item, cases, the pad and the prisoner console.
+                Action::UseOn(target)
+                    if tool == Some(crate::implants::IMPLANTER)
+                        && people.contains(target)
+                        && (target == mob || places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0))) =>
+                {
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::implants::start_implanting(world, mob, held, target);
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::implants::IMPLANTER)
+                        && reaches
+                        && !people.contains(target)
+                        && appearances.get(target).is_ok_and(|(look, _)| {
+                            !matches!(look.sprite.as_str(), crate::implants::CASE | crate::implants::PAD)
+                        }) =>
+                {
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            let compress = world
+                                .get::<crate::implants::Implanter>(held)
+                                .and_then(|i| i.0)
+                                .and_then(|imp| world.get::<crate::implants::Implant>(imp))
+                                .is_some_and(|i| matches!(i.kind, crate::implants::Kind::Compressed { .. }));
+                            if compress && world.get::<crate::hands::Item>(target).is_some() {
+                                crate::implants::scan(world, mob, held, target);
+                            }
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if (reaches || hands.active_item() == Some(target))
+                        && appearances.get(target).is_ok_and(|(look, _)| {
+                            matches!(look.sprite.as_str(), crate::implants::CASE | crate::implants::PAD)
+                        }) =>
+                {
+                    let held = hands.active_item();
+                    commands
+                        .queue(move |world: &mut World| crate::implants::use_on(world, mob, held, target));
+                }
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| look.sprite == crate::implants::CONSOLE)
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::implants::click_console(world, mob, target));
+                }
                 Action::UseOn(target)
                     if hands.active_item() == Some(target)
                         && matches!(

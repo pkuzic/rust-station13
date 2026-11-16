@@ -17,7 +17,6 @@
 //      1 /obj/machinery/computer/aiupload
 //      3 /obj/machinery/computer/gasmon
 //      1 /obj/machinery/computer/general_alert
-//      1 /obj/machinery/computer/prisoner
 //      1 /obj/machinery/computer/rdconsole/core
 //      1 /obj/machinery/computer/rdservercontrol
 //      1 /obj/machinery/computer/siberia/airlock
@@ -1076,7 +1075,7 @@
         '傉': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: North), (id: "window-pane", dir: South), (id: "pipe", dir: South)]),
         '傊': (tile: (id: "floor"), objects: ["locker-warden"]),
         '傋': (tile: (id: "floor"), objects: ["security-records", (id: "door-button", vars: {"id": "secure_storage", "pixel_y": "23"})]),
-        '傌': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "light-switch", vars: {"pixel_x": "24"})]),
+        '傌': (tile: (id: "floor"), objects: [(id: "pipe", dir: South), (id: "light-switch", vars: {"pixel_x": "24"}), "prisoner-console"]),
         '傍': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "vent", dir: East)]),
         '傎': (tile: (id: "floor"), objects: [(id: "light", dir: West), "crate"]),
         '傏': (tile: (id: "floor"), objects: [(id: "scrubber", dir: East), (id: "chair", dir: North)]),

@@ -68,6 +68,7 @@ pub mod heaters;
 pub mod hydroponics;
 pub mod id_computer;
 pub mod igniters;
+pub mod implants;
 pub mod jetpacks;
 pub mod jobs;
 pub mod lighting;
@@ -177,6 +178,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<blob::BlobState>()
             .init_resource::<changeling::LingState>()
             .init_resource::<changeling::HiveLines>()
+            .init_resource::<implants::Heard>()
             .init_resource::<explosions::PendingBlasts>()
             .init_resource::<objects::NetIds>()
             .init_resource::<pulling::Stepped>()
@@ -487,7 +489,15 @@ impl Plugin for ClassicPlugin {
                             (
                                 wizard_items::run_picks,
                                 wizard_items::update_views,
-                                (devices::run_picks, devices::run_devices, devices::update_views).chain(),
+                                (
+                                    devices::run_picks,
+                                    devices::run_devices,
+                                    devices::update_views,
+                                    implants::run_picks,
+                                    implants::run_implants,
+                                    implants::update_views,
+                                )
+                                    .chain(),
                                 anomalies::run_picks,
                                 anomalies::run_anomalies,
                                 anomalies::update_views,

@@ -26,6 +26,10 @@
     (id: "robotics", categories: ["science"], cost: 15, contains: ["prox-sensor", "prox-sensor", "prox-sensor", "toolbox-electrical", "flash", "flash", "flash", "flash", "high-power-cell", "high-power-cell"], container: Some("crate-secure"), access: Some("robotics")),
     // Luna `armor`: Armor crate
     (id: "armor", categories: ["security"], cost: 15, contains: ["armor-vest", "armor-vest", "armor-vest", "helmet", "helmet", "helmet"], container: Some("crate-secure"), access: Some("security")),
+    // Luna `daimp`, `trackingimp`, `chemimp`: implant kits (`implants.md`)
+    (id: "daimp", categories: ["medical"], cost: 15, contains: ["death-alarm-kit"], container: Some("crate-medical")),
+    (id: "trackingimp", categories: ["security"], cost: 20, contains: ["tracking-implant-kit"], container: Some("crate-secure"), access: Some("armory")),
+    (id: "chemimp", categories: ["security"], cost: 20, contains: ["chem-implant-kit"], container: Some("crate-secure"), access: Some("armory")),
     // Luna `riot`: Riot gear crate (without flashbang, teargas)
     (id: "riot", categories: ["security"], cost: 40, contains: ["riot-suit", "riot-suit", "riot-suit", "riot-helmet", "riot-helmet", "riot-helmet", "stun-baton", "stun-baton", "stun-baton", "riot-shield", "riot-shield", "riot-shield", "handcuffs-box", "handcuffs-box"], container: Some("crate-secure-gear"), access: Some("security")),
     // Luna `weapons`: Weapons crate

@@ -100,4 +100,4 @@ any tank (`explosions.md`): it burns, and too much pressure makes it leak, ruptu
   built.
 - The health-analyser-igniter and the armour bomb vest, and the flamethrower.
 - The admin log of welded bombs.
-- Grenades and implants come separately.
+- Grenades come separately; implants are in `implants.md`.
