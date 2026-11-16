@@ -67,6 +67,8 @@ const SOUNDS: &[(&str, &[&[u8]])] = &[
     ("gunshot", &[ogg!("weapons/Gunshot.ogg")]),
     ("taser", &[ogg!("weapons/Taser.ogg")]),
     ("baton-hit", &[ogg!("weapons/Egloves.ogg")]),
+    ("arm-bomb", &[ogg!("weapons/armbomb.ogg")]),
+    ("bang", &[ogg!("effects/bang.ogg")]),
     (
         "sparks",
         &[

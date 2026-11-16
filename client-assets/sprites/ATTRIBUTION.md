@@ -558,6 +558,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `emergency-oxygen:` | `icons/obj/tank.dmi : "emergency"` | CC-BY-SA 3.0 |
 | `emergency-oxygen-double:` | `icons/obj/tank.dmi : "emergency_double"` | CC-BY-SA 3.0 |
 | `emergency-oxygen-engi:` | `icons/obj/tank.dmi : "emergency_engi"` | CC-BY-SA 3.0 |
+| `emp-grenade:` | `icons/obj/grenade.dmi : "emp"` | CC-BY-SA 3.0 |
+| `emp-grenade:active` | `icons/obj/grenade.dmi : "emp_active"` | CC-BY-SA 3.0 |
+| `emp-grenade-box:` | `icons/obj/storage.dmi : "flashbang"` | CC-BY-SA 3.0 |
 | `empty-canister:` | `icons/obj/atmos.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `empty-canister:can-connector` | `icons/obj/atmos.dmi : "can-connector"` | CC-BY-SA 3.0 |
 | `empty-canister:can-o0` | `icons/obj/atmos.dmi : "can-o0"` | CC-BY-SA 3.0 |
@@ -712,6 +715,9 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `fishburger:` | `icons/obj/food.dmi : "burger"` | CC-BY-SA 3.0 |
 | `flash:` | `icons/obj/device.dmi : "flash"` | CC-BY-SA 3.0 |
 | `flash:flashburnt` | `icons/obj/device.dmi : "flashburnt"` | CC-BY-SA 3.0 |
+| `flashbang:` | `icons/obj/grenade.dmi : "flashbang"` | CC-BY-SA 3.0 |
+| `flashbang:active` | `icons/obj/grenade.dmi : "flashbang_active"` | CC-BY-SA 3.0 |
+| `flashbang-box:` | `icons/obj/storage.dmi : "flashbang"` | CC-BY-SA 3.0 |
 | `flasher:mflash1` | `icons/obj/stationobjs.dmi : "mflash1"` | CC-BY-SA 3.0 |
 | `flashlight:` | `icons/obj/lighting.dmi : "flashlight"` | CC-BY-SA 3.0 |
 | `flashlight:on` | `icons/obj/lighting.dmi : "flashlight-on"` | CC-BY-SA 3.0 |
