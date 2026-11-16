@@ -2648,6 +2648,16 @@
         "beaker-large": { "": (dmi: "icons/obj/chemical.dmi", state: "beakerlarge") },
         "drinking-glass": { "": (dmi: "icons/obj/drinks.dmi", state: "glass_empty") },
         "grenade-casing": { "": (dmi: "icons/obj/grenade.dmi", state: "chemg") },
+        "flashbang": {
+            "": (dmi: "icons/obj/grenade.dmi", state: "flashbang"),
+            "active": (dmi: "icons/obj/grenade.dmi", state: "flashbang_active"),
+        },
+        "emp-grenade": {
+            "": (dmi: "icons/obj/grenade.dmi", state: "emp"),
+            "active": (dmi: "icons/obj/grenade.dmi", state: "emp_active"),
+        },
+        "flashbang-box": { "": (dmi: "icons/obj/storage.dmi", state: "flashbang") },
+        "emp-grenade-box": { "": (dmi: "icons/obj/storage.dmi", state: "flashbang") },
         "folder-red": { "": (dmi: "icons/obj/bureaucracy.dmi", state: "folder_red") },
         "folder-yellow": { "": (dmi: "icons/obj/bureaucracy.dmi", state: "folder_yellow") },
         "folder-white": { "": (dmi: "icons/obj/bureaucracy.dmi", state: "folder_white") },

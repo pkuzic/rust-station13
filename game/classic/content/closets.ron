@@ -73,11 +73,11 @@
     (id: "locker-botanist", closed: "hydrosecure", open: "hydrosecureopen", locked: "hydrosecure1", access: ["hydroponics"], contents: [(id: "black-shoes"), (id: "black-gloves"), (id: "radio")]),
     (id: "locker-cargo", closed: "securecargo", open: "securecargoopen", locked: "securecargo1", access: ["cargo"], contents: [(id: "black-shoes"), (id: "radio"), (id: "black-gloves"), (id: "helmet")]),
     (id: "locker-booze", closed: "cabinetdetective", open: "cabinetdetective_open", locked: "cabinetdetective_locked", access: ["bar"]),
-    (id: "locker-warden", closed: "wardensecure", open: "wardensecureopen", locked: "wardensecure1", access: ["armory"], contents: [(id: "clipboard"), (id: "radio"), (id: "sunglasses"), (id: "stun-baton"), (id: "energy-gun"), (id: "flash"), (id: "jackboots"), (id: "helmet"), (id: "black-gloves")]),
+    (id: "locker-warden", closed: "wardensecure", open: "wardensecureopen", locked: "wardensecure1", access: ["armory"], contents: [(id: "clipboard"), (id: "radio"), (id: "sunglasses"), (id: "stun-baton"), (id: "energy-gun"), (id: "flash"), (id: "jackboots"), (id: "helmet"), (id: "black-gloves"), (id: "flashbang-box")]),
     (id: "locker-rd", closed: "rdsecure", open: "rdsecureopen", locked: "rdsecure1", access: ["heads"], contents: [(id: "brown-shoes"), (id: "latex-gloves"), (id: "radio"), (id: "oxygen-tank"), (id: "gas-mask"), (id: "flash"), (id: "glasses")]),
     (id: "locker-quartermaster", closed: "secureqm", open: "secureqmopen", locked: "secureqm1", access: ["cargo"], contents: [(id: "brown-shoes"), (id: "radio"), (id: "black-gloves")]),
     (id: "locker-kitchen", closed: "secure", open: "secureopen", locked: "secure1", access: ["kitchen"]),
-    (id: "locker-hos", closed: "hossecure", open: "hossecureopen", locked: "hossecure1", access: ["heads"], contents: [(id: "radio"), (id: "sunglasses")]),
+    (id: "locker-hos", closed: "hossecure", open: "hossecureopen", locked: "hossecure1", access: ["heads"], contents: [(id: "radio"), (id: "sunglasses"), (id: "flashbang-box")]),
     (id: "locker-hop", closed: "hopsecure", open: "hopsecureopen", locked: "hopsecure1", access: ["heads"], contents: [(id: "armor-vest"), (id: "helmet"), (id: "radio"), (id: "brown-shoes"), (id: "energy-gun"), (id: "flash"), (id: "sunglasses")]),
     (id: "locker-forensics", closed: "sec", open: "secopen", locked: "sec1", access: ["forensics_lockers"], contents: [(id: "radio"), (id: "brown-shoes")]),
     (id: "locker-detective", closed: "cabinetdetective", open: "cabinetdetective_open", locked: "cabinetdetective_locked", access: ["forensics_lockers"], contents: [(id: "black-gloves"), (id: "brown-shoes"), (id: "clipboard"), (id: "radio")]),
@@ -101,6 +101,7 @@
     (id: "locker-brig", closed: "secure", open: "secureopen", locked: Some("secure1"),
         access: ["security"]),
     (id: "locker-security", closed: "sec", open: "secopen", locked: Some("sec1"),
+        contents: [(id: "flashbang", chance: 70.0, or: Some("flashbang-box"))],
         access: ["security"]),
 
     // Secure lockers (secure/engineering.dm).

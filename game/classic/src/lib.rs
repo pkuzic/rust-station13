@@ -62,6 +62,7 @@ pub mod generators;
 pub mod genetics;
 pub mod ghosts;
 pub mod grabs;
+pub mod grenades;
 pub mod hands;
 pub mod health;
 pub mod heaters;
@@ -487,7 +488,14 @@ impl Plugin for ClassicPlugin {
                             (
                                 wizard_items::run_picks,
                                 wizard_items::update_views,
-                                (devices::run_picks, devices::run_devices, devices::update_views).chain(),
+                                (
+                                    devices::run_picks,
+                                    devices::run_devices,
+                                    devices::update_views,
+                                    grenades::run_grenades,
+                                    grenades::heal_ears,
+                                )
+                                    .chain(),
                                 anomalies::run_picks,
                                 anomalies::run_anomalies,
                                 anomalies::update_views,

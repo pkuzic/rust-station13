@@ -125,6 +125,7 @@ const APC_WALL_PX: i32 = 24;
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
     crate::devices::equip_item(world, entity, &spec.id);
+    crate::grenades::equip_item(world, entity, &spec.id);
     crate::anomalies::equip_item(world, entity, &spec.id);
     crate::forensics::equip_item(world, &spec.id, entity);
     // Tagged for an airlock console (`airlock-control.md`).

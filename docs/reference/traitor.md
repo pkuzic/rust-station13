@@ -43,6 +43,7 @@ Using it also repeats a traitor's objectives in chat.
 | Soap | 1 |
 | Low power charge, with detonator (`explosions.md`) | 4 |
 | High power charge, with detonator | 7 |
+| Box of five EMP grenades | 4 |
 
 ## Differences from Luna
 
@@ -57,4 +58,4 @@ Using it also repeats a traitor's objectives in chat.
 | Syndicate soap, as ordinary soap with another sprite | Ordinary soap |
 
 Waiting for what makes them work, and not sold yet: implants (3.20), energy crossbow and sword (4.3), hacktool, emag (4.1),
-no-slip shoes, chameleon jumpsuit, thermals, voice changer (1.12), binary key (1.10), fake ID, EMP grenades, Detomatix cartridge (3.21), chameleon projector, sleepy pen, freeform AI module (3.9), power sink, cyanide pill.
+no-slip shoes, chameleon jumpsuit, thermals, voice changer (1.12), binary key (1.10), fake ID, Detomatix cartridge (3.21), chameleon projector, sleepy pen, freeform AI module (3.9), power sink, cyanide pill.

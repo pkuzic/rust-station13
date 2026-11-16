@@ -47,6 +47,8 @@ to files in `apps/client/src/audio.rs`.
 | `weapons/Gunshot.ogg` | `sound/weapons/Gunshot.ogg` | `gunshot` | CC-BY-SA 3.0 |
 | `weapons/Taser.ogg` | `sound/weapons/Taser.ogg` | `taser` | CC-BY-SA 3.0 |
 | `weapons/Egloves.ogg` | `sound/weapons/Egloves.ogg` | `baton-hit` | CC-BY-SA 3.0 |
+| `weapons/armbomb.ogg` | `sound/weapons/armbomb.ogg` | `arm-bomb` | CC-BY-SA 3.0 |
+| `effects/bang.ogg` | `sound/effects/bang.ogg` | `bang` | CC-BY-SA 3.0 |
 | `effects/refill.ogg` | `sound/effects/refill.ogg` | `refill` | CC-BY-SA 3.0 |
 | `items/eatfood.ogg` | `sound/items/eatfood.ogg` | `eat-food` | CC-BY-SA 3.0 |
 | `items/drink.ogg` | `sound/items/drink.ogg` | `drink` | CC-BY-SA 3.0 |
