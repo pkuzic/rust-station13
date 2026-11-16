@@ -61,7 +61,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.10 Cyborgs: mob, modules, laws, chargers | L | `silicon/robot` | |
 | [ ] | 3.11 Research: console, analyzer, protolathe, imprinter, servers | L | `modules/research` | |
 | [ ] | 3.12 Mechs and fabricator | XL | `modules/mecha` | |
-| [ ] | 3.13 Anomalies: artifacts, analyser, harvester | M | `research/anomaly` | |
+| [x] | 3.13 Anomalies: artifacts, analyser, harvester | M | `research/anomaly` | `anomalies.md`; the utilizer too. No dizziness, drowsiness or mutant races yet |
 | [ ] | 3.14 Mining and the Siberia outpost | M-L | `modules/mining` | |
 | [ ] | 3.15 Bots: Beepsky, mulebot, others | L | `machinery/bots` | Navigation beacons exist |
 | [ ] | 3.16 Aliens | L | `carbon/alien`, `objects/alien` | |
