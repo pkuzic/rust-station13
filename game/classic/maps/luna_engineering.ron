@@ -5,7 +5,6 @@
 // Skipped (no prototype yet):
 //      1 /obj/item/clothing/mask/cigarette/cigar/havana
 //      1 /obj/item/weapon/storage/box/grenades/metalfoam
-//      1 /obj/machinery/computer/cargo/ordercomp
 //      3 /obj/machinery/computer/gasmon
 //      1 /obj/machinery/computer/general_alert
 //      1 /obj/machinery/pipedispenser/disposal
@@ -300,7 +299,7 @@
         'σ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "pipe", dir: South), (id: "cable", ends: [East, West]), (id: "window-pane", dir: South), (id: "cable", ends: [North, South])]),
         'τ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "light", dir: East)]),
         'υ': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: South), (id: "cable", ends: [South, East]), (id: "cable", ends: [East, West])]),
-        'φ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [North, West]), (id: "cable", ends: [North, South])]),
+        'φ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [North, West]), (id: "cable", ends: [North, South]), "order-console"]),
         'χ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "crate-rcd"]),
         'ψ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "cable", ends: [North, West])]),
         'ω': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "cable", ends: [East, West]), (id: "chair", dir: South), "landmark-derelict-nodamage", "utility-belt-full"]),

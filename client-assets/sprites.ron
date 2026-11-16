@@ -1603,6 +1603,41 @@
             "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
             "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
         },
+        "crate-medical": {
+            "medicalcrate": (dmi: "icons/obj/storage.dmi", state: "medicalcrate"),
+            "medicalcrateopen": (dmi: "icons/obj/storage.dmi", state: "medicalcrateopen"),
+        },
+        "crate-electrical": {
+            "engi_e_crate": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate"),
+            "engi_e_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate_open"),
+        },
+        "crate-secure": {
+            "securecrate": (dmi: "icons/obj/storage.dmi", state: "securecrate"),
+            "securecrateopen": (dmi: "icons/obj/storage.dmi", state: "securecrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-weapon": {
+            "weaponcrate": (dmi: "icons/obj/storage.dmi", state: "weaponcrate"),
+            "weaponcrateopen": (dmi: "icons/obj/storage.dmi", state: "weaponcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-plasma": {
+            "plasmacrate": (dmi: "icons/obj/storage.dmi", state: "plasmacrate"),
+            "plasmacrateopen": (dmi: "icons/obj/storage.dmi", state: "plasmacrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-gear": {
+            "secgearcrate": (dmi: "icons/obj/storage.dmi", state: "secgearcrate"),
+            "secgearcrateopen": (dmi: "icons/obj/storage.dmi", state: "secgearcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        // Cargo (`cargo.md`).
+        "supply-console": { "": (dmi: "icons/obj/computer.dmi", state: "shuttle") },
+        "order-console": { "": (dmi: "icons/obj/computer.dmi", state: "supply") },
         "crate-engineering": {
             "engi_crate": (dmi: "icons/obj/storage.dmi", state: "engi_crate"),
             "engi_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_crate_open"),
