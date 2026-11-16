@@ -20,7 +20,6 @@
 //      1 /obj/machinery/artifact_device/harvester
 //      1 /obj/machinery/bot/secbot/beepsky
 //      1 /obj/machinery/computer/aiupload
-//      1 /obj/machinery/computer/cargo/ordercomp
 //      2 /obj/machinery/computer/forensic_scanning
 //      1 /obj/machinery/computer/forensic_scanning/detective
 //      3 /obj/machinery/computer/gasmon
@@ -232,7 +231,7 @@
         'Ħ': (tile: (id: "grille", solid: true, opaque: Some(false), airtight: Some(false)), objects: [(id: "window-pane", dir: East), (id: "pipe", dir: South), (id: "cable", ends: [East, West]), (id: "window-pane", dir: South), (id: "cable", ends: [North, South])]),
         'ħ': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "light", dir: East)]),
         'Ĩ': (tile: (id: "r-wall", solid: true), objects: [(id: "pipe", dir: South), (id: "cable", ends: [South, East]), (id: "cable", ends: [East, West])]),
-        'ĩ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [North, West]), (id: "cable", ends: [North, South])]),
+        'ĩ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, East]), (id: "cable", ends: [North, West]), (id: "cable", ends: [North, South]), "order-console"]),
         'Ī': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), "crate-rcd"]),
         'ī': (tile: (id: "floor"), objects: [(id: "cable", ends: [East, West]), (id: "cable", ends: [North, West])]),
         'Ĭ': (tile: (id: "floor"), objects: [(id: "cable", ends: [North, South]), (id: "cable", ends: [East, West]), (id: "chair", dir: South), "landmark-derelict-nodamage", "utility-belt-full"]),

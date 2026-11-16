@@ -20,6 +20,7 @@ mod audio;
 mod brig_panel;
 mod build_panel;
 mod camera_panel;
+mod cargo_panel;
 mod changeling_panel;
 mod chem_panel;
 mod comms_panel;
@@ -570,6 +571,7 @@ fn main() {
         .init_resource::<pick_panel::OpenPickList>()
         .init_resource::<spellbook_panel::OpenSpellbook>()
         .init_resource::<genetics_panel::OpenGenetics>()
+        .init_resource::<cargo_panel::OpenCargo>()
         .init_resource::<heater_panel::OpenHeater>()
         .init_resource::<arcade_panel::OpenArcade>()
         .init_resource::<brig_panel::OpenBrig>()
@@ -651,6 +653,7 @@ fn main() {
                             )
                                 .chain(),
                             (genetics_panel::receive_genetics, genetics_panel::show_genetics).chain(),
+                            (cargo_panel::receive_cargo, cargo_panel::show_cargo).chain(),
                         ),
                         (heater_panel::receive_heater, heater_panel::show_heater).chain(),
                         (arcade_panel::receive_arcade, arcade_panel::show_arcade).chain(),
@@ -981,6 +984,7 @@ fn close_every_panel(world: &mut World) {
     world.resource_mut::<pick_panel::OpenPickList>().0 = None;
     world.resource_mut::<spellbook_panel::OpenSpellbook>().0 = None;
     *world.resource_mut::<genetics_panel::OpenGenetics>() = genetics_panel::OpenGenetics::default();
+    world.resource_mut::<cargo_panel::OpenCargo>().0 = None;
     world.resource_mut::<heater_panel::OpenHeater>().0 = None;
     world.resource_mut::<arcade_panel::OpenArcade>().0 = None;
     world.resource_mut::<brig_panel::OpenBrig>().0 = None;
@@ -2057,10 +2061,11 @@ fn scripted_use(
     mut sender: Query<&mut MessageSender<ActionInput>, (With<Client>, With<Connected>)>,
     mut menu: ResMut<context_menu::MenuRequest>,
     consoles: Res<camera_panel::OpenCameras>,
-    (lists, books, genes): (
+    (lists, books, genes, cargo): (
         Res<pick_panel::OpenPickList>,
         Res<spellbook_panel::OpenSpellbook>,
         Res<genetics_panel::OpenGenetics>,
+        Res<cargo_panel::OpenCargo>,
     ),
     (
         arcades,
@@ -2177,6 +2182,7 @@ fn scripted_use(
             .map(|view| view.target)
             .or_else(|| books.0.as_ref().map(|view| view.target))
             .or_else(|| genes.view.as_ref().map(|view| view.target))
+            .or_else(|| cargo.0.as_ref().map(|view| view.target))
             .map(|target| ActionInput::Pick { target, line }),
         UseStep::Camera(line) => consoles.0.as_ref().map(|view| ActionInput::Camera {
             target: view.target,

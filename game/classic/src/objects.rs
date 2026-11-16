@@ -271,6 +271,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::teleporters::spawn_part(world, proto, pos, id));
     }
+    if crate::cargo::is_cargo_console(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cargo::spawn_console(world, proto, pos, id));
+    }
     if crate::plumbing::is_plumbing(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::plumbing::spawn_plumbing(world, proto, pos, id));

@@ -502,6 +502,15 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::teleporters::click(world, mob, target));
                 }
+                // Cargo consoles (`cargo.md`).
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::cargo::is_cargo_console(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::cargo::click(world, mob, target));
+                }
                 Action::UseOn(target)
                     if tool == Some(crate::teleporters::HAND_TELE) && hands.active_item() == Some(target) =>
                 {

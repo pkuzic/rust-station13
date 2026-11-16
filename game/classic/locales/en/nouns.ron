@@ -758,4 +758,12 @@
     "teleporter-station": (gender: neuter, sg: (nom: "teleporter station", indef: "a teleporter station"), pl: Some((nom: "teleporter stations"))),
     "portal": (gender: neuter, sg: (nom: "portal", indef: "a portal"), pl: Some((nom: "portals"))),
     "wormhole": (gender: neuter, sg: (nom: "wormhole", indef: "a wormhole"), pl: Some((nom: "wormholes"))),
+    "supply-console": (gender: neuter, sg: (nom: "supply shuttle console", indef: "a supply shuttle console"), pl: Some((nom: "supply shuttle consoles"))),
+    "order-console": (gender: neuter, sg: (nom: "supply ordering console", indef: "a supply ordering console"), pl: Some((nom: "supply ordering consoles"))),
+    "crate-medical": (gender: neuter, sg: (nom: "medical crate", indef: "a medical crate"), pl: Some((nom: "medical crates"))),
+    "crate-electrical": (gender: neuter, sg: (nom: "electrical crate", indef: "an electrical crate"), pl: Some((nom: "electrical crates"))),
+    "crate-secure": (gender: neuter, sg: (nom: "secure crate", indef: "a secure crate"), pl: Some((nom: "secure crates"))),
+    "crate-secure-weapon": (gender: neuter, sg: (nom: "weapons crate", indef: "a weapons crate"), pl: Some((nom: "weapons crates"))),
+    "crate-secure-plasma": (gender: neuter, sg: (nom: "plasma crate", indef: "a plasma crate"), pl: Some((nom: "plasma crates"))),
+    "crate-secure-gear": (gender: neuter, sg: (nom: "gear crate", indef: "a gear crate"), pl: Some((nom: "gear crates"))),
 }

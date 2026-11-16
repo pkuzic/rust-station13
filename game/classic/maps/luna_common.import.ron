@@ -20,6 +20,8 @@
         (path: "/turf/simulated/shuttle/floor", tile: (id: "floor")),
         (path: "/turf/simulated/shuttle/wall", tile: (id: "r-wall", solid: true)),
         (path: "/turf/unsimulated/wall", tile: (id: "r-wall", solid: true)),
+        (path: "/turf/unsimulated/shuttle/floor", tile: (id: "floor")),
+        (path: "/turf/unsimulated/shuttle/wall", tile: (id: "r-wall", solid: true)),
         // A hole in the floor down to the deck below (`multiz.md`).
         (path: "/turf/simulated/floor/open", tile: (id: "open-space")),
     ],
@@ -439,6 +441,10 @@
         // Cloning (`cloning.md`).
         (path: "/obj/machinery/dna_scannernew", id: "dna-scanner"),
         (path: "/obj/machinery/computer/cloning", id: "cloning-console"),
+        // Cargo (`cargo.md`).
+        (path: "/obj/machinery/computer/cargo/supplycomp", id: "supply-console"),
+        (path: "/obj/machinery/computer/cargo/ordercomp", id: "order-console"),
+        (path: "/obj/effect/landmark/supplymarker", id: "supply-marker"),
         // Teleporters (`teleporters.md`).
         (path: "/obj/machinery/computer/teleporter", id: "teleporter-console"),
         (path: "/obj/machinery/teleport/hub", id: "teleporter-hub"),
