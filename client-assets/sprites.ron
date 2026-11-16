@@ -1603,6 +1603,41 @@
             "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
             "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
         },
+        "crate-medical": {
+            "medicalcrate": (dmi: "icons/obj/storage.dmi", state: "medicalcrate"),
+            "medicalcrateopen": (dmi: "icons/obj/storage.dmi", state: "medicalcrateopen"),
+        },
+        "crate-electrical": {
+            "engi_e_crate": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate"),
+            "engi_e_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate_open"),
+        },
+        "crate-secure": {
+            "securecrate": (dmi: "icons/obj/storage.dmi", state: "securecrate"),
+            "securecrateopen": (dmi: "icons/obj/storage.dmi", state: "securecrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-weapon": {
+            "weaponcrate": (dmi: "icons/obj/storage.dmi", state: "weaponcrate"),
+            "weaponcrateopen": (dmi: "icons/obj/storage.dmi", state: "weaponcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-plasma": {
+            "plasmacrate": (dmi: "icons/obj/storage.dmi", state: "plasmacrate"),
+            "plasmacrateopen": (dmi: "icons/obj/storage.dmi", state: "plasmacrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-gear": {
+            "secgearcrate": (dmi: "icons/obj/storage.dmi", state: "secgearcrate"),
+            "secgearcrateopen": (dmi: "icons/obj/storage.dmi", state: "secgearcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        // Cargo (`cargo.md`).
+        "supply-console": { "": (dmi: "icons/obj/computer.dmi", state: "shuttle") },
+        "order-console": { "": (dmi: "icons/obj/computer.dmi", state: "supply") },
         "crate-engineering": {
             "engi_crate": (dmi: "icons/obj/storage.dmi", state: "engi_crate"),
             "engi_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_crate_open"),
@@ -2758,7 +2793,15 @@
         "bike-horn": { "": (dmi: "icons/obj/items.dmi", state: "bike_horn") },
         "rubber-ducky": { "": (dmi: "icons/obj/watercloset.dmi", state: "rubberducky") },
         "atmos-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "atmos") },
-        "forensic-scanner": { "": (dmi: "icons/obj/device.dmi", state: "forensic0") },
+        "forensic-scanner": {
+            "": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic0": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic1": (dmi: "icons/obj/device.dmi", state: "forensic1"),
+        },
+        "fingerprint-card": {
+            "": (dmi: "icons/obj/card.dmi", state: "fingerprint0"),
+            "fingerprint1": (dmi: "icons/obj/card.dmi", state: "fingerprint1"),
+        },
         "infra-sensor": { "": (dmi: "icons/obj/device.dmi", state: "infra_sensor") },
         "worn:handcuffs": {
             "": (dmi: "icons/mob/mob.dmi", state: "handcuff1"),
@@ -2950,7 +2993,13 @@
         "display-case": { "": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1") },
         "washer": { "": (dmi: "icons/obj/washer.dmi", state: "land01") },
         "bookcase": { "": (dmi: "icons/obj/computer.dmi", state: "bookcase") },
-        "operating-table": { "": (dmi: "icons/obj/surgery.dmi", state: "table2-idle") },
+        "operating-table": {
+            "": (dmi: "icons/obj/surgery.dmi", state: "table2-idle"),
+            "table2-active": (dmi: "icons/obj/surgery.dmi", state: "table2-active"),
+            "table2-active-dead": (dmi: "icons/obj/surgery.dmi", state: "table2-active-dead"),
+        },
+        "appendix": { "": (dmi: "icons/obj/surgery.dmi", state: "appendix") },
+        "brain": { "": (dmi: "icons/obj/surgery.dmi", state: "brain2") },
         "laser-machine": { "": (dmi: "icons/effects/lasers2.dmi", state: "lasermachine") },
         "turntable": { "": (dmi: "icons/effects/lasers2.dmi", state: "turntable") },
         "air-sensor": { "": (dmi: "icons/obj/stationobjs.dmi", state: "gsensor1") },
@@ -3124,6 +3173,8 @@
         "detective-records": { "messyfiles": (dmi: "icons/obj/computer.dmi", state: "messyfiles") },
         "medical-records": { "medical": (dmi: "icons/obj/computer.dmi", state: "medical") },
         "id-computer": { "id": (dmi: "icons/obj/computer.dmi", state: "id") },
+        "forensic-computer": { "forensic": (dmi: "icons/obj/computer.dmi", state: "forensic") },
+        "forensic-computer-old": { "old": (dmi: "icons/obj/computer.dmi", state: "old") },
         "plant-pot": {
             "pot-empty": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "pot-empty"),
             "tomato-G1": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "tomato-G1"),

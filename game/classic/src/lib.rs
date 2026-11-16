@@ -19,6 +19,7 @@ pub mod blob;
 pub mod brig;
 pub mod cables;
 pub mod cameras;
+pub mod cargo;
 pub mod cells;
 pub mod chairs;
 pub mod changeling;
@@ -51,6 +52,7 @@ pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
 pub mod food;
+pub mod forensics;
 pub mod frames;
 pub mod freezers;
 pub mod furniture;
@@ -110,6 +112,7 @@ pub mod spells;
 pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
+pub mod surgery;
 pub mod teg;
 pub mod teleporters;
 pub mod time;
@@ -249,6 +252,7 @@ impl Plugin for ClassicPlugin {
                     smes_panel::process_smes_ops,
                     wires::resolve_shocks,
                     (
+                        surgery::take_surgery_clicks,
                         combat::resolve_attacks,
                         combat::keep_gods_whole,
                         combat::come_round,
@@ -488,6 +492,17 @@ impl Plugin for ClassicPlugin {
                                 teleporters::run_picks,
                                 teleporters::run_teleporters,
                                 teleporters::update_views,
+                                surgery::run_picks,
+                                surgery::run_operations,
+                                surgery::update_views,
+                                surgery::update_tables,
+                                forensics::run_picks,
+                                forensics::run_computers,
+                                forensics::update_views,
+                                cargo::run_picks,
+                                cargo::run_cargo,
+                                cargo::update_views,
+                                cargo::clear_closed_views,
                             )
                                 .chain(),
                             (

@@ -1,9 +1,11 @@
 //! Chunked tile grid with x, y and z (station deck) coordinates.
 
+mod cargo;
 mod components;
 mod map;
 pub mod sight;
 
+pub use cargo::{CARGO_CATEGORIES, CargoOp, CargoPage, CargoPanelView, ShuttleAt};
 pub use components::{
     AlarmPanelView, AlarmReading, ApcPanelView, Appearance, ArcadePanelView, AtmosView, AutolathePanelView,
     AutolatheRow, BodyScanView, BrigPanelView, BuildPanelView, CameraPanelView, CameraRow, CameraView,
