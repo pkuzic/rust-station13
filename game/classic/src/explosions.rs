@@ -433,6 +433,10 @@ fn hit_things(world: &mut World, at: TilePos, severity: u8, spare_people: bool) 
             }
             continue;
         }
+        if world.get::<crate::anomalies::Artifact>(thing).is_some() {
+            crate::anomalies::blasted(world, thing, severity);
+            continue;
+        }
         if world.get::<crate::blob::BlobCell>(thing).is_some() {
             crate::blob::blasted(world, thing, severity);
             continue;

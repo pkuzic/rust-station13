@@ -21,6 +21,9 @@ pub enum Step {
     UseOn(String),
     /// Ctrl-click: start pulling the first thing with this sprite. Waits until there is one.
     Pull(String),
+    /// Pick line `N` of the open list window of the first thing with this sprite (not its own
+    /// mob). Waits until there is one.
+    PickOn(String, u16),
     /// Click the item in the active hand (Luna `attack_self`: light a welding tool, flip
     /// an extinguisher's safety). Held items aren't sent as things on the map, so `UseOn`
     /// can't find them. Waits until the hand holds something.
@@ -108,6 +111,16 @@ pub(crate) fn run_script(
             let target = find(sprite);
             if let Some(id) = target {
                 actions.send::<IntentChannel>(ActionInput::UseOn(id));
+            }
+            target.is_some()
+        }
+        Step::PickOn(sprite, line) => {
+            let target = find(sprite);
+            if let Some(id) = target {
+                actions.send::<IntentChannel>(ActionInput::Pick {
+                    target: id,
+                    line: *line,
+                });
             }
             target.is_some()
         }

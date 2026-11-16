@@ -49,8 +49,8 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
-| [ ] | 3.1 Cargo: orders, supply shuttle, points, crates | M | `supplyshuttle`, `supplypacks` | |
-| [ ] | 3.2 Surgery and the operating table | M | `modules/surgery` | Table is scenery |
+| [x] | 3.1 Cargo: orders, supply shuttle, points, crates | M | `supplyshuttle`, `supplypacks` | `cargo.md`. 31 of 46 packs: the rest wait on their contents. No order comments or stamped manifests yet |
+| [x] | 3.2 Surgery and the operating table | M | `modules/surgery` | `surgery.md`; no bones or limbs yet |
 | [ ] | 3.3 Fractures, bleeding, limb loss, pain | L | `organs.dm`, `human_life` | |
 | [ ] | 3.4 Viruses and PanD.E.M.I.C. | L | `datums/diseases` | |
 | [~] | 3.5 Genetics: scanner console, injectors, powers | L | `dnaconsole_new`, `game/dna` | Genes, the DNA console, injectors, radiation, the monkey block, and hulk, X-ray, blindness, cold resistance, no breathing, regeneration, deafness, epilepsy, cough, twitch (`genetics.md`). Left: telekinesis, clumsiness and the rest under Not built |
@@ -61,13 +61,13 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.10 Cyborgs: mob, modules, laws, chargers | L | `silicon/robot` | |
 | [ ] | 3.11 Research: console, analyzer, protolathe, imprinter, servers | L | `modules/research` | |
 | [ ] | 3.12 Mechs and fabricator | XL | `modules/mecha` | |
-| [ ] | 3.13 Anomalies: artifacts, analyser, harvester | M | `research/anomaly` | |
+| [x] | 3.13 Anomalies: artifacts, analyser, harvester | M | `research/anomaly` | `anomalies.md`; the utilizer too. No dizziness, drowsiness or mutant races yet |
 | [ ] | 3.14 Mining and the Siberia outpost | M-L | `modules/mining` | |
 | [ ] | 3.15 Bots: Beepsky, mulebot, others | L | `machinery/bots` | Navigation beacons exist |
 | [ ] | 3.16 Aliens | L | `carbon/alien`, `objects/alien` | |
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
-| [ ] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | Records exist |
+| [x] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | `forensics.md`; no blood yet |
 | [~] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`). Left: grenades and implants. Mousetraps and infrared aren't on Luna's station |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 

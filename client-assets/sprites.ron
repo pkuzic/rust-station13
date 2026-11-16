@@ -1603,6 +1603,41 @@
             "o2crate": (dmi: "icons/obj/storage.dmi", state: "o2crate"),
             "o2crateopen": (dmi: "icons/obj/storage.dmi", state: "o2crateopen"),
         },
+        "crate-medical": {
+            "medicalcrate": (dmi: "icons/obj/storage.dmi", state: "medicalcrate"),
+            "medicalcrateopen": (dmi: "icons/obj/storage.dmi", state: "medicalcrateopen"),
+        },
+        "crate-electrical": {
+            "engi_e_crate": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate"),
+            "engi_e_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_e_crate_open"),
+        },
+        "crate-secure": {
+            "securecrate": (dmi: "icons/obj/storage.dmi", state: "securecrate"),
+            "securecrateopen": (dmi: "icons/obj/storage.dmi", state: "securecrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-weapon": {
+            "weaponcrate": (dmi: "icons/obj/storage.dmi", state: "weaponcrate"),
+            "weaponcrateopen": (dmi: "icons/obj/storage.dmi", state: "weaponcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-plasma": {
+            "plasmacrate": (dmi: "icons/obj/storage.dmi", state: "plasmacrate"),
+            "plasmacrateopen": (dmi: "icons/obj/storage.dmi", state: "plasmacrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        "crate-secure-gear": {
+            "secgearcrate": (dmi: "icons/obj/storage.dmi", state: "secgearcrate"),
+            "secgearcrateopen": (dmi: "icons/obj/storage.dmi", state: "secgearcrateopen"),
+            "securecrateg": (dmi: "icons/obj/storage.dmi", state: "securecrateg"),
+            "securecrater": (dmi: "icons/obj/storage.dmi", state: "securecrater"),
+        },
+        // Cargo (`cargo.md`).
+        "supply-console": { "": (dmi: "icons/obj/computer.dmi", state: "shuttle") },
+        "order-console": { "": (dmi: "icons/obj/computer.dmi", state: "supply") },
         "crate-engineering": {
             "engi_crate": (dmi: "icons/obj/storage.dmi", state: "engi_crate"),
             "engi_crate_open": (dmi: "icons/obj/storage.dmi", state: "engi_crate_open"),
@@ -2692,6 +2727,47 @@
         // Teleporters (`teleporters.md`).
         "tracking-beacon": { "": (dmi: "icons/obj/radio.dmi", state: "beacon") },
         "teleporter-console": { "teleport": (dmi: "icons/obj/computer.dmi", state: "teleport") },
+        // Anomaly research (`anomalies.md`).
+        "alien-artifact": {
+            "ano00": (dmi: "icons/obj/anomaly.dmi", state: "ano00"),
+            "ano01": (dmi: "icons/obj/anomaly.dmi", state: "ano01"),
+            "ano10": (dmi: "icons/obj/anomaly.dmi", state: "ano10"),
+            "ano11": (dmi: "icons/obj/anomaly.dmi", state: "ano11"),
+            "ano20": (dmi: "icons/obj/anomaly.dmi", state: "ano20"),
+            "ano21": (dmi: "icons/obj/anomaly.dmi", state: "ano21"),
+            "ano30": (dmi: "icons/obj/anomaly.dmi", state: "ano30"),
+            "ano31": (dmi: "icons/obj/anomaly.dmi", state: "ano31"),
+            "ano40": (dmi: "icons/obj/anomaly.dmi", state: "ano40"),
+            "ano41": (dmi: "icons/obj/anomaly.dmi", state: "ano41"),
+            "ano50": (dmi: "icons/obj/anomaly.dmi", state: "ano50"),
+            "ano51": (dmi: "icons/obj/anomaly.dmi", state: "ano51"),
+        },
+        "anomaly-analyser": {
+            "": (dmi: "icons/obj/machines/research.dmi", state: "anoscan"),
+            "nopower": (dmi: "icons/obj/machines/research.dmi", state: "anoscan_nopower"),
+        },
+        "anomaly-harvester": {
+            "": (dmi: "icons/obj/machines/research.dmi", state: "anocol"),
+            "nopower": (dmi: "icons/obj/machines/research.dmi", state: "anocol_nopower"),
+        },
+        "anomaly-battery": {
+            "": (dmi: "icons/obj/anomaly.dmi", state: "anobattery0"),
+            "anobattery0": (dmi: "icons/obj/anomaly.dmi", state: "anobattery0"),
+            "anobattery25": (dmi: "icons/obj/anomaly.dmi", state: "anobattery25"),
+            "anobattery50": (dmi: "icons/obj/anomaly.dmi", state: "anobattery50"),
+            "anobattery75": (dmi: "icons/obj/anomaly.dmi", state: "anobattery75"),
+            "anobattery100": (dmi: "icons/obj/anomaly.dmi", state: "anobattery100"),
+        },
+        "anomaly-utilizer": {
+            "": (dmi: "icons/obj/anomaly.dmi", state: "anodev"),
+            "anodev": (dmi: "icons/obj/anomaly.dmi", state: "anodev"),
+            "anodev0": (dmi: "icons/obj/anomaly.dmi", state: "anodev0"),
+            "anodev25": (dmi: "icons/obj/anomaly.dmi", state: "anodev25"),
+            "anodev50": (dmi: "icons/obj/anomaly.dmi", state: "anodev50"),
+            "anodev75": (dmi: "icons/obj/anomaly.dmi", state: "anodev75"),
+            "anodev100": (dmi: "icons/obj/anomaly.dmi", state: "anodev100"),
+        },
+        "artifact-field": { "shieldsparkles0": (dmi: "icons/effects/effects.dmi", state: "shieldsparkles0") },
         "teleporter-hub": {
             "tele0": (dmi: "icons/obj/stationobjs.dmi", state: "tele0"),
             "tele1": (dmi: "icons/obj/stationobjs.dmi", state: "tele1"),
@@ -2717,7 +2793,15 @@
         "bike-horn": { "": (dmi: "icons/obj/items.dmi", state: "bike_horn") },
         "rubber-ducky": { "": (dmi: "icons/obj/watercloset.dmi", state: "rubberducky") },
         "atmos-analyzer": { "": (dmi: "icons/obj/device.dmi", state: "atmos") },
-        "forensic-scanner": { "": (dmi: "icons/obj/device.dmi", state: "forensic0") },
+        "forensic-scanner": {
+            "": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic0": (dmi: "icons/obj/device.dmi", state: "forensic0"),
+            "forensic1": (dmi: "icons/obj/device.dmi", state: "forensic1"),
+        },
+        "fingerprint-card": {
+            "": (dmi: "icons/obj/card.dmi", state: "fingerprint0"),
+            "fingerprint1": (dmi: "icons/obj/card.dmi", state: "fingerprint1"),
+        },
         "infra-sensor": { "": (dmi: "icons/obj/device.dmi", state: "infra_sensor") },
         "worn:handcuffs": {
             "": (dmi: "icons/mob/mob.dmi", state: "handcuff1"),
@@ -2948,7 +3032,13 @@
         "display-case": { "": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1") },
         "washer": { "": (dmi: "icons/obj/washer.dmi", state: "land01") },
         "bookcase": { "": (dmi: "icons/obj/computer.dmi", state: "bookcase") },
-        "operating-table": { "": (dmi: "icons/obj/surgery.dmi", state: "table2-idle") },
+        "operating-table": {
+            "": (dmi: "icons/obj/surgery.dmi", state: "table2-idle"),
+            "table2-active": (dmi: "icons/obj/surgery.dmi", state: "table2-active"),
+            "table2-active-dead": (dmi: "icons/obj/surgery.dmi", state: "table2-active-dead"),
+        },
+        "appendix": { "": (dmi: "icons/obj/surgery.dmi", state: "appendix") },
+        "brain": { "": (dmi: "icons/obj/surgery.dmi", state: "brain2") },
         "laser-machine": { "": (dmi: "icons/effects/lasers2.dmi", state: "lasermachine") },
         "turntable": { "": (dmi: "icons/effects/lasers2.dmi", state: "turntable") },
         "air-sensor": { "": (dmi: "icons/obj/stationobjs.dmi", state: "gsensor1") },
@@ -3122,6 +3212,8 @@
         "detective-records": { "messyfiles": (dmi: "icons/obj/computer.dmi", state: "messyfiles") },
         "medical-records": { "medical": (dmi: "icons/obj/computer.dmi", state: "medical") },
         "id-computer": { "id": (dmi: "icons/obj/computer.dmi", state: "id") },
+        "forensic-computer": { "forensic": (dmi: "icons/obj/computer.dmi", state: "forensic") },
+        "forensic-computer-old": { "old": (dmi: "icons/obj/computer.dmi", state: "old") },
         "plant-pot": {
             "pot-empty": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "pot-empty"),
             "tomato-G1": (dmi: "icons/GoonHydroPort/hydroponics.dmi", state: "tomato-G1"),

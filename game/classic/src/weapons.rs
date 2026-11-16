@@ -535,6 +535,8 @@ pub fn run_shots(world: &mut World) {
         }
         let from = world.get::<GridPos>(entity).map_or(to, |p| p.0);
         if blocked(world, &decks, from, to, shot.fires == Fires::Beam) {
+            // An artifact in the way may wake to it (`anomalies.md`).
+            crate::anomalies::shot_into(world, to, matches!(shot.fires, Fires::Bullet(_)));
             world.entity_mut(entity).despawn();
             continue;
         }

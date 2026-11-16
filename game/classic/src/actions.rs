@@ -391,6 +391,15 @@ pub fn process_actions(
                 Action::UseOnTile(tile) => in_reach(mob_pos.0, tile),
                 _ => false,
             };
+            // Hands leave prints and fibres on what they touch (`forensics.md`).
+            if let Action::UseOn(target) = action {
+                let held = hands.active_item();
+                if reaches || held == Some(target) {
+                    commands.queue(move |world: &mut World| {
+                        crate::forensics::touch_with(world, mob, target, held)
+                    });
+                }
+            }
             if reaches
                 && let Some(active) = hands.active_item()
                 && welding.lit(Some(active)).is_some()
@@ -488,6 +497,48 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::explosions::use_detonator(world, target));
                 }
+                // Forensics (`forensics.md`): the scanner and fingerprint cards, and the computer.
+                Action::UseOn(target)
+                    if tool == Some(crate::forensics::SCANNER) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| {
+                        crate::forensics::toggle_printing(world, mob, target)
+                    });
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::forensics::CARD)
+                        && hands.active_item() != Some(target)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::forensics::SCANNER)
+                        && reaches =>
+                {
+                    if let Some(card) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::forensics::load_cards(world, mob, target, card)
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if tool == Some(crate::forensics::CARD) && hands.active_item() == Some(target) =>
+                {
+                    commands.queue(move |world: &mut World| crate::forensics::read_card(world, mob, target));
+                }
+                Action::UseOn(target) if tool == Some(crate::forensics::SCANNER) && reaches => {
+                    if let Some(scanner) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::forensics::scan(world, mob, scanner, target)
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::forensics::is_computer(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::forensics::click(world, mob, target));
+                }
                 // Teleporters (`teleporters.md`): the console, the station and portals clicked, and
                 // the hand teleporter used in the hand.
                 Action::UseOn(target)
@@ -501,6 +552,15 @@ pub fn process_actions(
                     }) && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
                 {
                     commands.queue(move |world: &mut World| crate::teleporters::click(world, mob, target));
+                }
+                // Cargo consoles (`cargo.md`).
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::cargo::is_cargo_console(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    commands.queue(move |world: &mut World| crate::cargo::click(world, mob, target));
                 }
                 Action::UseOn(target)
                     if tool == Some(crate::teleporters::HAND_TELE) && hands.active_item() == Some(target) =>
@@ -535,6 +595,30 @@ pub fn process_actions(
                         commands
                             .queue(move |world: &mut World| crate::devices::use_on(world, mob, held, target));
                     }
+                }
+                // Anomalies (`anomalies.md`): the artifact, the analyser and the harvester clicked,
+                // and the utilizer used in the hand or with a battery.
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| crate::anomalies::is_clicked(&look.sprite))
+                        && places.get(target).is_ok_and(|p| in_reach(mob_pos.0, p.0)) =>
+                {
+                    let held = hands.active_item();
+                    commands
+                        .queue(move |world: &mut World| crate::anomalies::click(world, mob, target, held));
+                }
+                Action::UseOn(target)
+                    if appearances
+                        .get(target)
+                        .is_ok_and(|(look, _)| look.sprite == crate::anomalies::UTILIZER)
+                        && (hands.active_item() == Some(target)
+                            || (reaches && tool == Some(crate::anomalies::BATTERY))) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        crate::anomalies::use_utilizer(world, mob, target, held)
+                    });
                 }
                 // A wormhole from a portal storm (`events.md`).
                 Action::UseOn(target)

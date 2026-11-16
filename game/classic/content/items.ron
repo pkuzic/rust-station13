@@ -376,6 +376,9 @@
     (id: "circular-saw", force: 15.0, size: 3),
     (id: "cautery", force: 0.0, size: 1),
     (id: "bone-gel", force: 0.0, size: 1),
+    // Organs taken out in surgery (`surgery.md`).
+    (id: "appendix", force: 0.0, size: 1),
+    (id: "brain", force: 0.0, size: 2),
     (id: "crayon-box", force: 0.0, size: 2, storage: ()),
     (id: "briefcase", force: 8.0, size: 4, storage: ()),
     (id: "bodybag-box", force: 0.0, size: 3, storage: ()),
@@ -393,6 +396,9 @@
     (id: "space-law", force: 0.0, size: 3),
     (id: "police-tape", force: 0.0, size: 2),
     (id: "hand-tele", force: 0.0, size: 2),
+    // Anomaly research (`anomalies.md`).
+    (id: "anomaly-battery", force: 0.0, size: 3),
+    (id: "anomaly-utilizer", force: 0.0, size: 3, slot: "belt"),
     // Luna `radio/beacon`: what a teleporter console locks onto (`teleporters.md`).
     (id: "tracking-beacon", force: 0.0, size: 2),
     (id: "genetics-analyzer", force: 0.0, size: 2),
@@ -405,6 +411,7 @@
     (id: "gavel", force: 8.0, size: 2),
     (id: "game-kit", force: 0.0, size: 5),
     (id: "fingerprint-case", force: 0.0, size: 2),
+    (id: "fingerprint-card", force: 0.0, size: 1),
     (id: "bike-horn", force: 0.0, size: 1),
     (id: "rubber-ducky", force: 0.0, size: 1),
     (id: "atmos-analyzer", force: 0.0, size: 2),

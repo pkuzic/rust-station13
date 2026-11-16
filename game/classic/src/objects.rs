@@ -125,6 +125,8 @@ const APC_WALL_PX: i32 = 24;
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
     crate::devices::equip_item(world, entity, &spec.id);
+    crate::anomalies::equip_item(world, entity, &spec.id);
+    crate::forensics::equip_item(world, &spec.id, entity);
     // Tagged for an airlock console (`airlock-control.md`).
     let tag = |name: &str| {
         spec.vars
@@ -268,9 +270,21 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::autolathe::spawn_autolathe(world, pos, id));
     }
+    if proto == crate::surgery::TABLE {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::surgery::spawn_table(world, pos, id));
+    }
+    if crate::forensics::is_computer(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::forensics::spawn_computer(world, proto, pos, id));
+    }
     if crate::teleporters::is_teleporter_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::teleporters::spawn_part(world, proto, pos, id));
+    }
+    if crate::cargo::is_cargo_console(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cargo::spawn_console(world, proto, pos, id));
     }
     if crate::plumbing::is_plumbing(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
@@ -343,6 +357,10 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
     if proto == crate::navbeacons::NAVBEACON {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::navbeacons::spawn_navbeacon(world, spec, pos, id));
+    }
+    if crate::anomalies::is_machine(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::anomalies::spawn_machine(world, proto, pos, id));
     }
     if crate::shields::is_shield_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
