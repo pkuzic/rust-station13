@@ -51,6 +51,7 @@ pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
 pub mod food;
+pub mod forensics;
 pub mod frames;
 pub mod freezers;
 pub mod furniture;
@@ -485,6 +486,9 @@ impl Plugin for ClassicPlugin {
                                 teleporters::run_picks,
                                 teleporters::run_teleporters,
                                 teleporters::update_views,
+                                forensics::run_picks,
+                                forensics::run_computers,
+                                forensics::update_views,
                                 cargo::run_picks,
                                 cargo::run_cargo,
                                 cargo::update_views,

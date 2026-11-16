@@ -67,7 +67,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.16 Aliens | L | `carbon/alien`, `objects/alien` | |
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
-| [ ] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | Records exist |
+| [x] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | `forensics.md`; no blood yet |
 | [ ] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Inert items exist |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 

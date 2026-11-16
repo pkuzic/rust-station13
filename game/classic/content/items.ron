@@ -404,6 +404,7 @@
     (id: "gavel", force: 8.0, size: 2),
     (id: "game-kit", force: 0.0, size: 5),
     (id: "fingerprint-case", force: 0.0, size: 2),
+    (id: "fingerprint-card", force: 0.0, size: 1),
     (id: "bike-horn", force: 0.0, size: 1),
     (id: "rubber-ducky", force: 0.0, size: 1),
     (id: "atmos-analyzer", force: 0.0, size: 2),
