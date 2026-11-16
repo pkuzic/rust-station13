@@ -223,6 +223,7 @@ pub fn update_cabinet_views(
         if viewer.and_then(|v| looks.get(v.0).ok()).is_some_and(|a| {
             crate::wizard_items::keeps_own_list(&a.sprite)
                 || crate::teleporters::keeps_own_list(&a.sprite)
+                || crate::devices::keeps_own_list(&a.sprite)
                 || crate::anomalies::keeps_own_list(&a.sprite)
                 || crate::forensics::keeps_own_list(&a.sprite)
         }) {

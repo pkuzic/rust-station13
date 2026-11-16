@@ -33,6 +33,7 @@ pub mod construction;
 pub mod conveyors;
 pub mod decks;
 pub mod derelict;
+pub mod devices;
 pub mod dispensers;
 pub mod disposals;
 pub mod doors;
@@ -283,7 +284,7 @@ impl Plugin for ClassicPlugin {
                     pulling::start_pulls,
                     grabs::struggle,
                     movement::move_mobs,
-                    slips::slip,
+                    (slips::slip, devices::sense_steps).chain(),
                     pulling::follow_pullers,
                     multiz::fall_through_holes,
                     pulling::drop_lost_pulls,
@@ -486,6 +487,7 @@ impl Plugin for ClassicPlugin {
                             (
                                 wizard_items::run_picks,
                                 wizard_items::update_views,
+                                (devices::run_picks, devices::run_devices, devices::update_views).chain(),
                                 anomalies::run_picks,
                                 anomalies::run_anomalies,
                                 anomalies::update_views,

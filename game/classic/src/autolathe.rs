@@ -21,7 +21,7 @@ pub const MAX_GLASS: i32 = 75_000;
 pub const MAKE_DS: f32 = 16.0;
 
 /// What it makes, and the metal and glass each takes (Luna `autolathe_recipes`, `m_amt`, `g_amt`).
-pub const RECIPES: [(&str, i32, i32); 26] = [
+pub const RECIPES: [(&str, i32, i32); 27] = [
     ("screwdriver", 50, 20),
     ("bucket", 200, 0),
     ("crowbar", 50, 0),
@@ -48,6 +48,7 @@ pub const RECIPES: [(&str, i32, i32); 26] = [
     ("timer", 100, 0),
     ("scalpel", 10_000, 5000),
     ("circular-saw", 20_000, 10_000),
+    ("signaler", 75, 25),
 ];
 
 /// What a sheet of this gives it, metal and glass (Luna `m_amt`, `g_amt` of the sheets).
