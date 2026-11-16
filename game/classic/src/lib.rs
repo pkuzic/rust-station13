@@ -24,6 +24,7 @@ pub mod cells;
 pub mod chairs;
 pub mod changeling;
 pub mod chem_dispenser;
+pub mod chem_effects;
 pub mod chem_master;
 pub mod chemistry;
 pub mod cloning;
@@ -494,6 +495,9 @@ impl Plugin for ClassicPlugin {
                                     devices::update_views,
                                     grenades::run_grenades,
                                     grenades::heal_ears,
+                                    chem_effects::run_smoke,
+                                    chem_effects::run_foam,
+                                    chem_effects::slip_on_foam,
                                 )
                                     .chain(),
                                 anomalies::run_picks,

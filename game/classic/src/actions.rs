@@ -444,6 +444,31 @@ pub fn process_actions(
                 }
                 Action::UseOn(target)
                     if reaches
+                        && hands.active_item().is_some_and(|held| held != target)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::grenades::is_chem_grenade(&look.sprite)) =>
+                {
+                    // Putting a chemical grenade together.
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::grenades::use_on_casing(world, mob, held, target);
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::chem_effects::FOAMED_METAL) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        crate::chem_effects::hit_foamed_metal(world, mob, held, target);
+                    });
+                }
+                Action::UseOn(target)
+                    if reaches
                         && tool == Some("screwdriver")
                         && appearances
                             .get(target)

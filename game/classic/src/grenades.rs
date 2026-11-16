@@ -17,6 +17,7 @@ use rs13_world::{Appearance, Dense, Dir, GridPos, MapLayer, Opaque, Slot, TilePo
 use crate::actions::Outbox;
 use crate::atmos::StationAtmos;
 use crate::changeling::Deafened;
+use crate::chemistry::Reagents;
 use crate::combat::{COUNT_DS, Paralyzed};
 use crate::equipment::{Equipment, WornBy};
 use crate::flashes::Weakened;
@@ -33,6 +34,16 @@ pub const FLASHBANG: &str = "flashbang";
 pub const EMP_GRENADE: &str = "emp-grenade";
 pub const FLASHBANG_BOX: &str = "flashbang-box";
 pub const EMP_BOX: &str = "emp-grenade-box";
+/// A chemical grenade's casing, and the ready-made ones.
+pub const CASING: &str = "grenade-casing";
+pub const METAL_FOAM_GRENADE: &str = "metal-foam-grenade";
+pub const CLEANER_GRENADE: &str = "cleaner-grenade";
+pub const TEARGAS_GRENADE: &str = "teargas-grenade";
+/// A chemical grenade's delay, ds (Luna `spawn(30)`), and how far what's left in it splashes.
+pub const CHEM_DS: f32 = 30.0;
+pub const SPLASH_RANGE: i32 = 3;
+/// What a casing holds once its beakers are emptied into it (Luna `reagents(1000)`).
+pub const CASING_HOLDS: f32 = 1000.0;
 
 /// A flashbang's delay, short and long, and an EMP grenade's, ds (Luna `det_time`).
 pub const FLASHBANG_SHORT_DS: f32 = 30.0;
@@ -61,6 +72,7 @@ pub const CAMERA_DARK_DS: f32 = 900.0;
 pub enum Kind {
     Flashbang,
     Emp,
+    Chem,
 }
 
 /// A grenade: what it does, how long it waits once primed, and when it goes off.
@@ -90,8 +102,44 @@ pub struct EarDamage(pub f32);
 #[derive(Component, Debug, Clone, Copy, PartialEq)]
 pub struct CameraDark(pub f32);
 
+/// A chemical grenade's casing as it's put together (Luna `chem_grenade`'s `stage`): 0 empty, 1 with
+/// its timer-igniter, 2 locked; and the beakers in it.
+#[derive(Component, Debug, Clone, PartialEq, Default)]
+pub struct ChemGrenade {
+    pub stage: u8,
+    pub beakers: Vec<Entity>,
+}
+
 pub fn is_grenade(sprite: &str) -> bool {
-    matches!(sprite, FLASHBANG | EMP_GRENADE)
+    matches!(sprite, FLASHBANG | EMP_GRENADE) || is_chem_grenade(sprite)
+}
+
+pub fn is_chem_grenade(sprite: &str) -> bool {
+    matches!(
+        sprite,
+        CASING | METAL_FOAM_GRENADE | CLEANER_GRENADE | TEARGAS_GRENADE
+    )
+}
+
+type Fill = &'static [(&'static str, f32)];
+
+/// What each ready-made chemical grenade's two beakers hold (Luna's `chem_grenade` kinds).
+fn ready_made(proto: &str) -> Option<[Fill; 2]> {
+    Some(match proto {
+        METAL_FOAM_GRENADE => [
+            &[("aluminium", 30.0)],
+            &[("foaming_agent", 10.0), ("pacid", 10.0)],
+        ],
+        CLEANER_GRENADE => [
+            &[("fluorosurfactant", 30.0)],
+            &[("water", 10.0), ("cleaner", 10.0)],
+        ],
+        TEARGAS_GRENADE => [
+            &[("condensedcapsaicin", 25.0), ("potassium", 25.0)],
+            &[("phosphorus", 25.0), ("sugar", 25.0)],
+        ],
+        _ => return None,
+    })
 }
 
 /// The parts a newly spawned grenade needs.
@@ -99,8 +147,39 @@ pub fn equip_item(world: &mut World, item: Entity, proto: &str) {
     let (kind, delay_ds) = match proto {
         FLASHBANG => (Kind::Flashbang, FLASHBANG_SHORT_DS),
         EMP_GRENADE => (Kind::Emp, EMP_DS),
+        _ if is_chem_grenade(proto) => (Kind::Chem, CHEM_DS),
         _ => return,
     };
+    if kind == Kind::Chem {
+        let mut casing = ChemGrenade::default();
+        if let Some(fills) = ready_made(proto) {
+            let tile = where_is(world, item).unwrap_or(TilePos::new(0, 0, 0));
+            for fill in fills {
+                let Ok(beaker) =
+                    crate::objects::spawn_object(world, &rs13_world::ObjectSpec::new("beaker"), tile)
+                else {
+                    continue;
+                };
+                if let Some(mut r) = world.get_mut::<Reagents>(beaker) {
+                    for (id, amount) in fill {
+                        r.add(id, *amount);
+                    }
+                }
+                world
+                    .entity_mut(beaker)
+                    .remove::<GridPos>()
+                    .insert(crate::devices::PartOf(item));
+                casing.beakers.push(beaker);
+            }
+            casing.stage = 2;
+            if let Some(mut look) = world.get_mut::<Appearance>(item) {
+                look.state = "locked".to_owned();
+            }
+        }
+        world
+            .entity_mut(item)
+            .insert((casing, Reagents::new(CASING_HOLDS)));
+    }
     world.entity_mut(item).insert(Grenade {
         kind,
         delay_ds,
@@ -121,7 +200,7 @@ fn clumsy(world: &World, mob: Entity) -> bool {
 }
 
 /// Where a thing is: its tile, or that of whoever holds or wears it, or of what it's packed in.
-fn where_is(world: &World, thing: Entity) -> Option<TilePos> {
+pub fn where_is(world: &World, thing: Entity) -> Option<TilePos> {
     let mut e = thing;
     for _ in 0..4 {
         if let Some(p) = world.get::<GridPos>(e) {
@@ -165,8 +244,17 @@ fn prime(world: &mut World, mob: Entity, grenade: Entity, sound: bool) -> bool {
     if state.goes_off_ds.is_some() {
         return false;
     }
+    let chem = state.kind == Kind::Chem;
+    if chem && world.get::<ChemGrenade>(grenade).is_none_or(|c| c.stage < 2) {
+        return false;
+    }
+    let item = world
+        .get::<Appearance>(grenade)
+        .map(|a| a.sprite.clone())
+        .unwrap_or_default();
+    let sound = sound || chem;
     let now = world.resource::<WorldTime>().deciseconds();
-    let delay = if clumsy(world, mob) {
+    let delay = if !chem && clumsy(world, mob) {
         tell(world, mob, LocMsg::new("grenade-clumsy"));
         CLUMSY_DS
     } else {
@@ -174,7 +262,7 @@ fn prime(world: &mut World, mob: Entity, grenade: Entity, sound: bool) -> bool {
             world,
             mob,
             LocMsg::new("grenade-primed")
-                .arg("item", noun(state.kind))
+                .arg("item", item)
                 .num("seconds", (state.delay_ds / 10.0).round() as i64),
         );
         state.delay_ds
@@ -191,13 +279,6 @@ fn prime(world: &mut World, mob: Entity, grenade: Entity, sound: bool) -> bool {
             .play(crate::sound::ARM_BOMB, at, 75.0);
     }
     true
-}
-
-fn noun(kind: Kind) -> &'static str {
-    match kind {
-        Kind::Flashbang => FLASHBANG,
-        Kind::Emp => EMP_GRENADE,
-    }
 }
 
 /// A grenade used in the hand (Luna `attack_self`): primed.
@@ -231,7 +312,14 @@ pub fn throw(world: &mut World, mob: Entity, grenade: Entity, to: TilePos) {
     if to.z != at.z || world.get::<HeldBy>(grenade).map(|h| h.0) != Some(mob) {
         return;
     }
-    prime(world, mob, grenade, true);
+    let primed = prime(world, mob, grenade, true);
+    // A chemical grenade is only thrown as it's primed (Luna `chem_grenade/afterattack`).
+    let chem = world
+        .get::<Grenade>(grenade)
+        .is_some_and(|g| g.kind == Kind::Chem);
+    if chem && !primed {
+        return;
+    }
     if let Some(dir) = Dir::from_offset((to.x - at.x).signum(), (to.y - at.y).signum())
         && let Some(mut state) = world.get_mut::<Mob>(mob)
     {
@@ -340,6 +428,10 @@ fn take(world: &mut World, thing: Entity) {
 
 /// Set a grenade off, wherever it is, and it's gone.
 pub fn go_off(world: &mut World, grenade: Entity, kind: Kind) {
+    if kind == Kind::Chem {
+        chem_go_off(world, grenade);
+        return;
+    }
     let at = where_is(world, grenade);
     let holder = carrier(world, grenade);
     take(world, grenade);
@@ -350,6 +442,134 @@ pub fn go_off(world: &mut World, grenade: Entity, kind: Kind) {
     match kind {
         Kind::Flashbang => bang(world, at, holder),
         Kind::Emp => emp(world, at),
+        Kind::Chem => {}
+    }
+}
+
+/// A chemical grenade going off (Luna `chem_grenade/explode`): with nothing in its beakers it only
+/// clicks and can be primed again; otherwise they're emptied into it, mixing as they go, and what
+/// doesn't react splashes on everyone close by.
+fn chem_go_off(world: &mut World, grenade: Entity) {
+    let at = where_is(world, grenade);
+    let beakers = world
+        .get::<ChemGrenade>(grenade)
+        .map(|c| c.beakers.clone())
+        .unwrap_or_default();
+    let full = beakers
+        .iter()
+        .any(|b| world.get::<Reagents>(*b).is_some_and(|r| r.total() > 0.0));
+    if !full {
+        if let Some(at) = at {
+            world
+                .resource_mut::<SoundEvents>()
+                .play(crate::sound::SCREWDRIVER, at, 50.0);
+        }
+        if let Some(mut g) = world.get_mut::<Grenade>(grenade) {
+            g.goes_off_ds = None;
+        }
+        if let Some(mut look) = world.get_mut::<Appearance>(grenade) {
+            look.state = "locked".to_owned();
+        }
+        return;
+    }
+    if let Some(at) = at {
+        world
+            .resource_mut::<SoundEvents>()
+            .play(crate::sound::BAMF, at, 50.0);
+    }
+    for beaker in &beakers {
+        let total = world.get::<Reagents>(*beaker).map_or(0.0, Reagents::total);
+        crate::chemistry::transfer(world, *beaker, grenade, total);
+    }
+    let left = world.get::<Reagents>(grenade).cloned().unwrap_or_default();
+    take(world, grenade);
+    for beaker in beakers {
+        world.entity_mut(beaker).despawn();
+    }
+    world.entity_mut(grenade).despawn();
+    let Some(at) = at else {
+        return;
+    };
+    if left.total() > 0.0 {
+        for (mob, _) in viewers(world, at, SPLASH_RANGE) {
+            crate::chem_effects::touch_all(world, mob, &left);
+        }
+    }
+}
+
+/// Something used on a chemical grenade's casing (Luna `chem_grenade/attackby`): a timer-igniter
+/// first, then up to two beakers with something in them, then a screwdriver locks it.
+pub fn use_on_casing(world: &mut World, mob: Entity, tool: Entity, casing: Entity) {
+    let Some(state) = world.get::<ChemGrenade>(casing).cloned() else {
+        return;
+    };
+    let Some(sprite) = world.get::<Appearance>(tool).map(|a| a.sprite.clone()) else {
+        return;
+    };
+    let at = where_is(world, casing);
+    let click = |world: &mut World| {
+        if let Some(at) = at {
+            world
+                .resource_mut::<SoundEvents>()
+                .play(crate::sound::SCREWDRIVER, at, 25.0);
+        }
+    };
+    match (state.stage, sprite.as_str()) {
+        (0, crate::devices::TIMER_IGNITER) => {
+            tell(
+                world,
+                mob,
+                LocMsg::new("casing-add-assembly").arg("item", sprite.clone()),
+            );
+            click(world);
+            take(world, tool);
+            crate::devices::destroy(world, tool);
+            set_casing(world, casing, 1, "assembled");
+        }
+        (1, "screwdriver") => {
+            if state.beakers.is_empty() {
+                tell(world, mob, LocMsg::new("casing-needs-beaker"));
+            } else {
+                tell(world, mob, LocMsg::new("casing-locked"));
+                click(world);
+                set_casing(world, casing, 2, "locked");
+            }
+        }
+        (1, glass) if crate::chemistry::is_glass(glass) => {
+            if state.beakers.len() >= 2 {
+                tell(world, mob, LocMsg::new("casing-full"));
+            } else if world.get::<Reagents>(tool).is_none_or(|r| r.total() <= 0.0) {
+                tell(
+                    world,
+                    mob,
+                    LocMsg::new("casing-beaker-empty").arg("item", sprite.clone()),
+                );
+            } else {
+                tell(
+                    world,
+                    mob,
+                    LocMsg::new("casing-add-beaker").arg("item", sprite.clone()),
+                );
+                take(world, tool);
+                world
+                    .entity_mut(tool)
+                    .remove::<(GridPos, HeldBy)>()
+                    .insert(crate::devices::PartOf(casing));
+                if let Some(mut c) = world.get_mut::<ChemGrenade>(casing) {
+                    c.beakers.push(tool);
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
+fn set_casing(world: &mut World, casing: Entity, stage: u8, state: &str) {
+    if let Some(mut c) = world.get_mut::<ChemGrenade>(casing) {
+        c.stage = stage;
+    }
+    if let Some(mut look) = world.get_mut::<Appearance>(casing) {
+        look.state = state.to_owned();
     }
 }
 

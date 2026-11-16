@@ -6,7 +6,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, Dense, GridPos, NetId, TilePos};
 
 use crate::actions::Outbox;
-use crate::chemistry::{Reagents, react, transfer};
+use crate::chemistry::{Reagents, transfer};
 use crate::extinguishers::WaterTank;
 use crate::hands::Hands;
 use crate::welding::FuelTank;
@@ -92,8 +92,9 @@ pub fn fill(world: &mut World, mob: Entity, tank: Entity) {
         };
         if let Some(mut into) = world.get_mut::<Reagents>(glass) {
             into.add(reagent, taken);
-            react(&mut into);
         }
+        let at = world.get::<GridPos>(tank).map(|p| p.0);
+        crate::chemistry::react_at(world, glass, at);
         taken
     };
     if moved > 0.0 {

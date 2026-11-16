@@ -92,70 +92,180 @@ impl Reagents {
     }
 }
 
-/// What mixes into what (Luna's `chemical_reaction`s for the medicines we have): what it takes,
-/// in parts, what it makes and how much for those parts.
-const RECIPES: [(&[(&str, f32)], &str, f32); 10] = [
-    (
+/// What a reaction does besides making something (Luna's `on_reaction`s).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Effect {
+    None,
+    /// Smoke carrying everything in the holder, which is emptied (Luna `chemsmoke`).
+    Smoke,
+    /// Foam carrying a unit of each reagent in the holder, which is emptied (Luna `foam`).
+    Foam,
+    /// Metal foam: 1 aluminium, 2 iron (Luna `metalfoam`, `ironfoam`).
+    MetalFoam(u8),
+}
+
+/// A recipe: what it takes, in parts, what it makes and how much for those parts, and what it does.
+struct Recipe {
+    needs: &'static [(&'static str, f32)],
+    makes: Option<&'static str>,
+    yields: f32,
+    effect: Effect,
+}
+
+const fn mix(needs: &'static [(&'static str, f32)], makes: &'static str, yields: f32) -> Recipe {
+    Recipe {
+        needs,
+        makes: Some(makes),
+        yields,
+        effect: Effect::None,
+    }
+}
+
+const fn mix_effect(needs: &'static [(&'static str, f32)], yields: f32, effect: Effect) -> Recipe {
+    Recipe {
+        needs,
+        makes: None,
+        yields,
+        effect,
+    }
+}
+
+/// What mixes into what (Luna's `chemical_reaction`s for what we have).
+const RECIPES: [Recipe; 20] = [
+    mix(
         &[("oxygen", 1.0), ("carbon", 1.0), ("sugar", 1.0)],
         "inaprovaline",
         3.0,
     ),
-    (
+    mix(
         &[("silicon", 1.0), ("potassium", 1.0), ("nitrogen", 1.0)],
         "anti_toxin",
         3.0,
     ),
-    (&[("silicon", 1.0), ("carbon", 1.0)], "kelotane", 2.0),
-    (&[("inaprovaline", 1.0), ("carbon", 1.0)], "bicaridine", 2.0),
-    (
+    mix(&[("silicon", 1.0), ("carbon", 1.0)], "kelotane", 2.0),
+    mix(&[("inaprovaline", 1.0), ("carbon", 1.0)], "bicaridine", 2.0),
+    mix(
         &[("inaprovaline", 1.0), ("anti_toxin", 1.0)],
         "tricordrazine",
         2.0,
     ),
-    (
+    mix(
         &[("oxygen", 1.0), ("phosphorus", 1.0), ("kelotane", 1.0)],
         "dermaline",
         3.0,
     ),
-    (&[("oxygen", 2.0), ("plasma", 0.1)], "dexalin", 1.0),
-    (
+    mix(&[("oxygen", 2.0), ("plasma", 0.1)], "dexalin", 1.0),
+    mix(
         &[("dexalin", 1.0), ("carbon", 1.0), ("iron", 1.0)],
         "dexalinp",
         3.0,
     ),
-    (
+    mix(
         &[("sugar", 1.0), ("lithium", 1.0), ("water", 1.0)],
         "synaptizine",
         3.0,
     ),
-    (
+    mix(
         &[("dexalin", 1.0), ("water", 1.0), ("oxygen", 1.0)],
         "cryoxadone",
         3.0,
     ),
+    // Smoke, foam and what goes into them (`grenades.md`).
+    mix_effect(
+        &[("potassium", 1.0), ("sugar", 1.0), ("phosphorus", 1.0)],
+        0.0,
+        Effect::Smoke,
+    ),
+    mix(
+        &[("fluorine", 2.0), ("carbon", 2.0), ("sacid", 1.0)],
+        "fluorosurfactant",
+        5.0,
+    ),
+    mix_effect(&[("fluorosurfactant", 1.0), ("water", 1.0)], 2.0, Effect::Foam),
+    mix_effect(
+        &[("aluminium", 3.0), ("foaming_agent", 1.0), ("pacid", 1.0)],
+        5.0,
+        Effect::MetalFoam(1),
+    ),
+    mix_effect(
+        &[("iron", 3.0), ("foaming_agent", 1.0), ("pacid", 1.0)],
+        5.0,
+        Effect::MetalFoam(2),
+    ),
+    mix(&[("lithium", 1.0), ("hydrogen", 1.0)], "foaming_agent", 1.0),
+    mix(&[("hydrogen", 3.0), ("nitrogen", 1.0)], "ammonia", 3.0),
+    mix(&[("ammonia", 1.0), ("water", 1.0)], "cleaner", 2.0),
+    mix(
+        &[("sacid", 1.0), ("chlorine", 1.0), ("potassium", 1.0)],
+        "pacid",
+        3.0,
+    ),
+    mix(&[("capsaicin", 1.0), ("ethanol", 5.0)], "condensedcapsaicin", 1.0),
 ];
 
-/// Luna `handle_reactions`: mix whatever can mix, until nothing more does.
-pub fn react(reagents: &mut Reagents) {
+/// A reaction with an effect that took place, for whoever knows where it was to carry out.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Reaction {
+    pub effect: Effect,
+    /// How much it made (Luna's `created_volume`).
+    pub created: f32,
+    /// What the holder had left when it happened.
+    pub carried: Reagents,
+}
+
+/// Luna `handle_reactions`: mix whatever can mix, until nothing more does. The reactions with an
+/// effect are returned, for [`react_at`] to carry out.
+pub fn react(reagents: &mut Reagents) -> Vec<Reaction> {
+    let mut happened = Vec::new();
     for _ in 0..RECIPES.len() {
         let mut any = false;
-        for (needs, makes, yields) in RECIPES {
-            let batches = needs
+        for recipe in &RECIPES {
+            let batches = recipe
+                .needs
                 .iter()
                 .map(|(r, parts)| reagents.get(r) / parts)
                 .fold(f32::INFINITY, f32::min);
             if batches <= 0.001 {
                 continue;
             }
-            for (r, parts) in needs {
+            for (r, parts) in recipe.needs {
                 reagents.remove(r, parts * batches);
             }
-            *reagents.amounts.entry(makes.to_owned()).or_insert(0.0) += yields * batches;
+            if let Some(made) = recipe.makes {
+                *reagents.amounts.entry(made.to_owned()).or_insert(0.0) += recipe.yields * batches;
+            }
+            if recipe.effect != Effect::None {
+                happened.push(Reaction {
+                    effect: recipe.effect,
+                    created: recipe.yields * batches,
+                    carried: reagents.clone(),
+                });
+                if matches!(recipe.effect, Effect::Smoke | Effect::Foam) {
+                    reagents.amounts.clear();
+                }
+            }
             any = true;
         }
         if !any {
             break;
         }
+    }
+    happened
+}
+
+/// React what a holder has, and carry out any smoke or foam where it is, or at `fallback`.
+pub fn react_at(world: &mut World, holder: Entity, fallback: Option<rs13_world::TilePos>) {
+    let Some(happened) = world.get_mut::<Reagents>(holder).map(|mut r| react(&mut r)) else {
+        return;
+    };
+    if happened.is_empty() {
+        return;
+    }
+    let Some(at) = crate::grenades::where_is(world, holder).or(fallback) else {
+        return;
+    };
+    for reaction in happened {
+        crate::chem_effects::carry_out(world, at, &reaction);
     }
 }
 
@@ -283,8 +393,9 @@ pub fn transfer(world: &mut World, from: Entity, to: Entity, amount: f32) -> f32
         for (r, a) in &taken {
             into.add(r, *a);
         }
-        react(&mut into);
     }
+    let fallback = crate::grenades::where_is(world, from);
+    react_at(world, to, fallback);
     moved
 }
 

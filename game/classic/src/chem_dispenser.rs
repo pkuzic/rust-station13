@@ -6,7 +6,7 @@ use rs13_i18n::LocMsg;
 use rs13_world::{Appearance, ChemPanelView, Dense, GridPos, MobStat, NetId, TilePos};
 
 use crate::actions::{Outbox, in_reach};
-use crate::chemistry::{Reagents, is_glass, react};
+use crate::chemistry::{Reagents, is_glass};
 use crate::closets::InCloset;
 use crate::hands::{Hands, HeldBy};
 use crate::health::Vitals;
@@ -153,7 +153,8 @@ fn apply(world: &mut World, machine: Entity, op: ChemOp) {
                 return;
             };
             let added = into.add(reagent, wanted);
-            react(&mut into);
+            let at = world.get::<GridPos>(machine).map(|p| p.0);
+            crate::chemistry::react_at(world, beaker, at);
             if let Some(mut d) = world.get_mut::<ChemDispenser>(machine) {
                 d.energy = (d.energy - added / UNITS_PER_ENERGY).max(0.0);
             }

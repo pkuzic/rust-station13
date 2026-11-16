@@ -5,7 +5,6 @@
 // Skipped (no prototype yet):
 //     16 /obj/effect/landmark
 //      9 /obj/effect/landmark/alterations/nopath
-//      1 /obj/item/weapon/storage/box/grenades/metalfoam
 //      1 /obj/machinery/atmospherics/unary/vent
 //      1 /obj/machinery/bot/mulebot
 //      2 /obj/machinery/computer/atmosphere/alerts
@@ -484,7 +483,7 @@
         '乊': (tile: (id: "wall", solid: true), objects: [(id: "disposal-pipe", dir: South, state: Some("pipe-s")), (id: "pipe", dir: South)]),
         '之': (tile: (id: "plating"), objects: [(id: "pipe", dir: South), (id: "cable", ends: [North, South]), (id: "light-small", dir: East)]),
         '乌': (tile: (id: "floor"), objects: ["shield-plate"]),
-        '乍': (tile: (id: "floor"), objects: [(id: "light", dir: West), (id: "vent", dir: South), (id: "table", dir: East, state: Some("tabledir")), "transfer-valve", "transfer-valve"]),
+        '乍': (tile: (id: "floor"), objects: [(id: "light", dir: West), (id: "vent", dir: South), (id: "table", dir: East, state: Some("tabledir")), "transfer-valve", "transfer-valve", "metal-foam-box"]),
         '乎': (tile: (id: "floor"), objects: [(id: "pipe", dir: North)]),
         '乏': (tile: (id: "floor"), objects: [(id: "table", dir: NorthWest, state: Some("tabledir")), "paper-bin"]),
         '乐': (tile: (id: "floor"), objects: ["landmark-derelict-nodamage", (id: "table", dir: North, state: Some("tabledir")), "folder-yellow", "pen"]),
