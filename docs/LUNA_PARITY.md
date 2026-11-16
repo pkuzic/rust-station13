@@ -49,7 +49,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 
 | | Item | Size | Luna source | Notes |
 |---|---|---|---|---|
-| [ ] | 3.1 Cargo: orders, supply shuttle, points, crates | M | `supplyshuttle`, `supplypacks` | |
+| [x] | 3.1 Cargo: orders, supply shuttle, points, crates | M | `supplyshuttle`, `supplypacks` | `cargo.md`. 31 of 46 packs: the rest wait on their contents. No order comments or stamped manifests yet |
 | [x] | 3.2 Surgery and the operating table | M | `modules/surgery` | `surgery.md`; no bones or limbs yet |
 | [ ] | 3.3 Fractures, bleeding, limb loss, pain | L | `organs.dm`, `human_life` | |
 | [ ] | 3.4 Viruses and PanD.E.M.I.C. | L | `datums/diseases` | |
@@ -67,7 +67,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.16 Aliens | L | `carbon/alien`, `objects/alien` | |
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
-| [ ] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | Records exist |
+| [x] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | `forensics.md`; no blood yet |
 | [ ] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Inert items exist |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 

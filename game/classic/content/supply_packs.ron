@@ -1,0 +1,75 @@
+// Supply packs Centcom sends on the cargo shuttle (luna:code/datums/supplypacks.dm), in
+// Luna's order. Spec: docs/reference/cargo.md.
+//
+// - categories: where the consoles list it (Luna `types`);
+// - cost: in supply points;
+// - contains: prototype ids, one each (a stack comes as `amount`, Luna's `amount`);
+// - container: the crate it comes in, or loose on the shuttle floor;
+// - access: what opens its lock, if it comes in a secure crate.
+//
+// Packs Luna has whose contents are mostly not built yet are left out (cargo.md lists them);
+// those built in part come without what's missing, noted on each.
+[
+    // Luna `internals`: Internals crate
+    (id: "internals", categories: ["emergency"], cost: 10, contains: ["gas-mask", "gas-mask", "gas-mask", "oxygen-tank", "oxygen-tank", "oxygen-tank"], container: Some("crate-internals")),
+    // Luna `medical`: Medical crate (without stoxin)
+    (id: "medical", categories: ["medical"], cost: 10, contains: ["first-aid-kit", "first-aid-kit-fire", "first-aid-kit-toxin", "first-aid-kit-o2", "bottle-antitoxin", "bottle-inaprovaline", "syringe-box"], container: Some("crate-medical")),
+    // Luna `surgical`: Surgical tools crate
+    (id: "surgical", categories: ["medical"], cost: 20, contains: ["circular-saw", "scalpel", "cautery", "hemostat", "bone-gel", "surgical-drapes"], container: Some("crate-medical")),
+    // Luna `electrical`: Electrical maintenance crate
+    (id: "electrical", categories: ["engineering"], cost: 20, contains: ["toolbox-electrical", "toolbox-electrical", "insulated-gloves", "insulated-gloves", "power-cell", "power-cell", "high-power-cell", "high-power-cell"], container: Some("crate-electrical")),
+    // Luna `mechanical`: Mechanical maintenance crate
+    (id: "mechanical", categories: ["engineering"], cost: 15, contains: ["utility-belt-loaded", "utility-belt-loaded", "utility-belt-loaded", "hazard-vest", "hazard-vest", "hazard-vest", "welding-helmet", "welding-helmet", "welding-helmet", "hardhat", "hardhat", "hardhat"], container: Some("crate-engineering")),
+    // Luna `plasma`: Plasma assembly crate
+    (id: "plasma", categories: ["science"], cost: 20, contains: ["plasma-tank", "plasma-tank", "plasma-tank", "igniter-device", "igniter-device", "igniter-device", "prox-sensor", "prox-sensor", "prox-sensor", "timer", "timer", "timer"], container: Some("crate-secure-plasma"), access: Some("tox_storage")),
+    // Luna `robotics`: Robotics assembly crate
+    (id: "robotics", categories: ["science"], cost: 15, contains: ["prox-sensor", "prox-sensor", "prox-sensor", "toolbox-electrical", "flash", "flash", "flash", "flash", "high-power-cell", "high-power-cell"], container: Some("crate-secure"), access: Some("robotics")),
+    // Luna `armor`: Armor crate
+    (id: "armor", categories: ["security"], cost: 15, contains: ["armor-vest", "armor-vest", "armor-vest", "helmet", "helmet", "helmet"], container: Some("crate-secure"), access: Some("security")),
+    // Luna `riot`: Riot gear crate (without flashbang, teargas)
+    (id: "riot", categories: ["security"], cost: 40, contains: ["riot-suit", "riot-suit", "riot-suit", "riot-helmet", "riot-helmet", "riot-helmet", "stun-baton", "stun-baton", "stun-baton", "riot-shield", "riot-shield", "riot-shield", "handcuffs-box", "handcuffs-box"], container: Some("crate-secure-gear"), access: Some("security")),
+    // Luna `weapons`: Weapons crate
+    (id: "weapons", categories: ["security"], cost: 20, contains: ["stun-baton", "stun-baton", "stun-baton", "taser", "taser", "taser"], container: Some("crate-secure-weapon"), access: Some("security")),
+    // Luna `laser`: Lasers crate
+    (id: "laser", categories: ["security"], cost: 20, contains: ["laser-gun", "laser-gun", "laser-gun"], container: Some("crate-secure-weapon"), access: Some("armory")),
+    // Luna `ballistic`: Shotguns crate
+    (id: "ballistic", categories: ["security"], cost: 30, contains: ["slug-box", "slug-box", "slug-box", "combat-shotgun", "combat-shotgun", "combat-shotgun"], container: Some("crate-secure-weapon"), access: Some("armory")),
+    // Luna `egun`: Energy guns crate
+    (id: "egun", categories: ["security"], cost: 35, contains: ["energy-gun", "energy-gun", "energy-gun"], container: Some("crate-secure-weapon"), access: Some("armory")),
+    // Luna `laserarmor`: Ablative armor crate
+    (id: "laserarmor", categories: ["security"], cost: 20, contains: ["ablative-vest", "ablative-vest"], container: Some("crate-secure-plasma"), access: Some("armory")),
+    // Luna `securitybarriers`: Security barrier
+    (id: "securitybarriers", categories: ["security"], cost: 10, contains: ["barrier"]),
+    // Luna `watertank`: Water tank
+    (id: "watertank", categories: ["materials"], cost: 10, contains: ["water-tank"]),
+    // Luna `hvwatertank`: High-volume water tank
+    (id: "hvwatertank", categories: ["materials"], cost: 15, contains: ["water-tank"]),
+    // Luna `fueltank`: Fuel tank
+    (id: "fueltank", categories: ["materials"], cost: 15, contains: ["fuel-tank"]),
+    // Luna `hvfueltank`: High-volume fuel tank
+    (id: "hvfueltank", categories: ["materials"], cost: 20, contains: ["fuel-tank"]),
+    // Luna `metal50`: 50 metal sheets
+    (id: "metal50", categories: ["materials"], cost: 15, contains: ["metal-sheet"], amount: Some(50)),
+    // Luna `glass50`: 50 glass sheets
+    (id: "glass50", categories: ["materials"], cost: 15, contains: ["glass-sheet"], amount: Some(50)),
+    // Luna `gascanisterair`: Gas canister \[Air\]
+    (id: "gascanisterair", categories: ["materials", "emergency", "engineering"], cost: 10, contains: ["canister"]),
+    // Luna `gascanisternitrogen`: Gas canister \[N2\]
+    (id: "gascanisternitrogen", categories: ["materials", "engineering"], cost: 10, contains: ["nitrogen-canister"]),
+    // Luna `gascanisteroxygen`: Gas canister \[Oxygen\]
+    (id: "gascanisteroxygen", categories: ["materials", "emergency", "engineering"], cost: 10, contains: ["oxygen-canister"]),
+    // Luna `gascanisterco2`: Gas canister \[CO2\]
+    (id: "gascanisterco2", categories: ["materials"], cost: 10, contains: ["carbon-dioxide-canister"]),
+    // Luna `gascanisterplasma`: Gas canister \[Plasma\]
+    (id: "gascanisterplasma", categories: ["materials", "science"], cost: 40, contains: ["plasma-canister"]),
+    // Luna `gascanisterlaughgas`: Gas canister \[N2O\]
+    (id: "gascanisterlaughgas", categories: ["materials"], cost: 40, contains: ["nitrous-oxide-canister"]),
+    // Luna `costume`: Standard costume crate (without bottleofnothing)
+    (id: "costume", categories: ["miscellaneous"], cost: 10, contains: ["clown-backpack", "clown-shoes", "gas-mask", "clown-suit", "bike-horn", "mime-outfit", "black-shoes", "latex-gloves", "gas-mask", "beret", "suspenders"], container: Some("crate-secure"), access: Some("theater")),
+    // Luna `wizard`: Wizard costume crate
+    (id: "wizard", categories: ["miscellaneous"], cost: 15, contains: ["staff", "wizard-robe", "sandals", "wizard-hat"], container: Some("crate")),
+    // Luna `janitor`: Janitorial supplies (without cleaner)
+    (id: "janitor", categories: ["miscellaneous"], cost: 10, contains: ["bucket", "mop", "caution", "space-cleaner", "mop-bucket"], container: Some("crate")),
+    // Luna `paper`: Bureaucracy crate (without camera_test)
+    (id: "paper", categories: ["miscellaneous"], cost: 15, contains: ["chest-drawer", "hand-labeler", "labeler-refill", "labeler-refill", "paper-bin", "pen", "pen", "pen", "folder-blue", "folder-red", "folder-yellow", "clipboard", "clipboard"], container: Some("crate")),
+]

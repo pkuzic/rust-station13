@@ -18,6 +18,7 @@ pub mod blob;
 pub mod brig;
 pub mod cables;
 pub mod cameras;
+pub mod cargo;
 pub mod cells;
 pub mod chairs;
 pub mod changeling;
@@ -50,6 +51,7 @@ pub mod flashlights;
 pub mod floodlights;
 pub mod floors;
 pub mod food;
+pub mod forensics;
 pub mod frames;
 pub mod freezers;
 pub mod furniture;
@@ -490,6 +492,13 @@ impl Plugin for ClassicPlugin {
                                 surgery::run_operations,
                                 surgery::update_views,
                                 surgery::update_tables,
+                                forensics::run_picks,
+                                forensics::run_computers,
+                                forensics::update_views,
+                                cargo::run_picks,
+                                cargo::run_cargo,
+                                cargo::update_views,
+                                cargo::clear_closed_views,
                             )
                                 .chain(),
                             (

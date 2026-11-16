@@ -207,6 +207,7 @@ pub fn server_app_with_station(port: u16, decks: Vec<&'static str>) -> App {
     .add_systems(FixedPostUpdate, send_spell_panels)
     .add_systems(FixedPostUpdate, send_spellbook_panels)
     .add_systems(FixedPostUpdate, send_genetics_panels)
+    .add_systems(FixedPostUpdate, send_cargo_panels)
     .add_systems(
         FixedUpdate,
         (
@@ -392,6 +393,32 @@ fn send_spellbook_panels(
         let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
         if sent.get(&link) != now.as_ref() {
             sender.send::<NoticeChannel>(SpellbookPanel(now.clone()));
+            match now {
+                Some(view) => {
+                    sent.insert(link, view);
+                }
+                None => {
+                    sent.remove(&link);
+                }
+            }
+        }
+    }
+}
+
+/// Show each player the cargo console they have open (`cargo.md`).
+fn send_cargo_panels(
+    mut links: Query<(
+        Entity,
+        &Controls,
+        &mut MessageSender<rs13_network::protocol::CargoPanel>,
+    )>,
+    mobs: Query<&rs13_classic::cargo::CargoPanelOut>,
+    mut sent: Local<std::collections::HashMap<Entity, rs13_world::CargoPanelView>>,
+) {
+    for (link, controls, mut sender) in &mut links {
+        let now = mobs.get(controls.0).ok().and_then(|out| out.0.clone());
+        if sent.get(&link) != now.as_ref() {
+            sender.send::<NoticeChannel>(rs13_network::protocol::CargoPanel(now.clone()));
             match now {
                 Some(view) => {
                     sent.insert(link, view);

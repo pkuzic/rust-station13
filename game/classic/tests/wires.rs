@@ -384,10 +384,16 @@ fn a_cut_electrify_wire_bites_whoever_touches_the_door() {
         },
     );
     assert!(app.world().get::<Wiring>(airlock).unwrap().is_electrified());
-    // Close the panel: the door is now a trap.
+    // Touch it with a tool: the door is now a trap. A tool is shocked three times in four
+    // (`wires::TOOL_SHOCK`), so a few tries are sure to be bitten.
     hold(&mut app, mob, "screwdriver");
-    use_on(&mut app, mob, airlock);
-    ticks(&mut app, 1);
+    for _ in 0..10 {
+        use_on(&mut app, mob, airlock);
+        ticks(&mut app, 1);
+        if app.world().get::<Body>(mob).unwrap().health() < 100.0 {
+            break;
+        }
+    }
     assert!(
         app.world().get::<Body>(mob).unwrap().health() < 100.0,
         "the screwdriver touched it"

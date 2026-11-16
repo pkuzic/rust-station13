@@ -124,6 +124,7 @@ const APC_WALL_PX: i32 = 24;
 /// Spawn one object. Fails on an unknown prototype or access id.
 pub fn spawn_object(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Entity, String> {
     let entity = spawn_thing(world, spec, pos)?;
+    crate::forensics::equip_item(world, &spec.id, entity);
     // Tagged for an airlock console (`airlock-control.md`).
     let tag = |name: &str| {
         spec.vars
@@ -271,9 +272,17 @@ fn spawn_thing(world: &mut World, spec: &ObjectSpec, pos: TilePos) -> Result<Ent
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::surgery::spawn_table(world, pos, id));
     }
+    if crate::forensics::is_computer(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::forensics::spawn_computer(world, proto, pos, id));
+    }
     if crate::teleporters::is_teleporter_part(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
         return Ok(crate::teleporters::spawn_part(world, proto, pos, id));
+    }
+    if crate::cargo::is_cargo_console(proto) {
+        let id = world.resource_mut::<NetIds>().alloc();
+        return Ok(crate::cargo::spawn_console(world, proto, pos, id));
     }
     if crate::plumbing::is_plumbing(proto) {
         let id = world.resource_mut::<NetIds>().alloc();
