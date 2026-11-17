@@ -286,3 +286,72 @@ fn a_wrench_frees_the_photocopier_and_bolts_it_down_again() {
     assert_eq!(act(&mut app, mob, Action::UseOn(copier)), ["copier-wrenched"]);
     assert!(app.world().get::<Photocopier>(copier).unwrap().anchored);
 }
+
+#[test]
+fn a_noticeboard_holds_five_sheets_to_read_write_on_and_take_down() {
+    use rs13_classic::bureaucracy::{MAX_NOTICES, Noticeboard};
+    let (mut app, mob) = setup();
+    let board = spawn(&mut app, "noticeboard", NEXT);
+    let first = written(&mut app, "Lost cat.");
+    give(&mut app, mob, first);
+    assert_eq!(act(&mut app, mob, Action::UseOn(board)), ["notice-pinned"]);
+    assert_eq!(app.world().get::<Filed>(first).map(|f| f.0), Some(board));
+    for _ in 1..MAX_NOTICES {
+        let sheet = written(&mut app, "");
+        give(&mut app, mob, sheet);
+        act(&mut app, mob, Action::UseOn(board));
+    }
+    assert_eq!(state(&app, board), "nboard05");
+    let sixth = written(&mut app, "");
+    give(&mut app, mob, sixth);
+    assert_eq!(act(&mut app, mob, Action::UseOn(board)), ["notice-too-many"]);
+    assert_eq!(active(&app, mob), Some(sixth));
+    put_down(&mut app, mob);
+
+    // An empty hand opens its window: each sheet to read, write on or take down.
+    act(&mut app, mob, Action::UseOn(board));
+    assert_eq!(
+        rows(&app, mob)[..3],
+        ["msg:notice-read:Paper", "msg:notice-write", "msg:notice-remove"]
+    );
+    pick(&mut app, mob, board, 0);
+    assert!(
+        app.world()
+            .get::<PaperOut>(mob)
+            .unwrap()
+            .0
+            .iter()
+            .any(|w| w.sheet == first && w.mode == PaperMode::Read)
+    );
+    // Writing wants a pen in hand.
+    let before = app.world().get::<Outbox>(mob).unwrap().0.len();
+    pick(&mut app, mob, board, 1);
+    assert_eq!(
+        app.world().get::<Outbox>(mob).unwrap().0[before..]
+            .iter()
+            .map(|m| m.id.as_str())
+            .collect::<Vec<_>>(),
+        ["notice-no-pen"]
+    );
+    let pen = spawn(&mut app, "pen", HERE);
+    give(&mut app, mob, pen);
+    pick(&mut app, mob, board, 1);
+    assert!(
+        app.world()
+            .get::<PaperOut>(mob)
+            .unwrap()
+            .0
+            .iter()
+            .any(|w| w.sheet == first && w.mode == PaperMode::Write)
+    );
+    // Taken down, it falls to the floor under the board.
+    pick(&mut app, mob, board, 2);
+    assert_eq!(
+        app.world().get::<Noticeboard>(board).unwrap().0.len(),
+        MAX_NOTICES - 1
+    );
+    assert_eq!(app.world().get::<GridPos>(first).map(|p| p.0), Some(NEXT));
+    assert!(app.world().get::<Filed>(first).is_none());
+    tick(&mut app, 1);
+    assert_eq!(state(&app, board), "nboard04");
+}

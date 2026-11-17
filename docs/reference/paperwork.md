@@ -3,7 +3,7 @@
 Sources (Luna's build includes the old paper, not `modules/paperwork/paper.dm`):
 `luna:code/defines/obj/weapon.dm` (`paper`), `luna:code/game/objects/items/weapons/papers_bins.dm`
 (`paper`: `examine`, `attack_self`, `attackby`), `luna:code/modules/paperwork/paperbin.dm`,
-`pen.dm`, `clipboard.dm`, `stamps.dm`, `folders.dm`, `photocopier.dm`; `supplyshuttle.dm`
+`pen.dm`, `clipboard.dm`, `structures/noticeboard.dm`, `stamps.dm`, `folders.dm`, `photocopier.dm`; `supplyshuttle.dm`
 (stamped manifests); `NSV_Luna.dmm`: 28 paper bins, 21 pens, 10 clipboards, 7 sheets, rubber
 stamps, folders and two photocopiers.
 
@@ -53,6 +53,16 @@ sticking out of it. Used in the hand, its window lists every sheet with **Remove
 hand, or at your feet) and **Read**. It only works while you carry it. A folder goes into a
 filing cabinet like a sheet (`filing-cabinets.md`).
 
+## Noticeboard (`noticeboard`)
+
+A sheet clicked onto it is pinned up ("You pin the paper to the noticeboard."), five at most
+("You reach to pin your paper to the board but hesitate. You are certain your paper will not be
+seen among the many others already attached."); its sprite shows how many. An empty hand opens
+its window: each sheet by name to read, **Write** (with a pen in the active hand: "You'll need
+something to write with!") and **Remove**, which drops it on the floor under the board.
+Handcuffed, you can't write or take one down ("It's a bit hard to remove the notice when you're
+restrained like this.").
+
 ## Photocopier (`photocopier`)
 
 Wrenched down, dense, on the equipment power channel (30 W), though like Luna's it works
@@ -87,5 +97,7 @@ Toner cartridges come six to a crate (Toner cartridges, 10 points).
 | Its scanner flashes as a sheet goes in, and copying draws 200 W | Neither: it draws its idle 30 W |
 | Losing toner in an explosion leaves an oil stain | No stain |
 | The hand labeler names things | Not built (custom names, 4.7) |
+| A monkey reads a notice with words missing; the board's window can be used from anywhere once open | A notice reads in full; the window works within a tile |
+| A notice is written on with a pen in either hand | In the active hand |
 | The head of security's, chief medical officer's and clown's stamps | Not on the station |
 | A sheet can be worn on the head | Not built |

@@ -5,6 +5,7 @@
 //!   end of its text, its sprite shows the stamp, and no pen can change it after. A stamped
 //!   supply manifest sent back in its crate earns cargo 4 points.
 //! - **Folders** hold sheets; used in the hand, their window takes one out or reads it.
+//! - **Noticeboards** hold up to five sheets, to read, write on or take down from their window.
 //! - **The photocopier** takes one sheet and prints up to ten copies of its name and text, one a
 //!   second and a half, a unit of toner each; an empty one takes a new toner cartridge.
 
@@ -23,6 +24,9 @@ use crate::time::WorldTime;
 use crate::wires::PanelViewer;
 
 pub const PHOTOCOPIER: &str = "photocopier";
+pub const NOTICEBOARD: &str = "noticeboard";
+/// Most sheets on a noticeboard (Luna `notices < 5`).
+pub const MAX_NOTICES: usize = 5;
 pub const TONER: &str = "toner";
 /// Toner in a full photocopier, one per copy (Luna `toner`).
 pub const TONER_FULL: u8 = 30;
@@ -42,6 +46,10 @@ pub fn is_folder(sprite: &str) -> bool {
 /// A folder: the sheets in it, in the order they went in.
 #[derive(Component, Debug, Clone, Default, PartialEq, Eq)]
 pub struct Folder(pub Vec<Entity>);
+
+/// A noticeboard: the sheets pinned to it, in the order they went up.
+#[derive(Component, Debug, Clone, Default, PartialEq, Eq)]
+pub struct Noticeboard(pub Vec<Entity>);
 
 /// A photocopier: the sheet in it, how many copies to print, toner left, whether it is
 /// wrenched down, and the copies still to come out.
@@ -73,6 +81,9 @@ pub fn equip_item(world: &mut World, item: Entity, proto: &str) {
     if is_folder(proto) {
         world.entity_mut(item).insert(Folder::default());
     }
+    if proto == NOTICEBOARD {
+        world.entity_mut(item).insert(Noticeboard::default());
+    }
 }
 
 pub fn spawn_photocopier(world: &mut World, pos: TilePos, id: NetId) -> Entity {
@@ -103,9 +114,11 @@ fn at(world: &World, e: Entity) -> Option<TilePos> {
 }
 
 /// Whether a click with `tool` (the held item's sprite) on `target` is ours: a stamp on a sheet or
-/// clipboard, a sheet into a folder, anything on a photocopier.
+/// clipboard, a sheet into a folder, anything on a photocopier, a sheet or an empty hand on a
+/// noticeboard.
 pub fn takes(target: &str, tool: Option<&str>) -> bool {
     target == PHOTOCOPIER
+        || (target == NOTICEBOARD && matches!(tool, None | Some(PAPER)))
         || (tool.is_some_and(is_stamp) && (target == PAPER || target == CLIPBOARD))
         || (tool == Some(PAPER) && is_folder(target))
 }
@@ -119,6 +132,10 @@ pub fn use_on(world: &mut World, mob: Entity, held: Option<Entity>, target: Enti
     };
     if look == PHOTOCOPIER {
         use_on_copier(world, mob, held, tool.as_deref(), target);
+        return;
+    }
+    if world.get::<Noticeboard>(target).is_some() {
+        pin(world, mob, held, target);
         return;
     }
     let Some(held) = held else { return };
@@ -186,6 +203,28 @@ fn stamp(world: &mut World, mob: Entity, stamp: Entity, sheet: Entity) {
         look.state = "stamped".to_owned();
     }
     tell(world, mob, LocMsg::new("paper-stamp"));
+}
+
+/// Luna `noticeboard/attackby` and `attack_hand`: a sheet is pinned up, while there's room; an
+/// empty hand opens its window.
+fn pin(world: &mut World, mob: Entity, held: Option<Entity>, board: Entity) {
+    let Some(sheet) = held.filter(|h| world.get::<Paper>(*h).is_some()) else {
+        world.entity_mut(mob).insert(PanelViewer(board));
+        return;
+    };
+    if world
+        .get::<Noticeboard>(board)
+        .is_some_and(|b| b.0.len() >= MAX_NOTICES)
+    {
+        tell(world, mob, LocMsg::new("notice-too-many"));
+        return;
+    }
+    drop_from_hand(world, mob, sheet);
+    world.entity_mut(sheet).insert(Filed(board));
+    if let Some(mut b) = world.get_mut::<Noticeboard>(board) {
+        b.0.push(sheet);
+    }
+    tell(world, mob, LocMsg::new("notice-pinned"));
 }
 
 fn use_on_copier(world: &mut World, mob: Entity, held: Option<Entity>, tool: Option<&str>, copier: Entity) {
@@ -272,6 +311,8 @@ enum Line {
     Info,
     Take(usize),
     Read(usize),
+    NoticeWrite(usize),
+    NoticeRemove(usize),
     Remove,
     Copy,
     Less,
@@ -288,6 +329,18 @@ fn lines(world: &World, target: Entity) -> Vec<(String, Line)> {
                 .unwrap_or_default();
             out.push((format!("msg:folder-remove:{name}"), Line::Take(i)));
             out.push((format!("msg:folder-read:{name}"), Line::Read(i)));
+        }
+        return out;
+    }
+    if let Some(board) = world.get::<Noticeboard>(target) {
+        for (i, sheet) in board.0.iter().enumerate() {
+            let name = world
+                .get::<Paper>(*sheet)
+                .map(|p| p.name.clone())
+                .unwrap_or_default();
+            out.push((format!("msg:notice-read:{name}"), Line::Read(i)));
+            out.push(("msg:notice-write".to_owned(), Line::NoticeWrite(i)));
+            out.push(("msg:notice-remove".to_owned(), Line::NoticeRemove(i)));
         }
         return out;
     }
@@ -313,15 +366,27 @@ fn lines(world: &World, target: Entity) -> Vec<(String, Line)> {
 }
 
 fn is_ours(world: &World, target: Entity) -> bool {
-    world.get::<Folder>(target).is_some() || world.get::<Photocopier>(target).is_some()
+    world.get::<Folder>(target).is_some()
+        || world.get::<Photocopier>(target).is_some()
+        || world.get::<Noticeboard>(target).is_some()
 }
 
 /// Whether the filing cabinets should leave this viewer's list alone.
 pub fn keeps_own_list(sprite: &str) -> bool {
-    sprite == PHOTOCOPIER || is_folder(sprite)
+    sprite == PHOTOCOPIER || sprite == NOTICEBOARD || is_folder(sprite)
 }
 
-/// A folder only while carried (Luna `usr.contents.Find(src)`); the photocopier within a tile.
+/// The sheets a window lists: a folder's or a noticeboard's.
+fn sheet_at(world: &World, target: Entity, i: usize) -> Option<Entity> {
+    world
+        .get::<Folder>(target)
+        .map(|f| &f.0)
+        .or_else(|| world.get::<Noticeboard>(target).map(|b| &b.0))
+        .and_then(|sheets| sheets.get(i).copied())
+}
+
+/// A folder only while carried (Luna `usr.contents.Find(src)`); a photocopier or noticeboard
+/// within a tile.
 fn can_work(world: &World, mob: Entity, target: Entity) -> bool {
     if world.get::<Folder>(target).is_some() {
         return world.get::<HeldBy>(target).is_some_and(|h| h.0 == mob);
@@ -385,8 +450,57 @@ fn do_line(world: &mut World, mob: Entity, target: Entity, line: Line) {
                 give(world, mob, sheet);
             }
         }
+        Line::NoticeWrite(_) | Line::NoticeRemove(_)
+            if world.get::<crate::security::Cuffed>(mob).is_some() =>
+        {
+            // Luna's `usr.restrained()`.
+            let id = if matches!(line, Line::NoticeWrite(_)) {
+                "notice-cuffed-write"
+            } else {
+                "notice-cuffed-remove"
+            };
+            tell(world, mob, LocMsg::new(id));
+        }
+        Line::NoticeWrite(i) => {
+            let Some(sheet) = sheet_at(world, target, i) else {
+                return;
+            };
+            let pen = world
+                .get::<Hands>(mob)
+                .and_then(Hands::active_item)
+                .and_then(|p| sprite(world, p))
+                .is_some_and(|s| crate::paperwork::is_pen(&s));
+            if !pen {
+                tell(world, mob, LocMsg::new("notice-no-pen"));
+                return;
+            }
+            if world.get::<Stamped>(sheet).is_some() {
+                tell(world, mob, LocMsg::new("paper-stamped-no-edit"));
+                return;
+            }
+            let Some(paper) = world.get::<Paper>(sheet).cloned() else {
+                return;
+            };
+            if let Some(mut out) = world.get_mut::<PaperOut>(mob) {
+                out.0.push(PaperWindow {
+                    sheet,
+                    title: paper.name,
+                    text: paper.text,
+                    mode: PaperMode::Write,
+                });
+            }
+        }
+        Line::NoticeRemove(i) => {
+            // Down onto the floor under the board.
+            let sheet = world
+                .get_mut::<Noticeboard>(target)
+                .and_then(|mut b| (i < b.0.len()).then(|| b.0.remove(i)));
+            if let (Some(sheet), Some(pos)) = (sheet, at(world, target)) {
+                world.entity_mut(sheet).remove::<Filed>().insert(GridPos(pos));
+            }
+        }
         Line::Read(i) => {
-            let Some(sheet) = world.get::<Folder>(target).and_then(|f| f.0.get(i).copied()) else {
+            let Some(sheet) = sheet_at(world, target, i) else {
                 return;
             };
             let Some(paper) = world.get::<Paper>(sheet).cloned() else {
@@ -495,12 +609,25 @@ pub fn update_views(world: &mut World) {
     }
 }
 
-/// A folder shows a sheet sticking out while it holds any (Luna `folder/update_icon`).
-pub fn update_looks(mut folders: Query<(&Folder, &mut Appearance), Changed<Folder>>) {
+/// A folder shows a sheet sticking out while it holds any (Luna `folder/update_icon`); a
+/// noticeboard shows how many sheets are up (`nboard0N`).
+pub fn update_looks(
+    mut folders: Query<(&Folder, &mut Appearance), (Changed<Folder>, Without<Noticeboard>)>,
+    mut boards: Query<(&Noticeboard, &mut Appearance), Changed<Noticeboard>>,
+) {
     for (folder, mut look) in &mut folders {
         let state = if folder.0.is_empty() { "" } else { "+folder_paper" };
         if look.state != state {
             look.state = state.to_owned();
+        }
+    }
+    for (board, mut look) in &mut boards {
+        let state = match board.0.len() {
+            0 => String::new(),
+            n => format!("nboard0{n}"),
+        };
+        if look.state != state {
+            look.state = state;
         }
     }
 }

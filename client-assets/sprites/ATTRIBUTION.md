@@ -1236,6 +1236,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `no-raisin:` | `icons/obj/food.dmi : "4no_raisins"` | CC-BY-SA 3.0 |
 | `noodles:` | `icons/obj/food.dmi : "spagetti"` | CC-BY-SA 3.0 |
 | `noticeboard:` | `icons/obj/stationobjs.dmi : "nboard00"` | CC-BY-SA 3.0 |
+| `noticeboard:nboard01` | `icons/obj/stationobjs.dmi : "nboard01"` | CC-BY-SA 3.0 |
+| `noticeboard:nboard02` | `icons/obj/stationobjs.dmi : "nboard02"` | CC-BY-SA 3.0 |
+| `noticeboard:nboard03` | `icons/obj/stationobjs.dmi : "nboard03"` | CC-BY-SA 3.0 |
+| `noticeboard:nboard04` | `icons/obj/stationobjs.dmi : "nboard04"` | CC-BY-SA 3.0 |
+| `noticeboard:nboard05` | `icons/obj/stationobjs.dmi : "nboard05"` | CC-BY-SA 3.0 |
 | `nuclear-bomb:0` | `icons/obj/stationobjs.dmi : "nuclearbomb0"` | CC-BY-SA 3.0 |
 | `nuclear-bomb:1` | `icons/obj/stationobjs.dmi : "nuclearbomb1"` | CC-BY-SA 3.0 |
 | `nuclear-bomb:2` | `icons/obj/stationobjs.dmi : "nuclearbomb2"` | CC-BY-SA 3.0 |

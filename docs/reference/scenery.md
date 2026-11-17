@@ -1,7 +1,8 @@
 # Scenery
 
 Fixtures on `NSV_Luna.dmm` that nothing else needs yet. They stand where the map puts them, so the decks
-look as they should and block what they should, and they can be examined. Clicking them does nothing.
+look as they should and block what they should, and they can be examined. Clicking them does nothing. The
+noticeboard is the exception: it holds notices (`paperwork.md`).
 
 Code: `game/classic/src/scenery.rs`. Tests: `game/classic/tests/scenery.rs`.
 
