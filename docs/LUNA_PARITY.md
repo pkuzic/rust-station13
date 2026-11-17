@@ -77,7 +77,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 |---|---|---|---|---|
 | [ ] | 4.1 Hacking: wires on APCs, vendors, autolathe; emag; signallers | L | `datums/wires` | Airlock wires only |
 | [ ] | 4.2 Inventory: pockets, throwing, grabs, strip window | M | `hands`, `mob/inventory` | |
-| [ ] | 4.3 Weapons: casings, other guns, accuracy, energy swords, clumsiness | M | `modules/projectiles`, `items/weapons` | `weapons.md` |
+| [~] | 4.3 Weapons: casings, other guns, accuracy, energy swords, clumsiness | M | `modules/projectiles`, `items/weapons` | `weapons.md`: the captain's antique laser and display case, the energy sword, the mini energy-crossbow, shields blocking. Left: casings, accuracy, clumsiness, the other guns |
 | [ ] | 4.4 Power: solars, trackers, turbine, supermatter meltdown | M | `modules/power` | Needs 1.13 for meltdown |
 | [ ] | 4.5 Atmospherics: consoles, heat exchangers, pipe bursts, dispensers | M | `atmospherics` | |
 | [ ] | 4.6 Machine windows that are only clicks: cryo, TEG, pumps, mixers, airlock control | M | various | |

@@ -46,6 +46,28 @@ field behind glass with 30 health:
 The glass rings when hit. At 0 it shatters and can be walked through, and an empty hand then
 deactivates the field and takes the gun ("You deactivate the hover field built into the case.").
 
+## Mini energy-crossbow (`energy-crossbow`)
+
+The traitors' (uplink, 5 crystals). It fires bolts: 20 toxin damage and knocked down as long as
+an electrode does, both halved by energy armour. It's silenced: only a quiet sound, and nobody is
+told who fired. Glass stops a bolt. It charges itself, 100 every 4 seconds, and a recharger won't
+take it. Its sprite never shows the charge.
+
+## Energy sword (`energy-sword`)
+
+The traitors' (uplink, 5 crystals). Off, it's a small hilt: force 3, and it fits in a pocket.
+Click it in hand to switch it: "The sword is now active." with a hum, force 30 and too big for
+a pocket or box, its blade one of red, blue, green or purple (picked when it's made). Click it
+again: "The sword can now be concealed." with force 3 again.
+
+## Shields
+
+A **riot shield**, or an energy sword with its blade out, in either hand can block:
+- a blow from an item: 50% less a third of its force ("X blocks the Y with the Z!");
+- a shot: 50% less a third of its damage ("X blocks the shot with the Z!").
+
+A blocked blow or shot does nothing.
+
 ## Bullet guns
 
 They come loaded and fire the same way, with rounds instead of charge. Click a gun with ammunition to
@@ -98,4 +120,7 @@ out. Every 2 seconds it adds 100 to a gun or 250 to a baton, and shows when it's
 | Other bullet guns, syringe guns and laser tag | Not built |
 | Clumsy shooters | Not built |
 | A shattered display case leaves a glass shard | There are no shards yet |
+| Bolts also make you stutter | Not built |
+| A clumsy person switching an energy sword on may cut themselves | No clumsiness yet |
+| A reactive armour vest may teleport its wearer clear of an attack | No reactive armour yet |
 | The display case breaks to a blob and to a meteor | Not yet |

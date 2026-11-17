@@ -585,6 +585,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `empty-canister:can-o1` | `icons/obj/atmos.dmi : "can-o1"` | CC-BY-SA 3.0 |
 | `empty-canister:can-o2` | `icons/obj/atmos.dmi : "can-o2"` | CC-BY-SA 3.0 |
 | `empty-canister:can-o3` | `icons/obj/atmos.dmi : "can-o3"` | CC-BY-SA 3.0 |
+| `energy-crossbow:crossbow` | `icons/obj/gun.dmi : "crossbow"` | CC-BY-SA 3.0 |
 | `energy-gun:energykill0` | `icons/obj/gun.dmi : "energykill0"` | CC-BY-SA 3.0 |
 | `energy-gun:energykill100` | `icons/obj/gun.dmi : "energykill100"` | CC-BY-SA 3.0 |
 | `energy-gun:energykill25` | `icons/obj/gun.dmi : "energykill25"` | CC-BY-SA 3.0 |
@@ -595,6 +596,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `energy-gun:energystun25` | `icons/obj/gun.dmi : "energystun25"` | CC-BY-SA 3.0 |
 | `energy-gun:energystun50` | `icons/obj/gun.dmi : "energystun50"` | CC-BY-SA 3.0 |
 | `energy-gun:energystun75` | `icons/obj/gun.dmi : "energystun75"` | CC-BY-SA 3.0 |
+| `energy-sword:sword0` | `icons/obj/weapons.dmi : "sword0"` | CC-BY-SA 3.0 |
+| `energy-sword:swordblue` | `icons/obj/weapons.dmi : "swordblue"` | CC-BY-SA 3.0 |
+| `energy-sword:swordgreen` | `icons/obj/weapons.dmi : "swordgreen"` | CC-BY-SA 3.0 |
+| `energy-sword:swordpurple` | `icons/obj/weapons.dmi : "swordpurple"` | CC-BY-SA 3.0 |
+| `energy-sword:swordred` | `icons/obj/weapons.dmi : "swordred"` | CC-BY-SA 3.0 |
 | `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `engineer-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "engine"` | CC-BY-SA 3.0 |
 | `evidence-box:` | `icons/obj/storage.dmi : "box"` | CC-BY-SA 3.0 |
@@ -1485,6 +1491,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shield-plate:plate-p` | `icons/obj/machines/shieldgen.dmi : "plate-p"` | CC-BY-SA 3.0 |
 | `shields-button:access_button_standby` | `icons/obj/airlock_machines.dmi : "access_button_standby"` | CC-BY-SA 3.0 |
 | `shot:bullet` | `icons/obj/projectiles.dmi : "bullet"` | CC-BY-SA 3.0 |
+| `shot:cbbolt` | `icons/obj/projectiles.dmi : "cbbolt"` | CC-BY-SA 3.0 |
 | `shot:heavylaser` | `icons/obj/projectiles.dmi : "heavylaser"` | CC-BY-SA 3.0 |
 | `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
 | `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |

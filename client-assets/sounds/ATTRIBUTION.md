@@ -48,6 +48,9 @@ to files in `apps/client/src/audio.rs`.
 | `weapons/Taser.ogg` | `sound/weapons/Taser.ogg` | `taser` | CC-BY-SA 3.0 |
 | `weapons/Egloves.ogg` | `sound/weapons/Egloves.ogg` | `baton-hit` | CC-BY-SA 3.0 |
 | `weapons/armbomb.ogg` | `sound/weapons/armbomb.ogg` | `arm-bomb` | CC-BY-SA 3.0 |
+| `weapons/saberon.ogg` | `sound/weapons/saberon.ogg` | `saber-on` | CC-BY-SA 3.0 |
+| `weapons/saberoff.ogg` | `sound/weapons/saberoff.ogg` | `saber-off` | CC-BY-SA 3.0 |
+| `weapons/Genhit.ogg` | `sound/weapons/Genhit.ogg` | `genhit` | CC-BY-SA 3.0 |
 | `machines/WashingMachine1.ogg` | `sound/machines/WashingMachine1.ogg` | `washing-machine` | CC-BY-SA 3.0 |
 | `effects/bang.ogg` | `sound/effects/bang.ogg` | `bang` | CC-BY-SA 3.0 |
 | `effects/smoke.ogg` | `sound/effects/smoke.ogg` | `smoke` | CC-BY-SA 3.0 |

@@ -2412,6 +2412,14 @@
             "pod_1": (dmi: "icons/obj/cloning.dmi", state: "pod_1"),
         },
         "door-timer": { "frame": (dmi: "icons/obj/status_display.dmi", state: "frame") },
+        "energy-sword": {
+            "sword0": (dmi: "icons/obj/weapons.dmi", state: "sword0"),
+            "swordred": (dmi: "icons/obj/weapons.dmi", state: "swordred"),
+            "swordblue": (dmi: "icons/obj/weapons.dmi", state: "swordblue"),
+            "swordgreen": (dmi: "icons/obj/weapons.dmi", state: "swordgreen"),
+            "swordpurple": (dmi: "icons/obj/weapons.dmi", state: "swordpurple"),
+        },
+        "energy-crossbow": { "crossbow": (dmi: "icons/obj/gun.dmi", state: "crossbow") },
         "captain-laser": {
             "caplaser0": (dmi: "icons/obj/gun.dmi", state: "caplaser0"),
             "caplaser25": (dmi: "icons/obj/gun.dmi", state: "caplaser25"),
@@ -2452,6 +2460,7 @@
         "shot": {
             "laser": (dmi: "icons/obj/projectiles.dmi", state: "laser"),
             "heavylaser": (dmi: "icons/obj/projectiles.dmi", state: "heavylaser"),
+            "cbbolt": (dmi: "icons/obj/projectiles.dmi", state: "cbbolt"),
             "spark": (dmi: "icons/obj/projectiles.dmi", state: "spark"),
             "bullet": (dmi: "icons/obj/projectiles.dmi", state: "bullet"),
         },

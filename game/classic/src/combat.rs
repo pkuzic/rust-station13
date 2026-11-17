@@ -238,6 +238,8 @@ pub fn resolve_attacks(
     )>,
     items: Query<(&Item, &Appearance, Option<&crate::welding::Welder>)>,
     looks: Query<&Appearance>,
+    holders: Query<&Hands>,
+    swords: Query<&crate::swords::EnergySword>,
     mut commands: Commands,
 ) {
     for (attacker, target) in pending.0.drain(..) {
@@ -257,6 +259,7 @@ pub fn resolve_attacks(
         }
         let at = to.0;
         let victim = victim_name.0.clone();
+        let target_hands = holders.get(target).ok();
         let gear = worn(equipment, &looks);
         let mut told = |id: &str| {
             if let Some(outbox) = outbox.as_mut() {
@@ -266,6 +269,27 @@ pub fn resolve_attacks(
         let mut consequence = Consequence::default();
 
         if let Some((item, appearance, welder)) = weapon {
+            // A riot shield or a lit energy sword in the victim's hands may stop it (Luna
+            // `check_shields`, 50% less a third of the force).
+            if target != attacker
+                && let Some(shield) = target_hands.and_then(|h| {
+                    [h.left, h.right].into_iter().flatten().find(|i| {
+                        looks.get(*i).is_ok_and(|a| a.sprite == "riot-shield")
+                            || swords.get(*i).is_ok_and(|s| s.active)
+                    })
+                })
+                && rng.prob(50.0 - (item.force / 3.0).round())
+            {
+                let msg = LocMsg::new("shield-blocks-blow")
+                    .arg("victim", victim.clone())
+                    .arg("item", appearance.sprite.clone())
+                    .arg(
+                        "shield",
+                        looks.get(shield).map(|a| a.sprite.clone()).unwrap_or_default(),
+                    );
+                visible.0.push((at, msg, None));
+                continue;
+            }
             // In this era a held item hits on any intent. A lit welding tool burns.
             let zone = ran_zone(aimed, &mut rng);
             let burning = welder.is_some_and(|w| w.lit);
