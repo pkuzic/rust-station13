@@ -23,6 +23,7 @@ mod camera_panel;
 mod cargo_panel;
 mod changeling_panel;
 mod chem_panel;
+mod chrome;
 mod comms_panel;
 mod context_menu;
 mod depth;
@@ -598,10 +599,15 @@ fn main() {
         .init_resource::<paper_panel::OpenClipboard>()
         .init_resource::<smes_panel::OpenSmes>()
         .init_resource::<storage_panel::OpenStorage>()
+        .init_resource::<chrome::WindowPlaces>()
         .init_resource::<OverlayOn>()
         .init_resource::<TileSprites>()
         .insert_resource(Loc(localizer))
         .init_resource::<MessageLog>()
+        .add_systems(
+            PostUpdate,
+            chrome::dress_windows.before(bevy::ui::UiSystems::Prepare),
+        )
         .add_systems(
             Startup,
             (
@@ -848,8 +854,8 @@ fn setup(mut commands: Commands, server: Res<ServerAddr>) -> Result {
 /// The text panel right of the map, as in the classic BYOND client: stats on top, the
 /// message output below, the say line at the bottom.
 fn spawn_panel(mut commands: Commands) {
-    let grey = Color::srgb(0.83, 0.82, 0.78);
-    let edge = Color::srgb(0.5, 0.5, 0.5);
+    // A classic grey window face, with the status, log and chat line set into it.
+    let grey = chrome::FACE;
     commands.spawn((
         Node {
             position_type: PositionType::Absolute,
@@ -867,11 +873,11 @@ fn spawn_panel(mut commands: Commands) {
             (
                 Node {
                     flex_direction: FlexDirection::Column,
-                    border: UiRect::all(Val::Px(1.0)),
+                    border: UiRect::all(Val::Px(2.0)),
                     padding: UiRect::all(Val::Px(4.0)),
                     ..default()
                 },
-                BorderColor::all(edge),
+                chrome::sunken(),
                 children![
                     (
                         StatusLine,
@@ -893,12 +899,12 @@ fn spawn_panel(mut commands: Commands) {
                     flex_direction: FlexDirection::Column,
                     justify_content: JustifyContent::FlexEnd,
                     overflow: Overflow::clip(),
-                    border: UiRect::all(Val::Px(1.0)),
+                    border: UiRect::all(Val::Px(2.0)),
                     padding: UiRect::all(Val::Px(4.0)),
                     ..default()
                 },
                 BackgroundColor(Color::WHITE),
-                BorderColor::all(edge),
+                chrome::sunken(),
                 children![(
                     LogText,
                     Text::new(""),
@@ -909,13 +915,13 @@ fn spawn_panel(mut commands: Commands) {
             (
                 Node {
                     min_height: Val::Px(22.0),
-                    border: UiRect::all(Val::Px(1.0)),
+                    border: UiRect::all(Val::Px(2.0)),
                     padding: UiRect::horizontal(Val::Px(4.0)),
                     align_items: AlignItems::Center,
                     ..default()
                 },
                 BackgroundColor(Color::WHITE),
-                BorderColor::all(edge),
+                chrome::sunken(),
                 children![(
                     ChatLine,
                     Text::new(""),

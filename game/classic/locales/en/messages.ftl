@@ -1005,6 +1005,7 @@ panel-cut = Cut
 panel-mend = Mend
 panel-pulse = Pulse
 panel-close = Close
+window-vote-panel = Vote
 panel-bolts-down = The door bolts have dropped!
 panel-bolts-up = The door bolts are up.
 panel-test-light-on = The test light is on.

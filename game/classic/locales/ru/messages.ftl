@@ -995,6 +995,7 @@ panel-cut = Перерезать
 panel-mend = Починить
 panel-pulse = Импульс
 panel-close = Закрыть
+window-vote-panel = Голосование
 panel-bolts-down = Болты двери опущены!
 panel-bolts-up = Болты двери подняты.
 panel-test-light-on = Контрольная лампа горит.

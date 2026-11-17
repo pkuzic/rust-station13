@@ -7,8 +7,9 @@ Icons: Luna `icons/mob/screen1.dmi`, the `hud` sprite in `client-assets/sprites.
 
 The window follows the classic BYOND client:
 - **Left:** a square map screen, as tall as the window.
-- **Right:** a grey text panel. It has stats and the hover tip on top, the white message
-  output below, and the say line at the bottom.
+- **Right:** a grey text panel in the classic desktop style. It has stats and the hover tip in
+  a sunken box on top, the white message output sunken below, and the sunken say line at the
+  bottom.
 
 The screen square is 16 × 16 cells:
 - the 15 × 15 map view, centred on the player (view range 7);
@@ -17,6 +18,21 @@ The screen square is 16 × 16 cells:
 
 Cells use Luna's `screen_loc` coordinates: x 1–16 from the left, y 0–15 from the bottom
 (`code/game/hud.dm`). The map is scaled to fit the square, so cells are not always 32 px.
+
+## Windows
+
+Every window a machine, paper or panel opens looks like a classic desktop window
+(`apps/client/src/chrome.rs`):
+- a grey face with a raised bevel (lit top and left edges, shaded bottom and right);
+- a navy title bar fading to blue, with the window's title in bold white and a close box that
+  does what the window's own Close does. A window without a title line takes its name from the
+  locale (`window-vote-panel`);
+- its buttons as raised grey keys with black labels, which sink while pressed.
+
+Drag a window by its title bar to move it. It opens there again next time, until the client
+quits. A window never moved opens a step down and to the right of each window already open. A
+press anywhere on a window brings it in front of the others. The right-click menu is a grey
+raised popup with the same keys.
 
 ## Scaling
 
