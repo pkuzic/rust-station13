@@ -31,5 +31,5 @@ Both are dense and start bolted down.
 
 | Luna | Here |
 |---|---|
-| Folders and photos go in too | There are no folders or photos yet |
+| Folders and photos go in too | Folders do, listed by their name; there are no photos yet |
 | The rolling chest drawer, from the supply shuttle | There is no supply shuttle yet |

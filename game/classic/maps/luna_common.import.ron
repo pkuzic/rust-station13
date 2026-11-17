@@ -554,6 +554,7 @@
         (path: "/obj/item/weapon/storage/toolbox/emergency", id: "toolbox-emergency-red"),
         (path: "/obj/item/weapon/storage/toolbox/syndicate", id: "toolbox-syndicate"),
         (path: "/obj/item/weapon/stamp", id: "stamp"),
+        (path: "/obj/machinery/photocopier", id: "photocopier"),
         (path: "/obj/item/weapon/stamp/denied", id: "stamp-denied"),
         (path: "/obj/item/weapon/stamp/rd", id: "stamp-rd"),
         (path: "/obj/item/weapon/stamp/hop", id: "stamp-hop"),

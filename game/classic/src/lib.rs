@@ -17,6 +17,7 @@ pub mod bedsheets;
 pub mod blastdoors;
 pub mod blob;
 pub mod brig;
+pub mod bureaucracy;
 pub mod cables;
 pub mod cameras;
 pub mod cargo;
@@ -503,6 +504,10 @@ impl Plugin for ClassicPlugin {
                                     chem_effects::run_smoke,
                                     chem_effects::run_foam,
                                     chem_effects::slip_on_foam,
+                                    bureaucracy::run_picks,
+                                    bureaucracy::run_copiers,
+                                    bureaucracy::update_views,
+                                    bureaucracy::update_looks,
                                 )
                                     .chain(),
                                 anomalies::run_picks,

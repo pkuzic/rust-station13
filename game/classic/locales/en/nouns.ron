@@ -266,6 +266,8 @@
     "beaker": (gender: neuter, sg: (nom: "beaker", indef: "a beaker"), pl: Some((nom: "beakers"))),
     "knife": (gender: neuter, sg: (nom: "knife", indef: "a knife"), pl: Some((nom: "knifes"))),
     "handcuffs": (gender: neuter, sg: (nom: "handcuffs", indef: "a set of handcuffs"), pl: Some((nom: "handcuffs"))),
+    "photocopier": (gender: neuter, sg: (nom: "photocopier", indef: "a photocopier"), pl: Some((nom: "photocopiers"))),
+    "toner": (gender: neuter, sg: (nom: "toner cartridge", indef: "a toner cartridge"), pl: Some((nom: "toner cartridges"))),
     "labeler-refill": (gender: neuter, sg: (nom: "hand labeler paper roll", indef: "a hand labeler paper roll"), pl: Some((nom: "hand labeler paper rolls"))),
     "scalpel": (gender: neuter, sg: (nom: "scalpel", indef: "a scalpel"), pl: Some((nom: "scalpels"))),
     "retractor": (gender: neuter, sg: (nom: "retractor", indef: "a retractor"), pl: Some((nom: "retractors"))),

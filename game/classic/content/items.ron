@@ -374,6 +374,8 @@
     (id: "knife", force: 8.0, size: 1),
     (id: "handcuffs", force: 0.0, size: 2),
     (id: "labeler-refill", force: 0.0, size: 1),
+    // Luna `device/toner`: a new cartridge for an empty photocopier (`paperwork.md`).
+    (id: "toner", force: 0.0, size: 2),
     (id: "scalpel", force: 10.0, size: 1),
     (id: "retractor", force: 0.0, size: 1),
     (id: "hemostat", force: 0.0, size: 1),

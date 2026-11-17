@@ -438,6 +438,12 @@ fn hit_things(world: &mut World, at: TilePos, severity: u8, spare_people: bool) 
             crate::anomalies::blasted(world, thing, severity);
             continue;
         }
+        if world.get::<crate::bureaucracy::Photocopier>(thing).is_some() {
+            if crate::bureaucracy::blasted(world, thing, severity) {
+                destroy(world, thing, at);
+            }
+            continue;
+        }
         if world.get::<crate::blob::BlobCell>(thing).is_some() {
             crate::blob::blasted(world, thing, severity);
             continue;

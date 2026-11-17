@@ -82,7 +82,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.5 Atmospherics: consoles, heat exchangers, pipe bursts, dispensers | M | `atmospherics` | |
 | [ ] | 4.6 Machine windows that are only clicks: cryo, TEG, pumps, mixers, airlock control | M | various | |
 | [ ] | 4.7 Custom names on objects | S | various | Morgue, arcade, windoors, cards |
-| [ ] | 4.8 Paperwork: stamps, photocopier, folders, burning | S | `paperwork` | |
+| [x] | 4.8 Paperwork: stamps, photocopier, folders, burning | S | `paperwork` | Stamps, folders, the photocopier and toner (`paperwork.md`). Luna's paper doesn't burn; labelling folders waits for 4.7, copying photos for 4.9 |
 | [ ] | 4.9 Photography | S | `WIP/Cameras` | |
 | [ ] | 4.10 Library: books, writer's desk | S | `head/books` | Bookcases are scenery |
 | [x] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | `events.md`. The ion storm waits on 3.9 AI, the epidemic on 3.4 viruses |
