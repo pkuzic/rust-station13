@@ -366,3 +366,38 @@ fn on_lunas_deck_the_berth_is_the_shuttles_size_and_the_consoles_are_there() {
         "{consoles:?}"
     );
 }
+
+#[test]
+fn a_stamped_manifest_sent_back_in_its_crate_earns_four_points_more() {
+    let mut app = setup();
+    let (supply, order) = (console(&mut app, true), console(&mut app, false));
+    let tech = person(&mut app, DESK, "Tech");
+    with_card(&mut app, tech, "cargo");
+    act(&mut app, tech, Action::UseOn(order));
+    let (cat, i) = place_of(&app, "security", "armor");
+    press(&mut app, tech, order, CargoOp::Order);
+    press(&mut app, tech, order, CargoOp::Category(cat));
+    tick(&mut app, 1);
+    press(&mut app, tech, order, CargoOp::Pack(i));
+    act(&mut app, tech, Action::UseOn(supply));
+    press(&mut app, tech, supply, CargoOp::Approve(0));
+    press(&mut app, tech, supply, CargoOp::Send);
+    arrive_now(&mut app);
+    let delivered = crates(&mut app);
+    let closet = app.world().get::<Closet>(delivered[0]).unwrap().clone();
+    let manifest = closet
+        .contents
+        .iter()
+        .copied()
+        .find(|e| app.world().get::<rs13_classic::paperwork::Manifest>(*e).is_some())
+        .expect("the manifest is in the crate");
+    app.world_mut()
+        .entity_mut(manifest)
+        .insert(rs13_classic::paperwork::Stamped);
+    let before = cargo(&app).points;
+    press(&mut app, tech, supply, CargoOp::Send);
+    assert_eq!(
+        cargo(&app).points,
+        before + cargo::PER_CRATE + cargo::PER_MANIFEST
+    );
+}

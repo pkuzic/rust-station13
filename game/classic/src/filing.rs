@@ -65,6 +65,7 @@ pub fn spawn_cabinet(world: &mut World, proto: &str, pos: TilePos, id: NetId) ->
 pub struct FilingWork<'w, 's> {
     cabinets: Query<'w, 's, &'static mut FilingCabinet>,
     papers: Query<'w, 's, &'static Paper>,
+    folders: Query<'w, 's, (), With<crate::bureaucracy::Folder>>,
     looks: Query<'w, 's, &'static Appearance>,
     time: Res<'w, WorldTime>,
 }
@@ -103,7 +104,7 @@ impl FilingWork<'_, '_> {
             commands.entity(mob).insert(PanelViewer(target));
             return Some((ClickOutcome::default(), false));
         };
-        if self.papers.contains(item) {
+        if self.papers.contains(item) || self.folders.contains(item) {
             *hands.slot_mut(hands.active) = None;
             commands.entity(item).remove::<HeldBy>().insert(Filed(target));
             cabinet.contents.push(item);
@@ -225,6 +226,7 @@ pub fn update_cabinet_views(
                 || crate::teleporters::keeps_own_list(&a.sprite)
                 || crate::devices::keeps_own_list(&a.sprite)
                 || crate::implants::keeps_own_list(&a.sprite)
+                || crate::bureaucracy::keeps_own_list(&a.sprite)
                 || crate::anomalies::keeps_own_list(&a.sprite)
                 || crate::forensics::keeps_own_list(&a.sprite)
         }) {
@@ -243,8 +245,14 @@ pub fn update_cabinet_views(
                     .contents
                     .iter()
                     .rev()
-                    .filter_map(|p| papers.get(*p).ok())
-                    .map(|p| p.name.clone())
+                    .map(|p| match papers.get(*p) {
+                        Ok(paper) => paper.name.clone(),
+                        // A folder, by its name.
+                        Err(_) => format!(
+                            "msg:pick-noun:{}",
+                            looks.get(*p).map(|a| a.sprite.as_str()).unwrap_or_default()
+                        ),
+                    })
                     .collect(),
             })
         });

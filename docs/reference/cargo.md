@@ -12,7 +12,8 @@ Tests: `game/classic/tests/cargo.rs`.
 - **Start:** 50 at round start.
 - **Over time:** one more every 30 s.
 - **Sending crates back:** every crate on the shuttle when it is sent back to the dock earns 4,
-  and every plasma sheet inside one earns 1 more. The crate and everything in it are gone.
+  4 more if its supply manifest is in it stamped (any stamp, `paperwork.md`), and every plasma
+  sheet inside one earns 1 more. The crate and everything in it are gone.
 
 ## The consoles
 
@@ -64,7 +65,7 @@ Both need power and show the shuttle's whereabouts and the points.
 
 ## Packs
 
-34 of Luna's 46 packs, with their costs and contents as Luna has them
+35 of Luna's 46 packs, with their costs and contents as Luna has them
 (`supply_packs.ron`). Some come without parts that aren't built yet:
 
 | Pack | Without |
@@ -80,12 +81,10 @@ Both need power and show the shuttle's whereabouts and the points.
 - **High-volume tanks:** the high-volume water and fuel tanks come as ordinary ones.
 - **Crate names:** Luna names a pack's crate after the pack ("Internals crate"). Custom
   names on objects aren't built yet (4.7), so crates keep their kind's name.
-- **Stamped manifests:** Luna gives 4 points for a stamped manifest sent back. Stamps aren't
-  built yet (4.8).
 - **Not implemented:**
   - packs whose contents are mostly not built: Emergency crate (bots, metal foam), Virus
     crate, Solar pack crate, Party equipment,
-    MULEbot, Collectable hats, Toner cartridges;
+    MULEbot, Collectable hats;
   - "Experimental weapons" (stun gloves) and the two mech circuit crates;
   - the emag's special supplies and the hacked console's contraband (their contents aren't
     built);

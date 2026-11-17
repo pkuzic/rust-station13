@@ -1554,6 +1554,27 @@ paper-label-prompt = What would you like to label the paper?
 paper-save = Save
 
 # Filing cabinets (filing-cabinets.md). Args: $cabinet, $item (noun ids).
+paper-stamp = You stamp the paper with your rubber stamp.
+paper-stamped-no-edit = This paper has been stamped and can no longer be edited.
+paper-stamped-with = This paper has been stamped with the
+folder-put = You put the { NOUN($item) } into the { NOUN($folder) }.
+folder-remove = Remove - { $value }
+folder-read = Read - { $value }
+pick-noun = { NOUN($value) }
+copier-remove = Remove Paper
+copier-copy = Copy
+copier-printing = Printing: { $value } copies.
+copier-less = -
+copier-more = +
+copier-insert = Please insert paper to copy.
+copier-toner = Current toner level: { $value }
+copier-no-toner = Please insert a new toner cartridge!
+copier-inserted = You insert the { NOUN($item) } into the photocopier.
+copier-full = There is already something in the photocopier.
+copier-took = You take the { NOUN($item) } out of the photocopier.
+copier-toner-not-empty = This cartridge is not yet ready for replacement! Use up the rest of the toner.
+copier-wrenched = You wrench the photocopier.
+copier-unwrenched = You unwrench the photocopier.
 cabinet-put = You put the { NOUN($item) } in the { NOUN($cabinet) }.
 cabinet-wont-fit = You can't put the { NOUN($item) } in the { NOUN($cabinet) }!
 cabinet-wrenched = You wrench the { NOUN($cabinet) }.

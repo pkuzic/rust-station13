@@ -38,6 +38,7 @@ pub struct Pullable<'w, 's> {
             Option<&'static crate::security::Barrier>,
             Option<&'static crate::nuke::NuclearBomb>,
             Option<&'static crate::anomalies::Artifact>,
+            Option<&'static crate::bureaucracy::Photocopier>,
         ),
         With<GridPos>,
     >,
@@ -45,7 +46,7 @@ pub struct Pullable<'w, 's> {
 
 impl Pullable<'_, '_> {
     /// Items, people, closets and crates, chairs, space heaters, an unlocked barrier, a canister not wrenched to
-    /// a port, a generator or filing cabinet not bolted down, and an artifact no machine is working on.
+    /// a port, a generator, filing cabinet or photocopier not bolted down, and an artifact no machine is working on.
     pub fn check(&self, target: Entity) -> bool {
         let Ok((
             item,
@@ -60,6 +61,7 @@ impl Pullable<'_, '_> {
             barrier,
             bomb,
             artifact,
+            copier,
         )) = self.things.get(target)
         else {
             return false;
@@ -74,6 +76,7 @@ impl Pullable<'_, '_> {
             || barrier.is_some_and(|b| !b.locked)
             || bomb.is_some_and(|b| !b.anchored)
             || artifact.is_some_and(|a| !a.busy)
+            || copier.is_some_and(|c| !c.anchored)
     }
 }
 

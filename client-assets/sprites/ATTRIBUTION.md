@@ -744,9 +744,13 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `foamed-metal:` | `icons/effects/effects.dmi : "metalfoam"` | CC-BY-SA 3.0 |
 | `foamed-metal:iron` | `icons/effects/effects.dmi : "ironfoam"` | CC-BY-SA 3.0 |
 | `folder-blue:` | `icons/obj/bureaucracy.dmi : "folder_blue"` | CC-BY-SA 3.0 |
+| `folder-blue:folder_paper` | `icons/obj/bureaucracy.dmi : "folder_paper"` | CC-BY-SA 3.0 |
 | `folder-red:` | `icons/obj/bureaucracy.dmi : "folder_red"` | CC-BY-SA 3.0 |
+| `folder-red:folder_paper` | `icons/obj/bureaucracy.dmi : "folder_paper"` | CC-BY-SA 3.0 |
 | `folder-white:` | `icons/obj/bureaucracy.dmi : "folder_white"` | CC-BY-SA 3.0 |
+| `folder-white:folder_paper` | `icons/obj/bureaucracy.dmi : "folder_paper"` | CC-BY-SA 3.0 |
 | `folder-yellow:` | `icons/obj/bureaucracy.dmi : "folder_yellow"` | CC-BY-SA 3.0 |
+| `folder-yellow:folder_paper` | `icons/obj/bureaucracy.dmi : "folder_paper"` | CC-BY-SA 3.0 |
 | `forcewall:` | `icons/effects/effects.dmi : "m_shield"` | CC-BY-SA 3.0 |
 | `forensic-computer:forensic` | `icons/obj/computer.dmi : "forensic"` | CC-BY-SA 3.0 |
 | `forensic-computer-old:old` | `icons/obj/computer.dmi : "old"` | CC-BY-SA 3.0 |
@@ -1257,6 +1261,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pacman:portgen0` | `icons/obj/power.dmi : "portgen0"` | CC-BY-SA 3.0 |
 | `pacman:portgen1` | `icons/obj/power.dmi : "portgen1"` | CC-BY-SA 3.0 |
 | `paper:` | `icons/obj/items.dmi : "paper"` | CC-BY-SA 3.0 |
+| `paper:stamped` | `icons/obj/items.dmi : "paper_stamped"` | CC-BY-SA 3.0 |
 | `paper-bin:paper_bin0` | `icons/obj/bureaucracy.dmi : "paper_bin0"` | CC-BY-SA 3.0 |
 | `paper-bin:paper_bin1` | `icons/obj/bureaucracy.dmi : "paper_bin1"` | CC-BY-SA 3.0 |
 | `party-button:` | `icons/obj/monitors.dmi : "fire0"` | CC-BY-SA 3.0 |
@@ -1271,6 +1276,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `pepper-spray:` | `icons/obj/weapons.dmi : "pepperspray"` | CC-BY-SA 3.0 |
 | `pepper-tank:peppertank` | `icons/obj/objects.dmi : "peppertank"` | CC-BY-SA 3.0 |
 | `photo-album:` | `icons/obj/items.dmi : "album"` | CC-BY-SA 3.0 |
+| `photocopier:` | `icons/obj/library.dmi : "bigscanner"` | CC-BY-SA 3.0 |
 | `pill-antitox:` | `icons/obj/chemical.dmi : "pill17"` | CC-BY-SA 3.0 |
 | `pill-bottle-antitox:` | `icons/obj/chemical.dmi : "pill_canister"` | CC-BY-SA 3.0 |
 | `pill-bottle-box:` | `icons/obj/storage.dmi : "pillbottle"` | CC-BY-SA 3.0 |
@@ -1873,6 +1879,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `timer-radio:2` | `icons/obj/assemblies.dmi : "timer-radio2"` | CC-BY-SA 3.0 |
 | `toilet:` | `icons/obj/watercloset.dmi : "toilet10"` | CC-BY-SA 3.0 |
 | `tomato:` | `icons/GoonHydroPort/hydroponics.dmi : "tomato"` | CC-BY-SA 3.0 |
+| `toner:` | `icons/obj/device.dmi : "tonercartridge"` | CC-BY-SA 3.0 |
 | `toolbox-electrical:` | `icons/obj/storage.dmi : "yellow"` | CC-BY-SA 3.0 |
 | `toolbox-emergency:` | `icons/obj/storage.dmi : "red"` | CC-BY-SA 3.0 |
 | `toolbox-emergency-red:` | `icons/obj/storage.dmi : "red"` | CC-BY-SA 3.0 |

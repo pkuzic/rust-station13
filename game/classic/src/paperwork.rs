@@ -47,6 +47,15 @@ pub struct Clipboard {
     pub pen: Option<Entity>,
 }
 
+/// A sheet with a stamp on it: no pen can change it (Luna `stamped`). A copy isn't stamped.
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Stamped;
+
+/// A supply manifest (Luna `paper/manifest`): stamped and sent back in its crate, it earns cargo
+/// points (`cargo.md`).
+#[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Manifest;
+
 /// On a sheet in a paper bin, or a sheet or pen on a clipboard (it is off the map).
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Filed(pub Entity);
@@ -123,6 +132,7 @@ pub struct PaperWork<'w, 's> {
     clipboards: Query<'w, 's, &'static mut Clipboard>,
     looks: Query<'w, 's, &'static Appearance>,
     out: Query<'w, 's, &'static mut PaperOut>,
+    stamped: Query<'w, 's, (), With<Stamped>>,
 }
 
 impl PaperWork<'_, '_> {
@@ -204,12 +214,19 @@ impl PaperWork<'_, '_> {
             }
             // Anything else goes to the top sheet: a pen writes on it.
             let top = *board.papers.last()?;
-            self.open(mob, top, PaperMode::Write);
-            return Some(ClickOutcome::default());
+            return Some(self.write(mob, top));
         }
         // A pen on a sheet: its text box.
-        self.open(mob, target, PaperMode::Write);
-        Some(ClickOutcome::default())
+        Some(self.write(mob, target))
+    }
+
+    /// A pen on a sheet opens its text box, unless it is stamped (Luna `paper/attackby`).
+    fn write(&mut self, mob: Entity, sheet: Entity) -> ClickOutcome {
+        if self.stamped.contains(sheet) {
+            return ClickOutcome::told("paper-stamped-no-edit");
+        }
+        self.open(mob, sheet, PaperMode::Write);
+        ClickOutcome::default()
     }
 
     /// Queue a paper window for the mob to see.
@@ -297,6 +314,7 @@ pub fn process_paper_ops(
     )>,
     mut papers: Query<&mut Paper>,
     mut clipboards: Query<&mut Clipboard>,
+    stamped: Query<(), With<Stamped>>,
     looks: Query<&Appearance>,
     places: Query<(Option<&GridPos>, Option<&HeldBy>, Option<&Filed>)>,
     mut commands: Commands,
@@ -314,7 +332,7 @@ pub fn process_paper_ops(
             }
             match op {
                 PaperOp::Write(sheet, text) => {
-                    if !holding_pen || !reachable(mob, pos.0, sheet, &places) {
+                    if !holding_pen || stamped.contains(sheet) || !reachable(mob, pos.0, sheet, &places) {
                         continue;
                     }
                     if let Ok(mut paper) = papers.get_mut(sheet) {
@@ -372,7 +390,11 @@ pub fn process_paper_ops(
                                 && holding_pen
                                 && let Ok(paper) = papers.get(sheet)
                             {
-                                out.0.push(view(sheet, paper, PaperMode::Write));
+                                if stamped.contains(sheet) {
+                                    outbox.0.push(LocMsg::new("paper-stamped-no-edit"));
+                                } else {
+                                    out.0.push(view(sheet, paper, PaperMode::Write));
+                                }
                             }
                         }
                         PaperOp::Read(_, n) => {

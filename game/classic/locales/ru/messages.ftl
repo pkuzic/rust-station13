@@ -1560,6 +1560,27 @@ paper-label-prompt = Как подписать лист?
 paper-save = Сохранить
 
 # Картотеки (filing-cabinets.md). Аргументы: $cabinet, $item (id существительных).
+paper-stamp = Вы ставите на лист оттиск резинового штампа.
+paper-stamped-no-edit = На листе стоит оттиск штампа: его больше нельзя изменить.
+paper-stamped-with = На листе стоит оттиск:
+folder-put = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($folder, case: "acc") }.
+folder-remove = Достать - { $value }
+folder-read = Прочитать - { $value }
+pick-noun = { NOUN($value) }
+copier-remove = Достать бумагу
+copier-copy = Копировать
+copier-printing = Копий: { $value }.
+copier-less = -
+copier-more = +
+copier-insert = Вставьте бумагу для копирования.
+copier-toner = Тонер: { $value }
+copier-no-toner = Вставьте новый картридж с тонером!
+copier-inserted = Вы вставляете { NOUN($item, case: "acc") } в фотокопир.
+copier-full = В фотокопире уже что-то лежит.
+copier-took = Вы достаёте { NOUN($item, case: "acc") } из фотокопира.
+copier-toner-not-empty = Этот картридж ещё рано менять! Сначала израсходуйте тонер.
+copier-wrenched = Вы прикручиваете фотокопир.
+copier-unwrenched = Вы откручиваете фотокопир.
 cabinet-put = Вы кладёте { NOUN($item, case: "acc") } в { NOUN($cabinet, case: "acc") }.
 cabinet-wont-fit = Нельзя положить { NOUN($item, case: "acc") } в { NOUN($cabinet, case: "acc") }!
 cabinet-wrenched = Вы прикручиваете { NOUN($cabinet, case: "acc") } к полу.

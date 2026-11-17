@@ -49,6 +49,8 @@ pub const START_POINTS: u32 = 50;
 pub const POINT_EVERY_DS: f32 = 300.0;
 pub const PER_CRATE: u32 = 4;
 pub const PER_PLASMA_SHEET: u32 = 1;
+/// Points for a stamped manifest sent back in its crate (Luna `SUPPLY_POINTSPERMANIFEST`).
+pub const PER_MANIFEST: u32 = 4;
 /// How long the shuttle takes to come from the dock, ds (Luna `SUPPLY_MOVETIME`).
 pub const MOVE_DS: f32 = 1200.0;
 
@@ -567,6 +569,7 @@ fn deliver(world: &mut World, order: &Order, markers: &[TilePos]) {
         .insert("name".to_owned(), "[msg:cargo-manifest-paper]".to_owned());
     sheet.vars.insert("info".to_owned(), manifest(&pack));
     if let Ok(paper) = crate::objects::spawn_object(world, &sheet, at) {
+        world.entity_mut(paper).insert(crate::paperwork::Manifest);
         items.push(paper);
     }
     if let Some(c) = crate_entity {
@@ -611,13 +614,18 @@ fn destroy(world: &mut World, thing: Entity) {
     }
 }
 
-/// What a crate earns sent back: 4, and 1 more for every plasma sheet in it (Luna
-/// `sell_crates`).
+/// What a crate earns sent back: 4, 4 more for a stamped manifest in it, and 1 more for every
+/// plasma sheet in it (Luna `sell_crates`).
 fn worth(world: &World, closet: Entity) -> u32 {
-    let sheets: u32 = world
+    let contents = world
         .get::<Closet>(closet)
         .map(|c| c.contents.clone())
-        .unwrap_or_default()
+        .unwrap_or_default();
+    let stamped = contents.iter().any(|item| {
+        world.get::<crate::paperwork::Manifest>(*item).is_some()
+            && world.get::<crate::paperwork::Stamped>(*item).is_some()
+    });
+    let sheets: u32 = contents
         .into_iter()
         .filter(|item| {
             world
@@ -626,7 +634,7 @@ fn worth(world: &World, closet: Entity) -> u32 {
         })
         .map(|item| world.get::<Stack>(item).map_or(1, |s| s.amount))
         .sum();
-    PER_CRATE + sheets * PER_PLASMA_SHEET
+    PER_CRATE + if stamped { PER_MANIFEST } else { 0 } + sheets * PER_PLASMA_SHEET
 }
 
 /// Send the shuttle back to the dock: the crates aboard are sold, its fittings go with it, the

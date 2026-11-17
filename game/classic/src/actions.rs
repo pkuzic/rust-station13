@@ -412,6 +412,24 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // Stamps, folders and the photocopier (`paperwork.md`).
+                Action::UseOn(target)
+                    if hands.active_item() == Some(target)
+                        && tool.is_some_and(crate::bureaucracy::is_folder) =>
+                {
+                    commands
+                        .queue(move |world: &mut World| crate::bureaucracy::open_folder(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::bureaucracy::takes(&look.sprite, tool)) =>
+                {
+                    let held = hands.active_item();
+                    commands
+                        .queue(move |world: &mut World| crate::bureaucracy::use_on(world, mob, held, target));
+                }
                 // Implants (`implants.md`): an implanter on someone, the compressed matter one on an
                 // item, cases, the pad and the prisoner console.
                 Action::UseOn(target)

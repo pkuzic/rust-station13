@@ -74,6 +74,8 @@
     (id: "wizard", categories: ["miscellaneous"], cost: 15, contains: ["staff", "wizard-robe", "sandals", "wizard-hat"], container: Some("crate")),
     // Luna `janitor`: Janitorial supplies
     (id: "janitor", categories: ["miscellaneous"], cost: 10, contains: ["bucket", "mop", "caution", "space-cleaner", "mop-bucket", "cleaner-box"], container: Some("crate")),
+    // Luna `toner`: Toner cartridges
+    (id: "toner", categories: ["miscellaneous"], cost: 10, contains: ["toner", "toner", "toner", "toner", "toner", "toner"], container: Some("crate")),
     // Luna `paper`: Bureaucracy crate (without camera_test)
     (id: "paper", categories: ["miscellaneous"], cost: 15, contains: ["chest-drawer", "hand-labeler", "labeler-refill", "labeler-refill", "paper-bin", "pen", "pen", "pen", "folder-blue", "folder-red", "folder-yellow", "clipboard", "clipboard"], container: Some("crate")),
 ]
