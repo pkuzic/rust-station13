@@ -37,6 +37,7 @@ pub mod decks;
 pub mod derelict;
 pub mod devices;
 pub mod dispensers;
+pub mod display_case;
 pub mod disposals;
 pub mod doors;
 pub mod environment;
@@ -450,6 +451,7 @@ impl Plugin for ClassicPlugin {
                         security::run_turrets,
                         weapons::run_shots,
                         weapons::run_rechargers,
+                        weapons::run_self_charging,
                         brig::run_brig,
                         brig::update_brig_views,
                         cloning::run_cloning,

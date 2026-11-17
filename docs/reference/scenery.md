@@ -21,7 +21,6 @@ Code: `game/classic/src/scenery.rs`. Tests: `game/classic/tests/scenery.rs`.
 | `sign-nosmoking` | `structure/sign/nosmoking_1` |  |  |
 | `sign-fire` | `structure/sign/fire` |  |  |
 | `meat-spike` | `structure/kitchenspike` | yes |  |
-| `display-case` | `structure/displaycase` | yes |  |
 | `bookcase` | `machinery/bookcase` | yes |  |
 | `operating-table` | `machinery/optable` | yes |  |
 | `laser-machine` | `machinery/party/lasermachine` |  |  |

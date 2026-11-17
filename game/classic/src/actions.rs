@@ -412,6 +412,18 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // The captain's display case (`weapons.md`).
+                Action::UseOn(target)
+                    if reaches
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::display_case::DISPLAY_CASE) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        crate::display_case::use_on(world, mob, held, target)
+                    });
+                }
                 // The laundromat (`laundry.md`).
                 Action::UseOn(target)
                     if reaches

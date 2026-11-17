@@ -44,7 +44,8 @@ pub const GOODS: [(&str, u8); 10] = [
     ("explosive-implant-kit", 6),
 ];
 /// What can be set as a theft (Luna `get_all_thefts`, of what's on this station).
-pub const THEFTS: [&str; 8] = [
+pub const THEFTS: [&str; 9] = [
+    crate::weapons::CAPTAIN_LASER,
     "hand-tele",
     "jetpack",
     "magboots",

@@ -2412,6 +2412,13 @@
             "pod_1": (dmi: "icons/obj/cloning.dmi", state: "pod_1"),
         },
         "door-timer": { "frame": (dmi: "icons/obj/status_display.dmi", state: "frame") },
+        "captain-laser": {
+            "caplaser0": (dmi: "icons/obj/gun.dmi", state: "caplaser0"),
+            "caplaser25": (dmi: "icons/obj/gun.dmi", state: "caplaser25"),
+            "caplaser50": (dmi: "icons/obj/gun.dmi", state: "caplaser50"),
+            "caplaser75": (dmi: "icons/obj/gun.dmi", state: "caplaser75"),
+            "caplaser100": (dmi: "icons/obj/gun.dmi", state: "caplaser100"),
+        },
         "laser-gun": {
             "laser0": (dmi: "icons/obj/gun.dmi", state: "laser0"),
             "laser25": (dmi: "icons/obj/gun.dmi", state: "laser25"),
@@ -2444,6 +2451,7 @@
         },
         "shot": {
             "laser": (dmi: "icons/obj/projectiles.dmi", state: "laser"),
+            "heavylaser": (dmi: "icons/obj/projectiles.dmi", state: "heavylaser"),
             "spark": (dmi: "icons/obj/projectiles.dmi", state: "spark"),
             "bullet": (dmi: "icons/obj/projectiles.dmi", state: "bullet"),
         },
@@ -3127,7 +3135,13 @@
         "sign-nosmoking": { "": (dmi: "icons/obj/decals.dmi", state: "nosmoking") },
         "sign-fire": { "": (dmi: "icons/obj/decals.dmi", state: "fire") },
         "meat-spike": { "": (dmi: "icons/obj/kitchen.dmi", state: "spike") },
-        "display-case": { "": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1") },
+        "display-case": {
+            "": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1"),
+            "glassbox1": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1"),
+            "glassbox0": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox0"),
+            "glassboxb1": (dmi: "icons/obj/stationobjs.dmi", state: "glassboxb1"),
+            "glassboxb0": (dmi: "icons/obj/stationobjs.dmi", state: "glassboxb0"),
+        },
         "washer": {
             "": (dmi: "icons/obj/washer.dmi", state: "land01"),
             "landanim": (dmi: "icons/obj/washer.dmi", state: "landanim"),

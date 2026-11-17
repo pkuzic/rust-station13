@@ -266,6 +266,11 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `capacitor:` | `icons/obj/stock_parts.dmi : "capacitor"` | CC-BY-SA 3.0 |
 | `captain-hat:` | `icons/obj/clothing/hats.dmi : "captain"` | CC-BY-SA 3.0 |
 | `captain-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "captain"` | CC-BY-SA 3.0 |
+| `captain-laser:caplaser0` | `icons/obj/gun.dmi : "caplaser0"` | CC-BY-SA 3.0 |
+| `captain-laser:caplaser100` | `icons/obj/gun.dmi : "caplaser100"` | CC-BY-SA 3.0 |
+| `captain-laser:caplaser25` | `icons/obj/gun.dmi : "caplaser25"` | CC-BY-SA 3.0 |
+| `captain-laser:caplaser50` | `icons/obj/gun.dmi : "caplaser50"` | CC-BY-SA 3.0 |
+| `captain-laser:caplaser75` | `icons/obj/gun.dmi : "caplaser75"` | CC-BY-SA 3.0 |
 | `captains-armor:` | `icons/obj/clothing/suits.dmi : "caparmor"` | CC-BY-SA 3.0 |
 | `captains-hat:` | `icons/obj/clothing/hats.dmi : "captain"` | CC-BY-SA 3.0 |
 | `captains-tunic:` | `icons/obj/clothing/suits.dmi : "captunic"` | CC-BY-SA 3.0 |
@@ -475,6 +480,10 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `detective-records:messyfiles` | `icons/obj/computer.dmi : "messyfiles"` | CC-BY-SA 3.0 |
 | `dispatcher-uniform:` | `icons/obj/clothing/uniforms.dmi : "dispatch"` | CC-BY-SA 3.0 |
 | `display-case:` | `icons/obj/stationobjs.dmi : "glassbox1"` | CC-BY-SA 3.0 |
+| `display-case:glassbox0` | `icons/obj/stationobjs.dmi : "glassbox0"` | CC-BY-SA 3.0 |
+| `display-case:glassbox1` | `icons/obj/stationobjs.dmi : "glassbox1"` | CC-BY-SA 3.0 |
+| `display-case:glassboxb0` | `icons/obj/stationobjs.dmi : "glassboxb0"` | CC-BY-SA 3.0 |
+| `display-case:glassboxb1` | `icons/obj/stationobjs.dmi : "glassboxb1"` | CC-BY-SA 3.0 |
 | `disposal-bin:disposal` | `icons/obj/pipes/disposal.dmi : "disposal"` | CC-BY-SA 3.0 |
 | `disposal-bin:disposal-flush` | `icons/obj/pipes/disposal.dmi : "disposal-flush"` | CC-BY-SA 3.0 |
 | `disposal-bin:dispover-charge` | `icons/obj/pipes/disposal.dmi : "dispover-charge"` | CC-BY-SA 3.0 |
@@ -1476,6 +1485,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `shield-plate:plate-p` | `icons/obj/machines/shieldgen.dmi : "plate-p"` | CC-BY-SA 3.0 |
 | `shields-button:access_button_standby` | `icons/obj/airlock_machines.dmi : "access_button_standby"` | CC-BY-SA 3.0 |
 | `shot:bullet` | `icons/obj/projectiles.dmi : "bullet"` | CC-BY-SA 3.0 |
+| `shot:heavylaser` | `icons/obj/projectiles.dmi : "heavylaser"` | CC-BY-SA 3.0 |
 | `shot:laser` | `icons/obj/projectiles.dmi : "laser"` | CC-BY-SA 3.0 |
 | `shot:spark` | `icons/obj/projectiles.dmi : "spark"` | CC-BY-SA 3.0 |
 | `shower:` | `icons/obj/watercloset.dmi : "shower"` | CC-BY-SA 3.0 |
