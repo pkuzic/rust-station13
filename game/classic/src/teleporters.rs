@@ -140,6 +140,9 @@ fn offset(tile: TilePos, dx: i32) -> TilePos {
 
 /// Where a thing is: its tile, or that of whoever holds it (Luna `find_loc`).
 fn where_is(world: &World, thing: Entity) -> Option<TilePos> {
+    if world.get::<crate::implants::Implant>(thing).is_some() {
+        return crate::implants::tracking_place(world, thing);
+    }
     at(world, thing).or_else(|| world.get::<HeldBy>(thing).and_then(|h| at(world, h.0)))
 }
 
@@ -152,18 +155,23 @@ fn area_of(world: &mut World, tile: TilePos) -> String {
         .unwrap_or_default()
 }
 
-/// Every beacon somewhere on the station, named after its area (the second of a name gets
-/// " (2)", and so on), in a steady order.
+/// Every beacon somewhere on the station, named after its area, then every tracking implant in
+/// someone, named after them (`implants.md`); the second of a name gets " (2)", and so on, in a
+/// steady order.
 fn beacons(world: &mut World) -> Vec<(String, Entity)> {
     let mut q = world.query_filtered::<Entity, With<Beacon>>();
     let mut all: Vec<Entity> = q.iter(world).collect();
     all.sort();
-    let mut out: Vec<(String, Entity)> = Vec::new();
+    let mut named: Vec<(String, Entity)> = Vec::new();
     for beacon in all {
         let Some(tile) = where_is(world, beacon) else {
             continue;
         };
-        let name = area_of(world, tile);
+        named.push((area_of(world, tile), beacon));
+    }
+    named.extend(crate::implants::tracking_targets(world));
+    let mut out: Vec<(String, Entity)> = Vec::new();
+    for (name, beacon) in named {
         let seen = out
             .iter()
             .filter(|(n, _)| *n == name || n.starts_with(&format!("{name} (")))

@@ -31,14 +31,17 @@ pub const CRYSTALS: u8 = 10;
 pub const REMINDER_DS: f32 = 6000.0;
 /// What an uplink sells, and for how many crystals. Luna's other goods wait for what makes them work
 /// (`traitor.md`).
-pub const GOODS: [(&str, u8); 7] = [
+pub const GOODS: [(&str, u8); 10] = [
     (crate::weapons::SYNDICATE_REVOLVER, 7),
     ("ammo-357", 3),
     ("toolbox-syndicate", 1),
     ("soap", 1),
     (crate::explosions::C4_SMALL, 4),
     (crate::explosions::C4_LARGE, 7),
+    ("freedom-implant-kit", 3),
     (crate::grenades::EMP_BOX, 4),
+    ("compressed-implant-kit", 5),
+    ("explosive-implant-kit", 6),
 ];
 /// What can be set as a theft (Luna `get_all_thefts`, of what's on this station).
 pub const THEFTS: [&str; 8] = [

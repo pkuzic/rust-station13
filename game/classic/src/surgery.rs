@@ -41,16 +41,18 @@ pub enum Procedure {
     PlasticSurgery,
     GenderReassignment,
     CavityImplant,
+    ImplantRemoval,
 }
 
 impl Procedure {
-    pub const ALL: [Procedure; 6] = [
+    pub const ALL: [Procedure; 7] = [
         Procedure::Appendectomy,
         Procedure::BrainRemoval,
         Procedure::EyeSurgery,
         Procedure::PlasticSurgery,
         Procedure::GenderReassignment,
         Procedure::CavityImplant,
+        Procedure::ImplantRemoval,
     ];
 
     pub fn id(self) -> &'static str {
@@ -61,6 +63,7 @@ impl Procedure {
             Self::PlasticSurgery => "plastic-surgery",
             Self::GenderReassignment => "gender-reassignment",
             Self::CavityImplant => "cavity-implant",
+            Self::ImplantRemoval => "implant-removal",
         }
     }
 
@@ -69,7 +72,7 @@ impl Procedure {
         match self {
             Self::Appendectomy | Self::GenderReassignment => zone == Zone::Groin,
             Self::BrainRemoval | Self::EyeSurgery | Self::PlasticSurgery => zone == Zone::Head,
-            Self::CavityImplant => true,
+            Self::CavityImplant | Self::ImplantRemoval => true,
         }
     }
 
@@ -82,6 +85,7 @@ impl Procedure {
             Self::PlasticSurgery => &[Incise, Retract, ReshapeFace, Close],
             Self::GenderReassignment => &[Incise, Clamp, ReshapeGenitals, Close],
             Self::CavityImplant => &[Incise, Clamp, Retract, Incise, HandleCavity, Close],
+            Self::ImplantRemoval => &[Incise, Clamp, Retract, ExtractImplant, Close],
         }
     }
 }
@@ -100,6 +104,7 @@ pub enum Step {
     ReshapeFace,
     ReshapeGenitals,
     HandleCavity,
+    ExtractImplant,
 }
 
 /// What a step can be done with.
@@ -126,6 +131,7 @@ impl Step {
             Self::ReshapeFace => "reshape-face",
             Self::ReshapeGenitals => "reshape-genitals",
             Self::HandleCavity => "cavity",
+            Self::ExtractImplant => "extract-implant",
         }
     }
 
@@ -157,6 +163,9 @@ impl Step {
                 Takes::Tools(&[("scalpel", 100.0), ("hatchet", 50.0), ("wirecutters", 35.0)])
             }
             Self::HandleCavity => Takes::Anything,
+            Self::ExtractImplant => {
+                Takes::Tools(&[("hemostat", 100.0), ("wirecutters", 85.0), ("crowbar", 65.0)])
+            }
         }
     }
 
@@ -417,6 +426,7 @@ fn surgery_click(world: &mut World, surgeon: Entity, patient: Entity) -> bool {
             "surgery-begin-reshape-genitals-male".to_owned()
         }
         Step::HandleCavity if held.is_none() => "surgery-begin-cavity-check".to_owned(),
+        Step::ExtractImplant if !implant_in(world, patient, zone) => "surgery-begin-look-implant".to_owned(),
         _ => format!("surgery-begin-{}", step.id()),
     };
     seen(world, &begins, surgeon, patient, zone);
@@ -683,6 +693,14 @@ fn succeed(
             seen(world, id, surgeon, patient, zone);
         }
         Step::HandleCavity => return handle_cavity(world, surgeon, patient, zone, held),
+        Step::ExtractImplant => {
+            let id = if crate::implants::extract(world, patient, zone).is_some() {
+                "surgery-done-extract-implant"
+            } else {
+                "surgery-no-implant"
+            };
+            seen(world, id, surgeon, patient, zone);
+        }
         _ => seen(
             world,
             &format!("surgery-done-{}", step.id()),
@@ -692,6 +710,15 @@ fn succeed(
         ),
     }
     true
+}
+
+/// Whether there's an implant in this part.
+fn implant_in(world: &mut World, patient: Entity, zone: Zone) -> bool {
+    crate::implants::implants_in(world, patient).into_iter().any(|e| {
+        world
+            .get::<crate::implants::Implant>(e)
+            .is_some_and(|i| i.zone == Some(zone))
+    })
 }
 
 /// The biggest thing a part's cavity holds (Luna `w_class`).

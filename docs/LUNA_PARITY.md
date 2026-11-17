@@ -68,7 +68,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
 | [x] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | `forensics.md`; no blood yet |
-| [~] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`); flashbangs, EMP and chemical grenades, smoke and foam (`grenades.md`). Left: implants. Mousetraps and infrared aren't on Luna's station |
+| [x] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`); flashbangs, EMP and chemical grenades, smoke and foam (`grenades.md`); implants (`implants.md`). Mousetraps and infrared aren't on Luna's station |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 
 ## 4. Depth in what exists
@@ -86,7 +86,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.9 Photography | S | `WIP/Cameras` | |
 | [ ] | 4.10 Library: books, writer's desk | S | `head/books` | Bookcases are scenery |
 | [x] | 4.11 Random events: storms, leaks, radiation belt, epidemic | S-M | `WIP/Events` | `events.md`. The ion storm waits on 3.9 AI, the epidemic on 3.4 viruses |
-| [x] | 4.12 Teleporters | S-M | `teleporter` | `teleporters.md`: computer, station, hub, beacons, hand teleporter and portals. Implants wait on 3.20 |
+| [x] | 4.12 Teleporters | S-M | `teleporter` | `teleporters.md`: computer, station, hub, beacons, hand teleporter and portals; tracking implants as targets |
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |
 | [x] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | `plumbing.md`, with mirrors. No blood or dirt yet to wash off |

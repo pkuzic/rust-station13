@@ -301,6 +301,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `chef-hat:` | `icons/obj/clothing/hats.dmi : "chef"` | CC-BY-SA 3.0 |
 | `chef-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "chef"` | CC-BY-SA 3.0 |
 | `chem-dispenser:dispenser` | `icons/obj/chemical.dmi : "dispenser"` | CC-BY-SA 3.0 |
+| `chem-implant-kit:` | `icons/obj/storage.dmi : "implant"` | CC-BY-SA 3.0 |
 | `chem-master:mixer0` | `icons/obj/chemical.dmi : "mixer0"` | CC-BY-SA 3.0 |
 | `chem-master:mixer1` | `icons/obj/chemical.dmi : "mixer1"` | CC-BY-SA 3.0 |
 | `chem-master:mixers` | `icons/obj/chemical.dmi : "mixers"` | CC-BY-SA 3.0 |
@@ -384,6 +385,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `comfy-chair-brown:south` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comfy-chair-brown:west` | `icons/obj/objects.dmi : "comfychair_brown"` | CC-BY-SA 3.0 |
 | `comms-console:comm` | `icons/obj/computer.dmi : "comm"` | CC-BY-SA 3.0 |
+| `compressed-implant-kit:` | `icons/obj/storage.dmi : "box_of_doom"` | CC-BY-SA 3.0 |
 | `computer-frame:0` | `icons/obj/stock_parts.dmi : "0"` | CC-BY-SA 3.0 |
 | `computer-frame:1` | `icons/obj/stock_parts.dmi : "1"` | CC-BY-SA 3.0 |
 | `computer-frame:2` | `icons/obj/stock_parts.dmi : "2"` | CC-BY-SA 3.0 |
@@ -465,6 +467,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `cryo-cell:celltop` | `icons/obj/Cryogenic2.dmi : "celltop"` | CC-BY-SA 3.0 |
 | `cryo-cell:celltop-p` | `icons/obj/Cryogenic2.dmi : "celltop-p"` | CC-BY-SA 3.0 |
 | `cryo-cell:celltop_1` | `icons/obj/Cryogenic2.dmi : "celltop_1"` | CC-BY-SA 3.0 |
+| `death-alarm-kit:` | `icons/obj/storage.dmi : "implant"` | CC-BY-SA 3.0 |
 | `desk-lamp:` | `icons/obj/lighting.dmi : "lamp"` | CC-BY-SA 3.0 |
 | `desk-lamp:on` | `icons/obj/lighting.dmi : "lamp-on"` | CC-BY-SA 3.0 |
 | `desk-lamp-green:` | `icons/obj/lighting.dmi : "lampgreen"` | CC-BY-SA 3.0 |
@@ -586,6 +589,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `engine-laser:` | `icons/obj/machines/engine.dmi : "laser"` | CC-BY-SA 3.0 |
 | `engineer-jumpsuit:` | `icons/obj/clothing/uniforms.dmi : "engine"` | CC-BY-SA 3.0 |
 | `evidence-box:` | `icons/obj/storage.dmi : "box"` | CC-BY-SA 3.0 |
+| `explosive-implant-kit:` | `icons/obj/storage.dmi : "box_of_doom"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_closed` | `icons/obj/closet.dmi : "extinguisher_closed"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_empty` | `icons/obj/closet.dmi : "extinguisher_empty"` | CC-BY-SA 3.0 |
 | `extinguisher-cabinet:extinguisher_full` | `icons/obj/closet.dmi : "extinguisher_full"` | CC-BY-SA 3.0 |
@@ -750,6 +754,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `forensic-scanner:` | `icons/obj/device.dmi : "forensic0"` | CC-BY-SA 3.0 |
 | `forensic-scanner:forensic0` | `icons/obj/device.dmi : "forensic0"` | CC-BY-SA 3.0 |
 | `forensic-scanner:forensic1` | `icons/obj/device.dmi : "forensic1"` | CC-BY-SA 3.0 |
+| `freedom-implant-kit:` | `icons/obj/storage.dmi : "box_of_doom"` | CC-BY-SA 3.0 |
 | `freezer:freezer` | `icons/obj/Cryogenic2.dmi : "freezer"` | CC-BY-SA 3.0 |
 | `freezer:freezer_1` | `icons/obj/Cryogenic2.dmi : "freezer_1"` | CC-BY-SA 3.0 |
 | `fuel-tank:` | `icons/obj/objects.dmi : "weldtank"` | CC-BY-SA 3.0 |
@@ -923,6 +928,16 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `igniter-device:` | `icons/obj/device.dmi : "igniter"` | CC-BY-SA 3.0 |
 | `ignition-switch:launcheract` | `icons/obj/objects.dmi : "launcheract"` | CC-BY-SA 3.0 |
 | `ignition-switch:launcherbtt` | `icons/obj/objects.dmi : "launcherbtt"` | CC-BY-SA 3.0 |
+| `implant:` | `icons/obj/device.dmi : "implant"` | CC-BY-SA 3.0 |
+| `implant:b` | `icons/obj/device.dmi : "implant_b"` | CC-BY-SA 3.0 |
+| `implant:s-b` | `icons/obj/device.dmi : "implant_s_b"` | CC-BY-SA 3.0 |
+| `implant-case:` | `icons/obj/items.dmi : "implantcase-0"` | CC-BY-SA 3.0 |
+| `implant-case:b` | `icons/obj/items.dmi : "implantcase-b"` | CC-BY-SA 3.0 |
+| `implant-case:s` | `icons/obj/items.dmi : "implantcase-s"` | CC-BY-SA 3.0 |
+| `implant-pad:` | `icons/obj/items.dmi : "implantpad-0"` | CC-BY-SA 3.0 |
+| `implant-pad:full` | `icons/obj/items.dmi : "implantpad-1"` | CC-BY-SA 3.0 |
+| `implanter:` | `icons/obj/items.dmi : "implanter0"` | CC-BY-SA 3.0 |
+| `implanter:full` | `icons/obj/items.dmi : "implanter1"` | CC-BY-SA 3.0 |
 | `infra-sensor:` | `icons/obj/device.dmi : "infra_sensor"` | CC-BY-SA 3.0 |
 | `injector:off` | `icons/obj/atmospherics/outlet_injector.dmi : "off"` | CC-BY-SA 3.0 |
 | `injector:on` | `icons/obj/atmospherics/outlet_injector.dmi : "on"` | CC-BY-SA 3.0 |
@@ -1339,6 +1354,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `power-cell:cell-o2` | `icons/obj/power.dmi : "cell-o2"` | CC-BY-SA 3.0 |
 | `power-monitor:power` | `icons/obj/computer.dmi : "power"` | CC-BY-SA 3.0 |
 | `power-monitor:unpowered` | `icons/obj/computer.dmi : "c_unpowered"` | CC-BY-SA 3.0 |
+| `prisoner-console:` | `icons/obj/computer.dmi : "explosive"` | CC-BY-SA 3.0 |
 | `prox-igniter:` | `icons/obj/assemblies.dmi : "prox-igniter0"` | CC-BY-SA 3.0 |
 | `prox-igniter:0` | `icons/obj/assemblies.dmi : "prox-igniter0"` | CC-BY-SA 3.0 |
 | `prox-igniter:1` | `icons/obj/assemblies.dmi : "prox-igniter1"` | CC-BY-SA 3.0 |
@@ -1867,6 +1883,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `toy-gygax:` | `icons/obj/toy.dmi : "gygaxtoy"` | CC-BY-SA 3.0 |
 | `toy-ripley:` | `icons/obj/toy.dmi : "ripleytoy"` | CC-BY-SA 3.0 |
 | `tracking-beacon:` | `icons/obj/radio.dmi : "beacon"` | CC-BY-SA 3.0 |
+| `tracking-implant-kit:` | `icons/obj/storage.dmi : "implant"` | CC-BY-SA 3.0 |
 | `transfer-valve:` | `icons/obj/assemblies.dmi : "valve_1"` | CC-BY-SA 3.0 |
 | `trash-candy:` | `icons/obj/janitor.dmi : "candy"` | CC-BY-SA 3.0 |
 | `trash-cheesie:` | `icons/obj/janitor.dmi : "cheesie_honkers"` | CC-BY-SA 3.0 |

@@ -144,7 +144,8 @@ fn drapes_offer_what_the_part_allows() {
             Procedure::BrainRemoval,
             Procedure::EyeSurgery,
             Procedure::PlasticSurgery,
-            Procedure::CavityImplant
+            Procedure::CavityImplant,
+            Procedure::ImplantRemoval
         ]
     );
 }

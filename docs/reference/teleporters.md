@@ -39,7 +39,6 @@ whose beacon is gone closes.
 
 | Luna | Here |
 |---|---|
-| The computer also lists tracking implants | No implants yet (3.20) |
 | The computer's id can be changed with a verb; the station has a Test Fire verb | Not built: few verbs (4.14) |
 | Teleporting draws 5000 W | No extra draw |
 | Space is its own level | A random space tile of a deck |

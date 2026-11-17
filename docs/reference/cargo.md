@@ -64,7 +64,7 @@ Both need power and show the shuttle's whereabouts and the points.
 
 ## Packs
 
-31 of Luna's 46 packs, with their costs and contents as Luna has them
+34 of Luna's 46 packs, with their costs and contents as Luna has them
 (`supply_packs.ron`). Some come without parts that aren't built yet:
 
 | Pack | Without |
@@ -84,7 +84,7 @@ Both need power and show the shuttle's whereabouts and the points.
   built yet (4.8).
 - **Not implemented:**
   - packs whose contents are mostly not built: Emergency crate (bots, metal foam), Virus
-    crate, Solar pack crate, Death Alarm, tracking and chemical implants, Party equipment,
+    crate, Solar pack crate, Party equipment,
     MULEbot, Collectable hats, Toner cartridges;
   - "Experimental weapons" (stun gloves) and the two mech circuit crates;
   - the emag's special supplies and the hacked console's contraband (their contents aren't

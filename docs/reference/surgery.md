@@ -57,6 +57,7 @@ A failed step usually has to be done again ("… screws up!").
 | Plastic surgery | head | incise, retract, reshape face, close | A new random name |
 | Gender reassignment | groin | incise, clamp, reshape genitals, close | Flips male and female. A failure leaves it to chance but still moves on |
 | Cavity implant | any | incise, clamp, retract, incise, cavity, close | An item goes in (see below), or an empty hand takes one out |
+| Implant removal | any | incise, clamp, retract, extract implant, close | The implant in that part drops out (`implants.md`). The extract step takes a hemostat, wirecutters (85%) or a crowbar (65%) |
 
 A cavity holds one item: up to size 1 in the head, hands and feet, 2 in the arms and legs,
 and 3 in the chest and groin. Organs don't go in. A step that can't fit the item, or finds

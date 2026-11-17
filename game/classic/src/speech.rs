@@ -216,6 +216,8 @@ pub fn speak(
     holes: Res<crate::decks::Holes>,
     radios: RadioSets,
     mut rng: ResMut<crate::rng::GameRng>,
+    mut implants: ResMut<crate::implants::Heard>,
+    choosing: Query<(), With<crate::implants::ChoosingPhrase>>,
 ) {
     use crate::radio::{RADIO_TALK_RANGE, RadioMode, format_frequency, split_mode};
 
@@ -254,7 +256,17 @@ pub fn speak(
             if let Some(typed) = raw.trim_start().strip_prefix('*') {
                 // Only the one who typed it hears that there's no such thing.
                 match emote(&name.0, typed) {
-                    Some(msg) => said.push((speaker, pos.0, HEARING_RANGE, msg, Vec::new())),
+                    Some(msg) => {
+                        // Implants answer their host's emotes (`implants.md`).
+                        let act = typed
+                            .split(' ')
+                            .next()
+                            .unwrap_or("")
+                            .to_lowercase()
+                            .replace('_', "-");
+                        implants.emoted.push((speaker, act));
+                        said.push((speaker, pos.0, HEARING_RANGE, msg, Vec::new()));
+                    }
                     None => said.push((speaker, pos.0, -1, LocMsg::new("emote-unknown"), Vec::new())),
                 }
                 continue;
@@ -263,6 +275,14 @@ pub fn speak(
             let Some(text) = sanitize_speech(rest) else {
                 continue;
             };
+            // A new explosive implant's phrase, said to no one (`implants.md`).
+            if choosing.contains(speaker) {
+                implants.phrases.push((speaker, text));
+                continue;
+            }
+            if mode != Some(RadioMode::Whisper) {
+                implants.said.push((speaker, pos.0, text.clone()));
+            }
             if mode == Some(RadioMode::Whisper) {
                 let line = |text: &str| {
                     LocMsg::new("whisper")
