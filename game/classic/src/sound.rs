@@ -75,6 +75,8 @@ pub const TASER: &str = "taser";
 pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// A grenade primed and thrown, and a flashbang going off.
 pub const ARM_BOMB: &str = "arm-bomb";
+/// A laundromat starting a wash (`laundry.md`).
+pub const WASHING_MACHINE: &str = "washing-machine";
 pub const BANG: &str = "bang";
 /// Chemical smoke and foam, a chemical grenade going off, and slipping on foam.
 pub const SMOKE: &str = "smoke";
@@ -124,6 +126,7 @@ pub const ALL_SOUNDS: &[&str] = &[
     TASER,
     BATON_HIT_SOUND,
     ARM_BOMB,
+    WASHING_MACHINE,
     BANG,
     SMOKE,
     BUBBLES,

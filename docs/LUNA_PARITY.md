@@ -90,7 +90,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 4.13 Sound: footsteps, ambience, volume | S-M | `game/sound` | |
 | [ ] | 4.14 Verbs: the dozens not yet built | M | throughout | 5 now, `verbs.rs` |
 | [x] | 4.15 Sinks, showers, toilets | S | `structures.dm`, `watercloset.dm` | `plumbing.md`, with mirrors. No blood or dirt yet to wash off |
-| [ ] | 4.16 Remaining scenery behaviour: washers, spikes, holopads, sensors | M | `scenery.md` | Mirrors done with 4.15 |
+| [~] | 4.16 Remaining scenery behaviour: washers, spikes, holopads, sensors | M | `scenery.md` | Mirrors done with 4.15; washers (`laundry.md`); noticeboards (`paperwork.md`). Luna's build leaves out the meat spike |
 | [ ] | 4.17 Mass drivers, cyborg chargers, remaining map objects | M | `zcount`: 106 kinds, 290 objects | |
 
 ## Not gaps

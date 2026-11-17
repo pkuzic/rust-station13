@@ -1516,6 +1516,14 @@ cigarette-trodden = { $name } calmly drops and treads on the lit { NOUN($item) }
 # Object verbs in the right-click menu (verbs.rs).
 verb-toggle-open = Toggle Open
 verb-toggle-lock = Toggle Lock
+washer-busy = You can't put something in it while it's washing.
+washer-poured = You transfer { $value } units of cleaning solution to the laundromat.
+washer-beeps = The laundromat beeps when you try to put in the { NOUN($item) }.
+washer-adds = { $name } adds the { NOUN($item) } into the laundromat.
+washer-no-cleaner = You need more cleaning solution.
+washer-locked = The door is locked.
+examine-washer = It has { $value } units of cleaning solution left.
+verb-empty-washer = Empty
 verb-rotate-chair = Rotate Chair
 verb-toggle-light = Toggle Light
 verb-toggle-jetpack = Toggle Jetpack

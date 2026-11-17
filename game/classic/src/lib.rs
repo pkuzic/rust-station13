@@ -125,6 +125,7 @@ pub mod traitor;
 pub mod vending;
 pub mod verbs;
 pub mod walllockers;
+pub mod washers;
 pub mod weapons;
 pub mod welding;
 pub mod windoors;
@@ -508,6 +509,7 @@ impl Plugin for ClassicPlugin {
                                     bureaucracy::run_copiers,
                                     bureaucracy::update_views,
                                     bureaucracy::update_looks,
+                                    washers::run_washers,
                                 )
                                     .chain(),
                                 anomalies::run_picks,

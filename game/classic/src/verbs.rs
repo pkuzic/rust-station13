@@ -15,17 +15,22 @@ pub const TOGGLE_LIGHT: &str = "toggle-light";
 /// Switch a jetpack you carry (Luna `jetpack/verb/toggle`).
 pub const TOGGLE_JETPACK: &str = "toggle-jetpack";
 
+/// Let everything out of a laundromat that isn't washing (Luna `washer/verb/empty`), within a
+/// tile.
+pub const EMPTY_WASHER: &str = "empty-washer";
+
 /// Ask someone to join an RP revolution (Luna's "Rev-Convert"). The client only offers it to those
 /// in on one, and the server checks.
 pub const REV_CONVERT: &str = "rev-convert";
 
 /// Every verb, for turning a name a client sent into one of ours.
-pub const ALL: [&str; 6] = [
+pub const ALL: [&str; 7] = [
     TOGGLE_OPEN,
     TOGGLE_LOCK,
     ROTATE_CHAIR,
     TOGGLE_LIGHT,
     TOGGLE_JETPACK,
+    EMPTY_WASHER,
     REV_CONVERT,
 ];
 
@@ -52,6 +57,9 @@ pub fn verbs_for(sprite: &str) -> Vec<&'static str> {
     if crate::jetpacks::is_jetpack(sprite) {
         verbs.push(TOGGLE_JETPACK);
     }
+    if sprite == crate::washers::WASHER {
+        verbs.push(EMPTY_WASHER);
+    }
     verbs
 }
 
@@ -65,6 +73,7 @@ mod tests {
         assert_eq!(verbs_for("locker-engineer"), [TOGGLE_OPEN, TOGGLE_LOCK]);
         assert_eq!(verbs_for("chair"), [ROTATE_CHAIR]);
         assert_eq!(verbs_for("flashlight"), [TOGGLE_LIGHT]);
+        assert_eq!(verbs_for("washer"), [EMPTY_WASHER]);
         assert!(verbs_for("wrench").is_empty());
     }
 }

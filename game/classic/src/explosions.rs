@@ -438,6 +438,15 @@ fn hit_things(world: &mut World, at: TilePos, severity: u8, spare_people: bool) 
             crate::anomalies::blasted(world, thing, severity);
             continue;
         }
+        if world.get::<crate::washers::Washer>(thing).is_some() {
+            // Luna `washer/ex_act`: 100, 50 and 10 in a hundred.
+            let chance = [100.0, 50.0, 10.0][usize::from(severity.clamp(1, 3)) - 1];
+            if world.resource_mut::<GameRng>().prob(chance) {
+                crate::washers::empty_out(world, thing);
+                destroy(world, thing, at);
+            }
+            continue;
+        }
         if world.get::<crate::bureaucracy::Photocopier>(thing).is_some() {
             if crate::bureaucracy::blasted(world, thing, severity) {
                 destroy(world, thing, at);
