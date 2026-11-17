@@ -54,7 +54,7 @@ Using it also repeats a traitor's objectives in chat.
 |---|---|
 | The uplink is hidden in their own PDA with a passcode, or their radio with a frequency to dial | A separate radio, as ours can't be dialled yet and PDAs don't exist |
 | Notes keep the objectives to read later | Using the uplink repeats them |
-| Thefts include the captain's laser, the RCD, a toy singularity, a cyborg shell and an AI core, and six reagents | Only the eight items on the station. The rest wait for what makes them (`LUNA_PARITY.md` 3.6, 3.9, 3.10, 1.14) |
+| Thefts include the RCD, a toy singularity, a cyborg shell and an AI core, and six reagents | Only the nine items on the station, the captain's antique laser among them. The rest wait for what makes them (`LUNA_PARITY.md` 3.6, 3.9, 3.10, 1.14) |
 | Stealing a full plasma tank wants 28 moles in it | Any plasma tank |
 | An intercepted report is printed at communications consoles after a few minutes | Not built |
 | Silicons can be traitors | There are no silicons yet |

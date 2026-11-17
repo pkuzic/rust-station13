@@ -28,6 +28,24 @@ electrode, and beams go through them.
 - **Beam:** 20 burn on a random part, mostly the chest.
 - **Electrode:** no damage, and knocked down for 20 s (`flashes.md`).
 
+## Captain's antique laser (`captain-laser`)
+
+It fires a heavy beam: 40 burn, twice a laser's, through glass as a beam does. It can't be
+switched to stun. It charges itself, 100 every 4 seconds, wherever it is. Force 10. It's one of
+the traitors' theft objectives (`traitor.md`).
+
+It starts in the **display case** (`display-case`) in the captain's quarters, held in a hover
+field behind glass with 30 health:
+- an item clicked on it hits the glass for its force;
+- an empty hand kicks it for 2 ("X kicks the display case.");
+- a shot that stops at it does its damage (a beam 20, a heavy beam 40, a bullet its brute, an
+  electrode nothing);
+- an explosion takes the case at the heaviest, dropping the gun, and otherwise cracks the glass
+  half the time (15, or 5 at the lightest).
+
+The glass rings when hit. At 0 it shatters and can be walked through, and an empty hand then
+deactivates the field and takes the gun ("You deactivate the hover field built into the case.").
+
 ## Bullet guns
 
 They come loaded and fire the same way, with rounds instead of charge. Click a gun with ammunition to
@@ -79,3 +97,5 @@ out. Every 2 seconds it adds 100 to a gun or 250 to a baton, and shows when it's
 | A gun holds a row of casings, ejects them, and a pistol takes a whole magazine | A count of one kind of round, moved across one click at a time, and the magazine stays in your hand |
 | Other bullet guns, syringe guns and laser tag | Not built |
 | Clumsy shooters | Not built |
+| A shattered display case leaves a glass shard | There are no shards yet |
+| The display case breaks to a blob and to a meteor | Not yet |
