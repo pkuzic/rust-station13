@@ -30,8 +30,8 @@
     (id: "daimp", categories: ["medical"], cost: 15, contains: ["death-alarm-kit"], container: Some("crate-medical")),
     (id: "trackingimp", categories: ["security"], cost: 20, contains: ["tracking-implant-kit"], container: Some("crate-secure"), access: Some("armory")),
     (id: "chemimp", categories: ["security"], cost: 20, contains: ["chem-implant-kit"], container: Some("crate-secure"), access: Some("armory")),
-    // Luna `riot`: Riot gear crate (without flashbang, teargas)
-    (id: "riot", categories: ["security"], cost: 40, contains: ["riot-suit", "riot-suit", "riot-suit", "riot-helmet", "riot-helmet", "riot-helmet", "stun-baton", "stun-baton", "stun-baton", "riot-shield", "riot-shield", "riot-shield", "handcuffs-box", "handcuffs-box"], container: Some("crate-secure-gear"), access: Some("security")),
+    // Luna `riot`: Riot gear crate
+    (id: "riot", categories: ["security"], cost: 40, contains: ["riot-suit", "riot-suit", "riot-suit", "riot-helmet", "riot-helmet", "riot-helmet", "stun-baton", "stun-baton", "stun-baton", "riot-shield", "riot-shield", "riot-shield", "flashbang-box", "teargas-box", "handcuffs-box", "handcuffs-box"], container: Some("crate-secure-gear"), access: Some("security")),
     // Luna `weapons`: Weapons crate
     (id: "weapons", categories: ["security"], cost: 20, contains: ["stun-baton", "stun-baton", "stun-baton", "taser", "taser", "taser"], container: Some("crate-secure-weapon"), access: Some("security")),
     // Luna `laser`: Lasers crate
@@ -72,8 +72,8 @@
     (id: "costume", categories: ["miscellaneous"], cost: 10, contains: ["clown-backpack", "clown-shoes", "gas-mask", "clown-suit", "bike-horn", "mime-outfit", "black-shoes", "latex-gloves", "gas-mask", "beret", "suspenders"], container: Some("crate-secure"), access: Some("theater")),
     // Luna `wizard`: Wizard costume crate
     (id: "wizard", categories: ["miscellaneous"], cost: 15, contains: ["staff", "wizard-robe", "sandals", "wizard-hat"], container: Some("crate")),
-    // Luna `janitor`: Janitorial supplies (without cleaner)
-    (id: "janitor", categories: ["miscellaneous"], cost: 10, contains: ["bucket", "mop", "caution", "space-cleaner", "mop-bucket"], container: Some("crate")),
+    // Luna `janitor`: Janitorial supplies
+    (id: "janitor", categories: ["miscellaneous"], cost: 10, contains: ["bucket", "mop", "caution", "space-cleaner", "mop-bucket", "cleaner-box"], container: Some("crate")),
     // Luna `paper`: Bureaucracy crate (without camera_test)
     (id: "paper", categories: ["miscellaneous"], cost: 15, contains: ["chest-drawer", "hand-labeler", "labeler-refill", "labeler-refill", "paper-bin", "pen", "pen", "pen", "folder-blue", "folder-red", "folder-yellow", "clipboard", "clipboard"], container: Some("crate")),
 ]

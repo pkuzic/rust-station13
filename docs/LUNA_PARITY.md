@@ -54,7 +54,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.3 Fractures, bleeding, limb loss, pain | L | `organs.dm`, `human_life` | |
 | [ ] | 3.4 Viruses and PanD.E.M.I.C. | L | `datums/diseases` | |
 | [~] | 3.5 Genetics: scanner console, injectors, powers | L | `dnaconsole_new`, `game/dna` | Genes, the DNA console, injectors, radiation, the monkey block, and hulk, X-ray, blindness, cold resistance, no breathing, regeneration, deafness, epilepsy, cough, twitch (`genetics.md`). Left: telekinesis, clumsiness and the rest under Not built |
-| [ ] | 3.6 Chemistry: the other ~170 reagents and ~155 recipes, splash, grinder | XL | `modules/Chemistry` | ~30 reagents, 10 recipes now |
+| [ ] | 3.6 Chemistry: the other ~170 reagents and ~155 recipes, splash, grinder | XL | `modules/Chemistry` | ~35 reagents and 20 recipes now, with smoke, foam and acids on the skin (`grenades.md`) |
 | [ ] | 3.7 Kitchen and bar: recipes, drinks, drink mixing, gibber | L | `machinery/microwave`, `WIP/food`, `gibber` | Donk-pockets only |
 | [~] | 3.8 Botany: ~25 more plants, genes, mutation, compost, extractor | L | `ISaidNo Release/hydroponics` | 8 plants, `hydroponics.md` |
 | [ ] | 3.9 AI: mob, laws, upload, camera eye, door control | L | `silicon/ai`, `ai_laws` | Off by default in Luna's config |
@@ -68,7 +68,7 @@ Each item names its main Luna source. Read it, describe the behaviour, and write
 | [ ] | 3.17 Metroids | L | `carbon/metroid` | |
 | [~] | 3.18 Critters and player monkeys | M | `ISaidNo Release/critters` | Monkeys exist |
 | [x] | 3.19 Forensics: prints, fibres, scanner, computer | M | `DetectiveWork` | `forensics.md`; no blood yet |
-| [~] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`); implants (`implants.md`). Left: grenades. Mousetraps and infrared aren't on Luna's station |
+| [x] | 3.20 Devices: signallers, proximity, grenades, implants, mousetraps | M-L | `modules/assembly`, `implants`, `grenades` | Signalers, timers, proximity sensors, igniters, their assemblies, tank bombs and the transfer valve (`devices.md`); flashbangs, EMP and chemical grenades, smoke and foam (`grenades.md`); implants (`implants.md`). Mousetraps and infrared aren't on Luna's station |
 | [ ] | 3.21 PDAs: messaging, cartridges | M-L | `PDA` | Inert item exists |
 
 ## 4. Depth in what exists

@@ -65,6 +65,16 @@ Whenever reagents arrive in a container or someone's blood, whatever can mix doe
 | 3 `dexalinp` | dexalin, carbon, iron |
 | 3 `synaptizine` | sugar, lithium, water |
 | 3 `cryoxadone` | dexalin, water, oxygen |
+| 5 `fluorosurfactant` | 2 fluorine, 2 carbon, sulphuric acid |
+| 1 `foaming_agent` | lithium, hydrogen |
+| 3 `ammonia` | 3 hydrogen, nitrogen |
+| 2 `cleaner` | ammonia, water |
+| 3 `pacid` | sulphuric acid, chlorine, potassium |
+| 1 `condensedcapsaicin` | capsaicin, 5 ethanol |
+
+Some mixes do something where they happen instead (`grenades.md`): potassium, sugar and phosphorus
+make **smoke**; fluorosurfactant and water make **foam**; 3 aluminium (or iron), foaming agent and
+polytrinic acid make **metal foam**.
 
 ## In the blood
 
@@ -89,7 +99,7 @@ Every 2 seconds each reagent in a living person acts and 0.4 units of it are use
 
 | Luna | Here |
 |---|---|
-| About 200 reagents and over 100 recipes, some explosive | Only the medicines above, and the dispenser's 21. Plasma comes from nowhere yet, so dexalin can't be made |
+| About 200 reagents and over 100 recipes, some explosive | Only the medicines, smoke and foam above, and the dispenser's 21. Plasma comes from nowhere yet, so dexalin can't be made |
 | Reagents splash, and react to skin and floors | Only moved between containers and blood |
 | Syringes draw blood, and spread viruses | Not built |
 | You choose how much a beaker pours | Always 10 |

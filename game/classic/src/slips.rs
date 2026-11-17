@@ -17,6 +17,15 @@ pub const SLIPPERY: [&str; 2] = ["soap", "banana-peel"];
 /// How long a slip takes you off your feet, in Luna's counts (its `Stun(6)` and `Weaken(4)`).
 const SLIP_COUNTS: f32 = 6.0;
 
+/// Wearing shoes that don't slip.
+pub fn no_slip(world: &World, mob: Entity) -> bool {
+    world
+        .get::<Equipment>(mob)
+        .and_then(|e| e.get(Slot::Shoes))
+        .and_then(|shoes| world.get::<Wearable>(shoes))
+        .is_some_and(|shoes| shoes.no_slip)
+}
+
 /// Those who just stepped onto something slippery, without the shoes for it.
 pub fn slip(world: &mut World) {
     let movers: Vec<Entity> = world
@@ -45,12 +54,7 @@ pub fn slip(world: &mut World) {
         let Some((_, thing)) = slippery.iter().find(|(there, _)| *there == at) else {
             continue;
         };
-        let safe = world
-            .get::<Equipment>(mob)
-            .and_then(|e| e.get(Slot::Shoes))
-            .and_then(|shoes| world.get::<Wearable>(shoes))
-            .is_some_and(|shoes| shoes.no_slip);
-        if safe {
+        if no_slip(world, mob) {
             continue;
         }
         world

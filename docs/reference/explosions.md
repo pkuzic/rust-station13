@@ -43,7 +43,7 @@ press the button, from anywhere. 5 seconds later the charge goes off, with range
 
 An electromagnetic pulse has a heavy and a light range. Cells, energy guns and batons lose 1000 charge inside the heavy range, and
 500 out to the light one, on the floor or carried. A locker's lock flips half the time, or a quarter out in the light range. Only
-the admin verb sets one off for now: grenades come with devices (3.20).
+the admin verb and the EMP grenade (`grenades.md`) set one off.
 
 ## Differences from Luna
 
@@ -57,6 +57,5 @@ the admin verb sets one off for now: grenades come with devices (3.20).
 | Machines take particular damage rather than vanishing, and some items, like tanks, go off themselves | All by the table above |
 | Lattice is left where a floor went | Just space |
 | Window edges still hold air after the window has gone | The same stale edge, for now |
-| Bombs of a tank with a timer or signaller, and grenades | Not built (3.20) |
 | An EMP also breaks computers, opens crates, upsets turrets, radios and sleepers, and reaches the next decks | Cells, energy weapons, batons and locks |
 | Doppler arrays report blasts | Not built |

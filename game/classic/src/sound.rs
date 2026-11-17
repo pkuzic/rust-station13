@@ -73,6 +73,14 @@ pub const LASER: &str = "laser";
 pub const GUNSHOT: &str = "gunshot";
 pub const TASER: &str = "taser";
 pub const BATON_HIT_SOUND: &str = "baton-hit";
+/// A grenade primed and thrown, and a flashbang going off.
+pub const ARM_BOMB: &str = "arm-bomb";
+pub const BANG: &str = "bang";
+/// Chemical smoke and foam, a chemical grenade going off, and slipping on foam.
+pub const SMOKE: &str = "smoke";
+pub const BUBBLES: &str = "bubbles";
+pub const BAMF: &str = "bamf";
+pub const SLIP: &str = "slip";
 /// Every sound id the game plays.
 /// A blast, up close and from anywhere on the station; and an EMP.
 pub const EXPLOSION: &str = "explosion";
@@ -115,6 +123,12 @@ pub const ALL_SOUNDS: &[&str] = &[
     GUNSHOT,
     TASER,
     BATON_HIT_SOUND,
+    ARM_BOMB,
+    BANG,
+    SMOKE,
+    BUBBLES,
+    BAMF,
+    SLIP,
 ];
 
 /// A sound made at a tile this tick.

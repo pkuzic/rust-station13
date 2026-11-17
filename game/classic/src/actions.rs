@@ -465,6 +465,70 @@ pub fn process_actions(
                     commands
                         .queue(move |world: &mut World| crate::implants::click_console(world, mob, target));
                 }
+                // Grenades (`grenades.md`): primed in the hand, thrown at somewhere out of
+                // reach, and a screwdriver sets a flashbang's delay.
+                Action::UseOn(target)
+                    if hands.active_item() == Some(target)
+                        && tool.is_some_and(crate::grenades::is_grenade) =>
+                {
+                    commands.queue(move |world: &mut World| crate::grenades::use_in_hand(world, mob, target));
+                }
+                Action::UseOn(target)
+                    if tool.is_some_and(crate::grenades::is_grenade)
+                        && places.get(target).is_ok_and(|p| !in_reach(mob_pos.0, p.0)) =>
+                {
+                    let grenade = hands.active_item();
+                    let to = places.get(target).map_or(mob_pos.0, |p| p.0);
+                    commands.queue(move |world: &mut World| {
+                        if let Some(grenade) = grenade {
+                            crate::grenades::throw(world, mob, grenade, to);
+                        }
+                    });
+                }
+                Action::UseOnTile(to)
+                    if tool.is_some_and(crate::grenades::is_grenade) && !in_reach(mob_pos.0, to) =>
+                {
+                    let grenade = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        if let Some(grenade) = grenade {
+                            crate::grenades::throw(world, mob, grenade, to);
+                        }
+                    });
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && hands.active_item().is_some_and(|held| held != target)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::grenades::is_chem_grenade(&look.sprite)) =>
+                {
+                    // Putting a chemical grenade together.
+                    if let Some(held) = hands.active_item() {
+                        commands.queue(move |world: &mut World| {
+                            crate::grenades::use_on_casing(world, mob, held, target);
+                        });
+                    }
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::chem_effects::FOAMED_METAL) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| {
+                        crate::chem_effects::hit_foamed_metal(world, mob, held, target);
+                    });
+                }
+                Action::UseOn(target)
+                    if reaches
+                        && tool == Some("screwdriver")
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::grenades::FLASHBANG) =>
+                {
+                    commands.queue(move |world: &mut World| crate::grenades::set_delay(world, mob, target));
+                }
                 Action::UseOn(target)
                     if hands.active_item() == Some(target)
                         && matches!(

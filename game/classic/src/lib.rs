@@ -24,6 +24,7 @@ pub mod cells;
 pub mod chairs;
 pub mod changeling;
 pub mod chem_dispenser;
+pub mod chem_effects;
 pub mod chem_master;
 pub mod chemistry;
 pub mod cloning;
@@ -62,6 +63,7 @@ pub mod generators;
 pub mod genetics;
 pub mod ghosts;
 pub mod grabs;
+pub mod grenades;
 pub mod hands;
 pub mod health;
 pub mod heaters;
@@ -496,6 +498,11 @@ impl Plugin for ClassicPlugin {
                                     implants::run_picks,
                                     implants::run_implants,
                                     implants::update_views,
+                                    grenades::run_grenades,
+                                    grenades::heal_ears,
+                                    chem_effects::run_smoke,
+                                    chem_effects::run_foam,
+                                    chem_effects::slip_on_foam,
                                 )
                                     .chain(),
                                 anomalies::run_picks,
