@@ -127,6 +127,7 @@ and **Pull** (as Ctrl-click), then its own verbs; yourself with Examine only. Th
 | **Rotate Chair** | chairs, within a tile | a quarter turn anticlockwise, sitter and all (`chair/rotate`) |
 | **Toggle Light** | flashlights and lamps you carry | switches it (`flashlight/verb/toggle`) |
 | **Toggle Jetpack** | jetpacks you carry | switches it (`jetpack/verb/toggle`) |
+| **Empty** | laundromats, within a tile | lets out what's inside, unless it's washing (`washer/verb/empty`, `laundry.md`) |
  Picking one does it; a left click
 elsewhere or Escape closes the menu without doing anything else. Code:
 `apps/client/src/context_menu.rs`.

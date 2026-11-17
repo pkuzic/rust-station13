@@ -1971,6 +1971,7 @@ Every sprite below is taken from NSV Luna (https://github.com/SS13/luna, commit 
 | `wardrobe-toxins:open` | `icons/obj/closet.dmi : "open"` | CC-BY-SA 3.0 |
 | `wardrobe-toxins:white` | `icons/obj/closet.dmi : "white"` | CC-BY-SA 3.0 |
 | `washer:` | `icons/obj/washer.dmi : "land01"` | CC-BY-SA 3.0 |
+| `washer:landanim` | `icons/obj/washer.dmi : "landanim"` | CC-BY-SA 3.0 |
 | `water-cooler:water_cooler` | `icons/obj/vending.dmi : "water_cooler"` | CC-BY-SA 3.0 |
 | `water-puff:` | `icons/effects/effects.dmi : "extinguish"` | CC-BY-SA 3.0 |
 | `water-tank:` | `icons/obj/objects.dmi : "watertank"` | CC-BY-SA 3.0 |

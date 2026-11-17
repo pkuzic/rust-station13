@@ -412,6 +412,16 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // The laundromat (`laundry.md`).
+                Action::UseOn(target)
+                    if reaches
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| look.sprite == crate::washers::WASHER) =>
+                {
+                    let held = hands.active_item();
+                    commands.queue(move |world: &mut World| crate::washers::use_on(world, mob, held, target));
+                }
                 // Stamps, folders and the photocopier (`paperwork.md`).
                 Action::UseOn(target)
                     if hands.active_item() == Some(target)
@@ -1100,6 +1110,11 @@ pub fn process_actions(
                             None
                         }
                         crate::verbs::ROTATE_CHAIR if near => chairs.rotate(target),
+                        crate::verbs::EMPTY_WASHER if near => {
+                            commands
+                                .queue(move |world: &mut World| crate::washers::empty(world, mob, target));
+                            None
+                        }
                         crate::verbs::TOGGLE_LIGHT if carried => flashlights.use_self(target),
                         crate::verbs::TOGGLE_JETPACK if carried => jetpacks.use_self(target),
                         _ => None,
@@ -1175,6 +1190,15 @@ pub fn process_actions(
                                     .arg("lighting", mode(Channel::Lighting))
                                     .arg("environment", mode(Channel::Environment)),
                             );
+                        }
+                        if appearance.sprite == crate::washers::WASHER {
+                            commands.queue(move |world: &mut World| {
+                                if let Some(more) = crate::washers::examine(world, target)
+                                    && let Some(mut outbox) = world.get_mut::<Outbox>(mob)
+                                {
+                                    outbox.0.push(more);
+                                }
+                            });
                         }
                         if reagent_holders.contains(target) {
                             commands.queue(move |world: &mut World| {

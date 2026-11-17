@@ -1521,6 +1521,14 @@ cigarette-trodden = { $name } спокойно бросает { NOUN($item, case
 # Действия с предметами в меню правой кнопки (verbs.rs).
 verb-toggle-open = Открыть/закрыть
 verb-toggle-lock = Запереть/отпереть
+washer-busy = Нельзя ничего положить, пока идёт стирка.
+washer-poured = Вы заливаете в стиральную машину чистящий раствор, единиц: { $value }.
+washer-beeps = Стиральная машина пищит, когда вы пытаетесь положить в неё { NOUN($item, case: "acc") }.
+washer-adds = { $name } кладёт в стиральную машину { NOUN($item, case: "acc") }.
+washer-no-cleaner = Нужно больше чистящего раствора.
+washer-locked = Дверца заперта.
+examine-washer = Чистящего раствора осталось единиц: { $value }.
+verb-empty-washer = Опустошить
 verb-rotate-chair = Повернуть стул
 verb-toggle-light = Включить/выключить свет
 verb-toggle-jetpack = Включить/выключить ранец

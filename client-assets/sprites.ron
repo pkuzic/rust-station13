@@ -3128,7 +3128,10 @@
         "sign-fire": { "": (dmi: "icons/obj/decals.dmi", state: "fire") },
         "meat-spike": { "": (dmi: "icons/obj/kitchen.dmi", state: "spike") },
         "display-case": { "": (dmi: "icons/obj/stationobjs.dmi", state: "glassbox1") },
-        "washer": { "": (dmi: "icons/obj/washer.dmi", state: "land01") },
+        "washer": {
+            "": (dmi: "icons/obj/washer.dmi", state: "land01"),
+            "landanim": (dmi: "icons/obj/washer.dmi", state: "landanim"),
+        },
         "bookcase": { "": (dmi: "icons/obj/computer.dmi", state: "bookcase") },
         "operating-table": {
             "": (dmi: "icons/obj/surgery.dmi", state: "table2-idle"),
