@@ -133,3 +133,48 @@ fn the_antique_laser_fires_a_heavy_beam_and_charges_itself() {
 fn the_antique_laser_is_a_theft_objective() {
     assert!(rs13_classic::traitor::THEFTS.contains(&CAPTAIN_LASER));
 }
+
+#[test]
+fn an_energy_sword_switches_between_a_hilt_and_a_blade_and_blocks_as_a_shield() {
+    use rs13_classic::swords::{ENERGY_SWORD, EnergySword, OFF_FORCE, ON_FORCE, is_shield};
+    let (mut app, mob, _case) = setup();
+    let sword = spawn_object(app.world_mut(), &ObjectSpec::new(ENERGY_SWORD), HERE).unwrap();
+    let hand = app.world().get::<Hands>(mob).unwrap().active;
+    app.world_mut()
+        .entity_mut(sword)
+        .remove::<GridPos>()
+        .insert(HeldBy(mob));
+    *app.world_mut().get_mut::<Hands>(mob).unwrap().slot_mut(hand) = Some(sword);
+    assert!(!is_shield(app.world(), sword));
+    assert_eq!(act(&mut app, mob, Action::UseOn(sword)), ["sword-on"]);
+    let state = *app.world().get::<EnergySword>(sword).unwrap();
+    assert!(state.active);
+    assert_eq!(
+        app.world().get::<rs13_classic::hands::Item>(sword).unwrap().force,
+        ON_FORCE
+    );
+    assert_eq!(
+        app.world().get::<Appearance>(sword).unwrap().state,
+        format!("sword{}", state.colour)
+    );
+    assert!(is_shield(app.world(), sword));
+    assert_eq!(act(&mut app, mob, Action::UseOn(sword)), ["sword-off"]);
+    assert_eq!(
+        app.world().get::<rs13_classic::hands::Item>(sword).unwrap().force,
+        OFF_FORCE
+    );
+    assert_eq!(app.world().get::<Appearance>(sword).unwrap().state, "sword0");
+}
+
+#[test]
+fn the_crossbow_fires_bolts_charges_itself_and_is_sold_with_the_sword() {
+    use rs13_classic::weapons::ENERGY_CROSSBOW;
+    let (mut app, _mob, _case) = setup();
+    let bow = spawn_object(app.world_mut(), &ObjectSpec::new(ENERGY_CROSSBOW), HERE).unwrap();
+    assert_eq!(app.world().get::<Gun>(bow).unwrap().fires, Fires::Bolt);
+    app.world_mut().get_mut::<Gun>(bow).unwrap().charge = 0;
+    tick(&mut app, 2 * 41);
+    assert!(app.world().get::<Gun>(bow).unwrap().charge >= SELF_CHARGE);
+    let goods: Vec<&str> = rs13_classic::traitor::GOODS.iter().map(|(id, _)| *id).collect();
+    assert!(goods.contains(&ENERGY_CROSSBOW) && goods.contains(&"energy-sword"));
+}

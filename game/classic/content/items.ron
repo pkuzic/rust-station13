@@ -544,6 +544,9 @@
     (id: "laser-gun", force: 5.0, slot: "belt", conducts: true),
     // Luna `laser/captain`: the antique, in the captain's display case (`weapons.md`).
     (id: "captain-laser", force: 10.0, slot: "belt", conducts: true),
+    // Luna `melee/energy/sword` and `gun/energy/crossbow`: the uplink's (`weapons.md`).
+    (id: "energy-sword", force: 3.0, size: 2),
+    (id: "energy-crossbow", force: 5.0, size: 2, slot: "belt", conducts: true),
     (id: "energy-gun", force: 5.0, slot: "belt", conducts: true),
     (id: "taser", force: 5.0, slot: "belt", conducts: true),
     (id: "pistol", force: 5.0, size: 2, slot: "belt", conducts: true),

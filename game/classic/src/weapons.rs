@@ -20,6 +20,8 @@ use crate::time::WorldTime;
 pub const LASER_GUN: &str = "laser-gun";
 /// The captain's antique laser gun (Luna `laser/captain`), kept in the display case.
 pub const CAPTAIN_LASER: &str = "captain-laser";
+/// The traitors' mini energy crossbow (Luna `gun/energy/crossbow`).
+pub const ENERGY_CROSSBOW: &str = "energy-crossbow";
 pub const ENERGY_GUN: &str = "energy-gun";
 pub const TASER: &str = "taser";
 pub const BATON: &str = "stun-baton";
@@ -44,6 +46,9 @@ pub const BATON_HIT: i32 = 1000;
 pub const BEAM_BURN: f32 = 20.0;
 /// What the antique laser's heavy beam burns (Luna `beam/heavylaser`).
 pub const HEAVY_BEAM_BURN: f32 = 40.0;
+/// What a crossbow bolt does: toxin damage, and a knock-down as long as an electrode's (Luna
+/// `energy/bolt`).
+pub const BOLT_TOX: f32 = 20.0;
 /// What the antique laser gives itself, and how often, ds (Luna: 100 every second process).
 pub const SELF_CHARGE: i32 = 100;
 pub const SELF_CHARGE_DS: f32 = 40.0;
@@ -68,6 +73,8 @@ pub enum Fires {
     Beam,
     /// The antique laser's: twice a beam's burn.
     HeavyBeam,
+    /// The energy crossbow's: poison, and down.
+    Bolt,
     Electrode,
     Bullet(Round),
 }
@@ -201,10 +208,11 @@ pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
                 Appearance::new(proto, look),
             ));
         }
-        LASER_GUN | ENERGY_GUN | TASER | CAPTAIN_LASER => {
+        LASER_GUN | ENERGY_GUN | TASER | CAPTAIN_LASER | ENERGY_CROSSBOW => {
             let (capacity, fires, switchable) = match proto {
                 LASER_GUN => (GUN_CELL, Fires::Beam, false),
                 CAPTAIN_LASER => (GUN_CELL, Fires::HeavyBeam, false),
+                ENERGY_CROSSBOW => (GUN_CELL, Fires::Bolt, false),
                 ENERGY_GUN => (GUN_CELL, Fires::Electrode, true),
                 _ => (TASER_CELL, Fires::Electrode, false),
             };
@@ -217,7 +225,7 @@ pub fn fit_weapon(entity: &mut EntityWorldMut, proto: &str) {
             };
             let state = gun_look(proto, &gun);
             entity.insert((gun, Appearance::new(proto, state)));
-            if proto == CAPTAIN_LASER {
+            if matches!(proto, CAPTAIN_LASER | ENERGY_CROSSBOW) {
                 entity.insert(SelfCharging { next_ds: 0.0 });
             }
         }
@@ -239,6 +247,7 @@ pub fn is_gun(proto: &str) -> bool {
         proto,
         LASER_GUN
             | CAPTAIN_LASER
+            | ENERGY_CROSSBOW
             | ENERGY_GUN
             | TASER
             | PISTOL
@@ -258,6 +267,8 @@ fn gun_look(proto: &str, gun: &Gun) -> String {
         SYNDICATE_REVOLVER => return "revolver".to_owned(),
         COMBAT_SHOTGUN => return "cshotgun".to_owned(),
         DOUBLE_BARREL => return "dshotgun".to_owned(),
+        // Its sprite never shows the charge (Luna `crossbow/update_icon`).
+        ENERGY_CROSSBOW => return "crossbow".to_owned(),
         _ => {}
     }
     let quarter = (f64::from(gun.charge) / f64::from(gun.capacity) * 4.0).round() as i32 * 25;
@@ -309,7 +320,7 @@ pub fn switch_gun(world: &mut World, mob: Entity, gun_entity: Entity) {
         other => other,
     };
     let id = match gun.fires {
-        Fires::Bullet(_) | Fires::HeavyBeam => return,
+        Fires::Bullet(_) | Fires::HeavyBeam | Fires::Bolt => return,
         Fires::Beam => "gun-set-kill",
         Fires::Electrode => "gun-set-stun",
     };
@@ -342,7 +353,14 @@ pub fn fire(world: &mut World, mob: Entity, gun_entity: Entity, to: TilePos) {
         Fires::Beam | Fires::HeavyBeam => crate::sound::LASER,
         Fires::Electrode => crate::sound::TASER,
         Fires::Bullet(_) => crate::sound::GUNSHOT,
+        Fires::Bolt => crate::sound::GENHIT,
     };
+    // The crossbow is silenced (Luna `silenced`): a quiet sound and nothing for onlookers.
+    if gun.fires == Fires::Bolt {
+        world.resource_mut::<SoundEvents>().play(sound, at, 10.0);
+        launch(world, mob, at, to, gun.fires);
+        return;
+    }
     world.resource_mut::<SoundEvents>().play(sound, at, 50.0);
     let item = world
         .get::<Appearance>(gun_entity)
@@ -417,6 +435,7 @@ pub fn launch(world: &mut World, firer: Entity, at: TilePos, to: TilePos, fires:
     let look = match fires {
         Fires::Beam => "laser",
         Fires::HeavyBeam => "heavylaser",
+        Fires::Bolt => "cbbolt",
         Fires::Electrode => "spark",
         Fires::Bullet(_) => "bullet",
     };
@@ -485,8 +504,31 @@ fn victim(world: &mut World, shot: &Shot, at: TilePos) -> Option<Entity> {
         .map(|(e, ..)| e)
 }
 
+/// What a shot does to what it hits, for shields and glass.
+fn damage_of(fires: Fires) -> f32 {
+    match fires {
+        Fires::Beam => BEAM_BURN,
+        Fires::HeavyBeam => HEAVY_BEAM_BURN,
+        Fires::Electrode => 0.0,
+        Fires::Bolt => BOLT_TOX,
+        Fires::Bullet(round) => round.effect().0,
+    }
+}
+
 fn hit(world: &mut World, shot: &Shot, person: Entity, at: TilePos) {
     let name = name_of(world, person);
+    // A riot shield or a lit energy sword may take it (Luna `check_shields`).
+    if let Some(shield) = crate::swords::shield_block(world, person, damage_of(shot.fires)) {
+        let item = world
+            .get::<Appearance>(shield)
+            .map(|a| a.sprite.clone())
+            .unwrap_or_default();
+        let msg = LocMsg::new("shield-blocks-shot")
+            .arg("name", name)
+            .arg("item", item);
+        world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+        return;
+    }
     let zone = {
         let mut rng = world.resource_mut::<GameRng>();
         ran_zone(shot.zone, &mut rng)
@@ -505,6 +547,19 @@ fn hit(world: &mut World, shot: &Shot, person: Entity, at: TilePos) {
                 && let Some(mut body) = world.get_mut::<Body>(person)
             {
                 body.take_damage(zone, 0.0, burn / (absorbed as f32 + 1.0));
+            }
+        }
+        Fires::Bolt => {
+            let absorbed = crate::combat::armour_check(world, person, zone, crate::combat::ArmorKind::Energy);
+            let msg = LocMsg::new("shot-hit-bolt").arg("name", name);
+            world.resource_mut::<VisibleEvents>().0.push((at, msg, None));
+            if absorbed < 2 {
+                if let Some(mut body) = world.get_mut::<Body>(person) {
+                    body.tox += BOLT_TOX / (absorbed as f32 + 1.0);
+                }
+                let down = ELECTRODE_WEAKEN_DS / (absorbed as f32 + 1.0);
+                let until = world.resource::<WorldTime>().deciseconds() + down;
+                world.entity_mut(person).insert(Weakened(until));
             }
         }
         Fires::Bullet(round) => {
@@ -571,13 +626,7 @@ pub fn run_shots(world: &mut World) {
             // An artifact in the way may wake to it (`anomalies.md`).
             crate::anomalies::shot_into(world, to, matches!(shot.fires, Fires::Bullet(_)));
             // A display case's glass takes it (`display_case.rs`).
-            let damage = match shot.fires {
-                Fires::Beam => BEAM_BURN,
-                Fires::HeavyBeam => HEAVY_BEAM_BURN,
-                Fires::Electrode => 0.0,
-                Fires::Bullet(round) => round.effect().0,
-            };
-            crate::display_case::shot_into(world, to, damage);
+            crate::display_case::shot_into(world, to, damage_of(shot.fires));
             world.entity_mut(entity).despawn();
             continue;
         }
@@ -671,9 +720,10 @@ pub fn click_recharger(world: &mut World, mob: Entity, recharger: Entity) {
     let held = world.get::<Hands>(mob).and_then(Hands::active_item);
     match (held, state.charging) {
         (Some(item), None) => {
+            // Bullet guns and the crossbow don't go in (Luna `recharger/attackby`).
             let fits = world
                 .get::<Gun>(item)
-                .is_some_and(|g| !matches!(g.fires, Fires::Bullet(_)))
+                .is_some_and(|g| !matches!(g.fires, Fires::Bullet(_) | Fires::Bolt))
                 || world.get::<Baton>(item).is_some();
             if !fits {
                 return;

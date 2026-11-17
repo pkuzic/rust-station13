@@ -412,6 +412,12 @@ pub fn process_actions(
                 welded_with.push((mob, active, at));
             }
             match action {
+                // An energy sword switched in the hand (`weapons.md`).
+                Action::UseOn(target)
+                    if hands.active_item() == Some(target) && tool == Some(crate::swords::ENERGY_SWORD) =>
+                {
+                    commands.queue(move |world: &mut World| crate::swords::toggle(world, mob, target));
+                }
                 // The captain's display case (`weapons.md`).
                 Action::UseOn(target)
                     if reaches

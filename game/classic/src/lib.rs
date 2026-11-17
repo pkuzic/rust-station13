@@ -119,6 +119,7 @@ pub mod status_displays;
 pub mod storage;
 pub mod supermatter;
 pub mod surgery;
+pub mod swords;
 pub mod teg;
 pub mod teleporters;
 pub mod time;

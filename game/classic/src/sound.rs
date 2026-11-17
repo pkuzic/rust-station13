@@ -75,6 +75,11 @@ pub const TASER: &str = "taser";
 pub const BATON_HIT_SOUND: &str = "baton-hit";
 /// A grenade primed and thrown, and a flashbang going off.
 pub const ARM_BOMB: &str = "arm-bomb";
+/// An energy sword's blade out, and away (`weapons.md`).
+pub const SABER_ON: &str = "saber-on";
+pub const SABER_OFF: &str = "saber-off";
+/// The energy crossbow firing, quietly.
+pub const GENHIT: &str = "genhit";
 /// A laundromat starting a wash (`laundry.md`).
 pub const WASHING_MACHINE: &str = "washing-machine";
 pub const BANG: &str = "bang";
@@ -126,6 +131,9 @@ pub const ALL_SOUNDS: &[&str] = &[
     TASER,
     BATON_HIT_SOUND,
     ARM_BOMB,
+    SABER_ON,
+    SABER_OFF,
+    GENHIT,
     WASHING_MACHINE,
     BANG,
     SMOKE,
