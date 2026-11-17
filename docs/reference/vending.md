@@ -41,7 +41,8 @@ mainly uniforms, and bio suits on the toxins machine.
 
 | Luna | Here |
 |---|---|
-| Coins unlock premium stock; a multitool or wirecutters on its wires unlock contraband, shock or make it throw things | Not built: only the ordinary stock |
+| Coins unlock premium stock | Not built |
+| Its wires: contraband, ID scanner, shock, throwing | Built, in a separate window (`hacking.md`) |
 | It speaks its slogans, and some greet a sale | Not built |
 | It uses 5 W per sale | It draws nothing, but needs its area's equipment power |
 | Explosions and the blob break it (`-broken`) | Not built |

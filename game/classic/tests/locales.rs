@@ -186,6 +186,7 @@ fn every_message_formats_in_both_locales() {
     args.set("sink", "sink");
     args.set("folder", "folder-red");
     args.set("shield", "riot-shield");
+    args.set("machine", "vending-cola");
     args.set("new", "Ann Bell");
     args.set("procedure", "Appendectomy");
     args.set("print", "0123456789abcdef0123456789abcdef");

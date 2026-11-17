@@ -51,6 +51,14 @@ pub const RECIPES: [(&str, i32, i32); 27] = [
     ("signaler", 75, 25),
 ];
 
+/// What it makes once hacked (Luna `autolathe_recipes_hidden`), those that exist here.
+pub const HIDDEN: [(&str, i32, i32); 2] = [("handcuffs", 500, 0), ("ammo-357", 50_000, 0)];
+
+/// A line of its list: the recipes, then the hidden ones.
+pub fn recipe(line: usize) -> Option<(&'static str, i32, i32)> {
+    RECIPES.iter().chain(HIDDEN.iter()).nth(line).copied()
+}
+
 /// What a sheet of this gives it, metal and glass (Luna `m_amt`, `g_amt` of the sheets).
 fn sheet(proto: &str) -> Option<(i32, i32)> {
     Some(match proto {
@@ -100,7 +108,26 @@ fn tell(world: &mut World, mob: Entity, msg: LocMsg) {
 /// A click: sheets in hand go in, as many as fit; an empty hand opens the window (Luna `attackby`,
 /// `attack_hand`).
 pub fn click(world: &mut World, mob: Entity, machine: Entity) {
-    let Some(item) = world.get::<Hands>(mob).and_then(Hands::active_item) else {
+    let wires = crate::hacking::wires(world, machine).cloned();
+    let item = world.get::<Hands>(mob).and_then(Hands::active_item);
+    // Luna `interact`: a live shock wire bites; an open hatch shows the wires; a cut or pulsed
+    // disable wire leaves the buttons dead (`hacking.md`).
+    if let Some(w) = &wires
+        && (item.is_none() || w.panel_open)
+    {
+        if w.shocked {
+            crate::hacking::shock(world, mob, machine, crate::hacking::WIRE_SHOCK);
+        }
+        if w.panel_open {
+            crate::hacking::show_wires(world, mob, machine);
+            return;
+        }
+        if w.disabled {
+            tell(world, mob, LocMsg::new("lathe-dead"));
+            return;
+        }
+    }
+    let Some(item) = item else {
         world.entity_mut(mob).insert(PanelViewer(machine));
         return;
     };
@@ -157,13 +184,18 @@ pub fn run_autolathes(world: &mut World) {
         for (machine, line) in ops {
             let near = world.get::<GridPos>(machine).is_some_and(|p| in_reach(at, p.0));
             let powered = world.get::<PowerUser>(machine).is_some_and(|p| p.powered);
+            let (hacked, disabled) =
+                crate::hacking::wires(world, machine).map_or((false, false), |w| (w.hacked, w.disabled));
             let Some(mut lathe) = world.get_mut::<Autolathe>(machine) else {
                 continue;
             };
-            let Some((_, metal, glass)) = RECIPES.get(line) else {
+            let Some((_, metal, glass)) = recipe(line) else {
                 continue;
             };
-            if near && powered && lathe.making.is_none() && lathe.metal >= *metal && lathe.glass >= *glass {
+            if line >= RECIPES.len() && !hacked || disabled {
+                continue;
+            }
+            if near && powered && lathe.making.is_none() && lathe.metal >= metal && lathe.glass >= glass {
                 lathe.metal -= metal;
                 lathe.glass -= glass;
                 lathe.making = Some((line, now + MAKE_DS));
@@ -190,7 +222,9 @@ pub fn run_autolathes(world: &mut World) {
         }
         // Every recipe is a prototype (`tests/autolathe.rs` checks).
         // One of it, if it stacks.
-        let _ = spawn_stack(world, RECIPES[line].0, at, 1);
+        if let Some((item, ..)) = recipe(line) {
+            let _ = spawn_stack(world, item, at, 1);
+        }
     }
 }
 
@@ -204,12 +238,22 @@ pub fn update_lathe_views(
         &mut LathePanelOut,
         Option<&Vitals>,
     )>,
-    machines: Query<(&GridPos, &Autolathe, &NetId)>,
+    machines: Query<(
+        &GridPos,
+        &Autolathe,
+        &NetId,
+        Option<&crate::hacking::MachineWires>,
+    )>,
     mut commands: Commands,
 ) {
     for (mob, pos, viewer, mut out, vitals) in &mut viewers {
         let target = viewer.and_then(|v| machines.get(v.0).ok());
-        let view = target.and_then(|(at, lathe, id)| {
+        let view = target.and_then(|(at, lathe, id, wires)| {
+            let hidden = if wires.is_some_and(|w| w.hacked) {
+                HIDDEN.len()
+            } else {
+                0
+            };
             let usable = in_reach(pos.0, at.0) && vitals.is_none_or(|v| v.stat == MobStat::Conscious);
             usable.then(|| AutolathePanelView {
                 target: *id,
@@ -218,6 +262,7 @@ pub fn update_lathe_views(
                 busy: lathe.making.is_some(),
                 rows: RECIPES
                     .iter()
+                    .chain(HIDDEN.iter().take(hidden))
                     .map(|(item, metal, glass)| AutolatheRow {
                         item: (*item).to_owned(),
                         metal: *metal,

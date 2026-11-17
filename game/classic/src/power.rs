@@ -200,6 +200,8 @@ pub struct Apc {
     pub last_used: [f64; 3],
     /// Wrecked (Luna `BROKEN`, only from a derelict round): it powers nothing and charges nothing.
     pub broken: bool,
+    /// A main power wire cut or pulsed (Luna `shorted`, `hacking.md`): it powers nothing.
+    pub shorted: bool,
 }
 
 impl Apc {
@@ -217,6 +219,7 @@ impl Apc {
             charging: 0,
             last_used: [0.0; 3],
             broken: false,
+            shorted: false,
         }
     }
 
@@ -484,7 +487,7 @@ pub fn power_cycle(
         if let Some(grid) = grid {
             *grid = spare;
         }
-        let operating = apc.operating && apc.cell.is_some();
+        let operating = apc.operating && apc.cell.is_some() && !apc.shorted;
         state.on = apc.channels.map(|c| operating && c.is_on());
     }
 

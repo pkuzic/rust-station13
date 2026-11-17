@@ -8,6 +8,7 @@ use rs13_world::{Appearance, GridPos, MobStat, NetId, ObjectSpec, TilePos, Vendi
 use crate::access::{IdCard, Shown};
 use crate::actions::{Outbox, in_reach};
 use crate::equipment::Equipment;
+use crate::hacking::MachineWires;
 use crate::hands::Hands;
 use crate::health::Vitals;
 use crate::power::{Channel, PowerUser};
@@ -26,6 +27,8 @@ pub struct VendingKind {
     pub access: Option<&'static str>,
     /// Hung on a wall, so nothing bumps into it.
     pub wall: bool,
+    /// What a pulsed contraband wire unlocks (Luna `contraband`, `product_hidden`).
+    pub contraband: &'static [(&'static str, u16)],
 }
 
 /// The kinds on NSV Luna.
@@ -46,6 +49,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: None,
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-medical",
@@ -67,6 +71,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: Some("medical"),
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-wallmed",
@@ -81,6 +86,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: None,
         wall: true,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-toxins",
@@ -97,6 +103,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: Some("tox"),
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-engineering",
@@ -122,6 +129,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: Some("engine"),
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-coffee",
@@ -130,6 +138,7 @@ pub const KINDS: [VendingKind; 10] = [
         products: &[("coffee", 25), ("tea", 25), ("hot-chocolate", 25)],
         access: None,
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-snack",
@@ -146,6 +155,7 @@ pub const KINDS: [VendingKind; 10] = [
         ],
         access: None,
         wall: false,
+        contraband: &[],
     },
     VendingKind {
         id: "vending-cola",
@@ -154,6 +164,7 @@ pub const KINDS: [VendingKind; 10] = [
         products: COLA,
         access: None,
         wall: false,
+        contraband: &[("rootbeer", 5)],
     },
     VendingKind {
         id: "vending-soda",
@@ -162,6 +173,7 @@ pub const KINDS: [VendingKind; 10] = [
         products: COLA,
         access: None,
         wall: false,
+        contraband: &[("rootbeer", 5)],
     },
     VendingKind {
         id: "vending-cigarette",
@@ -170,6 +182,7 @@ pub const KINDS: [VendingKind; 10] = [
         products: &[("cigarette-packet", 10), ("matchbox", 10), ("lighter", 4)],
         access: None,
         wall: false,
+        contraband: &[("zippo", 4)],
     },
 ];
 
@@ -183,6 +196,15 @@ const COLA: &[(&str, u16)] = &[
 
 pub fn kind(proto: &str) -> Option<&'static VendingKind> {
     KINDS.iter().find(|k| k.id == proto)
+}
+
+/// The prototype on a line: the products, then the contraband.
+pub fn product(kind: &VendingKind, line: usize) -> Option<&'static str> {
+    kind.products
+        .iter()
+        .chain(kind.contraband)
+        .nth(line)
+        .map(|(id, _)| *id)
 }
 
 /// A vending machine: what is left of each product, and what it is handing out.
@@ -210,7 +232,12 @@ pub fn spawn_vending(world: &mut World, kind: &'static VendingKind, pos: TilePos
         Appearance::new(kind.id, kind.look),
         Vending {
             kind,
-            stock: kind.products.iter().map(|(_, n)| *n).collect(),
+            stock: kind
+                .products
+                .iter()
+                .chain(kind.contraband)
+                .map(|(_, n)| *n)
+                .collect(),
             vending: None,
         },
         PowerUser::new(Channel::Equipment, 0.0),
@@ -219,21 +246,6 @@ pub fn spawn_vending(world: &mut World, kind: &'static VendingKind, pos: TilePos
         machine.insert(rs13_world::Dense);
     }
     machine.id()
-}
-
-/// Clicking one in reach opens its window, if it has power (Luna `attack_hand`).
-pub fn open(
-    machines: &Query<(&GridPos, &PowerUser), With<Vending>>,
-    mob: Entity,
-    mob_pos: TilePos,
-    target: Entity,
-    commands: &mut Commands,
-) -> Option<()> {
-    let (pos, power) = machines.get(target).ok()?;
-    if in_reach(mob_pos, pos.0) && power.powered {
-        commands.entity(mob).insert(PanelViewer(target));
-    }
-    Some(())
 }
 
 /// Vend buttons (Luna `Topic`): one thing at a time, while there is some, in reach and
@@ -248,20 +260,26 @@ pub fn process_vend_ops(
         Option<&Equipment>,
         Option<&mut Outbox>,
     )>,
-    mut machines: Query<(&GridPos, &mut Vending, &PowerUser)>,
+    mut machines: Query<(&GridPos, &mut Vending, &PowerUser, Option<&MachineWires>)>,
     cards: Query<&IdCard>,
 ) {
     let now = time.deciseconds();
     for (pos, mut pending, vitals, hands, equipment, mut outbox) in &mut mobs {
         let awake = vitals.is_none_or(|v| v.stat == MobStat::Conscious);
         for (target, line) in pending.0.drain(..) {
-            let Ok((at, mut machine, power)) = machines.get_mut(target) else {
+            let Ok((at, mut machine, power, wires)) = machines.get_mut(target) else {
                 continue;
             };
             if !awake || !in_reach(pos.0, at.0) || !power.powered || machine.vending.is_some() {
                 continue;
             }
+            // Contraband only once its wire has been pulsed (`hacking.md`).
+            if line >= machine.kind.products.len() && !wires.is_some_and(|w| w.contraband) {
+                continue;
+            }
+            // A cut or pulsed ID wire stops the scanner.
             if let Some(access) = machine.kind.access
+                && wires.is_none_or(|w| w.scan_id)
                 && !Shown::of(hands, equipment, &cards).opens(&[access.to_owned()])
             {
                 if let Some(outbox) = outbox.as_mut() {
@@ -293,7 +311,9 @@ pub fn run_vending(
             continue;
         }
         machine.vending = None;
-        let item = machine.kind.products[line].0;
+        let Some(item) = product(machine.kind, line) else {
+            continue;
+        };
         let tile = pos.0;
         commands.queue(move |world: &mut World| {
             // Every product is a prototype (`tests/vending.rs` checks).
@@ -311,12 +331,17 @@ pub fn update_vending_views(
         &mut VendingPanelOut,
         Option<&Vitals>,
     )>,
-    machines: Query<(&GridPos, &Vending, &PowerUser, &NetId)>,
+    machines: Query<(&GridPos, &Vending, &PowerUser, &NetId, Option<&MachineWires>)>,
     mut commands: Commands,
 ) {
     for (mob, pos, viewer, mut out, vitals) in &mut viewers {
         let target = viewer.and_then(|v| machines.get(v.0).ok());
-        let view = target.and_then(|(at, machine, power, id)| {
+        let view = target.and_then(|(at, machine, power, id, wires)| {
+            let lines = if wires.is_some_and(|w| w.contraband) {
+                machine.kind.products.len() + machine.kind.contraband.len()
+            } else {
+                machine.kind.products.len()
+            };
             let usable =
                 in_reach(pos.0, at.0) && power.powered && vitals.is_none_or(|v| v.stat == MobStat::Conscious);
             usable.then(|| VendingPanelView {
@@ -326,6 +351,8 @@ pub fn update_vending_views(
                     .kind
                     .products
                     .iter()
+                    .chain(machine.kind.contraband)
+                    .take(lines)
                     .zip(&machine.stock)
                     .map(|((item, _), amount)| VendingRow {
                         item: (*item).to_owned(),
