@@ -43,6 +43,27 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
   If a path can't be driven yet, build the means to drive it first.
 - Deliver: code, tests, a short summary, known limits, and any interface changes.
 
+## Disk space and temporary files
+
+Builds here are big (a full debug build is tens of GB), so keep the disk tidy:
+
+- **Temporary files go in `disposable/`**, never loose in `target/` or the repo root. This
+  includes scratch scripts, logs, test maps, screenshots and drafts. Use
+  `disposable/tmp/<task>/`. See `disposable/README.md`.
+- **One main build.** Build in `target/` so incremental builds are reused. If a build must not
+  share it, use `--target-dir disposable/builds/<name>`, and delete that folder when done.
+  Don't create other target directories.
+- **Clean up when the work is merged:**
+  - delete its `disposable/tmp/<task>/` and any `disposable/builds/<name>`;
+  - remove its worktree (`git worktree remove`) and delete its local branch.
+
+  A worktree has its own `target/`, so a forgotten one costs gigabytes.
+- **Before starting**, look for leftovers: `git worktree list`, and the folders in
+  `disposable/`. Remove the ones whose branch is merged and that have no uncommitted
+  changes.
+- If `target/` has grown past ~40 GB, run `cargo clean` between tasks rather than in the
+  middle of one, since the next build starts from scratch.
+
 ## Conventions
 
 - Crate names `rs13-<name>`; Rust edition 2024.
