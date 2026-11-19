@@ -675,6 +675,7 @@
     "utility-belt-full": (gender: neuter, sg: (nom: "utility belt", indef: "a utility belt"), pl: Some((nom: "utility belts"))),
     "air-alarm": (gender: neuter, sg: (nom: "air alarm", indef: "an air alarm"), pl: Some((nom: "air alarms"))),
     "id-card": (gender: neuter, sg: (nom: "ID card", indef: "an ID card"), pl: Some((nom: "ID cards"))),
+    "emag": (gender: neuter, sg: (nom: "cryptographic sequencer", indef: "a cryptographic sequencer"), pl: Some((nom: "cryptographic sequencers"))),
     "human": (gender: neuter, sg: (nom: "human", indef: "a human"), pl: Some((nom: "humans"))),
     // Body parts, for messages like "attacked in the chest".
     "zone-head": (gender: neuter, sg: (nom: "head")),

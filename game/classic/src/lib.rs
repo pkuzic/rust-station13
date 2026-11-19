@@ -40,6 +40,7 @@ pub mod dispensers;
 pub mod display_case;
 pub mod disposals;
 pub mod doors;
+pub mod emag;
 pub mod environment;
 pub mod equipment;
 pub mod escape;

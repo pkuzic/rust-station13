@@ -277,9 +277,9 @@ pub fn process_vend_ops(
             if line >= machine.kind.products.len() && !wires.is_some_and(|w| w.contraband) {
                 continue;
             }
-            // A cut or pulsed ID wire stops the scanner.
+            // A cut or pulsed ID wire, or an emag, stops the scanner (`hacking.md`, `emag.md`).
             if let Some(access) = machine.kind.access
-                && wires.is_none_or(|w| w.scan_id)
+                && wires.is_none_or(|w| w.scan_id && !w.emagged)
                 && !Shown::of(hands, equipment, &cards).opens(&[access.to_owned()])
             {
                 if let Some(outbox) = outbox.as_mut() {

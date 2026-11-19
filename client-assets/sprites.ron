@@ -893,6 +893,7 @@
         "circuit-box": { "": (dmi: "icons/obj/storage.dmi", state: "circuit") },
         "floor-tile": { "": (dmi: "icons/obj/items.dmi", state: "tile") },
         "id-card": { "": (dmi: "icons/obj/card.dmi", state: "id") },
+        "emag": { "": (dmi: "icons/obj/card.dmi", state: "emag") },
         "oxygen-tank": { "": (dmi: "icons/obj/tank.dmi", state: "oxygen") },
         "jetpack": {
             "": (dmi: "icons/obj/tank.dmi", state: "jetpack0"),
@@ -1033,6 +1034,7 @@
             "open": (dmi: "icons/obj/power.dmi", state: "apc2"),
             "open-empty": (dmi: "icons/obj/power.dmi", state: "apc1"),
             "broken": (dmi: "icons/obj/power.dmi", state: "apc-b"),
+            "emag": (dmi: "icons/obj/power.dmi", state: "apcemag"),
         },
         // Tank storage unit: the overlay shows how full it is (oxygen-5 full … oxygen-1).
         "tank-dispenser": {

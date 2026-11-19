@@ -56,12 +56,28 @@ pub struct Windoor {
     pub swing: Swing,
     /// Showing its deny animation until then, ds.
     pub deny_until: Option<f32>,
+    /// Its controls burnt out by an emag (Luna `operating = -1`): it stays as it is.
+    pub broken: bool,
 }
 
 impl Windoor {
     /// Whether it blocks its edge (Luna `density`): shut, closing, or not yet open.
     pub fn sealed(&self) -> bool {
         !matches!(self.swing, Swing::Open { .. })
+    }
+
+    /// An emag swiped on it (Luna `door/window/attackby`): a shut door swings open for good.
+    /// Returns whether it was shut and whole.
+    pub fn emag(&mut self, now: f32) -> bool {
+        if self.broken || self.swing != Swing::Closed {
+            return false;
+        }
+        self.broken = true;
+        self.swing = Swing::Opening {
+            at: now + SWING_DS,
+            auto: false,
+        };
+        true
     }
 
     pub fn edge(&self, at: TilePos) -> (TilePos, Dir) {
@@ -122,6 +138,7 @@ pub fn spawn_windoor(world: &mut World, spec: &ObjectSpec, pos: TilePos, id: Net
                 access: spec.access.clone(),
                 swing: Swing::Closed,
                 deny_until: None,
+                broken: false,
             },
         ))
         .id()
@@ -167,7 +184,7 @@ pub fn click(
     now: f32,
     sounds: &mut SoundEvents,
 ) {
-    if !in_reach(mob_pos, at) {
+    if door.broken || !in_reach(mob_pos, at) {
         return;
     }
     match door.swing {
@@ -206,7 +223,7 @@ pub fn bump_windoors(
         let Some(dir) = intent.dir else { continue };
         let to = pos.0.step(dir);
         for (at, mut door) in &mut doors {
-            if door.swing != Swing::Closed || !crosses(at.0, door.dir, pos.0, to) {
+            if door.broken || door.swing != Swing::Closed || !crosses(at.0, door.dir, pos.0, to) {
                 continue;
             }
             if Shown::of(Some(hands), equipment, &cards).opens(&door.access) {
