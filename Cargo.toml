@@ -69,6 +69,9 @@ too_many_arguments = "allow"
 # Bevy is very slow in debug builds; optimise dependencies but keep our code debuggable.
 [profile.dev]
 opt-level = 1
+# File and line numbers in backtraces, but no variable info: full debug info made each of the
+# ~400 test binaries carry a .pdb of up to 1.4 GB, and filled target/ past 150 GB.
+debug = "line-tables-only"
 
 [profile.dev.package."*"]
 opt-level = 3

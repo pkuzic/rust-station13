@@ -1,0 +1,4 @@
+# Everything a build writes is disposable, so it lives under disposable/ with the other
+# temporary files (see disposable/README.md).
+[build]
+target-dir = "disposable/target"
