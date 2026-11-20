@@ -71,14 +71,16 @@ fn a_meteor_round_sends_waves_and_others_dont() {
     let mut app = setup("extended");
     tick(&mut app, 60);
     assert_eq!(meteors(&mut app), 0);
+    // Most meteors hit the wall in the tick they come, so count them as they come.
     let mut app = setup("meteor");
-    let mut most = 0;
-    for _ in 0..4000 {
-        tick(&mut app, 1);
-        most = most.max(meteors(&mut app));
-    }
-    assert!(most > 0, "some meteors came");
+    app.init_resource::<MeteorsCome>();
+    app.add_observer(|_: On<Add<Meteor>>, mut come: ResMut<MeteorsCome>| come.0 += 1);
+    tick(&mut app, 4000);
+    assert!(app.world().resource::<MeteorsCome>().0 > 0, "some meteors came");
 }
+
+#[derive(Resource, Default)]
+struct MeteorsCome(usize);
 
 #[test]
 fn a_meteor_breaks_the_wall_it_hits() {

@@ -996,6 +996,9 @@ shocked = You feel a powerful shock course through your body!
 shocked-seen = { $name } was shocked!
 panel-title = Access panel
 panel-wire = { $colour ->
+        [violet] Violet
+        [goldenrod] Goldenrod
+        [light-red] Light red
         [orange] Orange
         [dark-red] Dark red
         [white] White
@@ -2328,3 +2331,30 @@ acid-helmet-melts = Your helmet melts into uselessness!
 acid-mask-protects = Your mask melts away but protects you from the acid!
 acid-helmet-protects = Your helmet melts into uselessness but protects you from the acid!
 acid-disfigured = Your face has become disfigured!
+
+# Hacking machines (`hacking.md`). Args: $machine, $item (noun ids), $name.
+vending-panel-opened = You open the maintenance panel.
+vending-panel-closed = You close the maintenance panel.
+vending-launches = The { NOUN($machine) } launches { NOUN($item, case: "indef") } at { $name }!
+lathe-hatch-opened = You open the maintenance hatch of the autolathe.
+lathe-hatch-closed = You close the maintenance hatch of the autolathe.
+lathe-dead = You press the button, but nothing happens.
+apc-close-first = Close the APC first.
+apc-close-panel-first = You must close the panel.
+apc-wires-exposed = The wires have been exposed.
+apc-wires-unexposed = The wires have been unexposed.
+apc-panel-locked = The APC is locked.
+apc-panel-unlocked = The APC is unlocked.
+apc-panel-shorted = The APC's power has been shorted.
+apc-panel-working = The APC is working properly!
+light-orange-on = The orange light is on.
+light-orange-off = The orange light is off.
+light-red-on = The red light is on.
+light-red-off = The red light is off.
+light-red-blinking = The red light is blinking.
+light-green-on = The green light is on.
+light-green-off = The green light is off.
+light-blue-on = The blue light is on.
+light-blue-off = The blue light is off.
+light-purple-on = The purple light is on.
+light-yellow-on = The yellow light is on.

@@ -423,13 +423,18 @@ pub fn process_wire_ops(
         for op in pending.0.drain(..) {
             let (door, colour, pulse) = match op {
                 WireOp::Close => {
-                    commands.entity(mob).remove::<PanelViewer>();
+                    commands
+                        .entity(mob)
+                        .remove::<PanelViewer>()
+                        .remove::<crate::hacking::HackViewer>();
                     continue;
                 }
                 WireOp::CutOrMend { door, colour } => (door, colour, false),
                 WireOp::Pulse { door, colour } => (door, colour, true),
             };
             let Ok((door_pos, mut airlock, mut wiring)) = doors.get_mut(door) else {
+                // Not a door: a machine's wires (`hacking.md`).
+                commands.queue(move |world: &mut World| crate::hacking::wire_op(world, mob, op));
                 continue;
             };
             if !airlock.panel_open || !in_reach(pos.0, door_pos.0) || colour >= WIRE_COLOURS.len() {
@@ -469,16 +474,20 @@ pub fn process_wire_ops(
 /// Build each open wire panel's view; close it once its viewer can no longer use it.
 pub fn update_panel_views(
     layout: Res<WireLayout>,
-    mut viewers: Query<(
-        Entity,
-        &GridPos,
-        Option<&PanelViewer>,
-        &mut WirePanelOut,
-        Option<&Vitals>,
-    )>,
+    mut viewers: Query<
+        (
+            Entity,
+            &GridPos,
+            Option<&PanelViewer>,
+            &mut WirePanelOut,
+            Option<&Vitals>,
+        ),
+        Without<crate::hacking::HackViewer>,
+    >,
     doors: Query<(&GridPos, &Airlock, &Wiring, &NetId)>,
     mut commands: Commands,
 ) {
+    // Machine wire panels are kept by `hacking::update_hack_views`.
     for (mob, pos, viewer, mut out, vitals) in &mut viewers {
         let view = viewer.and_then(|v| {
             let (door_pos, airlock, wiring, id) = doors.get(v.0).ok()?;

@@ -40,6 +40,7 @@ pub struct ApcWork<'w, 's> {
     apcs: Query<'w, 's, &'static mut Apc>,
     cells: Query<'w, 's, &'static PowerCell>,
     cards: Query<'w, 's, &'static IdCard>,
+    wires: Query<'w, 's, &'static crate::hacking::MachineWires>,
 }
 
 impl ApcWork<'_, '_> {
@@ -70,8 +71,11 @@ impl ApcWork<'_, '_> {
         let mut apc = self.apcs.get_mut(target).ok()?;
         let active = hands.active_item();
         if let Some(card) = active.and_then(|e| self.cards.get(e).ok()) {
+            let exposed = self.wires.get(target).is_ok_and(|w| w.panel_open);
             return Some(ClickOutcome::told(if apc.opened {
                 "apc-close-cover-first"
+            } else if exposed {
+                "apc-close-panel-first"
             } else if allowed(&[APC_ACCESS.to_owned()], Some(card)) {
                 apc.locked = !apc.locked;
                 if apc.locked {

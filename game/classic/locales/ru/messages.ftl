@@ -986,6 +986,9 @@ shocked = Вас пронзает мощный разряд тока!
 shocked-seen = { $name } бьёт током!
 panel-title = Панель доступа
 panel-wire = { $colour ->
+        [violet] Фиолетовый
+        [goldenrod] Золотистый
+        [light-red] Светло-красный
         [orange] Оранжевый
         [dark-red] Тёмно-красный
         [white] Белый
@@ -2335,3 +2338,30 @@ acid-helmet-melts = Ваш шлем плавится и приходит в не
 acid-mask-protects = Ваша маска плавится, но защищает вас от кислоты!
 acid-helmet-protects = Ваш шлем плавится и приходит в негодность, но защищает вас от кислоты!
 acid-disfigured = Ваше лицо обезображено!
+
+# Взлом машин (`hacking.md`). Аргументы: $machine, $item (id существительных), $name.
+vending-panel-opened = Вы открываете техническую панель.
+vending-panel-closed = Вы закрываете техническую панель.
+vending-launches = { NOUN($machine) } швыряет { NOUN($item, case: "acc") } в { $name }!
+lathe-hatch-opened = Вы открываете технический люк автолата.
+lathe-hatch-closed = Вы закрываете технический люк автолата.
+lathe-dead = Вы нажимаете кнопку, но ничего не происходит.
+apc-close-first = Сначала закройте энергощиток.
+apc-close-panel-first = Сначала закройте панель.
+apc-wires-exposed = Провода открыты.
+apc-wires-unexposed = Провода закрыты.
+apc-panel-locked = Энергощиток заблокирован.
+apc-panel-unlocked = Энергощиток разблокирован.
+apc-panel-shorted = Питание энергощитка закорочено.
+apc-panel-working = Энергощиток работает исправно!
+light-orange-on = Оранжевый индикатор горит.
+light-orange-off = Оранжевый индикатор не горит.
+light-red-on = Красный индикатор горит.
+light-red-off = Красный индикатор не горит.
+light-red-blinking = Красный индикатор мигает.
+light-green-on = Зелёный индикатор горит.
+light-green-off = Зелёный индикатор не горит.
+light-blue-on = Синий индикатор горит.
+light-blue-off = Синий индикатор не горит.
+light-purple-on = Горит фиолетовый индикатор.
+light-yellow-on = Горит жёлтый индикатор.

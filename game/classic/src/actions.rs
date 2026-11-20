@@ -418,6 +418,18 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::swords::toggle(world, mob, target));
                 }
+                // Machine panels and wires (`hacking.md`).
+                Action::UseOn(target)
+                    if reaches
+                        && crate::hacking::takes(tool)
+                        && appearances
+                            .get(target)
+                            .is_ok_and(|(look, _)| crate::hacking::is_hackable(&look.sprite)) =>
+                {
+                    let tool = tool.unwrap_or_default().to_owned();
+                    commands
+                        .queue(move |world: &mut World| crate::hacking::use_on(world, mob, target, &tool));
+                }
                 // The captain's display case (`weapons.md`).
                 Action::UseOn(target)
                     if reaches
@@ -1876,7 +1888,7 @@ pub fn process_actions(
                 }
                 Action::UseOn(target) if vendors.contains(target) => {
                     // Vending machines open their window (`vending.md`).
-                    crate::vending::open(&vendors, mob, mob_pos.0, target, &mut commands);
+                    commands.queue(move |world: &mut World| crate::hacking::touch_vendor(world, mob, target));
                 }
                 Action::UseOn(target) if walllockers.contains(target) => {
                     // Emergency wall lockers (`walllockers.md`), within reach.

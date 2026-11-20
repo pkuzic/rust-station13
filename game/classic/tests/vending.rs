@@ -63,7 +63,7 @@ fn every_product_is_a_prototype() {
     let mut app = App::new();
     app.add_plugins(ClassicPlugin);
     for kind in &KINDS {
-        for (item, _) in kind.products {
+        for (item, _) in kind.products.iter().chain(kind.contraband) {
             assert!(
                 spawn_object(app.world_mut(), &ObjectSpec::new(*item), TilePos::new(0, 0, 0)).is_ok(),
                 "{} sells {item}, which isn't a prototype",

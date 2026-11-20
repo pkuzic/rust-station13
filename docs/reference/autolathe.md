@@ -22,6 +22,6 @@ loaders, igniters and timers.
 |---|---|
 | Any item with metal or glass in it can be fed in | Only sheets |
 | Sheets can be made several at a time | One at a time |
-| A panel to open and wires to hack, unlocking more recipes | Not built |
+| A panel to open and wires to hack, unlocking more recipes | Built (`hacking.md`); only handcuffs and .357 boxes are on the hidden list |
 | Radios, headsets, tape recorders, rods, light tubes and shells are on the list | Not on it: some aren't items here, and Luna gives radios no cost |
 | Upgrading its parts | Not built |

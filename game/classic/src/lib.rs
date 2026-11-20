@@ -66,6 +66,7 @@ pub mod genetics;
 pub mod ghosts;
 pub mod grabs;
 pub mod grenades;
+pub mod hacking;
 pub mod hands;
 pub mod health;
 pub mod heaters;
@@ -207,6 +208,7 @@ impl Plugin for ClassicPlugin {
             .init_resource::<power::GridTotals>()
             .init_resource::<wires::WireLayout>()
             .init_resource::<wires::PendingShocks>()
+            .init_resource::<hacking::HackLayouts>()
             .init_resource::<alarms::AreaSeals>()
             .init_resource::<firealarms::AreaFires>()
             .init_resource::<fires::FireSprites>()
@@ -551,8 +553,10 @@ impl Plugin for ClassicPlugin {
                             traitor::update_uplink_views,
                         )
                             .chain(),
+                        hacking::run_hacking,
                         autolathe::run_autolathes,
                         autolathe::update_lathe_views,
+                        hacking::update_hack_views,
                         chem_master::run_chem_masters,
                         chem_master::update_master_views,
                         microwaves::run_microwaves,
