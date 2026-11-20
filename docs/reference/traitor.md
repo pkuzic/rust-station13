@@ -49,6 +49,7 @@ Using it also repeats a traitor's objectives in chat.
 | Explosive implant, with implanter | 6 |
 | Energy sword (`weapons.md`) | 5 |
 | Mini energy-crossbow | 5 |
+| Cryptographic sequencer, the emag (`emag.md`) | 3 |
 
 ## Differences from Luna
 

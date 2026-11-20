@@ -37,7 +37,7 @@ chat message is shown. Bumping goes through the same path.
 ## Not implemented yet
 
 The ID slot (`wear_id`), PDAs, silicons, job access lists assigned at spawn, card owner
-names and job titles, the ID computer, emags.
+names and job titles, the ID computer. Emags: `emag.md`.
 
 ## The identification computer (`id-computer`)
 

@@ -202,6 +202,8 @@ pub struct Apc {
     pub broken: bool,
     /// A main power wire cut or pulsed (Luna `shorted`, `hacking.md`): it powers nothing.
     pub shorted: bool,
+    /// Its interface broken open by an emag (Luna `emagged`, `emag.md`).
+    pub emagged: bool,
 }
 
 impl Apc {
@@ -220,6 +222,7 @@ impl Apc {
             last_used: [0.0; 3],
             broken: false,
             shorted: false,
+            emagged: false,
         }
     }
 
@@ -563,6 +566,8 @@ pub fn update_power_looks(mut apcs: Query<(&Apc, &mut rs13_world::Appearance), C
             "broken"
         } else if apc.opened {
             if apc.cell.is_some() { "open" } else { "open-empty" }
+        } else if apc.emagged {
+            "emag"
         } else if !apc.operating {
             "off"
         } else if !apc.channels[Channel::Equipment as usize].is_on() {

@@ -87,6 +87,8 @@ pub struct Closet {
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct ClosetLock {
     pub locked: bool,
+    /// Broken open by an emag (Luna `broken`): unlocked for good.
+    pub broken: bool,
     pub access: Vec<String>,
     pub locked_look: String,
 }
@@ -121,6 +123,7 @@ pub fn spawn_closet(
     };
     let lock = def.locked.as_ref().map(|look| ClosetLock {
         locked: true,
+        broken: false,
         access: def.access.clone(),
         locked_look: look.clone(),
     });
@@ -340,7 +343,11 @@ impl ClosetWork<'_, '_> {
         if closet.opened {
             return None;
         }
-        let access = self.locks.get(target).ok()?.access.clone();
+        let lock = self.locks.get(target).ok()?;
+        if lock.broken {
+            return Some(ClickOutcome::told("locker-broken"));
+        }
+        let access = lock.access.clone();
         if !self.shown(mob, hands).opens(&access) {
             return Some(ClickOutcome::told("locker-access-denied"));
         }
@@ -416,6 +423,9 @@ impl ClosetWork<'_, '_> {
             // An item, or an empty hand on a locker that won't open, works the lock.
             let opens = held.is_none() && !lock.locked && !closet.welded;
             if !opens {
+                if lock.broken {
+                    return Some(ClickOutcome::told("locker-broken"));
+                }
                 let access = lock.access.clone();
                 if !self.shown(mob, hands).opens(&access) {
                     return Some(ClickOutcome::told("locker-access-denied"));
@@ -470,6 +480,7 @@ mod tests {
         };
         let mut lock = ClosetLock {
             locked: true,
+            broken: false,
             access: Vec::new(),
             locked_look: "secureeng1".into(),
         };

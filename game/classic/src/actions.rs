@@ -418,6 +418,12 @@ pub fn process_actions(
                 {
                     commands.queue(move |world: &mut World| crate::swords::toggle(world, mob, target));
                 }
+                // The emag on anything but a person (`emag.md`).
+                Action::UseOn(target)
+                    if reaches && tool == Some(crate::emag::EMAG) && !people.contains(target) =>
+                {
+                    commands.queue(move |world: &mut World| crate::emag::use_on(world, mob, target));
+                }
                 // Machine panels and wires (`hacking.md`).
                 Action::UseOn(target)
                     if reaches

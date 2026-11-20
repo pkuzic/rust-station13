@@ -100,7 +100,7 @@ fn set_doors(world: &mut World, id: &str, shut: bool, now: f32) {
     let mut doors = world.query::<(&CellDoor, &GridPos, &mut Windoor)>();
     let mut moved: Vec<TilePos> = Vec::new();
     for (tag, at, mut door) in doors.iter_mut(world) {
-        if tag.0 != id {
+        if tag.0 != id || door.broken {
             continue;
         }
         match door.swing {

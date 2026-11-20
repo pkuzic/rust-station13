@@ -272,6 +272,9 @@ pub fn empulse(world: &mut World, at: TilePos, heavy: i32, light: i32) {
     let closets: Vec<(Entity, TilePos, ClosetLock)> =
         locks.iter(world).map(|(e, p, l)| (e, p.0, l.clone())).collect();
     for (closet, here, lock) in closets {
+        if lock.broken {
+            continue;
+        }
         let Some(severity) = emp_severity(world, at, here, heavy, light) else {
             continue;
         };

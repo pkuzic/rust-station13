@@ -72,7 +72,9 @@ impl ApcWork<'_, '_> {
         let active = hands.active_item();
         if let Some(card) = active.and_then(|e| self.cards.get(e).ok()) {
             let exposed = self.wires.get(target).is_ok_and(|w| w.panel_open);
-            return Some(ClickOutcome::told(if apc.opened {
+            return Some(ClickOutcome::told(if apc.emagged {
+                "apc-interface-broken"
+            } else if apc.opened {
                 "apc-close-cover-first"
             } else if exposed {
                 "apc-close-panel-first"

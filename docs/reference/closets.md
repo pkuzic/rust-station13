@@ -89,7 +89,7 @@ A crate holds items like a closet, with these differences:
 - **Brig lockers:** Luna bolts them down; ours can be pulled like any locker.
 - **Not implemented:**
   - rigging with cable and electropacks;
-  - emags and hacktools;
+  - hacktools (emags: `emag.md`);
   - breaking lockers;
   - stuffing people in by dragging or grabbing;
   - the "BANG, bang!" heard when someone inside pushes;

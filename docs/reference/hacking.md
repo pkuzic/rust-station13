@@ -101,5 +101,4 @@ Wires: orange, dark red, white and yellow.
 | The autolathe's hidden list also has a flamethrower, an RCD, an electropack, an industrial welder, magazines, an infrared emitter and shotgun shells | Not in the game yet |
 | More contraband: ice, Syndi-Cakes, Thirteen Loko, and pills and bottles on the medical machines | Not in the game yet |
 | A remote signaller can be attached to a wire | Not built |
-| The emag | Not built yet |
 | The APC sprite shows its exposed wires, and a vending machine its open panel | Their sprites don't change |

@@ -85,6 +85,8 @@ pub struct Airlock {
     pub air_locked: bool,
     /// Welded shut (Luna `welded`): it opens for nothing until welded open again.
     pub welded: bool,
+    /// Its controls burnt out by an emag (Luna `operating = -1`): it moves for nothing again.
+    pub broken: bool,
 }
 
 impl Default for Airlock {
@@ -103,6 +105,7 @@ impl Default for Airlock {
             seal_pending: false,
             air_locked: false,
             welded: false,
+            broken: false,
         }
     }
 }
@@ -116,7 +119,7 @@ impl Airlock {
     /// Luna's door `attackby`, also reached by hand and by bumping: ignored while
     /// operating; with access, toggle; without, a closed door shows "deny".
     pub fn use_by(&mut self, now: f32, shown: Shown) {
-        if matches!(self.state, DoorState::Opening { .. } | DoorState::Closing { .. }) {
+        if self.broken || matches!(self.state, DoorState::Opening { .. } | DoorState::Closing { .. }) {
             return;
         }
         // A cut ID scanner wire: no card counts (Luna `requiresID`).
@@ -130,7 +133,7 @@ impl Airlock {
 
     /// Open a closed door or close an open one. Returns whether anything started.
     pub fn toggle(&mut self, now: f32) -> bool {
-        if self.bolted || self.welded || !self.has_power() {
+        if self.broken || self.bolted || self.welded || !self.has_power() {
             return false;
         }
         match self.state {
@@ -150,7 +153,7 @@ impl Airlock {
     /// Luna's crowbar: an unpowered closed door can be prised open, and an open door can be
     /// pulled shut at any time, unless it is bolted. Uses no power.
     pub fn force(&mut self, now: f32) -> bool {
-        if self.bolted || self.welded {
+        if self.broken || self.bolted || self.welded {
             return false;
         }
         match self.state {
@@ -166,6 +169,22 @@ impl Airlock {
             }
             _ => false,
         }
+    }
+
+    /// An emag swiped on it (Luna door `attackby`): a shut door's controls burn out, and it
+    /// opens if it could anyway. Returns whether it was shut and whole.
+    pub fn emag(&mut self, now: f32) -> bool {
+        if self.broken || self.state != DoorState::Closed {
+            return false;
+        }
+        if !self.bolted && !self.welded && self.has_power() {
+            self.state = DoorState::Opening {
+                done_at: now + OPEN_DS,
+            };
+            self.operations += 1;
+        }
+        self.broken = true;
+        true
     }
 
     fn start_closing(&mut self, now: f32) {
@@ -214,7 +233,7 @@ pub fn update_doors(
             } if now >= at => {
                 // Luna checks once; a bolted or unpowered door stays open for good.
                 door.state = DoorState::Open { autoclose_at: None };
-                if !door.bolted && door.has_power() {
+                if !door.broken && !door.bolted && door.has_power() {
                     door.start_closing(now);
                     door.operations += 1;
                 }

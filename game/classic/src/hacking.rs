@@ -142,6 +142,8 @@ pub struct MachineWires {
     pub contraband: bool,
     pub throwing: bool,
     pub scan_id: bool,
+    /// The product lock shorted out by an emag (Luna `emagged`, `emag.md`): no access is checked.
+    pub emagged: bool,
     pub next_throw_ds: f32,
     // The autolathe.
     pub hacked: bool,
@@ -164,6 +166,7 @@ impl MachineWires {
             contraband: false,
             throwing: false,
             scan_id: true,
+            emagged: false,
             next_throw_ds: 0.0,
             hacked: false,
             disabled: false,
@@ -262,6 +265,15 @@ fn ensure(world: &mut World, machine: Entity) -> Option<Kind> {
     Some(kind)
 }
 
+/// An emag swiped on a vending machine: its product lock shorts out for good.
+pub fn emag_vendor(world: &mut World, machine: Entity) {
+    if ensure(world, machine).is_some()
+        && let Some(mut wires) = world.get_mut::<MachineWires>(machine)
+    {
+        wires.emagged = true;
+    }
+}
+
 pub fn wires(world: &World, machine: Entity) -> Option<&MachineWires> {
     world.get::<MachineWires>(machine)
 }
@@ -307,6 +319,9 @@ pub fn use_on(world: &mut World, mob: Entity, machine: Entity, tool: &str) {
     if tool == "screwdriver" {
         if world.get::<Apc>(machine).is_some_and(|apc| apc.opened) {
             return tell(world, mob, "apc-close-first");
+        }
+        if world.get::<Apc>(machine).is_some_and(|apc| apc.emagged) {
+            return tell(world, mob, "apc-interface-broken");
         }
         if let Some(mut wires) = world.get_mut::<MachineWires>(machine) {
             wires.panel_open = !wires.panel_open;
