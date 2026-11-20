@@ -45,24 +45,35 @@ Read before starting any task: `docs/VISION.md`, `docs/SCOPE.md`,
 
 ## Disk space and temporary files
 
-Builds here are big (a full debug build is tens of GB), so keep the disk tidy:
+Builds here are big, so keep the disk tidy. You must do this; it is not optional.
 
-- **Temporary files go in `disposable/`**, never loose in `target/` or the repo root. This
-  includes scratch scripts, logs, test maps, screenshots and drafts. Use
-  `disposable/tmp/<task>/`. See `disposable/README.md`.
-- **One main build.** Build in `target/` so incremental builds are reused. If a build must not
-  share it, use `--target-dir disposable/builds/<name>`, and delete that folder when done.
-  Don't create other target directories.
+- **Everything disposable lives in `disposable/`**: the build with its debug info, extra
+  builds, scratch scripts, logs, test maps, screenshots and drafts. Never leave such files
+  in the repo root or elsewhere. See `disposable/README.md`.
+- **One main build, in `disposable/target/`.** `.cargo/config.toml` sets this, so plain
+  `cargo` commands use it. If a build must not share it, use
+  `--target-dir disposable/builds/<name>`. Don't create other target directories.
+- **Temporary files go in `disposable/tmp/<task>/`.**
+- **Delete old debug info and stale builds.** Cargo keeps every old copy of a test binary
+  and its `.pdb`, and never deletes them. When a task is done, and whenever
+  `disposable/target/` passes ~40 GB, delete what is more than 3 days old:
+  ```sh
+  find disposable/target/debug/deps -maxdepth 1 \( -name '*.exe' -o -name '*.pdb' \) -mtime +3 -delete
+  find disposable/target/debug/incremental -mindepth 1 -maxdepth 1 -type d -mtime +3 -exec rm -rf {} +
+  ```
+  Leave the `.rlib` files, or dependencies such as Bevy rebuild from scratch. Do this
+  between builds, never while one is running.
 - **Clean up when the work is merged:**
-  - delete its `disposable/tmp/<task>/` and any `disposable/builds/<name>`;
+  - delete its `disposable/tmp/<task>/` and any `disposable/builds/<name>`, and any other
+    file in `disposable/` it no longer needs;
   - remove its worktree (`git worktree remove`) and delete its local branch.
 
-  A worktree has its own `target/`, so a forgotten one costs gigabytes.
+  A worktree has its own build, so a forgotten one costs gigabytes.
 - **Before starting**, look for leftovers: `git worktree list`, and the folders in
   `disposable/`. Remove the ones whose branch is merged and that have no uncommitted
   changes.
-- If `target/` has grown past ~40 GB, run `cargo clean` between tasks rather than in the
-  middle of one, since the next build starts from scratch.
+- Debug info is line tables only (`Cargo.toml`, `[profile.dev]`): backtraces keep file and
+  line. Don't turn full debug info back on for the whole workspace.
 
 ## Conventions
 
