@@ -5,3 +5,6 @@
 *.bak
 /config/admins.txt
 /data/
+# Scratch builds, logs, screenshots and scripts; safe to delete at any time.
+/disposable/*
+!/disposable/README.md
